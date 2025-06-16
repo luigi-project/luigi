@@ -21,6 +21,7 @@ mkdir public/assets
 
 # the following steps can be copy and pasted to the terminal at once
 cp src/index.html src/angular.html
+ng config projects.$folder.architect.build.options.index src/angular.html
 
 # download assets
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/assets/index.html > public/index.html
