@@ -4,7 +4,7 @@
   "description": "luigi-client development version, only the public folder is being published to npm as a package",
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "scripts": {
     "bundle": "npm run bundle-evergreen",

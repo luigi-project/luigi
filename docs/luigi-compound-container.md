@@ -8,7 +8,7 @@
     },
     "metaData": {
       "categoryPosition": 6,
-      "position": 2
+      "position": 1
     }
   }
 }
@@ -17,6 +17,7 @@ meta -->
 # Luigi Compound Container
 
 ## Overview
+
 The Luigi Compound Container works similarly to Luigi's compound web components [feature](web-component.md#compound-web-components) and allows you to insert multiple micro frontends on the same page.
 
 ## Installation
@@ -89,7 +90,7 @@ You can find more on the Luigi Compound Container [compoundConfig](luigi-compoun
 
 ### Test Application
 
-1. You can find a Luigi Compound Container example application on [GitHub](https://github.com/SAP/luigi/tree/main/container/examples). First, clone the Luigi repository if you haven't already done so:
+1. You can find a Luigi Compound Container example application on [GitHub](https://github.com/luigi-project/luigi/tree/main/container/examples). First, clone the Luigi repository if you haven't already done so:
 
 ```bash
 git clone git@github.com:SAP/luigi.git
@@ -106,7 +107,7 @@ npm run start-examples
 
 The Compound Container example should be available at `http://localhost:2222/#compound-wc-container` in your browser. 
 
-3. Check the [examples folder](https://github.com/SAP/luigi/tree/main/container/examples) to see how Luigi Compound Container is used.
+3. Check the [examples folder](https://github.com/luigi-project/luigi/tree/main/container/examples) to see how Luigi Compound Container is used.
 
 ### API Reference
 To make use of all of the compound container based Luigi functionalities you can take a further look at the API reference:

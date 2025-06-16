@@ -13,7 +13,7 @@ You can read about the new features in Luigi v1.20.0 in the release notes below.
 #### New SAP icon styles support
 
 In addition to basic SAP icons, Luigi now supports the use of different SAP Icon suites like TNT and businessSuiteInAppSymbols.
-In order to use these icons, it is recommended to add `@font-face` from the [Fundamental Styles](https://sap.github.io/fundamental-styles/?path=/docs/docs-introduction--docs) project configuration to your **custom styles**. You can find more information [here](https://github.com/SAP/luigi/pull/2432).
+In order to use these icons, it is recommended to add `@font-face` from the [Fundamental Styles](https://sap.github.io/fundamental-styles/?path=/docs/docs-introduction--docs) project configuration to your **custom styles**. You can find more information [here](https://github.com/luigi-project/luigi/pull/2432).
 
 #### Global search improvements
 
@@ -25,14 +25,14 @@ You can use `globalSearchCenteredCancelButton` to define the label of the cancel
 
 #### Dynamic pathSegment for breadcrumbs and navheader
 
-As of Luigi 1.20, [dynamic pathSegments](https://docs.luigi-project.io/docs/navigation-advanced/?section=dynamic-path-parameters) are also available for breadcrumbs and navheader. You can find more information [here](https://github.com/SAP/luigi/pull/2370).
+As of Luigi 1.20, [dynamic pathSegments](https://docs.luigi-project.io/docs/navigation-advanced/?section=dynamic-path-parameters) are also available for breadcrumbs and navheader. You can find more information [here](https://github.com/luigi-project/luigi/pull/2370).
 
 #### Parameter handlers improvements
 
 In Luigi 1.20, we added an optional boolean argument called `keepBrowserHistory` to [addCoreSearchParams](https://docs.luigi-project.io/docs/luigi-client-api/?section=addcoresearchparams). It allows for the change of params without an additional browser history entry.
-We also added a function to manipulate current node parameters called [addNodeParams](https://docs.luigi-project.io/docs/luigi-client-api/?section=addnodeparams) which provides the same functionality. It gives you the option to keep browser history or not. You can find more information [here](https://github.com/SAP/luigi/pull/2409).
+We also added a function to manipulate current node parameters called [addNodeParams](https://docs.luigi-project.io/docs/luigi-client-api/?section=addnodeparams) which provides the same functionality. It gives you the option to keep browser history or not. You can find more information [here](https://github.com/luigi-project/luigi/pull/2409).
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
 

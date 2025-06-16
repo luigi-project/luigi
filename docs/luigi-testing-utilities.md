@@ -18,7 +18,7 @@ meta -->
 
 # Luigi Testing Utilities
 
-The [Luigi Testing Utilities](https://github.com/SAP/luigi/tree/main/client-frameworks-support/testing-utilities) are a set of auxiliary functions used to enhance the user experience while testing Luigi-based micro frontends. The functions abstract away Luigi-specific logic from the tester so that it is easier for them to mock and assert Luigi functionality.
+The [Luigi Testing Utilities](https://github.com/luigi-project/luigi/tree/main/client-frameworks-support/testing-utilities) are a set of auxiliary functions used to enhance the user experience while testing Luigi-based micro frontends. The functions abstract away Luigi-specific logic from the tester so that it is easier for them to mock and assert Luigi functionality.
 
 ## LuigiMockUtil
 This class contains certain utility helper functions needed when writing e2e tests with different test frameworks. You can simply import this module into you project and then use an instance of it to test micro frontend functionality.

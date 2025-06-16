@@ -1,0 +1,11 @@
+{
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "extends": ["eslint:recommended"]
+}

@@ -156,7 +156,7 @@ async function prepareRelease() {
       const changelogPath = './CHANGELOG.md';
 
       //Add compare link to the end of the file
-      const lastline = `\n[v${version}]: https://github.com/SAP/luigi/compare/${lastContainerRelease.tag_name}...container/v${version}`;
+      const lastline = `\n[v${version}]: https://github.com/luigi-project/luigi/compare/${lastContainerRelease.tag_name}...container/v${version}`;
 
       //read file before append last line to file, otherwise it will not be written
       fs.readFileSync(changelogPath, 'utf8');

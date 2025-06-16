@@ -1101,7 +1101,7 @@ describe('Routing', function() {
     });
 
     it('calls proper function if item is an external link with url', () => {
-      const url = 'https://github.com/SAP/luigi';
+      const url = 'https://github.com/luigi-project/luigi';
       Routing.navigateToLink({ externalLink: { url } });
       sinon.assert.calledOnce(Routing.navigateToExternalLink);
       sinon.assert.calledWithExactly(Routing.navigateToExternalLink, { url });

@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "keywords": [
     "luigi",

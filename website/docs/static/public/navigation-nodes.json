@@ -12,7 +12,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-angular"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-angular"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -32,7 +32,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-vue"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-vue"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -52,7 +52,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-react"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-react"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -72,7 +72,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-js"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-js"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -92,7 +92,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-openui5"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-openui5"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -112,7 +112,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-svelte"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-svelte"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -132,7 +132,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-next"
+      "url": "https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-next"
     },
     "metaData": {
       "categoryPosition": 9,
@@ -152,7 +152,7 @@
       "label": "Examples"
     },
     "externalLink": {
-      "url": "https://github.com/SAP/luigi/tree/main/container/examples"
+      "url": "https://github.com/luigi-project/luigi/tree/main/container/examples"
     },
     "metaData": {
       "categoryPosition": 9,

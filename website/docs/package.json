@@ -15,7 +15,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test:unit": "vitest",
-    "fetchversions": "curl -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/SAP/luigi/tags?per_page=100 > ./public/versions.json",
+    "fetchversions": "curl -H \"Accept: application/vnd.github.v3+json\" https://api.github.com/repos/luigi-project/luigi/tags?per_page=100 > ./public/versions.json",
     "pre-build": "sh ./scripts/move-export.sh && npm run fetchversions && npm run compilecorescss && npm run bundleLuigiConfig && npm run generateSitemap && npm run buildMarkdownDocu",
     "copy-docs-html": "cp -R build/* public/docu-microfrontend",
     "compilecorescss": "sass --no-source-map ./src/luigi-config/styles/index.scss ./public/coreStyles.css",

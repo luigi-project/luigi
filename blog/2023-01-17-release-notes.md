@@ -12,15 +12,15 @@ You can read about the new features in Luigi v1.26.0 in the release notes below.
 
 #### Enhanced Left Navigation Accessibility
 
-In Luigi v1.26.0, we resolved issues related to accessibility in the left side navigation. We made the collapsed-state left navigation buttons accessible via keyboard and the collapsed-state category popups closeable via the `escape` key. For reference, see the [pull request](https://github.com/SAP/luigi/pull/3094).
+In Luigi v1.26.0, we resolved issues related to accessibility in the left side navigation. We made the collapsed-state left navigation buttons accessible via keyboard and the collapsed-state category popups closeable via the `escape` key. For reference, see the [pull request](https://github.com/luigi-project/luigi/pull/3094).
 
 #### Callback Added to OpenAsModal for Core API
 
-We added the parameter `onCloseCallback` to [openAsModal](https://docs.luigi-project.io/docs/luigi-core-api/?section=openasmodal) in the Luigi Core API. The callback function is called upon closing the opened modal. For more information, see the [pull request](https://github.com/SAP/luigi/pull/3049).
+We added the parameter `onCloseCallback` to [openAsModal](https://docs.luigi-project.io/docs/luigi-core-api/?section=openasmodal) in the Luigi Core API. The callback function is called upon closing the opened modal. For more information, see the [pull request](https://github.com/luigi-project/luigi/pull/3049).
 
 #### Luigi Client Type Declaration for Web Components
 
-In this release, we added Luigi Client type declaration for [Web Components](https://docs.luigi-project.io/docs/web-component). For more information, see the [pull request](https://github.com/SAP/luigi/pull/2963).
+In this release, we added Luigi Client type declaration for [Web Components](https://docs.luigi-project.io/docs/web-component). For more information, see the [pull request](https://github.com/luigi-project/luigi/pull/2963).
 
 #### Alignment of StatusBadge
  
@@ -57,16 +57,16 @@ LuigiClient.linkManager().navigateToIntent('External-view')
 LuigiClient.linkManager().navigate('/#?intent=External-view')
 Luigi.navigation().navigate('/#?intent=External-view')
 ```
-See the [pull request](https://github.com/SAP/luigi/pull/2941) and [advanced scenarios](https://docs.luigi-project.io/docs/advanced-scenarios) for more information. 
+See the [pull request](https://github.com/luigi-project/luigi/pull/2941) and [advanced scenarios](https://docs.luigi-project.io/docs/advanced-scenarios) for more information. 
 
 #### LuigiElement Shadow Mode Configuration 
 
-Luigi Client's LuigiElement no longer sets the shadow mode to `closed`. Instead, there is an option to configure it as `open` or closed. See the [pull request](https://github.com/SAP/luigi/pull/2932) for more information.
+Luigi Client's LuigiElement no longer sets the shadow mode to `closed`. Instead, there is an option to configure it as `open` or closed. See the [pull request](https://github.com/luigi-project/luigi/pull/2932) for more information.
 
 #### History Handling for Modals
 
-In this release, we improved the browser history handling of [modals](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=opennodeinmodal). Due to the limitation of the `history.length` object to 50 entries in Chrome and Firefox browsers, this was changed to a `history.state` object. See the [pull request](https://github.com/SAP/luigi/pull/3072) for more information.
+In this release, we improved the browser history handling of [modals](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=opennodeinmodal). Due to the limitation of the `history.length` object to 50 entries in Chrome and Firefox browsers, this was changed to a `history.state` object. See the [pull request](https://github.com/luigi-project/luigi/pull/3072) for more information.
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
