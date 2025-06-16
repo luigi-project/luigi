@@ -128,7 +128,7 @@
           hasMoreBtnElements = true;
         } else {
           // Hide tab from 'more' dropdown
-          document.querySelector('li[uid="' + uid + '"]').classList.add('hide_element');
+          document.querySelector('li[uid="' + uid + '"]')?.classList.add('hide_element');
         }
       });
 
