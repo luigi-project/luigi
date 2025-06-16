@@ -689,7 +689,7 @@
                   />
                 </div>
               </div>
-            </div> 
+            </div>
           {:else}
             <div class="fd-user-menu">
               <div class="fd-popover">
