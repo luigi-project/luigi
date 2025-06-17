@@ -22,7 +22,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: prepare
-    if: github.repository == 'SAP/luigi'
+    if: github.repository == 'luigi-project/luigi'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
