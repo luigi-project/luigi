@@ -1,4 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
 export interface TopNavData {
   appTitle: string;
@@ -6,8 +7,25 @@ export interface TopNavData {
   topNodes: [any];
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
+  appSwitcher?: AppSwitcher;
 }
 
+export interface AppSwitcher {
+  showMainAppEntry?: boolean;
+  items?: AppSwitcherItems[];
+}
+
+export interface AppSwitcherItems {
+  title?: string,
+  subtitle?: string,
+  link?: string
+  selectionConditions?: selectionConditions[];
+}
+
+export interface selectionConditions {
+  route?: string,
+  contextCriteria?: Record<string, any>
+}
 export interface ProfileSettings {
   logout: ProfileLogout;
   items?: ProfileItems[];
@@ -259,14 +277,18 @@ export class NavigationService {
     };
   }
 
-  getTopNavData(): TopNavData {
+  getTopNavData(path: string): TopNavData {
     const cfg = this.luigi.getConfig();
+    const pathData = this.getPathData(path);
+    let appSwitcher = cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
+    const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
     return {
-      appTitle: cfg.settings?.header?.title,
+      appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(cfg.navigation?.nodes) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
-      profile: cfg.navigation?.profile
+      profile: cfg.navigation?.profile,
+      appSwitcher: cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
     };
   }
 
@@ -275,6 +297,23 @@ export class NavigationService {
       return pathData.nodesInPath[pathData.nodesInPath.length - 2];
     }
     return undefined;
+  }
+
+  getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any){
+    const appSwitcher = appSwitcherData;
+    const showMainAppEntry = appSwitcher?.showMainAppEntry;
+    if (appSwitcher && appSwitcher.items && showMainAppEntry) {
+      const mainAppEntry = {
+        title: headerSettings.title,
+        subTitle: headerSettings.subTitle,
+        link: '/',
+      }
+      if (appSwitcher.items.some((item: AppSwitcherItems) => item.link === mainAppEntry.link)) {
+        return appSwitcher;
+      }
+      appSwitcher.items.unshift(mainAppEntry);
+    }
+    return appSwitcher;
   }
 
   getTabNavData(path: string): TabNavData {

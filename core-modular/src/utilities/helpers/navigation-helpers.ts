@@ -1,3 +1,8 @@
+
+import { get } from 'lodash'
+import { GenericHelpers } from './generic-helpers';
+import type { AppSwitcher, PathData } from '../../services/navigation.service';
+
 export const NavigationHelpers = {
   normalizePath: (raw: string) => {
     if (!raw || raw.length <= 0) {
@@ -11,5 +16,66 @@ export const NavigationHelpers = {
       value = value.substring(1);
     }
     return value;
+  },
+
+  segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/ ) => {
+    if (linkSegment === pathSegment) {
+      return true;
+    }
+    if (pathSegment.startsWith(':') && pathParams && pathParams[pathSegment.substr(1)] === linkSegment) {
+      return true;
+    }
+    return false;
+  },
+
+  checkMatch: (route: string, nodesInPath: Array<any>, pathParams?: Record<string, any>) => {
+    let match = true;
+    GenericHelpers.trimTrailingSlash(GenericHelpers.trimLeadingSlash(route))
+      .split('/')
+      .forEach((pathSegment, index) => {
+        if (match) {
+          if (index + 1 >= nodesInPath.length) {
+            match = false;
+          } else if (
+            !nodesInPath[index + 1]?.pathSegment ||
+            !NavigationHelpers.segmentMatches(pathSegment, nodesInPath[index + 1]?.pathSegment ?? '', pathParams ?? {})
+          ) {
+            match = false;
+          }
+        }
+      });
+    return match;
+  },
+
+  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData) => {
+    const appSwitcherItems = appSwitcherData.items;
+    if (appSwitcherItems && pathData) {
+      let title = '';
+      [...appSwitcherItems]
+        .sort((el1, el2) => (el2.link || '').localeCompare(el1.link || ''))
+        .some((item) => {
+          let match = false;
+          match = NavigationHelpers.checkMatch(item.link || '', pathData.nodesInPath ?? []);
+          if (!match && item.selectionConditions && item.selectionConditions[0]?.route) {
+            //TODO if pathParams are implemented
+            match = item.selectionConditions.some(condition => 
+              NavigationHelpers.checkMatch(condition.route || '', pathData.nodesInPath ?? [])
+            );
+            if (match) {
+              (item.selectionConditions[0]?.contextCriteria || []).forEach((ccrit: any) => {
+                //pathData.selectedNode.context vs pathData._context in core siehe routing.js L.421
+                match = match && get((pathData.selectedNode as any)?.context, ccrit.key) === ccrit.value;
+              });
+            }
+          }
+
+          if (match) {
+            title = item.title || '';
+            return true;
+          }
+        });
+      return title;
+    }
+    return;
   }
 };
