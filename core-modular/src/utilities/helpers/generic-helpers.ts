@@ -1,11 +1,10 @@
 export const GenericHelpers = {
-  
   /**
    * Creates a random Id
    * @returns random numeric value {number}
    * @private
    */
-  getRandomId: /* istanbul ignore next */() => {
+  getRandomId: /* istanbul ignore next */ () => {
     return window.crypto.getRandomValues(new Uint32Array(1))[0];
   },
 
@@ -27,12 +26,12 @@ export const GenericHelpers = {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
   },
 
-   /**
+  /**
    * Checks if input is a string.
    * @param stringToCheck mixed
    * @returns {boolean}
    */
-   isString: (stringToCheck: string | any) =>{
+  isString: (stringToCheck: string | any) => {
     return typeof stringToCheck === 'string' || stringToCheck instanceof String;
   },
 

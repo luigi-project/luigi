@@ -1,5 +1,4 @@
-
-import { get } from 'lodash'
+import { get } from 'lodash';
 import { GenericHelpers } from './generic-helpers';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
 
@@ -18,7 +17,7 @@ export const NavigationHelpers = {
     return value;
   },
 
-  segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/ ) => {
+  segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/) => {
     if (linkSegment === pathSegment) {
       return true;
     }
@@ -58,7 +57,7 @@ export const NavigationHelpers = {
           match = NavigationHelpers.checkMatch(item.link || '', pathData.nodesInPath ?? []);
           if (!match && item.selectionConditions && item.selectionConditions[0]?.route) {
             //TODO if pathParams are implemented
-            match = item.selectionConditions.some(condition => 
+            match = item.selectionConditions.some((condition) =>
               NavigationHelpers.checkMatch(condition.route || '', pathData.nodesInPath ?? [])
             );
             if (match) {

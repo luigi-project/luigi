@@ -16,15 +16,15 @@ export interface AppSwitcher {
 }
 
 export interface AppSwitcherItems {
-  title?: string,
-  subtitle?: string,
-  link?: string
+  title?: string;
+  subtitle?: string;
+  link?: string;
   selectionConditions?: selectionConditions[];
 }
 
 export interface selectionConditions {
-  route?: string,
-  contextCriteria?: Record<string, any>
+  route?: string;
+  contextCriteria?: Record<string, any>;
 }
 export interface ProfileSettings {
   logout: ProfileLogout;
@@ -280,7 +280,8 @@ export class NavigationService {
   getTopNavData(path: string): TopNavData {
     const cfg = this.luigi.getConfig();
     const pathData = this.getPathData(path);
-    let appSwitcher = cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
+    let appSwitcher =
+      cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
@@ -288,7 +289,8 @@ export class NavigationService {
       topNodes: this.buildNavItems(cfg.navigation?.nodes) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: cfg.navigation?.profile,
-      appSwitcher: cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
+      appSwitcher:
+        cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
     };
   }
 
@@ -299,15 +301,15 @@ export class NavigationService {
     return undefined;
   }
 
-  getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any){
+  getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any) {
     const appSwitcher = appSwitcherData;
     const showMainAppEntry = appSwitcher?.showMainAppEntry;
     if (appSwitcher && appSwitcher.items && showMainAppEntry) {
       const mainAppEntry = {
         title: headerSettings.title,
         subTitle: headerSettings.subTitle,
-        link: '/',
-      }
+        link: '/'
+      };
       if (appSwitcher.items.some((item: AppSwitcherItems) => item.link === mainAppEntry.link)) {
         return appSwitcher;
       }
