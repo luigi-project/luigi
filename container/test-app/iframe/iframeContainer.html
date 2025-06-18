@@ -124,7 +124,12 @@
         alert('show-alert-request message received: ' + JSON.stringify(event.detail));
         console.log(event.detail.data.data);
         alertSettings = event.detail.data.data;
-        showAnAlert(alertSettings);
+
+        if (alertSettings?.settings?.text !== 'Callback Test') {
+          showAnAlert(alertSettings);
+        } else {
+          event.callback(true);
+        }
       });
 
       luigiContainer.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event) => {
@@ -146,7 +151,12 @@
         const data = event.detail;
         const val = confirm(data.body);
         alert('show-confirmation-modal message received: ' + JSON.stringify(data));
-        luigiContainer.notifyConfirmationModalClosed(val);
+
+        if (data?.data?.data?.settings?.header !== 'Callback Test') {
+          luigiContainer.notifyConfirmationModalClosed(val);
+        } else {
+          event.callback(true);
+        }
       });
 
       luigiContainer.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event) => {
@@ -226,6 +236,7 @@
           Events.GET_CURRENT_ROUTE_REQUEST,
           'message received: ' + JSON.stringify(event.detail.data),
         );
+        event.callback('/test/route');
       });
 
       // NAVIGATION_COMPLETED_REPORT
@@ -252,6 +263,7 @@
           Events.CHECK_PATH_EXISTS_REQUEST,
           'message received: ' + JSON.stringify(event.detail.data),
         );
+        event.callback(true);
       });
 
       // SET_DIRTY_STATUS_REQUEST

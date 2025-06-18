@@ -3,6 +3,8 @@
 This library provides several features which make it easier to run your Angular application inside the Luigi micro frontend framework.
 If you want to know more about Luigi, please have a look at the [Luigi homepage](https://luigi-project.io/).
 
+> **NOTE:** Starting from v20 and on this package will only be released alongside Angular versions. So, `@luigi-project/client-support-angular@v20.0.0` will support Angular `v20.0.0` and so on. 
+
 ## How to use the library
 
 1. Import the library in the `package.json`:
@@ -10,13 +12,20 @@ If you want to know more about Luigi, please have a look at the [Luigi homepage]
 npm install @luigi-project/client-support-angular -s
 ```
 
-2. Once the library is imported and saved in your Angular project, you need to import the module `LuigiAngularSupportModule`:
+2. Once the library is imported and saved in your Angular project, provide the module `LuigiAngularSupportModule` in your app configuration:
+
+```javascript
+providers: [
+  importProvidersFrom(LuigiAngularSupportModule)
+]
+```
+
+> **NOTE:** For legacy Angular apps where **bootstrapModule** function is still in use, you need to import the module `LuigiAngularSupportModule` in your root NgModule:
 
 ```javascript
 imports: [
-  ........
-  ,LuigiAngularSupportModule
-],
+  LuigiAngularSupportModule
+]
 ```
 
 ## Features

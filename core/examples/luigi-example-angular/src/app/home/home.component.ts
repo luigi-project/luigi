@@ -13,12 +13,14 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     addInitListener(initialContext => {
       this.message = 'Luigi Client initialized.';
+      console.log(initialContext);
       if (!this.ref['destroyed']) {
         this.ref.detectChanges();
       }
     });
     addContextUpdateListener(updatedContext => {
       this.message = 'Luigi Client updated.';
+      console.log(updatedContext);
       if (!this.ref['destroyed']) {
         this.ref.detectChanges();
       }

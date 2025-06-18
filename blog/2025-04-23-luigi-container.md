@@ -16,4 +16,4 @@ You can read about the new features in Luigi Container v1.7 in the release notes
 With this release we added missing functions like `addCoreSearchParams`, `updateModalPathInternalNavigation`, `setDirtyStatus`, `setCurrentLocale` and `updateModalSettings` to the webcomponent client api.
 
 
-See our [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.7.0).
+See our [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.7.0).

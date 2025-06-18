@@ -634,7 +634,7 @@ describe('createClientAPI', () => {
       const settings = { confirmationSettings: 'settings' };
       const mockEventData = { result: 'confirmation data' };
 
-      service.containerService.dispatch = jest.fn((eventType, target, eventData, callback, callbackName) => {
+      service.containerService.dispatch = jest.fn((eventType, target, eventData, callback) => {
         callback(mockEventData);
       });
 
@@ -658,7 +658,7 @@ describe('createClientAPI', () => {
       // mock and spy on data/functions
       const settings = { confirmationSettings: 'settings' };
 
-      service.containerService.dispatch = jest.fn((eventType, target, eventData, callback, callbackName) => {
+      service.containerService.dispatch = jest.fn((eventType, target, eventData, callback) => {
         callback(false);
       });
 

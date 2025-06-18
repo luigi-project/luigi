@@ -102,6 +102,9 @@
   let btpToolLayout =
     LuigiConfig.getConfigValue('settings.btpToolLayout') &&
     GenericHelpers.requestExperimentalFeature('btpToolLayout', true);
+  let vegaLayout =
+    LuigiConfig.getConfigValue('settings.sideNav.style') === 'vega' ||
+    LuigiConfig.getConfigValue('settings.userSettings.style') === 'vega';
 
   export let isSearchFieldVisible;
   export let inputElem;
@@ -1811,6 +1814,7 @@
 <svelte:window on:resize={onResize} on:keydown={handleKeyDown} />
 <div
   id="app"
+  class:vega={vegaLayout}
   class:no-nav={hideNav}
   class:no-side-nav={hideSideNav}
   class:no-top-nav={isHeaderDisabled}

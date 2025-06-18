@@ -20,12 +20,13 @@ sed 's/"scripts": {/"scripts": {\
 mkdir public/assets
 
 # the following steps can be copy and pasted to the terminal at once
-mv src/index.html src/angular.html
+cp src/index.html src/angular.html
+ng config projects.$folder.architect.build.options.index src/angular.html
 
 # download assets
-curl https://raw.githubusercontent.com/SAP/luigi/main/scripts/setup/assets/index.html > public/index.html
-curl https://raw.githubusercontent.com/SAP/luigi/main/scripts/setup/assets/luigi-config.es6.js > public/assets/luigi-config.es6.js
-curl https://raw.githubusercontent.com/SAP/luigi/main/scripts/setup/assets/basicMicroFrontend.html > public/assets/basicMicroFrontend.html
+curl https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/assets/index.html > public/index.html
+curl https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/assets/luigi-config.es6.js > public/assets/luigi-config.es6.js
+curl https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/assets/basicMicroFrontend.html > public/assets/basicMicroFrontend.html
 
 # string replacements in some files
 sed 's#"src/index.html"#"src/angular.html"#g' angular.json > tmp.json && mv tmp.json angular.json

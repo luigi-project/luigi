@@ -46,6 +46,7 @@
 //'./node_modules/fundamental-styles/dist/section.css';
 @use 'fundamental-styles/dist/segmented-button.css';
 @use 'fundamental-styles/dist/select.css';
+@use 'fundamental-styles/dist/settings.css';
 @use 'fundamental-styles/dist/shellbar.css';
 @use 'fundamental-styles/dist/side-nav.css';
 @use 'fundamental-styles/dist/switch.css';
@@ -62,3 +63,26 @@
 //'./node_modules/fundamental-styles/dist/tree.css';
 @use 'fundamental-styles/dist/helpers.css';
 @use 'fundamental-styles/dist/user-menu.css';
+
+/** 
+    #####################################
+    ## fd fixes
+    #####################################
+*/
+.fd-side-nav--condensed .fd-nested-list__content.has-child:after, .fd-side-nav--condensed .fd-nested-list__link.has-child:after {
+    border-color: transparent var(--sapContent_IconColor) transparent transparent;
+    border-style: solid;
+    border-width: .375rem .375rem 0 0;
+    bottom: 0;
+    content: "";
+    margin-bottom: .0625rem;
+    margin-right: .125rem;
+    min-height: 0;
+    min-width: 0;
+    position: absolute;
+    right: 0;
+}
+
+.fd-side-nav--condensed .fd-nested-list__content.has-child, .fd-side-nav--condensed .fd-nested-list__link.has-child {
+    position: relative;
+}

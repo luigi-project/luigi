@@ -20,4 +20,4 @@ You can read about the new features in Luigi v2.17 in the release notes below.
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md#v2170-2024-10-02).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md#v2170-2024-10-02).

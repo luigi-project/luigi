@@ -615,10 +615,11 @@
 />
 {#if btpToolLayout}
   <div
-    class="fd-navigation fd-navigation--vertical {hideNavComponent ? 'hideNavComponent' : ''} {footerText ||
-    semiCollapsibleButton
-      ? 'hasFooter'
-      : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}
+    class="fd-navigation fd-navigation--vertical {sideNavCompactMode ? 'is-compact' : ''} {hideNavComponent
+      ? 'hideNavComponent'
+      : ''} {footerText || semiCollapsibleButton ? 'hasFooter' : ''} {footerText && !semiCollapsibleButton
+      ? 'hasOnlyFooterText'
+      : ''}
         {isSemiCollapsed ? 'fd-navigation--snapped' : ''}"
     role="navigation"
     style="width: var(--luigi__left-sidenav--width); height: 100%;"
@@ -1027,6 +1028,7 @@
         {/if}
       </div>
     {/if}
+    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
     <nav
       class="fd-side-nav {isSemiCollapsed ? 'fd-side-nav--condensed' : ''} {navHeader ? 'lui-nav-header-visible' : ''}"
       on:keyup={handleKey}
@@ -1097,6 +1099,7 @@
                   <!-- Collapsible nodes -->
                   {#if nodes.metaInfo.collapsible}
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <li
                       class="fd-nested-list__item lui-collapsible-item"
                       class:lui-item-expanded={isExpanded(nodes, expandedCategories)}
@@ -1104,6 +1107,7 @@
                       data-testid={getTestIdForCat(nodes.metaInfo, key)}
                     >
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                      <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <div
                         class="fd-nested-list__content has-child"
                         on:keypress={(event) => handleExpandCollapseCategories(event, nodes)}
@@ -1359,6 +1363,7 @@
                 </button>
               {:else}
                 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <i
                   class="lui-side-nav__footer--icon {isSemiCollapsed
                     ? 'sap-icon--open-command-field'
@@ -1479,6 +1484,10 @@
     .fd-side-nav {
       height: 100%;
       width: var(--luigi__left-sidenav--width);
+      //workaround fd v39
+      border-right: var(--sapList_BorderWidth) solid;
+      border-right-color: var(--sapGroup_ContentBorderColor);
+      //workaround end
       &.fd-side-nav--condensed {
         width: $leftNavWidthCollapsed;
       }
@@ -1824,5 +1833,13 @@
     outline-width: var(--sapContent_FocusWidth);
     outline-color: var(--sapContent_FocusColor);
     outline-style: var(--sapContent_FocusStyle);
+  }
+
+  .fd-side-nav--condensed .lui-fd-side-nav-wrapper > .fd-nested-list {
+    & > .fd-nested-list__button,
+    & > .fd-nested-list__group-header,
+    & > .fd-nested-list__title {
+      display: none;
+    }
   }
 </style>

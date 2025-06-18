@@ -12,4 +12,4 @@ You can read about the new features in Luigi Container v1.1 in the release notes
 
 #### Bugfixes
 
-With this release, we prevent browser history changes from Luigi client on context update. [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.1.0).
+With this release, we prevent browser history changes from Luigi client on context update. [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.1.0).

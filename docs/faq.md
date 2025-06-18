@@ -17,7 +17,7 @@ meta -->
 # Frequently asked questions about Luigi
 
 <!-- add-attribute:class:success -->
->**TIP:** You can go to our [GitHub Discussions page](https://github.com/SAP/luigi/discussions) to find the answers to more questions not listed here.
+>**TIP:** You can go to our [GitHub Discussions page](https://github.com/luigi-project/luigi/discussions) to find the answers to more questions not listed here.
 
 This page contains FAQs about Luigi in the following categories:
 - [Basics](#basic-questions)
@@ -53,11 +53,11 @@ No, Luigi can be used independently of SAP for a variety of purposes. You can fi
 
 ### What is the difference between Luigi and SAPUI5/OpenUI5?
 
-You can find a detailed response to this question [here](https://github.com/SAP/luigi/discussions/2809#discussioncomment-3137780).
+You can find a detailed response to this question [here](https://github.com/luigi-project/luigi/discussions/2809#discussioncomment-3137780).
 
 ### Where can I download Luigi?
 
-The Luigi project can be found on [GitHub](https://github.com/SAP/luigi). Depending on the UI framework you use, there are different setups for Luigi. You can find more information here: [application setup](application-setup.md).
+The Luigi project can be found on [GitHub](https://github.com/luigi-project/luigi). Depending on the UI framework you use, there are different setups for Luigi. You can find more information here: [application setup](application-setup.md).
 
 ### Does Luigi provide micro frontend to micro frontend communication?
 
@@ -517,7 +517,7 @@ There are a few options to do that at the moment:
                 {
                   label: "Luigi Github Page",
                   externalLink: {
-                    url: "https://github.com/SAP/luigi",
+                    url: "https://github.com/luigi-project/luigi",
                   },
                 },
                 {
@@ -725,6 +725,6 @@ One way would be to bind the Luigi app root to a specific [dom element](https://
 
 ### Where can I find the source code for Luigi Fiddle?
 
-Luigi is an open-source project. You can find the source code on our [GitHub repository](https://github.com/SAP/luigi/tree/main/website/fiddle).
+Luigi is an open-source project. You can find the source code on our [GitHub repository](https://github.com/luigi-project/luigi/tree/main/website/fiddle).
 
 <!-- accordion:end -->
