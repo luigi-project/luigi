@@ -18,7 +18,6 @@ export const NavigationHelpers = {
   },
 
   segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/) => {
-
     if (linkSegment === pathSegment) {
       return true;
     }
