@@ -24,7 +24,6 @@
   let displayEditor = false;
   let previousUserSettings = {};
   let getTranslation = getContext('getTranslation');
-  let vegaUserSettings = LuigiConfig.getConfigValue('settings.userSettings.style') === 'vega';
   let dialogHeader = TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
   let saveBtn = TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
   let dismissBtn = TOP_NAV_DEFAULTS.userSettingsDialog.dismissBtn;
@@ -502,10 +501,11 @@
     z-index: 999;
   }
 
-  .lui-usersettings-dialog-size {
+  .fd-settings .lui-usersettings-dialog-size {
     width: 58rem;
     height: 80vh;
     max-height: calc(100% - 2.5rem - 6%);
+    min-height: auto;
     position: relative;
   }
 
@@ -598,8 +598,8 @@
   }
 
   #app:not(.vega) .fd-settings .fd-settings__header {
-    --fdBar_Padding_Bottom: .25rem;
-    --fdSettings_Header_Margin_Top: .5px;
+    --fdBar_Padding_Bottom: 0.25rem;
+    --fdSettings_Header_Margin_Top: 0.5px;
     --fdBar_Height: 3rem;
   }
 

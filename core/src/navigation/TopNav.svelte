@@ -650,30 +650,25 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
-                  <div class={userInfo.picture ? 'fd-shellbar__button--user-menu' : ''}>
-                    <button
-                      class="fd-button fd-button--transparent fd-shellbar__button"
-                      aria-expanded={dropDownStates.profilePopover || false}
-                      aria-haspopup="true"
-                      aria-controls="profilePopover"
-                      on:click={() => toggleDropdownState('profilePopover')}
-                      title={userInfo.name ? userInfo.name : undefined}
-                      tabindex="0"
-                      data-testid="luigi-topnav-profile-btn"
+                  <div
+                    class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
+                    aria-controls="profilePopover"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                    title={userInfo.name || undefined}
+                    tabindex="0"
+                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
+                    data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
+                  >
+                    <span
+                      class="fd-avatar fd-avatar--xs fd-avatar--circle fd-shellbar__avatar--circle {userInfo.picture
+                        ? 'fd-avatar--thumbnail'
+                        : ''}"
+                      style={userInfo.picture ? `background-image:url('${userInfo.picture}')` : ''}
                     >
-                      {#if userInfo.picture}
-                        <span
-                          class="fd-avatar fd-avatar--xs fd-avatar--circle"
-                          style="background-image:url('{userInfo.picture}')"
-                        />
-                      {:else}
-                        <i
-                          class="sap-icon {!userInfo.picture
-                            ? 'sap-icon--customer'
-                            : 'fd-identifier fd-identifier--xs fd-identifier--circle'}"
-                        />
-                      {/if}
-                    </button>
+                      {!userInfo.picture ? userInfo.initials || '' : ''}
+                    </span>
                   </div>
                 </div>
                 <div
