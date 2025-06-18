@@ -1049,7 +1049,7 @@
       <nav
         class="fd-side-nav {isSemiCollapsed ? 'is-collapsed' : ''} {vegaSideNav ? 'vega-nav' : ''} {navHeader
           ? 'lui-nav-header-visible'
-          : ''}"
+          : ''} {sideNavCompactMode ? 'is-compact' : ''}"
         aria-roledescription="Main Navigation"
       >
         {#if children && pathData.length > 1}
