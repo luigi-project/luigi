@@ -176,8 +176,9 @@
           {#if userInfo?.picture}
             <span
               class="fd-avatar fd-avatar--lg fd-avatar--circle fd-avatar--thumbnail"
-                aria-label="Avatar"
-                style="background-image:url('{userInfo?.picture}')">
+              aria-label="Avatar"
+              style="background-image:url('{userInfo?.picture}')"
+            >
             </span>
           {:else}
             <span class="fd-avatar fd-avatar--lg fd-avatar--circle fd-avatar--thumbnail" aria-label="Avatar">
@@ -185,51 +186,56 @@
             </span>
           {/if}
           <div class="fd-user-menu__header-container">
-              <div class="fd-user-menu__user-name" data-testid="luigi-topnav-profile-username">
-                  {userInfo.name || ''}
-              </div>
-              <div class="fd-user-menu__subline">
-                {userInfo.email || ''}
-              </div>
-              <div class="fd-user-menu__subline" data-testid="luigi-topnav-profile-description">
-                {userInfo.description || ''}
-              </div>
+            <div class="fd-user-menu__user-name" data-testid="luigi-topnav-profile-username">
+              {userInfo.name || ''}
             </div>
+            <div class="fd-user-menu__subline">
+              {userInfo.email || ''}
+            </div>
+            <div class="fd-user-menu__subline" data-testid="luigi-topnav-profile-description">
+              {userInfo.description || ''}
+            </div>
+          </div>
         </div>
       {/if}
       <div class="fd-user-menu__content-container">
         <nav class="fd-menu fd-menu--icons fd-user-menu__menu">
           <ul class="fd-menu__list fd-user-menu__menu-list" role="menu">
             {#if hasUserSettings}
-              <li class="fd-menu__item"
+              <li
+                class="fd-menu__item"
                 role="presentation"
                 on:click|preventDefault={onUserSettingsClick}
                 on:keyup={(event) => handleKeyUp(event)}
-                >
-                  <!-- svelte-ignore a11y-missing-attribute -->
-                  <a class="fd-menu__link" role="menuitem" data-testid="settings-link">
-                      <span class="fd-menu__addon-before">
-                        <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
-                        {#if profileNav.settings?.icon}
-                          {#if hasOpenUIicon(profileNav.settings)}
-                            <i class="fd-top-nav__icon {getSapIconStr(profileNav.settings.icon)}" />
-                          {:else}
-                            <img
-                              class="fd-top-nav__icon nav-icon"
-                              src={profileNav.settings.icon}
-                              alt={profileNav.settings.altText ? profileNav.settings.altText : ''}
-                            />
-                          {/if}
-                        {/if}
-                      </span>
-                      <span class="fd-menu__title">Settings</span>
-                  </a>
-                </li>
+              >
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="fd-menu__link" role="menuitem" data-testid="settings-link">
+                  <span class="fd-menu__addon-before">
+                    <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
+                    {#if profileNav.settings?.icon}
+                      {#if hasOpenUIicon(profileNav.settings)}
+                        <i class="fd-top-nav__icon {getSapIconStr(profileNav.settings.icon)}" />
+                      {:else}
+                        <img
+                          class="fd-top-nav__icon nav-icon"
+                          src={profileNav.settings.icon}
+                          alt={profileNav.settings.altText ? profileNav.settings.altText : ''}
+                        />
+                      {/if}
+                    {/if}
+                  </span>
+                  <span class="fd-menu__title">Settings</span>
+                </a>
+              </li>
             {/if}
             {#each profileNav.items as profileItem}
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-              <li class="fd-menu__item" on:click={() => onActionClick(profileItem)} data-testid={getTestId(profileItem)}>
+              <li
+                class="fd-menu__item"
+                on:click={() => onActionClick(profileItem)}
+                data-testid={getTestId(profileItem)}
+              >
                 <a
                   class="fd-menu__link"
                   data-testid="luigi-topnav-profile-item"
@@ -243,18 +249,14 @@
               </li>
             {/each}
           </ul>
-        </nav>  
+        </nav>
       </div>
     </div>
   </div>
   <div class="fd-bar fd-bar--footer">
     <div class="fd-bar__right">
-      <div class="fd-bar__element"  data-testid={getTestId(profileNav.logout)}>
-        <button 
-        aria-label="button"
-        class="fd-button fd-button--transparent"
-        on:click={onLogoutClick}
-        >
+      <div class="fd-bar__element" data-testid={getTestId(profileNav.logout)}>
+        <button aria-label="button" class="fd-button fd-button--transparent" on:click={onLogoutClick}>
           <i class="sap-icon--log"></i>
           <span class="fd-button__text">{$getTranslation(profileNav.logout.label)}</span>
         </button>

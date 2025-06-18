@@ -650,7 +650,7 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
-                <div
+                  <div
                     class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
                     aria-controls="profilePopover"
                     aria-expanded="true"
@@ -684,7 +684,7 @@
                   />
                 </div>
               </div>
-            </div> 
+            </div>
           {:else}
             <div class="fd-user-menu">
               <div class="fd-popover">
