@@ -18,6 +18,7 @@ export const NavigationHelpers = {
   },
 
   segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/) => {
+
     if (linkSegment === pathSegment) {
       return true;
     }
@@ -55,19 +56,15 @@ export const NavigationHelpers = {
         .some((item) => {
           let match = false;
           match = NavigationHelpers.checkMatch(item.link || '', pathData.nodesInPath ?? []);
-          if (!match && item.selectionConditions && item.selectionConditions[0]?.route) {
+          if (!match && item.selectionConditions && item.selectionConditions.route) {
             //TODO if pathParams are implemented
-            match = item.selectionConditions.some((condition) =>
-              NavigationHelpers.checkMatch(condition.route || '', pathData.nodesInPath ?? [])
-            );
+            match = NavigationHelpers.checkMatch(item.selectionConditions.route, pathData.nodesInPath ?? []);
             if (match) {
-              (item.selectionConditions[0]?.contextCriteria || []).forEach((ccrit: any) => {
-                //pathData.selectedNode.context vs pathData._context in core siehe routing.js L.421
+              (item.selectionConditions.contextCriteria || []).forEach((ccrit: any) => {
                 match = match && get((pathData.selectedNode as any)?.context, ccrit.key) === ccrit.value;
               });
             }
           }
-
           if (match) {
             title = item.title || '';
             return true;

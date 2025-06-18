@@ -17,13 +17,13 @@ describe('Navigation-helpers', () => {
     assert.isTrue(matches);
   });
 
-  // it('should check route match w/o pathParams', () => {
-  //     const route = '/some/test/path';
-  //     const pathData = [{ pathSegment: 'some' }, { pathSegment: 'test' }, { pathSegment: 'path' }];
+  it('should check route match w/o pathParams', () => {
+    const route = '/some/test/path';
+    const nodesInPath = [{}, { pathSegment: 'some' }, { pathSegment: 'test' }, { pathSegment: 'path' }];
 
-  //     const isMatch = NavigationHelpers.checkMatch(route, pathData);
-  //     assert.isTrue(isMatch);
-  // });
+    const result = NavigationHelpers.checkMatch(route, nodesInPath);
+    expect(result).toBe(true);
+  });
 
   it('should update header title based on app switcher data', () => {
     const appSwitcherData = {

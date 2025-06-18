@@ -19,7 +19,7 @@ export interface AppSwitcherItems {
   title?: string;
   subtitle?: string;
   link?: string;
-  selectionConditions?: selectionConditions[];
+  selectionConditions?: selectionConditions;
 }
 
 export interface selectionConditions {
