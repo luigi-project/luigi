@@ -3,7 +3,7 @@ $desktopMinWidth: 600px;
 $desktopMaxWidth: 900px;
 $topNavHeight: var(--luigi__shellbar--height);
 $combinedLayoutGap: 1rem;
-$leftNavWidthCollapsed: 2.75rem;
+$leftNavWidthCollapsed: var(--luigi__leftnav_collapsed--width, 2.75rem);
 $zindex-dialog-box: 1000;
 $globalNavWidth: 69px;
 $navHeaderHeight: 3.25rem;
