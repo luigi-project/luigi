@@ -142,7 +142,7 @@ window.onload = () => {
             {
               pathSegment: 'projects',
               label: 'projects',
-            
+
               viewUrl: '/microfrontend.html',
               context: {
                 title: 'projects',

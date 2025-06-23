@@ -23,7 +23,7 @@ function readExpandedState(uid) {
 }
 
 function addShellbarItem(shellbar, item) {
-  if(item.node?.hideFromNav) {
+  if (item.node?.hideFromNav) {
     return;
   }
   if (item.node) {
@@ -76,7 +76,7 @@ function setDialogSize(dialog, settings) {
 
 function renderAppSwitcherItems(shellbar, appSwitcherItems, lastSelectedItem = null) {
   shellbar.querySelectorAll('ui5-li[slot=menuItems]').forEach((item) => item.remove());
-  if(!appSwitcherItems || appSwitcherItems.length ===0) return;
+  if (!appSwitcherItems || appSwitcherItems.length === 0) return;
   appSwitcherItems.forEach((item, index) => {
     if (item.link === lastSelectedItem) return;
     const ui5Li = document.createElement('ui5-li');
@@ -275,7 +275,6 @@ const connector = {
           this.renderAppSwitcherItems(shellbar, appSwitcherItems);
         }
 
-
         shellbar.addEventListener('menu-item-click', (event) => {
           const clickedItem = event.detail.item;
           const link = clickedItem.getAttribute('luigi-route');
@@ -283,12 +282,12 @@ const connector = {
             topNavData.appTitle = clickedItem.getAttribute('text');
             shellbar.setAttribute('primary-title', topNavData.appTitle);
             // display previous entry, if there
-            lastSelectedItem = link
+            lastSelectedItem = link;
             globalThis.Luigi.navigation().navigate(link);
             this.renderAppSwitcherItems(shellbar, appSwitcherItems, lastSelectedItem);
           }
         });
-      };
+      }
 
       // ...
     } else {
@@ -335,8 +334,9 @@ const connector = {
                                     text="${item.category.label}"
                                     icon="${item.category.icon}"
                                     category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                                    ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''
-              }>`;
+                                    ${
+                                      readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''
+                                    }>`;
 
             item.category.nodes.forEach((item) => {
               html += `<ui5-side-navigation-sub-item
