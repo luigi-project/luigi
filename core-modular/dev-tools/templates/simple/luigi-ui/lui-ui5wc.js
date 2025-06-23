@@ -23,6 +23,9 @@ function readExpandedState(uid) {
 }
 
 function addShellbarItem(shellbar, item) {
+  if(item.node?.hideFromNav) {
+    return;
+  }
   if (item.node) {
     const itemEl = document.createElement('ui5-shellbar-item');
     if (item.node.badgeCounter) {
@@ -69,6 +72,22 @@ function setDialogSize(dialog, settings) {
         dialog.classList.add('lui-dialog--large');
     }
   }
+}
+
+function renderAppSwitcherItems(shellbar, appSwitcherItems, lastSelectedItem = null) {
+  shellbar.querySelectorAll('ui5-li[slot=menuItems]').forEach((item) => item.remove());
+  if(!appSwitcherItems || appSwitcherItems.length ===0) return;
+  appSwitcherItems.forEach((item, index) => {
+    if (item.link === lastSelectedItem) return;
+    const ui5Li = document.createElement('ui5-li');
+    ui5Li.setAttribute('slot', 'menuItems');
+    ui5Li.setAttribute('text', item.title);
+    ui5Li.innerText = item.title;
+    ui5Li.setAttribute('description', item.subTitle);
+    ui5Li.setAttribute('luigi-route', item.link);
+    index === 0 && ui5Li.setAttribute('testtest', '');
+    shellbar.appendChild(ui5Li);
+  });
 }
 
 function renderProductSwitcherItems(productSwitcherConfig) {
@@ -185,7 +204,7 @@ const connector = {
 
   renderTopNav: (topNavData) => {
     const shellbar = document.querySelector('.tool-layout > ui5-shellbar');
-    shellbar.setAttribute('primary-title', topNavData.appTitle);
+    let lastSelectedItem;
 
     if (topNavData.productSwitcher) {
       shellbar.removeEventListener('product-switch-click', onProductSwitcherClick);
@@ -223,6 +242,7 @@ const connector = {
     // }
 
     if (!shellbar._lastTopNavData) {
+      shellbar.setAttribute('primary-title', topNavData.appTitle);
       // initial rendering
       let html = '';
       html += '<ui5-button icon="menu" slot="startButton" id="toggle"></ui5-button>';
@@ -245,9 +265,35 @@ const connector = {
       (topNavData.topNodes || []).forEach((item) => {
         addShellbarItem(shellbar, item);
       });
+
+      if (topNavData.appSwitcher) {
+        const appSwitcherItems = topNavData.appSwitcher.items;
+        // let title = updateHeaderTitle(topNavData);
+        if (topNavData.appSwitcher.showMainAppEntry) {
+          this.renderAppSwitcherItems(shellbar, appSwitcherItems, appSwitcherItems[0]?.link);
+        } else {
+          this.renderAppSwitcherItems(shellbar, appSwitcherItems);
+        }
+
+
+        shellbar.addEventListener('menu-item-click', (event) => {
+          const clickedItem = event.detail.item;
+          const link = clickedItem.getAttribute('luigi-route');
+          if (link) {
+            topNavData.appTitle = clickedItem.getAttribute('text');
+            shellbar.setAttribute('primary-title', topNavData.appTitle);
+            // display previous entry, if there
+            lastSelectedItem = link
+            globalThis.Luigi.navigation().navigate(link);
+            this.renderAppSwitcherItems(shellbar, appSwitcherItems, lastSelectedItem);
+          }
+        });
+      };
+
       // ...
     } else {
       // partial update
+      shellbar.setAttribute('primary-title', topNavData.appTitle);
       if (topNavData.logo !== shellbar._lastTopNavData.logo) {
         shellbar.querySelector('img[slot=logo]').setAttribute('src', topNavData.logo);
       }
@@ -257,8 +303,10 @@ const connector = {
           addShellbarItem(shellbar, item);
         });
       }
+      if (shellbar._lastTopNavData) {
+        console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
+      }
     }
-
     shellbar._lastTopNavData = topNavData;
   },
   renderLeftNav: (leftNavData) => {
@@ -287,9 +335,8 @@ const connector = {
                                     text="${item.category.label}"
                                     icon="${item.category.icon}"
                                     category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                                    ${
-                                      readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''
-                                    }>`;
+                                    ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''
+              }>`;
 
             item.category.nodes.forEach((item) => {
               html += `<ui5-side-navigation-sub-item
