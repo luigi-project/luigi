@@ -2,7 +2,7 @@ window.onload = () => {
   window.Luigi.setConfig({
     navigation: {
       appSwitcher: {
-        showMainAppEntry: false,
+        showMainAppEntry: true,
         items: [
           {
             title: 'Overview',
@@ -28,7 +28,18 @@ window.onload = () => {
             link: '/experimental/exp2',
             subTitle: 'experimental2'
           }
-        ]
+        ],
+        itemRenderer_: (item, slot, appSwitcherApiObj) => {
+          let a = document.createElement('a');
+          a.setAttribute('style', 'background-color: red; color:green;');
+          console.log('Hello from itemRenderer');
+          // addEventListener does not work due to limitations of ui5
+          a.setAttribute('onclick', `Luigi.navigation().navigate('${item.link}')`);
+          let spanText = document.createElement('span');
+          spanText.innerText = item.title;
+          a.appendChild(spanText);
+          slot.appendChild(a);
+        }
       },
       nodes: [
         {

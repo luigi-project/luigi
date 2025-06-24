@@ -13,6 +13,7 @@ export interface TopNavData {
 export interface AppSwitcher {
   showMainAppEntry?: boolean;
   items?: AppSwitcherItems[];
+  itemRenderer?: (item: AppSwitcherItems, slot: HTMLElement, appSwitcherApiObj?: any) => void;
 }
 
 export interface AppSwitcherItems {
