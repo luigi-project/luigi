@@ -17,6 +17,7 @@
   import LeftNavGroup from './LeftNavGroup.svelte';
   import LeftNavCollapsedWrapper from './LeftNavCollapsedWrapper.svelte';
   import { KEYCODE_ENTER } from '../utilities/keycode';
+  import LeftNavMore from './LeftNavMore.svelte';
 
   //TODO refactor
   const __this = {
@@ -166,6 +167,7 @@
     LuigiConfig.getConfigValue('settings.btpToolLayout.subCategoryDelimiter') ||
     '::';
   let navHeaderContainer;
+  let vegaNavCnt;
   let updateTimeout;
 
   const getNodeLabel = (node) => {
@@ -233,6 +235,16 @@
         }
       });
       btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
+    } else if (vegaSideNav) {
+      console.log('reset')
+      vegaNavCnt.querySelector('.lui-more').style.display = 'none';
+      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach(li => {
+        li.style.display = 'list-item';
+      });
+      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .fd-navigation-list__item--group').forEach(li => {
+        li.style.display = 'list-item';
+      });
+      
     }
   };
 
@@ -248,6 +260,27 @@
           lastNode = entries[i - 1];
           entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
           moreUL.insertBefore(entries[i], moreUL.firstChild);
+          if (spacer.clientHeight > 0) {
+            break;
+          }
+        }
+      }
+    } else if (vegaSideNav && vegaNavCnt) {
+      console.log('calc');
+      const spacer = vegaNavCnt.querySelector('.lui-spacer');
+      const entries = vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry');
+      
+      if (spacer.clientHeight === 0 && entries.length > 1) {
+        vegaNavCnt.querySelector('.lui-more').style.display = 'block';
+        for (let i = entries.length - 1; i > 0; i--) {
+          lastNode = entries[i - 1];
+          // entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
+          // moreUL.insertBefore(entries[i], moreUL.firstChild);
+          lastNode.style.display = 'none';
+          if (lastNode.getAttribute('is-in-group') === 'true' && lastNode.parentNode.getBoundingClientRect().height === 0) {
+            lastNode.parentNode.parentNode.style.display = 'none';
+          }
+          console.log(spacer.clientHeight);
           if (spacer.clientHeight > 0) {
             break;
           }
@@ -287,8 +320,8 @@
       });
     }
     window.Luigi.__btpNavTopCntRszObs.disconnect();
-    if (btpNavTopCnt && isSemiCollapsed) {
-      window.Luigi.__btpNavTopCntRszObs.observe(btpNavTopCnt);
+    if ((btpNavTopCnt || vegaSideNav) && isSemiCollapsed) {
+      window.Luigi.__btpNavTopCntRszObs.observe(btpNavTopCnt || vegaNavCnt);
     } else {
       resetNavEntries();
     }
@@ -1050,7 +1083,7 @@
         class="fd-side-nav {isSemiCollapsed ? 'is-collapsed' : ''} {vegaSideNav ? 'vega-nav' : ''} {navHeader
           ? 'lui-nav-header-visible'
           : ''} {sideNavCompactMode ? 'is-compact' : ''}"
-        aria-roledescription="Main Navigation"
+        aria-roledescription="Main Navigation" bind:this={vegaNavCnt}
       >
         {#if children && pathData.length > 1}
           <div class="fd-side-nav__container fd-side-nav__container--top">
@@ -1067,7 +1100,7 @@
                       {#each nodes as node}
                         {#if !node.hideFromNav}
                           {#if node.label}
-                            <li class="fd-navigation-list__item lui-nav-entry" role="none">
+                            <li is-in-group="{!group.isSingleEntry}" class="fd-navigation-list__item lui-nav-entry" role="none">
                               <!-- svelte-ignore a11y-role-has-required-aria-props -->
                               <a
                                 class="fd-navigation-list__content {node === selectedNode ? 'is-selected' : ''}"
@@ -1211,7 +1244,7 @@
                     {:else if nodes.filter((node) => !node.hideFromNav && node.label).length > 0}
                       <!-- Category Nodes-->
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
-                      <li
+                      <li is-in-group="{!group.isSingleEntry}"
                         class="fd-navigation__list-item {isSemiCollapsed ? 'fd-popover__control' : ''} lui-nav-entry"
                         data-testid={getTestIdForCat(nodes.metaInfo, key)}
                         on:click|stopPropagation={(event) => handleIconClick(nodes, event.currentTarget)}
@@ -1583,11 +1616,12 @@
                   {/each}
                 </LeftNavGroup>
               {/each}
+              
+              <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
             </ul>
           </div>
         {/if}
-
-        {#if footerText || semiCollapsibleButton}
+        {#if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
               <span class="lui-side-nav__footer--text fd-has-type-minus-1" data-testid="lui-side-nav__footer--text"
@@ -2025,6 +2059,13 @@
     height: auto;
     top: $navHeaderHeight;
     position: absolute;
+    bottom: 0;
+  }
+
+  :global(.semiCollapsed) .fd-app__sidebar .fd-side-nav {
+    height: auto;
+    position: absolute;
+    top: 0;
     bottom: 0;
   }
 
@@ -2467,5 +2508,13 @@
 
   .fd-navigation-list__content {
     text-decoration: none;
+  }
+
+  .fd-side-nav__container--top > .fd-navigation-list {
+    flex-grow: 1;
+
+    :global(.lui-more) {
+      margin-bottom: .5rem;
+    }
   }
 </style>
