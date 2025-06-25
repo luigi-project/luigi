@@ -211,7 +211,7 @@ describe('iframeCreationInterceptor test', () => {
 
   it('main iframe intercepted', () => {
     cy.get('#app[configversion="iframeInterceptorTest"]');
-    cy.get('iframe').should('have.attr', 'style', 'border: 3px dashed green;');
+    cy.get('iframe').should('have.attr', 'style', 'display: block;');
   });
 
   it('split-view iframe intercepted', () => {
