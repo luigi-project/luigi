@@ -78,11 +78,11 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "luigisample:build"
+            "buildTarget": "luigisample:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "luigisample:build:production"
+              "buildTarget": "luigisample:build:production"
             }
           }
         },

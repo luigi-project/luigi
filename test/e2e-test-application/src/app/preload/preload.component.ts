@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'preload',
-  template: ''
+    selector: 'preload',
+    template: '',
+    standalone: false
 })
 export class PreloadComponent {}

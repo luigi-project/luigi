@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { linkManager, uxManager, sendCustomMessage, addCustomMessageListener } from '@luigi-project/client';
 
 @Component({
-  selector: 'app-overview',
-  templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.css']
+    selector: 'app-overview',
+    templateUrl: './overview.component.html',
+    styleUrls: ['./overview.component.css'],
+    standalone: false
 })
 export class OverviewComponent implements OnInit {
   public linkManager = linkManager;
