@@ -4,7 +4,7 @@ export const GenericHelpers = {
    * @returns random numeric value {number}
    * @private
    */
-  getRandomId: /* istanbul ignore next */ () => {
+  getRandomId: (): number => {
     return window.crypto.getRandomValues(new Uint32Array(1))[0];
   },
 

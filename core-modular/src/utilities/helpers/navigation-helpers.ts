@@ -17,7 +17,7 @@ export const NavigationHelpers = {
     return value;
   },
 
-  segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/) => {
+  segmentMatches: (linkSegment: string, pathSegment: string, pathParams: Record<string, any> /*TODO*/): boolean => {
     if (linkSegment === pathSegment) {
       return true;
     }
@@ -27,7 +27,7 @@ export const NavigationHelpers = {
     return false;
   },
 
-  checkMatch: (route: string, nodesInPath: Array<any>, pathParams?: Record<string, any>) => {
+  checkMatch: (route: string, nodesInPath: Array<any>, pathParams?: Record<string, any>): boolean => {
     let match = true;
     GenericHelpers.trimTrailingSlash(GenericHelpers.trimLeadingSlash(route))
       .split('/')
@@ -46,7 +46,7 @@ export const NavigationHelpers = {
     return match;
   },
 
-  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData) => {
+  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): String | undefined => {
     const appSwitcherItems = appSwitcherData.items;
     if (appSwitcherItems && pathData) {
       let title = '';

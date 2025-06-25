@@ -79,6 +79,7 @@ export interface Node {
   category?: any;
   tabNav?: boolean;
   viewUrl?: string;
+  keepSelectedForChildren?: boolean;
 }
 
 export interface Category {
@@ -211,7 +212,7 @@ export class NavigationService {
    * @param array children
    * @returns array children
    */
-  getTruncatedChildren(children: any) {
+  getTruncatedChildren(children: any): any[] {
     let childToKeepFound = false;
     let tabNavUnset = false;
     let res: any = [];
@@ -257,7 +258,7 @@ export class NavigationService {
     const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
     let lastElement = [...pathDataTruncatedChildren].pop();
     let selectedNode = pathData.selectedNode;
-    if (lastElement.keepSelectedForChildren || lastElement.tabNav) {
+    if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
       selectedNode = lastElement;
       pathDataTruncatedChildren.pop();
       lastElement = [...pathDataTruncatedChildren].pop();
@@ -266,7 +267,7 @@ export class NavigationService {
     if (selectedNode && pathData.rootNodes.includes(selectedNode)) {
       navItems = this.buildNavItems(selectedNode.children);
     } else if (selectedNode && selectedNode.tabNav) {
-      navItems = this.buildNavItems(lastElement.children, selectedNode);
+      navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode) : [];
     } else {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
@@ -302,7 +303,7 @@ export class NavigationService {
     return undefined;
   }
 
-  getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any) {
+  getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any): AppSwitcher | undefined {
     const appSwitcher = appSwitcherData;
     const showMainAppEntry = appSwitcher?.showMainAppEntry;
     if (appSwitcher && appSwitcher.items && showMainAppEntry) {
