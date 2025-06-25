@@ -236,15 +236,16 @@
       });
       btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
     } else if (vegaSideNav) {
-      console.log('reset')
+      console.log('reset');
       vegaNavCnt.querySelector('.lui-more').style.display = 'none';
-      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach(li => {
+      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
         li.style.display = 'list-item';
       });
-      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .fd-navigation-list__item--group').forEach(li => {
-        li.style.display = 'list-item';
-      });
-      
+      vegaNavCnt
+        .querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .fd-navigation-list__item--group')
+        .forEach((li) => {
+          li.style.display = 'list-item';
+        });
     }
   };
 
@@ -269,7 +270,7 @@
       console.log('calc');
       const spacer = vegaNavCnt.querySelector('.lui-spacer');
       const entries = vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry');
-      
+
       if (spacer.clientHeight === 0 && entries.length > 1) {
         vegaNavCnt.querySelector('.lui-more').style.display = 'block';
         for (let i = entries.length - 1; i > 0; i--) {
@@ -277,7 +278,10 @@
           // entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
           // moreUL.insertBefore(entries[i], moreUL.firstChild);
           lastNode.style.display = 'none';
-          if (lastNode.getAttribute('is-in-group') === 'true' && lastNode.parentNode.getBoundingClientRect().height === 0) {
+          if (
+            lastNode.getAttribute('is-in-group') === 'true' &&
+            lastNode.parentNode.getBoundingClientRect().height === 0
+          ) {
             lastNode.parentNode.parentNode.style.display = 'none';
           }
           console.log(spacer.clientHeight);
@@ -1083,7 +1087,8 @@
         class="fd-side-nav {isSemiCollapsed ? 'is-collapsed' : ''} {vegaSideNav ? 'vega-nav' : ''} {navHeader
           ? 'lui-nav-header-visible'
           : ''} {sideNavCompactMode ? 'is-compact' : ''}"
-        aria-roledescription="Main Navigation" bind:this={vegaNavCnt}
+        aria-roledescription="Main Navigation"
+        bind:this={vegaNavCnt}
       >
         {#if children && pathData.length > 1}
           <div class="fd-side-nav__container fd-side-nav__container--top">
@@ -1100,7 +1105,11 @@
                       {#each nodes as node}
                         {#if !node.hideFromNav}
                           {#if node.label}
-                            <li is-in-group="{!group.isSingleEntry}" class="fd-navigation-list__item lui-nav-entry" role="none">
+                            <li
+                              is-in-group={!group.isSingleEntry}
+                              class="fd-navigation-list__item lui-nav-entry"
+                              role="none"
+                            >
                               <!-- svelte-ignore a11y-role-has-required-aria-props -->
                               <a
                                 class="fd-navigation-list__content {node === selectedNode ? 'is-selected' : ''}"
@@ -1244,7 +1253,8 @@
                     {:else if nodes.filter((node) => !node.hideFromNav && node.label).length > 0}
                       <!-- Category Nodes-->
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
-                      <li is-in-group="{!group.isSingleEntry}"
+                      <li
+                        is-in-group={!group.isSingleEntry}
                         class="fd-navigation__list-item {isSemiCollapsed ? 'fd-popover__control' : ''} lui-nav-entry"
                         data-testid={getTestIdForCat(nodes.metaInfo, key)}
                         on:click|stopPropagation={(event) => handleIconClick(nodes, event.currentTarget)}
@@ -1616,7 +1626,7 @@
                   {/each}
                 </LeftNavGroup>
               {/each}
-              
+
               <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
             </ul>
           </div>
@@ -2514,7 +2524,7 @@
     flex-grow: 1;
 
     :global(.lui-more) {
-      margin-bottom: .5rem;
+      margin-bottom: 0.5rem;
     }
   }
 </style>
