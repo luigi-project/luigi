@@ -32,9 +32,7 @@
         fd-popover__body--bottom fd-popover__body--arrow-left fd-popover__body--arrow-y-bottom"
       role="dialog"
     >
-      <ul class="fd-popover__wrapper fd-navigation-list level-1" role="menu">
-        
-      </ul>
+      <ul class="fd-popover__wrapper fd-navigation-list level-1" role="menu"></ul>
     </div>
   </li>
 {/if}
@@ -48,9 +46,8 @@
     max-height: 90vh;
     overflow: auto;
 
-    &> ul {
+    & > ul {
       overflow: visible;
     }
   }
-
 </style>

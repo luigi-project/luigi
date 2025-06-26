@@ -45,7 +45,7 @@
     cursor: default;
   }
 
-  .fd-popover__body[aria-hidden=true] {
+  .fd-popover__body[aria-hidden='true'] {
     display: none;
   }
 </style>

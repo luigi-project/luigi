@@ -246,8 +246,8 @@
         // vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
         //   li.style.display = 'list-item';
         // });
-        
-        moreUL.querySelectorAll('li').forEach(li => {
+
+        moreUL.querySelectorAll('li').forEach((li) => {
           if (li.luiIndex) {
             const placeholder = vegaNavCnt.querySelector('.lui-placeholder-' + li.luiIndex);
             if (!placeholder) {
@@ -275,7 +275,8 @@
         const entries = btpNavTopCnt.querySelectorAll('.fd-navigation__list > .lui-nav-entry');
 
         if (spacer.clientHeight === 0 && entries.length > 1) {
-          btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'flex';
+          btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display =
+            'flex';
           for (let i = entries.length - 1; i > 0; i--) {
             lastNode = entries[i - 1];
             entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
@@ -288,13 +289,14 @@
       } else if (vegaSideNav && vegaNavCnt) {
         console.log('calc');
         const spacer = vegaNavCnt.querySelector('.lui-spacer');
-        const entries = vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry');
+        const entries = vegaNavCnt.querySelectorAll(
+          '.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry'
+        );
         const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
 
         if (spacer.clientHeight === 0 && entries.length > 1) {
           vegaNavCnt.querySelector('.lui-more').style.display = 'block';
           for (let i = entries.length - 1; i > 0; i--) {
-            
             lastNode = entries[i];
             const parent = lastNode.parentNode;
             lastNode.luiIndex = i;
@@ -304,10 +306,7 @@
             placeholder.style.display = 'none';
             lastNode.parentNode.insertBefore(placeholder, lastNode);
             moreUL.insertBefore(lastNode, moreUL.firstChild);
-            if (
-              lastNode.getAttribute('is-in-group') === 'true' &&
-              parent.getBoundingClientRect().height === 0
-            ) {
+            if (lastNode.getAttribute('is-in-group') === 'true' && parent.getBoundingClientRect().height === 0) {
               parent.parentNode.style.display = 'none';
             }
             if (spacer.clientHeight > 0) {
