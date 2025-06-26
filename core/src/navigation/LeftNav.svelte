@@ -237,7 +237,10 @@
       btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
     } else if (vegaSideNav) {
       console.log('reset');
-      vegaNavCnt.querySelector('.lui-more').style.display = 'none';
+      const more = vegaNavCnt.querySelector('.lui-more');
+      if (more) {
+        more.style.display = 'none';
+      } 
       vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
         li.style.display = 'list-item';
       });

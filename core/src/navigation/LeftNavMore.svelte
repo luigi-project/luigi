@@ -9,7 +9,7 @@
 
 {#if collapsedMode}
   <li class="lui-spacer" role="presentation" aria-hidden="true" />
-  <li class="fd-navigation-list__item fd-popover lui-more" role="none">
+  <li class="fd-navigation-list__item fd-popover lui-more" role="none" style="display: none">
     <a
       class="fd-navigation-list__content is-selected fd-popover__control"
       role="menuitemradio"
