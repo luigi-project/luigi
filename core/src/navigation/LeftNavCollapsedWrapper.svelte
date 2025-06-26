@@ -44,4 +44,8 @@
   .fd-navigation-list__content {
     cursor: default;
   }
+
+  .fd-popover__body[aria-hidden=true] {
+    display: none;
+  }
 </style>

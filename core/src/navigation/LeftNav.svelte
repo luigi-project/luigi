@@ -223,77 +223,100 @@
   });
 
   const resetNavEntries = () => {
-    if (btpNavTopCnt) {
-      const moreEntries = btpNavTopCnt.querySelectorAll('.lui-moreItems  > .lui-nav-entry');
-      const navList = btpNavTopCnt.querySelector('.fd-navigation__list');
-      const spacer = btpNavTopCnt.querySelector('.fd-navigation__list > .lui-spacer');
-      moreEntries?.forEach((item) => {
-        if (item.navGroupId) {
-          navList.querySelector(`[navGroupId="${item.navGroupId}"]`).appendChild(item);
-        } else {
-          navList.insertBefore(item, spacer);
-        }
-      });
-      btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
-    } else if (vegaSideNav) {
-      console.log('reset');
-      const more = vegaNavCnt.querySelector('.lui-more');
-      if (more) {
-        more.style.display = 'none';
-      }
-      vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
-        li.style.display = 'list-item';
-      });
-      vegaNavCnt
-        .querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .fd-navigation-list__item--group')
-        .forEach((li) => {
-          li.style.display = 'list-item';
+    setTimeout(() => {
+      if (btpNavTopCnt) {
+        const moreEntries = btpNavTopCnt.querySelectorAll('.lui-moreItems  > .lui-nav-entry');
+        const navList = btpNavTopCnt.querySelector('.fd-navigation__list');
+        const spacer = btpNavTopCnt.querySelector('.fd-navigation__list > .lui-spacer');
+        moreEntries?.forEach((item) => {
+          if (item.navGroupId) {
+            navList.querySelector(`[navGroupId="${item.navGroupId}"]`).appendChild(item);
+          } else {
+            navList.insertBefore(item, spacer);
+          }
         });
-    }
+        btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
+      } else if (vegaSideNav) {
+        console.log('reset');
+        const more = vegaNavCnt.querySelector('.lui-more');
+        const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
+        if (more) {
+          more.style.display = 'none';
+        }
+        // vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
+        //   li.style.display = 'list-item';
+        // });
+        
+        moreUL.querySelectorAll('li').forEach(li => {
+          if (li.luiIndex) {
+            const placeholder = vegaNavCnt.querySelector('.lui-placeholder-' + li.luiIndex);
+            if (!placeholder) {
+              return;
+            }
+            placeholder.parentNode.insertBefore(li, placeholder);
+            placeholder.remove();
+          }
+        });
+        moreUL.innerHTML = '';
+        vegaNavCnt
+          .querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .fd-navigation-list__item--group')
+          .forEach((li) => {
+            li.style.display = 'list-item';
+          });
+      }
+    });
   };
 
   const calculateNavEntries = () => {
-    if (btpNavTopCnt) {
-      const spacer = btpNavTopCnt.querySelector('.fd-navigation__list > .lui-spacer');
-      const moreUL = btpNavTopCnt.querySelector('.lui-moreItems');
-      const entries = btpNavTopCnt.querySelectorAll('.fd-navigation__list > .lui-nav-entry');
+    setTimeout(() => {
+      if (btpNavTopCnt) {
+        const spacer = btpNavTopCnt.querySelector('.fd-navigation__list > .lui-spacer');
+        const moreUL = btpNavTopCnt.querySelector('.lui-moreItems');
+        const entries = btpNavTopCnt.querySelectorAll('.fd-navigation__list > .lui-nav-entry');
 
-      if (spacer.clientHeight === 0 && entries.length > 1) {
-        btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'flex';
-        for (let i = entries.length - 1; i > 0; i--) {
-          lastNode = entries[i - 1];
-          entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
-          moreUL.insertBefore(entries[i], moreUL.firstChild);
-          if (spacer.clientHeight > 0) {
-            break;
+        if (spacer.clientHeight === 0 && entries.length > 1) {
+          btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'flex';
+          for (let i = entries.length - 1; i > 0; i--) {
+            lastNode = entries[i - 1];
+            entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
+            moreUL.insertBefore(entries[i], moreUL.firstChild);
+            if (spacer.clientHeight > 0) {
+              break;
+            }
+          }
+        }
+      } else if (vegaSideNav && vegaNavCnt) {
+        console.log('calc');
+        const spacer = vegaNavCnt.querySelector('.lui-spacer');
+        const entries = vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry');
+        const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
+
+        if (spacer.clientHeight === 0 && entries.length > 1) {
+          vegaNavCnt.querySelector('.lui-more').style.display = 'block';
+          for (let i = entries.length - 1; i > 0; i--) {
+            
+            lastNode = entries[i];
+            const parent = lastNode.parentNode;
+            lastNode.luiIndex = i;
+            const placeholder = document.createElement('li');
+            placeholder.luiIndex = i;
+            placeholder.classList.add('lui-placeholder-' + i);
+            placeholder.style.display = 'none';
+            lastNode.parentNode.insertBefore(placeholder, lastNode);
+            moreUL.insertBefore(lastNode, moreUL.firstChild);
+            if (
+              lastNode.getAttribute('is-in-group') === 'true' &&
+              parent.getBoundingClientRect().height === 0
+            ) {
+              parent.parentNode.style.display = 'none';
+            }
+            if (spacer.clientHeight > 0) {
+              break;
+            }
           }
         }
       }
-    } else if (vegaSideNav && vegaNavCnt) {
-      console.log('calc');
-      const spacer = vegaNavCnt.querySelector('.lui-spacer');
-      const entries = vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry');
-
-      if (spacer.clientHeight === 0 && entries.length > 1) {
-        vegaNavCnt.querySelector('.lui-more').style.display = 'block';
-        for (let i = entries.length - 1; i > 0; i--) {
-          lastNode = entries[i - 1];
-          // entries[i].navGroupId = entries[i].parentNode.getAttribute('navGroupId');
-          // moreUL.insertBefore(entries[i], moreUL.firstChild);
-          lastNode.style.display = 'none';
-          if (
-            lastNode.getAttribute('is-in-group') === 'true' &&
-            lastNode.parentNode.getBoundingClientRect().height === 0
-          ) {
-            lastNode.parentNode.parentNode.style.display = 'none';
-          }
-          console.log(spacer.clientHeight);
-          if (spacer.clientHeight > 0) {
-            break;
-          }
-        }
-      }
-    }
+    });
   };
 
   const handleNavHeaderRenderer = () => {
@@ -314,15 +337,20 @@
 
   afterUpdate(() => {
     if (!window.Luigi.__btpNavTopCntRszObs) {
+      let oldHeight = 0;
       window.Luigi.__btpNavTopCntRszObs = new ResizeObserver((entries, observer) => {
         if (updateTimeout) {
           clearTimeout(updateTimeout);
         }
         if (isSemiCollapsed) {
-          updateTimeout = setTimeout(() => {
-            resetNavEntries();
-            calculateNavEntries();
-          }, 100);
+          console.log(entries[0].contentRect);
+          if (entries[0].target.getBoundingClientRect().height !== oldHeight) {
+            updateTimeout = setTimeout(() => {
+              resetNavEntries();
+              calculateNavEntries();
+              oldHeight = entries[0].target.getBoundingClientRect().height;
+            }, 100);
+          }
         }
       });
     }
@@ -1318,7 +1346,7 @@
                               {#each nodes as node}
                                 {#if !node.hideFromNav}
                                   {#if node.label}
-                                    <li class="fd-navigation-list__item lui-nav-entry" role="none">
+                                    <li class="fd-navigation-list__item" role="none">
                                       <!-- svelte-ignore a11y-role-has-required-aria-props -->
                                       <a
                                         class="fd-navigation-list__content {node === selectedNode ? 'is-selected' : ''}"
