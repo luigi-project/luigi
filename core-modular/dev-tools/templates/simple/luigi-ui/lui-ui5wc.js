@@ -112,7 +112,7 @@ function renderProductSwitcherItems(productSwitcherConfig) {
   const productSwitchPopover = document.createElement('ui5-popover');
   const productSwitch = document.createElement('ui5-product-switch');
   productSwitchPopover.setAttribute('id', 'productswitch-popover');
-  productSwitchPopover.setAttribute('placement', 'Bottom');
+  productSwitchPopover.setAttribute('placement-type', 'Bottom');
   productSwitchPopover.appendChild(productSwitch);
   productSwitcherConfig.items?.forEach((item) => {
     const productSwitchItem = document.createElement('ui5-product-switch-item');
@@ -147,7 +147,7 @@ function onProductSwitcherClick(event) {
 
 function renderCategoryPopover(catObj) {
   const catPopover = document.createElement('ui5-popover');
-  catPopover.setAttribute('placement', 'Bottom');
+  catPopover.setAttribute('placement-type', 'Bottom');
   (catObj.id && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`)) ||
     (catObj.label && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`));
   const catList = document.createElement('ui5-list');
