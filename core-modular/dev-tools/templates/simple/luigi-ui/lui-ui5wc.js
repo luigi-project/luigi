@@ -283,7 +283,7 @@ const connector = {
         addShellbarItem(shellbar, item);
       });
 
-      if (topNavData.appSwitcher.items && topNavData.appSwitcher) {
+      if (topNavData.appSwitcher?.items) {
         if (topNavData.appSwitcher.showMainAppEntry) {
           this.renderAppSwitcherItems(shellbar, topNavData.appSwitcher, topNavData.appSwitcher.items[0]?.link);
         } else {
