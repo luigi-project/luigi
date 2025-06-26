@@ -156,7 +156,7 @@ describe('iframeCreationInterceptor test', () => {
         switch (microFrontendType) {
           case 'main':
             console.log(microFrontendType);
-            iframe.style.cssText = style + ' green';
+            iframe.style.cssText = style + ' rgb(0, 128, 0)'; // green
             break;
           case 'split-view':
             console.log(microFrontendType);
@@ -174,7 +174,7 @@ describe('iframeCreationInterceptor test', () => {
 
   it('main iframe intercepted', () => {
     cy.get('#app[configversion="iframeInterceptorTest"]');
-    cy.get('iframe').should('have.attr', 'style', 'border: 3px dashed green;');
+    cy.get('.iframeContainer iframe').last().and('have.css', 'border').should('include', '3px dashed rgb(0, 128, 0)');
   });
 
   it('split-view iframe intercepted', () => {
