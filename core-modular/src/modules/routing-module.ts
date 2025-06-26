@@ -17,7 +17,7 @@ export const RoutingModule = {
           return;
         }
         const currentNode = navService.getCurrentNode(path);
-        luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData());
+        luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
         luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
         luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
         luigi.getEngine()._ui.updateMainContent(currentNode, luigi);

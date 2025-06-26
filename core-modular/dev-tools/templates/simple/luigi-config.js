@@ -1,6 +1,46 @@
 window.onload = () => {
   window.Luigi.setConfig({
     navigation: {
+      appSwitcher: {
+        showMainAppEntry: true,
+        items: [
+          {
+            title: 'Overview',
+            subTitle: 'overview',
+            link: '/home'
+          },
+          {
+            title: 'experimental',
+            link: '/experimental',
+            subTitle: '/parent/projects',
+            selectionConditions: {
+              route: '/parent/projects',
+              contextCriteria: [
+                {
+                  key: 'somekey',
+                  value: 'somevalue'
+                }
+              ]
+            }
+          },
+          {
+            title: 'experimental2',
+            link: '/experimental/exp2',
+            subTitle: 'experimental2'
+          }
+        ],
+        itemRenderer_: (item, slot, appSwitcherApiObj) => {
+          let a = document.createElement('a');
+          a.setAttribute('style', 'background-color: red; color:green;');
+          console.log('Hello from itemRenderer');
+          // addEventListener does not work due to limitations of ui5
+          a.setAttribute('onclick', `Luigi.navigation().navigate('${item.link}')`);
+          let spanText = document.createElement('span');
+          spanText.innerText = item.title;
+          a.appendChild(spanText);
+          slot.appendChild(a);
+        }
+      },
       nodes: [
         {
           pathSegment: 'home',
@@ -64,14 +104,14 @@ window.onload = () => {
           category: 'cat',
           label: 'Success',
           pathSegment: 'success',
-          icon: 'success',
+          icon: 'message-success',
           viewUrl: '/microfrontend.html#errors'
         },
         {
           category: { id: 'cat2', label: 'cat2', icon: 'record' },
           pathSegment: 'cat2',
           label: 'Cat2',
-          icon: 'people',
+          icon: 'people-connected',
           viewUrl: '/microfrontend.html#cat2'
         },
         {
@@ -102,6 +142,68 @@ window.onload = () => {
               icon: 'calendar'
             }
           ]
+        },
+        {
+          pathSegment: 'parent',
+          label: 'parent',
+          viewUrl: '/microfrontend.html#parent',
+          hideFromNav: true,
+          hideSideNav: true,
+          children: [
+            {
+              pathSegment: 'projects',
+              label: 'projects',
+
+              viewUrl: '/microfrontend.html',
+              context: {
+                title: 'projects',
+                content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration',
+                somekey: 'somevalue'
+              }
+            }
+          ]
+        },
+        {
+          pathSegment: 'experimental',
+          label: 'experimental',
+          viewUrl: '/microfrontend.html',
+          hideFromNav: true,
+          context: {
+            title: 'experimental',
+            content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+          },
+          children: [
+            {
+              pathSegment: 'exp1',
+              label: 'Exp1',
+              icon: 'home',
+              viewUrl: '/microfrontend.html',
+              context: {
+                title: 'exp1',
+                content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+              }
+            },
+            {
+              pathSegment: 'exp2',
+              label: 'exp2',
+              icon: 'home',
+              viewUrl: '/microfrontend.html',
+              context: {
+                title: 'exp2',
+                content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+              }
+            },
+            {
+              pathSegment: 'exp3',
+              label: 'exp3',
+              icon: 'home',
+              viewUrl: '/microfrontend.html',
+              context: {
+                title: 'exp3',
+                content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+              }
+            }
+          ]
         }
       ]
     },
@@ -112,6 +214,7 @@ window.onload = () => {
       responsiveNavigation: 'Fiori3',
       header: {
         title: 'Luigi Headless POC',
+        subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
       }
     }
