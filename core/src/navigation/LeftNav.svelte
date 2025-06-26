@@ -240,7 +240,7 @@
       const more = vegaNavCnt.querySelector('.lui-more');
       if (more) {
         more.style.display = 'none';
-      } 
+      }
       vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
         li.style.display = 'list-item';
       });
