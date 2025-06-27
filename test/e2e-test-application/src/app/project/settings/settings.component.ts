@@ -14,9 +14,10 @@ import {
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css']
+    selector: 'app-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.css'],
+    standalone: false
 })
 export class SettingsComponent implements OnInit {
   public linkManager = linkManager;
