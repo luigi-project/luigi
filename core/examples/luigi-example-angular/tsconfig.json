@@ -5,13 +5,13 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2017", "dom"],
     "module": "es2015",
-    "baseUrl": "./",
-    "allowSyntheticDefaultImports": true
+    "baseUrl": "./"
   }
 }

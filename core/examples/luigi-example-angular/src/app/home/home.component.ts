@@ -2,8 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { addInitListener, addContextUpdateListener } from '@luigi-project/client';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html'
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    standalone: false
 })
 export class HomeComponent implements OnInit {
   public message: string;
