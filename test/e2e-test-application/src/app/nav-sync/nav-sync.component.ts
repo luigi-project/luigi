@@ -8,9 +8,10 @@ import { Subscription } from 'rxjs';
  */
 
 @Component({
-  selector: 'app-nav-sync',
-  templateUrl: './nav-sync.component.html',
-  styleUrls: ['./nav-sync.component.css']
+    selector: 'app-nav-sync',
+    templateUrl: './nav-sync.component.html',
+    styleUrls: ['./nav-sync.component.css'],
+    standalone: false
 })
 export class NavSyncComponent implements OnInit, OnDestroy {
   segments: String[] = ['one', 'two', 'three', 'four'];
