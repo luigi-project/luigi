@@ -43,6 +43,7 @@ export interface LeftNavData {
   selectedNode: any;
   items: NavItem[];
   basePath: string;
+  sideNavFooterText?: string;
 }
 
 export interface PathData {
@@ -252,10 +253,12 @@ export class NavigationService {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
 
+    console.log("NavigationService.getLeftNavData",  this.luigi.getConfig().navigation?.sideNavFooterText)
     return {
       selectedNode: selectedNode,
       items: navItems,
-      basePath: basePath.replace(/\/\/+/g, '/')
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText
     };
   }
 
