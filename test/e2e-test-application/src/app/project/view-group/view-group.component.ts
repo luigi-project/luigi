@@ -3,9 +3,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-view-group',
-  templateUrl: './view-group.component.html',
-  styleUrls: ['./view-group.component.css']
+    selector: 'app-view-group',
+    templateUrl: './view-group.component.html',
+    styleUrls: ['./view-group.component.css'],
+    standalone: false
 })
 export class ViewGroupComponent implements OnInit {
   vg: string;

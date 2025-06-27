@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-project/client';
 
 @Component({
-  selector: 'app-miscellaneous2',
-  templateUrl: './miscellaneous2.component.html',
-  styleUrls: ['./miscellaneous2.component.css']
+    selector: 'app-miscellaneous2',
+    templateUrl: './miscellaneous2.component.html',
+    styleUrls: ['./miscellaneous2.component.css'],
+    standalone: false
 })
 export class Miscellaneous2Component implements OnInit {
   constructor() {}
