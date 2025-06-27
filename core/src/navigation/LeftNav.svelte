@@ -213,6 +213,12 @@
     semiCollapsible = stateArr.semiCollapsible;
     SemiCollapsibleNavigation.onValueChanged((stateArr) => {
       isSemiCollapsed = stateArr.isSemiCollapsed;
+      if(vegaSideNav) {
+        resetNavEntries();
+        if (isSemiCollapsed) {
+          calculateNavEntries();
+        }
+      }
     });
 
     EventListenerHelpers.addEventListener('message', (e) => {
@@ -243,9 +249,7 @@
         if (more) {
           more.style.display = 'none';
         }
-        // vegaNavCnt.querySelectorAll('.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry').forEach((li) => {
-        //   li.style.display = 'list-item';
-        // });
+        
 
         moreUL.querySelectorAll('li').forEach((li) => {
           if (li.luiIndex) {
@@ -508,7 +512,7 @@
 
       selectedCategory = selectedCat;
 
-      if (sideBar && !vegaSideNav) {
+      if (sideBar || vegaSideNav) {
         calculateFlyoutPosition(el);
       } else if (btpToolLayout) {
         calculateBTPNavFlyoutPosition(el);
@@ -516,42 +520,39 @@
           closeMorePopup();
         }
       }
-      // else if (vegaSideNav) {
-      //   const item = el.closest('.fd-navigation-list__item');
-      //   if (item) {
-      //     const popover = item.querySelector('.fd-navigation-list__popover-body');
-      //     if (popover) {
-      //       popover.setAttribute('aria-hidden', false)
-      //     }
-      //   }
-      // }
     }
   }
 
   export function calculateFlyoutPosition(el) {
-    //Calculate top/bottom position for flyout sublist
-    const parent = el.closest('.fd-nested-list__item');
-    const parentTopPosition = parent.offsetTop;
-    const shellbarHeight = LuigiElements.getShellbar().offsetHeight;
-    let containerHeight;
-    if (LuigiElements.isCustomLuigiContainer()) {
-      containerHeight = LuigiElements.getCustomLuigiContainer().clientHeight;
+    if (vegaSideNav) {
+      const parentPos = el.getBoundingClientRect();
+      const flyout = el.querySelector('.fd-popover__body');
+      flyout.setAttribute('style', `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px`);
     } else {
-      containerHeight = window.innerHeight;
-    }
-    setTimeout(() => {
-      const flyoutSublist = parent.getElementsByClassName('lui-flyout-sublist')[0];
-      const topScroll = el.closest('.lui-fd-side-nav-wrapper').scrollTop;
-      const topPosition = parentTopPosition + shellbarHeight - topScroll;
-      const bottomPosition = containerHeight - parentTopPosition - parent.offsetHeight + topScroll - shellbarHeight;
-
-      if (topPosition + flyoutSublist.offsetHeight >= containerHeight) {
-        flyoutSublist.style.bottom = bottomPosition + 'px';
-        flyoutSublist.className += ' has-bottom-position';
+      //Calculate top/bottom position for flyout sublist
+      const parent = el.closest('.fd-nested-list__item');
+      const parentTopPosition = parent.offsetTop;
+      const shellbarHeight = LuigiElements.getShellbar().offsetHeight;
+      let containerHeight;
+      if (LuigiElements.isCustomLuigiContainer()) {
+        containerHeight = LuigiElements.getCustomLuigiContainer().clientHeight;
       } else {
-        flyoutSublist.style.top = topPosition - shellbarHeight + 'px';
+        containerHeight = window.innerHeight;
       }
-    });
+      setTimeout(() => {
+        const flyoutSublist = parent.getElementsByClassName('lui-flyout-sublist')[0];
+        const topScroll = el.closest('.lui-fd-side-nav-wrapper').scrollTop;
+        const topPosition = parentTopPosition + shellbarHeight - topScroll;
+        const bottomPosition = containerHeight - parentTopPosition - parent.offsetHeight + topScroll - shellbarHeight;
+
+        if (topPosition + flyoutSublist.offsetHeight >= containerHeight) {
+          flyoutSublist.style.bottom = bottomPosition + 'px';
+          flyoutSublist.className += ' has-bottom-position';
+        } else {
+          flyoutSublist.style.top = topPosition - shellbarHeight + 'px';
+        }
+      });
+    }
   }
 
   export function calculateBTPNavFlyoutPosition(el) {

@@ -1,14 +1,10 @@
 <script>
-  import { NavigationHelpers } from '../utilities/helpers';
-
   export let collapsedMode;
-  export let label;
-  export let icon;
-  export let expanded = true;
 </script>
 
 {#if collapsedMode}
   <li class="lui-spacer" role="presentation" aria-hidden="true" />
+{/if}
   <li class="fd-navigation-list__item fd-popover lui-more" role="none" style="display: none">
     <a
       class="fd-navigation-list__content is-selected fd-popover__control"
@@ -35,7 +31,6 @@
       <ul class="fd-popover__wrapper fd-navigation-list level-1" role="menu"></ul>
     </div>
   </li>
-{/if}
 
 <style lang="scss">
   .lui-spacer {
