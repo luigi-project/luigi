@@ -516,7 +516,7 @@
 
       if (sideBar || vegaSideNav) {
         calculateFlyoutPosition(el);
-        if(vegaSideNav && !el.closest('.lui-more')) {
+        if (vegaSideNav && !el.closest('.lui-more')) {
           closeMorePopup();
         }
       } else if (btpToolLayout) {
