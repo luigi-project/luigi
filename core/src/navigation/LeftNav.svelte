@@ -212,9 +212,12 @@
     isSemiCollapsed = stateArr.isSemiCollapsed;
     semiCollapsible = stateArr.semiCollapsible;
     SemiCollapsibleNavigation.onValueChanged((stateArr) => {
+      const previousSemiCollapsed = isSemiCollapsed;
       isSemiCollapsed = stateArr.isSemiCollapsed;
       if (vegaSideNav) {
-        resetNavEntries();
+        if (!previousSemiCollapsed) {
+          resetNavEntries();
+        }
         if (isSemiCollapsed) {
           calculateNavEntries();
         }
@@ -243,7 +246,6 @@
         });
         btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
       } else if (vegaSideNav) {
-        console.log('reset');
         const more = vegaNavCnt.querySelector('.lui-more');
         const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
         if (more) {
@@ -290,7 +292,6 @@
           }
         }
       } else if (vegaSideNav && vegaNavCnt) {
-        console.log('calc');
         const spacer = vegaNavCnt.querySelector('.lui-spacer');
         const entries = vegaNavCnt.querySelectorAll(
           '.fd-side-nav__container--top > .fd-navigation-list .lui-nav-entry'
@@ -345,7 +346,6 @@
           clearTimeout(updateTimeout);
         }
         if (isSemiCollapsed) {
-          console.log(entries[0].contentRect);
           if (entries[0].target.getBoundingClientRect().height !== oldHeight) {
             updateTimeout = setTimeout(() => {
               resetNavEntries();
