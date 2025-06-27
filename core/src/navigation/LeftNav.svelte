@@ -213,7 +213,7 @@
     semiCollapsible = stateArr.semiCollapsible;
     SemiCollapsibleNavigation.onValueChanged((stateArr) => {
       isSemiCollapsed = stateArr.isSemiCollapsed;
-      if(vegaSideNav) {
+      if (vegaSideNav) {
         resetNavEntries();
         if (isSemiCollapsed) {
           calculateNavEntries();
@@ -249,7 +249,6 @@
         if (more) {
           more.style.display = 'none';
         }
-        
 
         moreUL.querySelectorAll('li').forEach((li) => {
           if (li.luiIndex) {
@@ -527,7 +526,10 @@
     if (vegaSideNav) {
       const parentPos = el.getBoundingClientRect();
       const flyout = el.querySelector('.fd-popover__body');
-      flyout.setAttribute('style', `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px`);
+      flyout.setAttribute(
+        'style',
+        `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px`
+      );
     } else {
       //Calculate top/bottom position for flyout sublist
       const parent = el.closest('.fd-nested-list__item');
