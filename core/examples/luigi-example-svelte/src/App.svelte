@@ -7,9 +7,16 @@
 </div>
 
 <script>
-  import { Router, Route } from "svelte-routing";
+  import { Router, Route } from "svelte-tiny-router";
   import Home from "./routes/Home.svelte";
   import Sample1 from "./routes/Sample1.svelte";
   import Sample2 from "./routes/Sample2.svelte";
-  export let url = "";
+
+  /**
+   * @typedef {Object} Props
+   * @property {string} [url]
+   */
+
+  /** @type {Props} */
+  let { url = "" } = $props();
 </script>

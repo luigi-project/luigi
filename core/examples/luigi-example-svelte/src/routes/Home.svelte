@@ -6,7 +6,7 @@
   import LuigiClient from '@luigi-project/client';
   import { onMount } from 'svelte';
 
-  let message = 'The app loaded without Luigi';
+  let message = $state('The app loaded without Luigi');
 
   onMount(() => {
     LuigiClient.addInitListener(() => {
