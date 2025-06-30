@@ -1,7 +1,3 @@
-<h1>Home</h1>
-<div>
-  { message }
-</div>
 <script>
   import LuigiClient from '@luigi-project/client';
   import { onMount } from 'svelte';
@@ -10,10 +6,15 @@
 
   onMount(() => {
     LuigiClient.addInitListener(() => {
-      message = 'Luigi Client initialized.'
+      message = 'Luigi Client initialized.';
     });
     LuigiClient.addContextUpdateListener(() => {
-      message = 'Luigi Client updated.'
+      message = 'Luigi Client updated.';
     });
   });
 </script>
+
+<h1>Home</h1>
+<div>
+  {message}
+</div>
