@@ -6,9 +6,10 @@ import { Subscription } from 'rxjs';
 import { toTitleCase } from '../../../../../services/helpers';
 
 @Component({
-  selector: 'app-group-settings',
-  templateUrl: './group-settings.component.html',
-  styleUrls: ['./group-settings.component.css']
+    selector: 'app-group-settings',
+    templateUrl: './group-settings.component.html',
+    styleUrls: ['./group-settings.component.css'],
+    standalone: false
 })
 export class GroupSettingsComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;
