@@ -126,7 +126,7 @@
             }
           }
         });
-        sideNavAccordionMode = NavigationHelpers.getSideNavAccordionMode(selectedNode);
+        sideNavAccordionMode = !vegaSideNav && NavigationHelpers.getSideNavAccordionMode(selectedNode);
       }
     }
   };
