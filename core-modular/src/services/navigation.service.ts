@@ -61,6 +61,7 @@ export interface Node {
   category?: any;
   tabNav?: boolean;
   viewUrl?: string;
+  openNodeInModal?: boolean;
 }
 
 export interface Category {
@@ -253,7 +254,7 @@ export class NavigationService {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
 
-    console.log("NavigationService.getLeftNavData",  this.luigi.getConfig().navigation?.sideNavFooterText)
+    console.log('NavigationService.getLeftNavData', this.luigi.getConfig().navigation?.sideNavFooterText);
     return {
       selectedNode: selectedNode,
       items: navItems,
