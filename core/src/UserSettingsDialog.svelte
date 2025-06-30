@@ -506,6 +506,8 @@
     height: 80vh;
     max-height: calc(100% - 2.5rem - 6%);
     min-height: auto;
+    max-width: calc(100vw - 10%);
+    min-width: 20rem;
     position: relative;
   }
 
@@ -651,8 +653,17 @@
 
   @media (max-width: 600px) {
     :global(.usersettings-leftNavVisible) .lui-usersettings-left-nav {
-      width: 0;
+      flex: 0;
+      min-width: 0;
       overflow: hidden;
+    }
+
+    .lui-usersettings-left-nav .fd-title {
+      padding-left: 48px;
+    }
+
+    :global(.usersettings-leftNavVisible) .lui-usersettings-left-nav .fd-title {
+      padding-left: 0;
     }
 
     /*micro frontend and iframe wrappers inside the right-side dialog body*/
@@ -676,7 +687,8 @@
     }
 
     .lui-usersettings-left-nav {
-      width: 100%;
+      flex: 1;
+      min-width: 100%;
       transition: 0.5s;
     }
 
@@ -688,8 +700,18 @@
     .lui-usersettings-content-header__back-btn {
       margin-right: 0.5em;
       display: inline-block;
+      position: absolute;
+      top: 0.5rem;
+      left: 1rem;
+      z-index: 11;
+      transform: rotate(180deg);
+    }
+
+    :global(.usersettings-leftNavVisible) .lui-usersettings-content-header__back-btn {
       position: relative;
-      z-index: 1;
+      top: 0;
+      left: 0;
+      transform: none;
     }
   }
 </style>
