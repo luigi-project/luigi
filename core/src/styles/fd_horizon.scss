@@ -8,17 +8,3 @@
 :root {
   --luigi__shellbar--height: 3.5rem;
 }
-
-@font-face {
-  font-family: 'SAP-icons';
-  src: url('@sap-theming/theming-base-content/content/Base/baseLib/sap_horizon/fonts/SAP-icons.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'SAP-icons';
-  src: url('@sap-theming/theming-base-content/content/Base/baseLib/sap_horizon/fonts/SAP-icons.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-}
