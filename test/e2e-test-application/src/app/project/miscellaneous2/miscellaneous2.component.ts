@@ -13,10 +13,10 @@ export class Miscellaneous2Component implements OnInit {
   consoleText: string = 'InitListener called';
 
   ngOnInit() {
-    addInitListener(context => {
+    addInitListener((context) => {
       this.consoleText = 'InitListener called';
     });
-    addContextUpdateListener(context => {
+    addContextUpdateListener((context) => {
       this.consoleText = 'ContextUpdateListener called';
     });
   }

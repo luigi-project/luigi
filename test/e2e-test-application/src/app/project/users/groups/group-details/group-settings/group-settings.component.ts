@@ -17,10 +17,13 @@ export class GroupSettingsComponent implements OnInit, OnDestroy {
   public groupLabel: string;
   private lcSubscription: Subscription;
 
-  constructor(private luigiService: LuigiContextService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private luigiService: LuigiContextService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.lcSubscription = this.luigiService.contextObservable().subscribe(ctx => {
+    this.lcSubscription = this.luigiService.contextObservable().subscribe((ctx) => {
       this.pathParams = getPathParams();
       this.groupLabel = this.pathParams && this.pathParams.group && toTitleCase(this.pathParams.group);
       if (!this.cdr['destroyed']) {

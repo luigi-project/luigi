@@ -47,7 +47,7 @@ export class SettingsComponent implements OnInit {
       this.groupId = params['groupId'];
     });
 
-    addInitListener(init => {
+    addInitListener((init) => {
       this.hasBack = linkManager().hasBack();
       this.isModal = uxManager().isModal();
       this.userSettings = getUserSettings();
@@ -61,7 +61,7 @@ export class SettingsComponent implements OnInit {
       }
     });
 
-    addContextUpdateListener(context => {
+    addContextUpdateListener((context) => {
       this.userSettings = getUserSettings();
     });
 
@@ -98,7 +98,7 @@ export class SettingsComponent implements OnInit {
     linkManager()
       .fromVirtualTreeRoot()
       .getCurrentRoute()
-      .then(route => {
+      .then((route) => {
         this.currentRouteVirtual = route;
       });
   }
@@ -106,7 +106,7 @@ export class SettingsComponent implements OnInit {
   getCurrentRoute() {
     linkManager()
       .getCurrentRoute()
-      .then(route => {
+      .then((route) => {
         this.currentRoute = route;
       });
   }

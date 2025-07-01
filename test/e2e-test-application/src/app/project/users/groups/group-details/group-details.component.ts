@@ -19,7 +19,10 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
   public currentRouteFromClosestContext: string;
   public currentRouteFromParent: string;
 
-  constructor(private luigiService: LuigiContextService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private luigiService: LuigiContextService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.lcSubscription = this.luigiService.contextObservable().subscribe((ctx: IContextMessage) => {
@@ -46,7 +49,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     linkManager()
       .fromContext('project')
       .getCurrentRoute()
-      .then(route => {
+      .then((route) => {
         this.currentRoute = route;
       });
   }
@@ -55,7 +58,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     linkManager()
       .fromParent()
       .getCurrentRoute()
-      .then(route => {
+      .then((route) => {
         this.currentRouteFromParent = route;
       });
   }
@@ -64,7 +67,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     linkManager()
       .fromClosestContext()
       .getCurrentRoute()
-      .then(route => {
+      .then((route) => {
         this.currentRouteFromClosestContext = route;
       });
   }

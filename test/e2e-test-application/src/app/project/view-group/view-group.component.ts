@@ -16,7 +16,10 @@ export class ViewGroupComponent implements OnInit {
   time: string;
   window: Window;
 
-  constructor(private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document) {
+  constructor(
+    private route: ActivatedRoute,
+    @Inject(DOCUMENT) private document: Document
+  ) {
     this.window = this.document.defaultView;
   }
 
@@ -37,7 +40,7 @@ export class ViewGroupComponent implements OnInit {
       3
     );
 
-    this.route.paramMap.subscribe(queryParams => {
+    this.route.paramMap.subscribe((queryParams) => {
       this.vg = queryParams.get('vg');
       this.time = new Date().toJSON();
 
@@ -45,7 +48,8 @@ export class ViewGroupComponent implements OnInit {
 
       this.code = JSON.stringify(iframes, null, 3);
       let currentIFrame = iframes.find(
-        iframe => !!iframe.currentNode && !!iframe.currentNode.pathSegment && iframe.currentNode.pathSegment === this.vg
+        (iframe) =>
+          !!iframe.currentNode && !!iframe.currentNode.pathSegment && iframe.currentNode.pathSegment === this.vg
       );
 
       if (!!currentIFrame) {

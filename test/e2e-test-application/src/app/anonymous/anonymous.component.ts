@@ -12,10 +12,10 @@ export class AnonymousComponent implements OnInit {
 
   constructor(private route: ActivatedRoute) {
     this.route.queryParams.subscribe(
-      params => {
+      (params) => {
         this.exclusive = params.exclusive;
       },
-      err => {}
+      (err) => {}
     );
   }
 

@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   constructor(private luigiService: LuigiContextService) {}
 
   ngOnInit() {
-    this.luigiService.contextObservable().subscribe(ctxObj => {
+    this.luigiService.contextObservable().subscribe((ctxObj) => {
       if (ctxObj.contextType === 0) {
         sendCustomMessage({ id: 'my-micro-frontend-is-ready' });
       }

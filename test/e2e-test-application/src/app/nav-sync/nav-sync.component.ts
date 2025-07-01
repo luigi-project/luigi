@@ -25,12 +25,12 @@ export class NavSyncComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subs.add(
       this.route.url.subscribe(
-        segments => {
+        (segments) => {
           this.currentSegment = segments[segments.length - 1].path;
           const nextIndex = this.segments.indexOf(this.currentSegment) + 1;
           this.nextSegment = this.segments[nextIndex] ? this.segments[nextIndex] : this.segments[0];
         },
-        err => {}
+        (err) => {}
       )
     );
     this.updateLuigiConfig(true);
