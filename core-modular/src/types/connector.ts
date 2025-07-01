@@ -17,6 +17,8 @@ export interface LuigiConnector {
 
   renderModal(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
 
+  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
+
   renderTabNav(data: TabNavData): void;
 
   renderAlert(alertSettings: AlertSettings, alertHandler: AlertHandler): void;

@@ -62,6 +62,7 @@ export interface Node {
   tabNav?: boolean;
   viewUrl?: string;
   openNodeInModal?: boolean;
+  drawer?: ModalSettings;
 }
 
 export interface Category {
