@@ -15,10 +15,10 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 import { delay, timeout } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-project',
-    templateUrl: './project.component.html',
-    styleUrls: ['./project.component.scss'],
-    standalone: false
+  selector: 'app-project',
+  templateUrl: './project.component.html',
+  styleUrls: ['./project.component.scss'],
+  standalone: false
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   @ViewChild('luigiAlertForm') luigiAlertForm: NgForm;

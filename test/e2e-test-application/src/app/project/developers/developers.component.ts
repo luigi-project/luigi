@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { addInitListener, removeInitListener } from '@luigi-project/client';
 import { LuigiContextService } from '@luigi-project/client-support-angular';
 @Component({
-    selector: 'app-developers',
-    templateUrl: './developers.component.html',
-    styleUrls: ['./developers.component.css'],
-    standalone: false
+  selector: 'app-developers',
+  templateUrl: './developers.component.html',
+  styleUrls: ['./developers.component.css'],
+  standalone: false
 })
 export class DevelopersComponent implements OnInit, OnDestroy {
   private initListener;

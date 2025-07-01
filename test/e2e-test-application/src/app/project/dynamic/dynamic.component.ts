@@ -6,10 +6,10 @@ import { LuigiContextService, IContextMessage } from '@luigi-project/client-supp
 import { toTitleCase } from '../../services/helpers';
 
 @Component({
-    selector: 'app-dynamic',
-    templateUrl: './dynamic.component.html',
-    styleUrls: ['./dynamic.component.css'],
-    standalone: false
+  selector: 'app-dynamic',
+  templateUrl: './dynamic.component.html',
+  styleUrls: ['./dynamic.component.css'],
+  standalone: false
 })
 export class DynamicComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;

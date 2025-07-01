@@ -5,10 +5,10 @@ import { LuigiContextService, IContextMessage } from '@luigi-project/client-supp
 import { toTitleCase } from '../../../../services/helpers';
 
 @Component({
-    selector: 'app-group-details',
-    templateUrl: './group-details.component.html',
-    styleUrls: ['./group-details.component.css'],
-    standalone: false
+  selector: 'app-group-details',
+  templateUrl: './group-details.component.html',
+  styleUrls: ['./group-details.component.css'],
+  standalone: false
 })
 export class GroupDetailsComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;

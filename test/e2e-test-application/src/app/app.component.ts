@@ -3,11 +3,11 @@ import { addInactiveListener, sendCustomMessage } from '@luigi-project/client';
 import { LuigiContextService } from '@luigi-project/client-support-angular';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class AppComponent implements OnInit {
   public title = 'app';
