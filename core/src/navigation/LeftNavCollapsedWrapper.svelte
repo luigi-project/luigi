@@ -48,4 +48,13 @@
   .fd-popover__body[aria-hidden='true'] {
     display: none;
   }
+
+  .fd-popover__body > .fd-popover__wrapper {
+    max-height: calc(100vh - 1rem);
+    overflow-y: auto;
+  }
+
+  .fd-popover__body::before, .fd-popover__body::after {
+    transform: translateY(var(--lui-flyout-offset))
+  }
 </style>
