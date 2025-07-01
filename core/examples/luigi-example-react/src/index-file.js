@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { render } from 'react-dom';
+import { Component } from 'react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route } from 'react-router-dom';
+import { addInitListener } from '@luigi-project/client';
+
 import Home from './views/home.js';
 import Sample1 from './views/sample1.js';
 import Sample2 from './views/sample2.js';
-import { addInitListener } from '@luigi-project/client';
 import './index.css';
 
 class App extends Component {
@@ -25,4 +26,6 @@ class App extends Component {
   }
 }
 
-render(<App />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+
+root.render(<App />);
