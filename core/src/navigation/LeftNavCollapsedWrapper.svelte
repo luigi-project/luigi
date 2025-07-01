@@ -54,7 +54,8 @@
     overflow-y: auto;
   }
 
-  .fd-popover__body::before, .fd-popover__body::after {
-    transform: translateY(var(--lui-flyout-offset))
+  .fd-popover__body::before,
+  .fd-popover__body::after {
+    transform: translateY(var(--lui-flyout-offset));
   }
 </style>
