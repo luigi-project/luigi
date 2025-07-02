@@ -275,11 +275,6 @@ export class NavigationService {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
 
-    console.log('NavigationService.getLeftNavData 5555', this.luigi.getConfig().settings?.sideNavFooterText);
-    setTimeout(() => {
-      console.log('NavigationService.getLeftNavData', this.luigi.getConfig().settings?.sideNavFooterText);
-      console.log('luigi config', this.luigi.getConfig());
-    }, 2000);
     return {
       selectedNode: selectedNode,
       items: navItems,
