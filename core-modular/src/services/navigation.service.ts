@@ -44,7 +44,6 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  megalodon: string;
 }
 
 export interface PathData {
@@ -255,18 +254,17 @@ export class NavigationService {
     } else {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
-    
-    console.log('NavigationService.getLeftNavData', this.luigi.getConfig().settings?.sideNavFooterText);
-    setTimeout(() => { 
+
+    console.log('NavigationService.getLeftNavData 5555', this.luigi.getConfig().settings?.sideNavFooterText);
+    setTimeout(() => {
       console.log('NavigationService.getLeftNavData', this.luigi.getConfig().settings?.sideNavFooterText);
-      console.log("luigi config", this.luigi.getConfig());
+      console.log('luigi config', this.luigi.getConfig());
     }, 2000);
     return {
       selectedNode: selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      megalodon: "this is just a test"
+      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText
     };
   }
 
