@@ -47,7 +47,7 @@ export const NavigationHelpers = {
   },
 
   updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): String | undefined => {
-    const appSwitcherItems = appSwitcherData.items;
+    const appSwitcherItems = appSwitcherData?.items;
     if (appSwitcherItems && pathData) {
       let title = '';
       [...appSwitcherItems]
