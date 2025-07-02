@@ -55,7 +55,7 @@
 
   .lui-more > .fd-popover__body {
     max-height: 90vh;
-    overflow: auto;
+    overflow: hidden auto;
     & > ul {
       overflow: visible;
     }
