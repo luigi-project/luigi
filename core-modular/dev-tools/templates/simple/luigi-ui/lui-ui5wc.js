@@ -23,6 +23,9 @@ function readExpandedState(uid) {
 }
 
 function addShellbarItem(shellbar, item) {
+  if (item.node?.hideFromNav) {
+    return;
+  }
   if (item.node) {
     const itemEl = document.createElement('ui5-shellbar-item');
     if (item.node.badgeCounter) {
@@ -71,12 +74,45 @@ function setDialogSize(dialog, settings) {
   }
 }
 
+function renderAppSwitcherItems(shellbar, appSwitcherData, lastSelectedItem = null) {
+  if (!appSwitcherData.items || appSwitcherData.items.length === 0) return;
+
+  if (appSwitcherData.itemRenderer) {
+    // const appSwitcherApiObj = {
+    //   closeDropDown: () => {
+    //     document.querySelector('ui5-shellbar').removeAttribute('show-app-switcher');
+    //   }
+    // };
+    appSwitcherData.items.forEach((item, index) => {
+      if (item.link === lastSelectedItem) return;
+      const ui5Li = document.createElement('ui5-li-custom');
+      ui5Li.setAttribute('slot', 'menuItems');
+      appSwitcherData.itemRenderer(item, ui5Li);
+      index === 0 && ui5Li.setAttribute('testtest', '');
+      shellbar.appendChild(ui5Li);
+    });
+  } else {
+    shellbar.querySelectorAll('ui5-li[slot=menuItems]').forEach((item) => item.remove());
+    appSwitcherData.items.forEach((item, index) => {
+      if (item.link === lastSelectedItem) return;
+      const ui5Li = document.createElement('ui5-li');
+      ui5Li.setAttribute('slot', 'menuItems');
+      ui5Li.setAttribute('text', item.title);
+      ui5Li.innerText = item.title;
+      ui5Li.setAttribute('description', item.subTitle);
+      ui5Li.setAttribute('luigi-route', item.link);
+      index === 0 && ui5Li.setAttribute('testtest', '');
+      shellbar.appendChild(ui5Li);
+    });
+  }
+}
+
 function renderProductSwitcherItems(productSwitcherConfig) {
   document.querySelector('.tool-layout > #productswitch-popover')?.remove();
   const productSwitchPopover = document.createElement('ui5-popover');
   const productSwitch = document.createElement('ui5-product-switch');
   productSwitchPopover.setAttribute('id', 'productswitch-popover');
-  productSwitchPopover.setAttribute('placement', 'Bottom');
+  productSwitchPopover.setAttribute('placement-type', 'Bottom');
   productSwitchPopover.appendChild(productSwitch);
   productSwitcherConfig.items?.forEach((item) => {
     const productSwitchItem = document.createElement('ui5-product-switch-item');
@@ -111,7 +147,7 @@ function onProductSwitcherClick(event) {
 
 function renderCategoryPopover(catObj) {
   const catPopover = document.createElement('ui5-popover');
-  catPopover.setAttribute('placement', 'Bottom');
+  catPopover.setAttribute('placement-type', 'Bottom');
   (catObj.id && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`)) ||
     (catObj.label && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`));
   const catList = document.createElement('ui5-list');
@@ -185,7 +221,7 @@ const connector = {
 
   renderTopNav: (topNavData) => {
     const shellbar = document.querySelector('.tool-layout > ui5-shellbar');
-    shellbar.setAttribute('primary-title', topNavData.appTitle);
+    let lastSelectedItem;
 
     if (topNavData.productSwitcher) {
       shellbar.removeEventListener('product-switch-click', onProductSwitcherClick);
@@ -223,6 +259,7 @@ const connector = {
     // }
 
     if (!shellbar._lastTopNavData) {
+      shellbar.setAttribute('primary-title', topNavData.appTitle);
       // initial rendering
       let html = '';
       html += '<ui5-button icon="menu" slot="startButton" id="toggle"></ui5-button>';
@@ -245,9 +282,34 @@ const connector = {
       (topNavData.topNodes || []).forEach((item) => {
         addShellbarItem(shellbar, item);
       });
+
+      if (topNavData.appSwitcher?.items) {
+        if (topNavData.appSwitcher.showMainAppEntry) {
+          this.renderAppSwitcherItems(shellbar, topNavData.appSwitcher, topNavData.appSwitcher.items[0]?.link);
+        } else {
+          this.renderAppSwitcherItems(shellbar, topNavData.appSwitcher);
+        }
+
+        if (!topNavData.appSwitcher.itemRenderer) {
+          shellbar.addEventListener('menu-item-click', (event) => {
+            const clickedItem = event.detail.item;
+            const link = clickedItem.getAttribute('luigi-route');
+            if (link) {
+              topNavData.appTitle = clickedItem.getAttribute('text');
+              shellbar.setAttribute('primary-title', topNavData.appTitle);
+              // display previous entry, if there
+              lastSelectedItem = link;
+              globalThis.Luigi.navigation().navigate(link);
+              this.renderAppSwitcherItems(shellbar, topNavData.appSwitcher, lastSelectedItem);
+            }
+          });
+        }
+      }
+
       // ...
     } else {
       // partial update
+      shellbar.setAttribute('primary-title', topNavData.appTitle);
       if (topNavData.logo !== shellbar._lastTopNavData.logo) {
         shellbar.querySelector('img[slot=logo]').setAttribute('src', topNavData.logo);
       }
@@ -257,8 +319,10 @@ const connector = {
           addShellbarItem(shellbar, item);
         });
       }
+      if (shellbar._lastTopNavData) {
+        console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
+      }
     }
-
     shellbar._lastTopNavData = topNavData;
   },
   renderLeftNav: (leftNavData) => {
