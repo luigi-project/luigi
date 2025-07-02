@@ -28,7 +28,7 @@ export class Navigation {
   };
 
   openAsModal = (path: string, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    console.log("opening modal 222", path)
+    console.log('opening modal 222', path);
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const node = this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
