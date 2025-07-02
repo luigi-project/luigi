@@ -83,6 +83,7 @@ export interface Node {
   openNodeInModal?: boolean;
   drawer?: ModalSettings;
   keepSelectedForChildren?: boolean;
+  hideFromNav?: boolean;
 }
 
 export interface Category {
