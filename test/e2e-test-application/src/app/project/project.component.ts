@@ -15,10 +15,10 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 import { delay, timeout } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-project',
-    templateUrl: './project.component.html',
-    styleUrls: ['./project.component.scss'],
-    standalone: false
+  selector: 'app-project',
+  templateUrl: './project.component.html',
+  styleUrls: ['./project.component.scss'],
+  standalone: false
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   @ViewChild('luigiAlertForm') luigiAlertForm: NgForm;
@@ -108,7 +108,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
     // Decentralized approach, using LuigiClient listeners directly
     //
-    this.cudListener = addContextUpdateListener(updatedContext => {
+    this.cudListener = addContextUpdateListener((updatedContext) => {
       // this.projectId = updatedContext.currentProject;
       // this.preservedViewCallbackContext = updatedContext.goBackContext;
       this.currentLocale = uxManager().getCurrentLocale();
@@ -220,7 +220,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
     uxManager()
       .showAlert(settings)
-      .then(data => {
+      .then((data) => {
         if (typeof data === 'string' && data.includes('neverShowItAgain')) {
           this.alertDismissKey = true;
         }
@@ -250,14 +250,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   public openSplitView() {
-    this.splitViewHandle = linkManager()
-      .withParams({ test: 'true' })
-      .openAsSplitView('/settings', {
-        title: 'Logs',
-        size: 30
-      });
+    this.splitViewHandle = linkManager().withParams({ test: 'true' }).openAsSplitView('/settings', {
+      title: 'Logs',
+      size: 30
+    });
 
-    this.splitViewHandle.on('resize', newSize => {
+    this.splitViewHandle.on('resize', (newSize) => {
       console.info('on:resize: split view got resized to', newSize);
       if (!this.cdr['destroyed']) {
         this.cdr.detectChanges();
@@ -293,8 +291,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => 'success',
-      result => 'Key ' + this.storageDemoKey + 'successfully stored with value ' + this.storageDemoValue
+      (result) => 'success',
+      (result) => 'Key ' + this.storageDemoKey + 'successfully stored with value ' + this.storageDemoValue
     );
   }
 
@@ -306,8 +304,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => (result ? 'info' : 'warning'),
-      result =>
+      (result) => (result ? 'info' : 'warning'),
+      (result) =>
         result ? 'Value for key ' + this.storageDemoKey + ' is ' + result : 'No value for key ' + this.storageDemoKey
     );
   }
@@ -322,8 +320,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => (result ? 'success' : 'warning'),
-      result => (result ? messageOk : messageKo)
+      (result) => (result ? 'success' : 'warning'),
+      (result) => (result ? messageOk : messageKo)
     );
   }
 
@@ -332,8 +330,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => 'success',
-      result => 'Clear all the storage'
+      (result) => 'success',
+      (result) => 'Clear all the storage'
     );
   }
 
@@ -347,8 +345,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => (result ? 'info' : 'warning'),
-      result => (result ? messageOk : messageKo)
+      (result) => (result ? 'info' : 'warning'),
+      (result) => (result ? messageOk : messageKo)
     );
   }
 
@@ -357,8 +355,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.executeWithTimeout(
       promiseStorage,
       100,
-      result => 'info',
-      keys => 'All keys present:<br/><br/>' + keys.join('<br/>')
+      (result) => 'info',
+      (keys) => 'All keys present:<br/><br/>' + keys.join('<br/>')
     );
   }
 
@@ -367,10 +365,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
     fromPromise(promise)
       .pipe(delay(timeout))
       .subscribe(
-        result => {
+        (result) => {
           this.storageShowAlert(alertType(result), successFullyMessage(result));
         },
-        error => {
+        (error) => {
           this.storageShowAlert('error', error);
           this.finishStorageOperation();
         },
