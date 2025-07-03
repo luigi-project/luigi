@@ -3,7 +3,7 @@ const prod = mode === 'production';
 
 module.exports = {
   svelte: {
-    test: /\.(html|svelte)$/,
+    test: /\.(html|svelte|svelte\.js)$/,
     use: {
       loader: 'svelte-loader',
       options: {
