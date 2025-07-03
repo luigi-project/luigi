@@ -534,8 +534,16 @@
       const flyout = el.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
-        `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px`
+        `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px;`
       );
+      setTimeout(() => {
+        const offset = flyout.getBoundingClientRect().bottom - window.innerHeight;
+        if (offset > 0) {
+          let cStyle = flyout.getAttribute('style');
+          cStyle += `--lui-flyout-offset: ${offset}px; transform: translateY(-${offset}px)`;
+          flyout.setAttribute('style', cStyle);
+        }
+      });
     } else {
       //Calculate top/bottom position for flyout sublist
       const parent = el.closest('.fd-nested-list__item');
