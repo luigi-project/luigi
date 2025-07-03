@@ -661,7 +661,10 @@
 
   /**
    * Handles expanding or collapsing categories when the user presses "Enter" or "Space".
-   * Optionally uses the parent element of the event target as the action target. This is needed because on click events the target is the li element, but on keypress events it is the a element.
+   * Optionally uses the parent element of the event target as the action target.
+   * This is necessary because the event target differs:
+   * for click events, the target is the <li> element,
+   * while for keypress events, it is the <a> element.
    *
    * @param {KeyboardEvent|string} event - The keyboard event triggering the action, or a string representing a key code.
    * @param {any[]} nodes - The list of category nodes to be processed.
