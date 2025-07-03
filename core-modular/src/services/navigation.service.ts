@@ -84,6 +84,7 @@ export interface Node {
   drawer?: ModalSettings;
   keepSelectedForChildren?: boolean;
   hideFromNav?: boolean;
+  onNodeActivation?: (node: Node) => boolean | void;
 }
 
 export interface Category {
