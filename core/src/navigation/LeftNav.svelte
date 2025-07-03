@@ -492,6 +492,7 @@
   }
 
   export function handleIconClick(nodeOrNodes, el) {
+    console.log('handleIconClick el', el);
     if (SemiCollapsibleNavigation.getCollapsed()) {
       let selectedCat;
       let sideBar = document.getElementsByClassName('fd-app__sidebar')[0];
@@ -531,6 +532,7 @@
   export function calculateFlyoutPosition(el) {
     if (vegaSideNav) {
       const parentPos = el.getBoundingClientRect();
+      console.log('parentPos', parentPos);
       const flyout = el.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
@@ -659,9 +661,21 @@
     }
   }
 
-  function handleExpandCollapseCategories(event, nodes) {
+  /**
+   * Handles expanding or collapsing categories when the user presses "Enter" or "Space".
+   * Optionally uses the parent element of the event target as the action target. This is needed because on click events the target is the li element, but on keypress events it is the a element.
+   *
+   * @param {KeyboardEvent|string} event - The keyboard event triggering the action, or a string representing a key code.
+   * @param {any[]} nodes - The list of category nodes to be processed.
+   * @param {boolean} useParentElement - If true, uses the parent of the event's currentTarget as the target element.
+   */
+  function handleExpandCollapseCategories(event, nodes, useParentElement) {
     if (event.code === 'Enter' || event === 'Space') {
-      handleIconClick(nodes, event.currentTarget);
+      let targetElement = event.currentTarget;
+      if (useParentElement) {
+        targetElement = targetElement.parentElement;
+      }
+      handleIconClick(nodes, targetElement);
     }
   }
 
@@ -1250,7 +1264,7 @@
                             setExpandedState(nodes, !isExpanded(nodes, expandedCategories), this)}
                           on:keypress|preventDefault={() =>
                             setExpandedState(nodes, !isExpanded(nodes, expandedCategories), this)}
-                          on:keypress|preventDefault={(event) => handleExpandCollapseCategories(event, nodes)}
+                          on:keypress|preventDefault={(event) => handleExpandCollapseCategories(event, nodes, true)}
                         >
                           <div class="fd-navigation-list__content-container">
                             {#if isOpenUIiconName(nodes.metaInfo.icon)}
