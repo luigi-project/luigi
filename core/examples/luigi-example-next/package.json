@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "copy:luigi-client": "cp node_modules/@luigi-project/client/luigi-client.js public",
-    "copy:luigi-core": "cp node_modules/@luigi-project/core -r public",
+    "copy:luigi-core": "cp -r node_modules/@luigi-project/core public",
     "copy": "npm run copy:luigi-client && npm run copy:luigi-core",
     "dev": "npm run copy && next dev",
     "build": "npm run copy && next build",
