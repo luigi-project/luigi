@@ -492,7 +492,6 @@
   }
 
   export function handleIconClick(nodeOrNodes, el) {
-    console.log('handleIconClick el', el);
     if (SemiCollapsibleNavigation.getCollapsed()) {
       let selectedCat;
       let sideBar = document.getElementsByClassName('fd-app__sidebar')[0];
@@ -532,7 +531,6 @@
   export function calculateFlyoutPosition(el) {
     if (vegaSideNav) {
       const parentPos = el.getBoundingClientRect();
-      console.log('parentPos', parentPos);
       const flyout = el.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
