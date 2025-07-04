@@ -73,5 +73,9 @@ export const UIModule = {
   openModal: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+  },
+  openDrawer: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    const lc = createContainer(node, luigi);
+    luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
   }
 };
