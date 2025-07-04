@@ -1812,9 +1812,15 @@
     top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
   }
 
+  :global(.lui-breadcrumb .vega) .fd-app__sidebar {
+    top: $topNavHeight;
+  }
+
   :global(.vega) .fd-app__sidebar {
     .lui-nav-title {
+      background: var(--sapList_Background);
       width: 100%;
+      padding-top: 0.25rem;
     }
   }
 
