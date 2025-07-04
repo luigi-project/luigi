@@ -424,30 +424,33 @@ export declare interface LinkManager {
    */
   getCurrentRoute: () => Promise<string>;
 }
-
 export declare class LuigiElement extends HTMLElement {
   constructor(options?: Options);
+
   /**
    * Override to return the html template string defining the web component view.
    *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {*} ctx The context object passed by Luigi Core
    */
   render(ctx?: Object): string;
+
   /**
    * Override to execute logic after an attribute of this web component has changed.
    */
   update(): void;
+
   /**
    * Override to execute logic when a new context object is set.
    *
-   * @param {*} ctx The new context object passed by luigi core
+   * @param {*} ctx The new context object passed by Luigi Core
    */
   onContextUpdate(ctx: Object): void;
+
   /**
    * Override to execute logic after initialization of the web component, i.e.
    * after internal rendering and all context data set.
    *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {*} ctx The context object passed by Luigi Core
    */
   afterInit(ctx: Object): void;
 
@@ -472,19 +475,18 @@ export declare class LuigiElement extends HTMLElement {
 
 export declare interface Options {
   /**
-   *
-   *if `true` shadowRoot mode is "open" otherwise shadowRoot mode is "closed".
+   * if `true` shadowRoot mode is "open" otherwise shadowRoot mode is "closed".
    */
   openShadow: boolean;
 
   /**
-   * if `true` LuigiClient initialization will be defered, until `LuigiClient.luigiClientInit()` will be called.
+   * if `true` LuigiClient initialization will be deferred, until `LuigiClient.luigiClientInit()` is called.
    */
   deferLuigiClientWCInit: boolean;
 }
 
 /**
- * Html string processing according to luigi functionality.
+ * Html string processing according to Luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
  *
  * @param {String} literal The literal to process.
@@ -498,15 +500,20 @@ export interface LuigiClient {
    * @memberof LuigiClient
    */
   getActiveFeatureToggles: () => Array<String>;
+
   /**
    * Gets the current locale.
    * @returns {string} current locale
    * @memberof LuigiClient
    */
   getCurrentLocale: () => string;
+
   linkManager: () => LinkManager;
+
   uxManager: () => UxManager;
+
   publishEvent: (event: Event) => void;
+
   /**
    * Sets node parameters in Luigi Core. The parameters will be added to the URL.
    * @param {Object} params
@@ -514,6 +521,7 @@ export interface LuigiClient {
    * @memberof LuigiClient
    */
   addNodeParams: (params: Object, keepBrowserHistory: boolean) => void;
+
   /**
    * Returns the node parameters of the active URL.
    * Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.
@@ -524,18 +532,21 @@ export interface LuigiClient {
    * @memberof LuigiClient
    */
   getNodeParams: (shouldDesanitise: boolean) => Object;
+
   /**
    * Sends anchor to Luigi Core. The anchor will be added to the URL.
    * @param {string} anchor
    * @memberof LuigiClient
    */
   setAnchor: (anchor: string) => void;
+
   /**
    * Retrieves the search params from the active URL
    * @returns {Object} containing the search params
    * @memberof LuigiClient
    */
   getCoreSearchParams: () => Object;
+
   /**
    * Returns the dynamic path parameters of the active URL.
    * Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.
@@ -546,10 +557,47 @@ export interface LuigiClient {
    * @memberof LuigiClient
    */
   getPathParams: () => Object;
+
   /**
    * Returns the current client permissions as specified in the navigation node or an empty object. For details, see [Node parameters](navigation-parameters-reference.md).
    * @returns {Object} client permissions as specified in the navigation node
    * @memberof LuigiClient
    */
   getClientPermissions(): () => Object;
+
+  /**
+   * Post-processing actions or data after they've been loaded or updated.
+   * @memberof LuigiClient
+   */
+  __postProcess: () => void;
+
+  /**
+   * Returns the count of certain attributes or elements, such as number of items.
+   * @returns {number} attribute count
+   * @memberof LuigiClient
+   */
+  attCnt: () => number;
+
+  /**
+   * Callback function called after loading or if an error occurs while loading.
+   * @param {boolean} isError indicates if there was an error
+   * @memberof LuigiClient
+   */
+  afterLoadOrError: (isError: boolean) => void;
+
+  /**
+   * Callback function that is called when an attribute changes.
+   * @param {string} name The name of the attribute that changed
+   * @param {string} oldValue The old value of the attribute
+   * @param {string} newValue The new value of the attribute
+   * @memberof LuigiClient
+   */
+  attributeChangedCallback: (name: string, oldValue: string, newValue: string) => void;
+
+  /**
+   * Returns the HTML content or template for rendering.
+   * @returns {string} HTML content
+   * @memberof LuigiClient
+   */
+  html: () => string;
 }
