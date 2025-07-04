@@ -92,7 +92,7 @@ export interface PageErrorHandler {
   timeout: number;
   viewUrl?: string;
   redirectPath?: string;
-  errorFn?: (error: any, node: Node) => void;
+  errorFn?: (node?: Node) => void;
 }
 
 export interface Category {
