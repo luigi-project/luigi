@@ -530,8 +530,9 @@
 
   export function calculateFlyoutPosition(el) {
     if (vegaSideNav) {
-      const parentPos = el.getBoundingClientRect();
-      const flyout = el.querySelector('.fd-popover__body');
+      const liPopOver = el.closest('.fd-popover__control');
+      const parentPos = liPopOver.getBoundingClientRect();
+      const flyout = liPopOver.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
         `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px;`
