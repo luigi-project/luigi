@@ -3,10 +3,10 @@ import { Component, OnChanges, Input, Output, EventEmitter, SimpleChanges } from
 import { uxManager } from '@luigi-project/client';
 
 @Component({
-    selector: 'app-modal',
-    templateUrl: './modal.component.html',
-    styleUrls: ['./modal.component.scss'],
-    standalone: false
+  selector: 'app-modal',
+  templateUrl: './modal.component.html',
+  styleUrls: ['./modal.component.scss'],
+  standalone: false
 })
 export class ModalComponent implements OnChanges {
   @Input() public modalActive: boolean;
