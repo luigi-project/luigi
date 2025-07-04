@@ -660,7 +660,7 @@
     }
   }
 
-  function handleExpandCollapseCategories(event, nodes, useParentElement) {
+  function handleExpandCollapseCategories(event, nodes) {
     if (event.code === 'Enter' || event === 'Space') {
       handleIconClick(nodes, event.currentTarget);
     }
