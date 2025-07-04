@@ -85,6 +85,14 @@ export interface Node {
   keepSelectedForChildren?: boolean;
   hideFromNav?: boolean;
   onNodeActivation?: (node: Node) => boolean | void;
+  pageErrorHandler?: PageErrorHandler;
+}
+
+export interface PageErrorHandler {
+  timeout: number;
+  viewUrl?: string;
+  redirectPath?: string;
+  errorFn?: (error: any, node: Node) => void;
 }
 
 export interface Category {
