@@ -245,7 +245,7 @@
           }
         });
         btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
-      } else if (vegaSideNav) {
+      } else if (vegaSideNav && vegaNavCnt) {
         const more = vegaNavCnt.querySelector('.lui-more');
         const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
         if (more) {
