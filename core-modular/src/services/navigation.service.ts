@@ -86,6 +86,12 @@ export interface Node {
   hideFromNav?: boolean;
   onNodeActivation?: (node: Node) => boolean | void;
   pageErrorHandler?: PageErrorHandler;
+  externalLink?: ExternalLink;
+}
+
+export interface ExternalLink {
+  URL: string;
+  sameWindow?: boolean;
 }
 
 export interface PageErrorHandler {

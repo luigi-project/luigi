@@ -1,5 +1,5 @@
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { NavigationService, type Node, type PageErrorHandler } from '../services/navigation.service';
+import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 
 export const RoutingModule = {
@@ -45,6 +45,20 @@ export const RoutingModule = {
           }
         }
       }, pageErrorHandler.timeout);
+    }
+  },
+
+  handleExternalLinkNavigation: (externalLink: ExternalLink) => {
+    if (externalLink.URL) {
+      const sameWindow = externalLink.sameWindow || false;
+      if (sameWindow) {
+        window.location.href  = externalLink.URL;
+      } else {
+        const newWindow = window.open(externalLink.URL, '_blank');
+        if (newWindow) {
+          newWindow.focus();
+        }
+      }
     }
   }
 };
