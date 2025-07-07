@@ -418,7 +418,6 @@
     top: calc($topNavHeight + $combinedLayoutGap);
   }
 
-
   .iframeModalCtn {
     position: absolute;
     height: 100%;
