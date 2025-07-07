@@ -16,7 +16,7 @@ export class LuigiEngine {
   _ui = UIModule;
   _comm = CommunicationModule;
   _ux = UXModule;
-  _routing = RoutingModule
+  _routing = RoutingModule;
 
   bootstrap(connector: LuigiConnector): void {
     this._app = mount(App, {

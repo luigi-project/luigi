@@ -35,15 +35,14 @@ export const RoutingModule = {
         if (pageErrorHandler.viewUrl) {
           node.viewUrl = pageErrorHandler.viewUrl;
           luigi.getEngine()._ui.updateMainContent(node, luigi);
-          console.log("globalThis", luigi);
-        }
-        else {
+          console.log('globalThis', luigi);
+        } else {
           if (pageErrorHandler.errorFn) {
             pageErrorHandler.errorFn(node);
           } else {
-              console.warn('Something went wrong with a client! You will be redirected to another page.');
-              const path = pageErrorHandler.redirectPath || '/';
-              luigi.navigation().navigate(path);
+            console.warn('Something went wrong with a client! You will be redirected to another page.');
+            const path = pageErrorHandler.redirectPath || '/';
+            luigi.navigation().navigate(path);
           }
         }
       }, pageErrorHandler.timeout);
