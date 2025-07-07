@@ -87,6 +87,7 @@ export interface Node {
   onNodeActivation?: (node: Node) => boolean | void;
   pageErrorHandler?: PageErrorHandler;
   externalLink?: ExternalLink;
+  hideSideNav?: boolean;
 }
 
 export interface ExternalLink {

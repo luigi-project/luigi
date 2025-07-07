@@ -52,7 +52,7 @@ export const RoutingModule = {
     if (externalLink.URL) {
       const sameWindow = externalLink.sameWindow || false;
       if (sameWindow) {
-        window.location.href  = externalLink.URL;
+        window.location.href = externalLink.URL;
       } else {
         const newWindow = window.open(externalLink.URL, '_blank');
         if (newWindow) {
