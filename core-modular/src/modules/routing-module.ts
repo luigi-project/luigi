@@ -31,11 +31,10 @@ export const RoutingModule = {
     if (pageErrorHandler && pageErrorHandler.timeout) {
       setTimeout(() => {
         // TODO: check showLoadingIndicator also needed (loading indicator not implemented yet)
-        // if (node.node.loadingIndicator...)
+        // if (node.loadingIndicator...)
         if (pageErrorHandler.viewUrl) {
           node.viewUrl = pageErrorHandler.viewUrl;
           luigi.getEngine()._ui.updateMainContent(node, luigi);
-          console.log('globalThis', luigi);
         } else {
           if (pageErrorHandler.errorFn) {
             pageErrorHandler.errorFn(node);
