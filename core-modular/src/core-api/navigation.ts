@@ -14,7 +14,6 @@ export class Navigation {
   }
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
-    console.log('navigate 111', path, preserveView, modalSettings);
     const normalizedPath = path.replace(/\/\/+/g, '/');
     if (this.hashRouting) {
       if (modalSettings) {
@@ -28,7 +27,6 @@ export class Navigation {
   };
 
   openAsModal = (path: string, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    console.log('opening modal 222', path);
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const node = this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
@@ -39,7 +37,6 @@ export class Navigation {
   };
 
   openAsDrawer = (path: string, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    console.log('openAsDrawer', path, modalSettings);
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const node = this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
