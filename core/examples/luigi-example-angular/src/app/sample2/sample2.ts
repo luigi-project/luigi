@@ -11,8 +11,8 @@ import { Component } from '@angular/core';
         </div>
         <div class="fd-panel">
           <div class="fd-panel__body">
-            Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
-            suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+            Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+            commodo consequat.
           </div>
         </div>
       </section>

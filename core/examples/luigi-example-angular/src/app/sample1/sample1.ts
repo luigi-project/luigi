@@ -11,9 +11,8 @@ import { Component } from '@angular/core';
         </div>
         <div class="fd-panel">
           <div class="fd-panel__body">
-            Luigi ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-            eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-            voluptua.
+            Luigi ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+            dolore magna aliquyam erat, sed diam voluptua.
           </div>
         </div>
       </section>
