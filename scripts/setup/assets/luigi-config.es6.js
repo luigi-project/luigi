@@ -26,7 +26,7 @@ Luigi.setConfig({
             loadingIndicator: {
               enabled: false
             },
-            viewUrl:'http://localhost:4300/'
+            viewUrl: 'http://localhost:4300/'
           },
           {
             category: { label: 'Links', icon: 'cloud' },
