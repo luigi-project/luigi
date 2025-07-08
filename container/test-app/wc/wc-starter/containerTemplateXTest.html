@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <script type="module">
+      import '/test-app/bundle.js';
+    </script>
+  </head>
+  <body>
+    <h3>
+      Testing WC-based microfrontends
+    </h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 0.5rem">
+      <div style="border: 1px solid blue">
+        <!-- Luigi Container to test general functionalities, params etc-->
+        <luigi-container
+          id="wc-based-container-test"
+          data-test-id="luigi-client-api-test-01"
+          viewURL="WC-URL"
+          webcomponent="true"
+        ></luigi-container>
+      </div>
+
+      <div style="grid-row: 1;">
+        <h3>Communication Panel</h3>
+        <div id="actions"></div>
+        <br>
+        <div>
+          <button onclick="clearResults()">Clear</button>
+          <label>
+            <input type="checkbox" id="keepRes" />
+            keep results
+          </label>
+        </div>
+        <div id="results"></div>
+      </div>
+
+      <script type="module" src="test-app/wc/wc-starter/xtest-wc.js"></script>
+
+      <!-- Used for testing dynamic compound container creation -->
+      <div class="content"></div>
+
+    </div>
+
+  </body>
+</html>
