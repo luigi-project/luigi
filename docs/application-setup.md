@@ -95,7 +95,7 @@ or execute these commands manually to get the same result:
 <!-- accordion:start -->
 ### Click to expand
 ```bash
-ng new $folder --defaults --minimal --routing --skip-tests --skip-git && cd $folder # skip interactive prompts
+ng new my-angular-app --defaults --minimal --routing --skip-tests --skip-git && cd my-angular-app # skip interactive prompts
 ng generate c home -s -t
 ng generate c sample1 -s -t
 ng generate c sample2 -s -t
@@ -123,8 +123,8 @@ curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/lu
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/assets/luigi-config.es6.js > public/assets/luigi-config.es6.js
 
 # adjust Angular configuration
-ng config projects.$folder.architect.build.options.index src/sampleapp.html
-ng config projects.$folder.architect.build.options.assets "[\"src/assets\"]"
+ng config projects.my-angular-app.architect.build.options.index src/sampleapp.html
+ng config projects.my-angular-app.architect.build.options.assets "[\"src/assets\"]"
 
 # string replacements in some files
 sed 's#"provideRouter"#"provideRouter,\
