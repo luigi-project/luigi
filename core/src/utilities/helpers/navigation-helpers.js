@@ -169,7 +169,15 @@ class NavigationHelpersClass {
     Object.keys(result).forEach((category) => {
       const metaInfo = result[category].metaInfo;
       if (metaInfo && metaInfo.id) {
-        result[metaInfo.label] = result[metaInfo.id];
+        if (!result[metaInfo.label]) {
+          result[metaInfo.label] = result[metaInfo.id];
+        } else {
+          let displayLabel = metaInfo.label + ' ';
+          while (result[displayLabel]) {
+            displayLabel += ' ';
+          }
+          result[displayLabel] = result[metaInfo.id];
+        }
         delete result[metaInfo.id];
       }
     });
