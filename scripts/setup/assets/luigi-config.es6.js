@@ -1,41 +1,56 @@
-// You can now use ES6 syntax here
 Luigi.setConfig({
   navigation: {
     nodes: () => [
       {
         pathSegment: 'home',
         label: 'Home',
+        icon: 'home',
+        viewUrl: '/sampleapp.html#/home',
         children: [
           {
-            pathSegment: 'hw',
-            label: 'Hello World!',
-            viewUrl: '/assets/basicMicroFrontend.html'
+            pathSegment: 'sample1',
+            label: 'First',
+            icon: 'nutrition-activity',
+            viewUrl: '/sampleapp.html#/sample1'
           },
           {
-            pathSegment: 'one',
-            label: 'Section one',
-            viewUrl: '/assets/basicMicroFrontend.html#one'
+            pathSegment: 'sample2',
+            label: 'Second',
+            icon: 'paper-plane',
+            viewUrl: '/sampleapp.html#/sample2'
           },
           {
-            pathSegment: 'two',
-            label: 'Section two',
-            viewUrl: '/assets/basicMicroFrontend.html#two'
+            pathSegment: 'mfe',
+            label: 'Angular MFE',
+            hideSideNav: true,
+            loadingIndicator: {
+              enabled: false
+            },
+            viewUrl:'http://localhost:4300/'
+          },
+          {
+            category: { label: 'Links', icon: 'cloud' },
+            label: 'Luigi Project',
+            externalLink: {
+              url: 'https://luigi-project.io/'
+            }
+          },
+          {
+            category: 'Links',
+            label: 'Angular',
+            externalLink: {
+              url: 'https://angular.dev/'
+            }
           }
         ]
       }
     ]
   },
-  routing: {
-    /**
-     * Development:
-     * For path routing, set to false
-     * For hash routing, set to true
-     */
-    useHashRouting: true
-  },
   settings: {
-    appLoadingIndicator: {
-      hideAutomatically: true
-    }
+    header: {
+      title: 'Luigi Angular App',
+      logo: '/logo.svg'
+    },
+    responsiveNavigation: 'simpleMobileOnly'
   }
 });
