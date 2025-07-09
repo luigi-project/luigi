@@ -30,7 +30,7 @@ Luigi.setConfig({
             category: 'Links',
             label: 'Angular',
             externalLink: {
-              url: 'https://angular.io/'
+              url: 'https://angular.dev/'
             }
           }
         ]
