@@ -27,7 +27,7 @@
                 <i class="{NavigationHelpers.renderIconClassName(icon)} " role="presentation"></i>
               </span>
             {:else}
-              <span class="fd-navigation__icon" role="presentation" aria-hidden="true">
+              <span class="fd-navigation-list__icon" role="presentation" aria-hidden="true">
                 <img src={icon} />
               </span>
             {/if}
@@ -57,5 +57,12 @@
   .fd-popover__body::before,
   .fd-popover__body::after {
     transform: translateY(var(--lui-flyout-offset));
+  }
+
+  .fd-navigation-list__icon {
+    img {
+      max-width: 18px;
+      max-height: 18px;
+    }
   }
 </style>
