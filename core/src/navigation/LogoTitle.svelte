@@ -361,7 +361,7 @@
 
   @media (max-width: $mobileMinWidth) {
     :global(.fd-shellbar__group--product) {
-      .fd-shellbar__separator, 
+      .fd-shellbar__separator,
       .fd-shellbar__title {
         display: none;
       }
