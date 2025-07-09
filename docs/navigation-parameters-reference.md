@@ -613,6 +613,15 @@ runTimeErrorHandler: {
 ```
 - **since**: 1.15.0
 
+### drawer
+- **type**: object
+- **description**: opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
+- **attributes**: 
+  - **header**: boolean or object: By default, the header is visible. Title is node label and `x` is displayed to close the drawer view. The header could also be an object with a title attribute to specify an own title for the drawer component.
+  - **backdrop**: boolean: By default, it is set to false. If it is set to true the rest of the screen has a backdrop.
+  - **size**: `("l" | "m" | "s" | "xs")` size of the drawer (optional, default "s")
+- **since**: 1.6.0
+
 ### externalLink
 - **type**: object
 - **description**: indicates that the node links to an external URL. If this parameter is defined, **pathSegment** and **link** parameters are ignored.
