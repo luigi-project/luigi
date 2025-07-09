@@ -1317,14 +1317,15 @@
                                         <div class="fd-navigation-list__content-container">
                                           {#if isOpenUIiconName(node.icon)}
                                             <span class="fd-navigation-list__icon">
-                                              <i
-                                                class="{getSapIconStr(node.icon)}"
-                                                role="presentation"
-                                              ></i>
+                                              <i class={getSapIconStr(node.icon)} role="presentation"></i>
                                             </span>
                                           {:else}
-                                            <span class="fd-navigation-list__icon" role="presentation" aria-hidden="true">
-                                              <img src={node.icon} alt={node.altText ? node.altText : ''}/>
+                                            <span
+                                              class="fd-navigation-list__icon"
+                                              role="presentation"
+                                              aria-hidden="true"
+                                            >
+                                              <img src={node.icon} alt={node.altText ? node.altText : ''} />
                                             </span>
                                           {/if}
                                           <span
