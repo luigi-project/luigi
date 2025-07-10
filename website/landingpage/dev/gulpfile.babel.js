@@ -47,8 +47,8 @@ gulp.task('default', gulp.series('build', server, watch));
 // Copy files out of the assets folder
 // This task skips over the "img", "js", and "scss" folders, which are parsed separately
 function copy() {
-  gulp.src(PATHS.rootAssets).pipe(gulp.dest(PATHS.dist));
-  return gulp.src(PATHS.assets).pipe(gulp.dest(PATHS.dist + '/assets'));
+  gulp.src(PATHS.rootAssets,{ encoding: false }).pipe(gulp.dest(PATHS.dist));
+  return gulp.src(PATHS.assets, { encoding: false }).pipe(gulp.dest(PATHS.dist + '/assets'));
 }
 
 // Copy page templates into finished HTML files
