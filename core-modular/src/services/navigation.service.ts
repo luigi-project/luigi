@@ -62,6 +62,7 @@ export interface LeftNavData {
   selectedNode: any;
   items: NavItem[];
   basePath: string;
+  sideNavFooterText?: string;
 }
 
 export interface PathData {
@@ -79,7 +80,26 @@ export interface Node {
   category?: any;
   tabNav?: boolean;
   viewUrl?: string;
+  openNodeInModal?: boolean;
+  drawer?: ModalSettings;
   keepSelectedForChildren?: boolean;
+  hideFromNav?: boolean;
+  onNodeActivation?: (node: Node) => boolean | void;
+  pageErrorHandler?: PageErrorHandler;
+  externalLink?: ExternalLink;
+  hideSideNav?: boolean;
+}
+
+export interface ExternalLink {
+  URL: string;
+  sameWindow?: boolean;
+}
+
+export interface PageErrorHandler {
+  timeout: number;
+  viewUrl?: string;
+  redirectPath?: string;
+  errorFn?: (node?: Node) => void;
 }
 
 export interface Category {
@@ -275,7 +295,8 @@ export class NavigationService {
     return {
       selectedNode: selectedNode,
       items: navItems,
-      basePath: basePath.replace(/\/\/+/g, '/')
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText
     };
   }
 
