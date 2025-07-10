@@ -123,7 +123,7 @@ Luigi.setConfig({
 
 ### customSandboxRules
 - **type**: array
-- **description**: an array of custom rules for the content in the iframe. You can extend the [Luigi default sandbox rules](https://github.com/SAP/luigi/blob/af1deebb392dcec6490f72576e32eb5853a894bc/core/src/utilities/helpers/iframe-helpers.js#L140) by adding further rules.
+- **description**: an array of custom rules for the content in the iframe. You can extend the [Luigi default sandbox rules](https://github.com/luigi-project/luigi/blob/af1deebb392dcec6490f72576e32eb5853a894bc/core/src/utilities/helpers/iframe-helpers.js#L140) by adding further rules.
 
 ### customTranslationImplementation
 - **type**: object/function returning an object
@@ -308,7 +308,7 @@ This function is called with the following parameters:
 
 You can check whether the user's browser supports third-party cookies by defining a **thirdPartyCookieCheck** object which expects a function called **thirdPartyCookieErrorHandling**, optional **disabled** and **thirdPartyCookiesScriptLocation** parameters. When **thirdPartyCookiesScriptLocation** is set, the Luigi Core application checks third-party cookie support only once and not on every micro frontend call. If it is *not* set, the Luigi Core application checks third-party cookie support whenever a micro frontend is loaded.
 
-To detect whether the user's browser supports the mechanism, use the script in the [`third-party-cookies`](https://github.com/SAP/luigi/tree/main/core/third-party-cookies) catalog. Deploy this file on a domain different from your main application's and set **thirdPartyCookieScriptLocation** to the `init.html` file. During initialization, Luigi detects cookies support and produces an alert if cookies are disabled in the user's browser.
+To detect whether the user's browser supports the mechanism, use the script in the [`third-party-cookies`](https://github.com/luigi-project/luigi/tree/main/core/third-party-cookies) catalog. Deploy this file on a domain different from your main application's and set **thirdPartyCookieScriptLocation** to the `init.html` file. During initialization, Luigi detects cookies support and produces an alert if cookies are disabled in the user's browser.
 
 ### Parameters
 

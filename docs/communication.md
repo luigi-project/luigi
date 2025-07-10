@@ -7,7 +7,7 @@
       "collapsible": true
     },
     "metaData": {
-      "categoryPosition": 7,
+      "categoryPosition": 8,
       "position": 1
     }
   }
@@ -66,10 +66,10 @@ In the `communication:` section of the Luigi config, you can add the `skipEvents
 
 For example, you can ignore any of these events (or others, as needed):
 
-- [luigi.navigation.open](https://github.com/SAP/luigi/blob/main/client/src/linkManager.ts#L115) - skipping this event will prevent the inactive iframe from opening
-- [luigi.navigate.ok](https://github.com/SAP/luigi/blob/main/client/src/lifecycleManager.ts#L155) - skipping this event will prevent navigation
-- [luigi.ux.confirmationModal.show](https://github.com/SAP/luigi/blob/main/client/src/uxManager.ts#L114) - skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal)
-- [luigi.ux.alert.show](https://github.com/SAP/luigi/blob/main/client/src/uxManager.ts#L198) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert)
+- [luigi.navigation.open](https://github.com/luigi-project/luigi/blob/main/client/src/linkManager.ts#L115) - skipping this event will prevent the inactive iframe from opening
+- [luigi.navigate.ok](https://github.com/luigi-project/luigi/blob/main/client/src/lifecycleManager.ts#L155) - skipping this event will prevent navigation
+- [luigi.ux.confirmationModal.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.ts#L114) - skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal)
+- [luigi.ux.alert.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.ts#L198) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert)
 
 ### skipEventsWhenInactive
 

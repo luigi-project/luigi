@@ -4,16 +4,16 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "peerDependencies": {
-    "@angular/common": "^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "@angular/core": "^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
     "@luigi-project/testing-utilities": "^2.0.0",
     "@luigi-project/client": "^2.0.0"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.8.1"
   },
   "publishConfig": {
     "tag": "client-support-angular"
@@ -22,5 +22,5 @@
     "@luigi-project/client": "^2.0.0",
     "@luigi-project/testing-utilities": "^2.0.0"
   },
-  "version": "2.21.3"
+  "version": "20.0.1"
 }

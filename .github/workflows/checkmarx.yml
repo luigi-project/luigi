@@ -17,5 +17,5 @@ jobs:
           cx_client_id: ${{ secrets.CXONE_CLIENT_ID }}
           cx_client_secret: ${{ secrets.CXONE_CLIENT_SECRET }}
           branch: ${{ github.ref_name }}
-          additional_params: "--async --scan-types sast -s https://github.com/SAP/luigi.git"
+          additional_params: "--async --scan-types sast -s https://github.com/luigi-project/luigi.git"
           

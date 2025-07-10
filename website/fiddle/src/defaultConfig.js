@@ -154,7 +154,7 @@ Luigi.setConfig({
                 },{
                     label: 'Luigi Github Page',
                     externalLink : { 
-                        url: 'https://github.com/SAP/luigi'
+                        url: 'https://github.com/luigi-project/luigi'
                     }
                 },{
                     label: 'Fundamental Library',
@@ -170,7 +170,7 @@ Luigi.setConfig({
             }],
             productSwitcher: {
                 items: [{
-                    icon: 'https://raw.githubusercontent.com/SAP/luigi/main/website/landingpage/public/assets/img/logos/sap.svg',
+                    icon: 'https://raw.githubusercontent.com/luigi-project/luigi/main/website/landingpage/public/assets/img/logos/sap.svg',
                     label: 'SAP homepage',
                     externalLink: {
                       url: 'https://www.sap.com',

@@ -22,6 +22,7 @@
 
   const dispatch = createEventDispatcher();
   let nodeObject;
+  let btpToolLayout;
   let pathData;
   let nodeParams;
   let iframeCreated = false;
@@ -253,6 +254,9 @@
         settings.title = getNodeLabel(nodeObject);
       }
     }, ['navigation.viewgroupdata']);
+    btpToolLayout =
+      LuigiConfig.getConfigValue('settings.btpToolLayout') &&
+      GenericHelpers.requestExperimentalFeature('btpToolLayout', false);
     EventListenerHelpers.addEventListener('message', onMessage);
     // only disable accessibility for all cases other than a drawer without backdrop
     !(settings.isDrawer && !settings.backdrop)
@@ -297,13 +301,15 @@
 </script>
 
 <div
-  class={isModal || (isDrawer && settings.backdrop) ? 'fd-dialog fd-dialog--active' : 'drawer-dialog'}
+  class={isModal || (isDrawer && settings.backdrop)
+    ? 'fd-dialog fd-dialog--active'
+    : `drawer-dialog ${btpToolLayout ? 'btp-drawer-dialog' : 'drawer-dialog'}`}
   style={isModal ? 'z-index:1001' : ''}
 >
   <div
     class="fd-dialog__content {isDrawer
       ? settings.backdrop
-        ? 'drawer drawer-dialog__content drawer__backdrop'
+        ? `drawer drawer-dialog__content ${btpToolLayout ? 'btp-drawer__backdrop' : 'drawer__backdrop'}`
         : 'drawer drawer-dialog__content'
       : 'lui-modal-mf lui-modal-index-' + modalIndex}"
     data-testid={isModal ? 'modal-mf' : 'drawer-mf'}
@@ -364,13 +370,9 @@
 </div>
 
 <style lang="scss">
-  :global(.lui-breadcrumb) .drawer-dialog {
-    top: calc(#{$combinedLayoutGap} + #{$topNavHeight} + var(--luigi__breadcrumb--height));
-  }
-
   .drawer-dialog {
     position: absolute;
-    top: calc(#{$combinedLayoutGap} + #{$topNavHeight});
+    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
     bottom: 0;
     width: 25%;
     z-index: 3;
@@ -379,6 +381,10 @@
     .drawer {
       height: 100%;
     }
+  }
+
+  .drawer-dialog.btp-drawer-dialog {
+    top: calc(#{$combinedLayoutGap} + #{$topNavHeight} + var(--luigi__breadcrumb--height));
   }
 
   .drawer {
@@ -395,6 +401,14 @@
 
   .drawer__backdrop {
     top: $topNavHeight;
+  }
+
+  .btp-drawer__backdrop {
+    top: calc($topNavHeight + $combinedLayoutGap);
+  }
+
+  :global(.lui-breadcrumb) .btp-drawer__backdrop {
+    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height) + $combinedLayoutGap);
   }
 
   .iframeModalCtn {

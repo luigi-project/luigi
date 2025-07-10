@@ -1,11 +1,11 @@
 <script>
+  import { onDestroy, onMount } from 'svelte';
+
   import luigiCorePkgInfo from '../node_modules/@luigi-project/core/package.json';
   import defaultConfig from './defaultConfig.js';
-  import { onMount } from 'svelte';
 
   export let luigiVersion = luigiCorePkgInfo.version;
   export let customVersion;
-
   export let versions;
   export let showVersions;
 
@@ -77,6 +77,9 @@
     let customConfig = sessionStorage.getItem('fiddle');
     let customConfigPreviousSession = localStorage.getItem('fiddle');
 
+    // init keyboard events
+    initKeyboardEvents();
+
     // check if config saved from a previous session
     if (!customConfig && customConfigPreviousSession) {
       if (confirm('We found a fiddle from a previous session. Do you want to restore it?')) {
@@ -99,6 +102,17 @@
       exec(defaultConfigString);
       configString = defaultConfigString;
     }
+  }
+
+  function handleKeydownEvent(event) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      event.preventDefault();
+      saveConfig();
+    }
+  }
+
+  function initKeyboardEvents() {
+    window.addEventListener('keydown', handleKeydownEvent);
   }
 
   function saveConfig() {
@@ -163,6 +177,10 @@
     window.location.reload();
   }
 
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleKeydownEvent);
+  });
+
   onMount(async () => {
     await injectLuigiAssets();
 
@@ -196,18 +214,21 @@
               on:click={resetConfig}>Reset</button
             >
           </div>
-          <div class="fd-bar__element lui-mobile-hide">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" on:click={saveConfig}>Apply</button>
-          </div>
-          <div class="fd-bar__element lui-mobile-show">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" on:click={saveConfigTA}
-              >Apply</button
+          <div class="fd-bar__element">
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact" on:click={closeConfig}
+              >Cancel</button
             >
           </div>
-          <div class="fd-bar__element">
+          <div class="fd-bar__element lui-mobile-hide">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
-              on:click={closeConfig}>Cancel</button
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              on:click={saveConfig}>Apply</button
+            >
+          </div>
+          <div class="fd-bar__element lui-mobile-show">
+            <button
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              on:click={saveConfigTA}>Apply</button
             >
           </div>
         </div>

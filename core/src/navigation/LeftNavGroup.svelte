@@ -3,6 +3,7 @@
 
   export let navGroup;
   export let expanded = true;
+  export let vega = false;
 
   function toggleExpanded() {
     expanded = !expanded;
@@ -15,6 +16,31 @@
 
 {#if navGroup.isSingleEntry}
   <slot />
+{:else if vega}
+  <li class="fd-navigation-list__item fd-navigation-list__item--group lui-expanded-{expanded}" role="none">
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <a
+      class="fd-navigation-list__content"
+      role="treeitem"
+      tabindex="0"
+      aria-expanded={expanded}
+      on:click|preventDefault|stopPropagation={toggleExpanded}
+      on:keyup={(event) => {
+        (event.code === 'Enter' || event.code === 'Space') && toggleExpanded();
+      }}
+    >
+      <div class="fd-navigation-list__content-container">
+        <span class="fd-navigation-list__text">{navGroup.title}</span>
+      </div>
+      <div class="fd-navigation-list__navigation-indicator" role="presentation" aria-hidden="true">
+        <i class={expanded ? 'sap-icon--navigation-down-arrow' : 'sap-icon--navigation-right-arrow'} role="presentation"
+        ></i>
+      </div>
+    </a>
+    <ul class="fd-navigation-list level-1" role="group" tabindex="-1" navGroupId={navGroup.uid}>
+      <slot />
+    </ul>
+  </li>
 {:else}
   <li class="fd-navigation__list-item">
     <div
@@ -67,5 +93,12 @@
 
   :global(.fd-navigation--snapped) .fd-navigation__list--parent-items {
     --fdNavigation_List_Parent_Items_Display: flex;
+  }
+
+  :global(.vega-nav):not(.is-collapsed) .lui-expanded-false,
+  :global(.fd-side-nav):not(.vega-nav) {
+    & > ul {
+      display: none;
+    }
   }
 </style>

@@ -4,7 +4,8 @@ import { linkManager } from '@luigi-project/client';
 @Component({
   selector: 'app-groups',
   templateUrl: './groups.component.html',
-  styleUrls: ['./groups.component.css']
+  styleUrls: ['./groups.component.css'],
+  standalone: false
 })
 export class GroupsComponent {
   public linkManager = linkManager;

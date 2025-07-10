@@ -50,4 +50,4 @@ Check the Luigi [application examples](../core/examples) for an in-depth�
 
 ## Development
 
-Read the [development and code formatting guidelines](https://github.com/SAP/luigi#development) if you are interested in contributing.
+Read the [development and code formatting guidelines](https://github.com/luigi-project/luigi#development) if you are interested in contributing.

@@ -293,8 +293,9 @@ class IframeClass {
             IframeHelpers.sendMessageToIframe(config.iframe, message);
           });
         } else {
-          config.iframe.addEventListener('load', () => {
-            config.iframe._ready = true;
+          const iframe = config.iframe;
+          iframe.addEventListener('load', () => {
+            iframe._ready = true;
           });
         }
         // In case something goes wrong with client and showLoadingIndicator is still active

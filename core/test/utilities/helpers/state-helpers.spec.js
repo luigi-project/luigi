@@ -50,4 +50,35 @@ describe('State-helpers', () => {
       assert.deepEqual(expanded, ['a', 'z']);
     });
   });
+
+  describe('doOnStoreChange', () => {
+    it('doOnStoreChange with no scope', () => {
+      const store = {
+        subscribe: () => {},
+        subscribeToScope: () => {}
+      };
+      const fn = () => {};
+      const unsubscribe = StateHelpers.doOnStoreChange(store, fn);
+      assert.isFunction(unsubscribe);
+    });
+
+    it('doOnStoreChange with simple scope', () => {
+      const store = {
+        subscribe: () => {},
+        subscribeToScope: () => {}
+      };
+      const fn = () => {};
+      const unsubscribe = StateHelpers.doOnStoreChange(store, fn, ['a']);
+      assert.isFunction(unsubscribe);
+    });
+    it('doOnStoreChange with multiple scopes', () => {
+      const store = {
+        subscribe: () => {},
+        subscribeToScope: () => {}
+      };
+      const fn = () => {};
+      const unsubscribe = StateHelpers.doOnStoreChange(store, fn, ['a', 'b']);
+      assert.isFunction(unsubscribe);
+    });
+  });
 });

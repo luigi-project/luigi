@@ -1,1001 +1,1001 @@
 [
   {
     "name": "v2.2.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v2.2.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v2.2.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v2.2.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v2.2.1",
     "commit": {
       "sha": "ed45b94c2fb0a2eca905f0ece66a4873236d3c01",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ed45b94c2fb0a2eca905f0ece66a4873236d3c01"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ed45b94c2fb0a2eca905f0ece66a4873236d3c01"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92Mi4yLjE="
   },
   {
     "name": "v2.2.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v2.2.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v2.2.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v2.2.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v2.2.0",
     "commit": {
       "sha": "f5990937c2d969a5d43e45e5fbda54a4813f1316",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/f5990937c2d969a5d43e45e5fbda54a4813f1316"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/f5990937c2d969a5d43e45e5fbda54a4813f1316"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92Mi4yLjA="
   },
   {
     "name": "v2.1.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v2.1.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v2.1.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v2.1.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v2.1.0",
     "commit": {
       "sha": "2f02e7813348ee3eb570e09e3f53b8c0bb5fa3bd",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/2f02e7813348ee3eb570e09e3f53b8c0bb5fa3bd"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/2f02e7813348ee3eb570e09e3f53b8c0bb5fa3bd"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92Mi4xLjA="
   },
   {
     "name": "v2.0.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v2.0.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v2.0.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v2.0.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v2.0.1",
     "commit": {
       "sha": "5d3a03c7c17dd9e4a2430fc14500a9215119e890",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/5d3a03c7c17dd9e4a2430fc14500a9215119e890"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/5d3a03c7c17dd9e4a2430fc14500a9215119e890"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92Mi4wLjE="
   },
   {
     "name": "v2.0.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v2.0.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v2.0.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v2.0.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v2.0.0",
     "commit": {
       "sha": "f8ebe54c5b42077903bf06c8dea4a98639188df2",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/f8ebe54c5b42077903bf06c8dea4a98639188df2"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/f8ebe54c5b42077903bf06c8dea4a98639188df2"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92Mi4wLjA="
   },
   {
     "name": "v1.26.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.26.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.26.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.26.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.26.0",
     "commit": {
       "sha": "5136198661e4cdfe3e60b36273e6489c964b45a7",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/5136198661e4cdfe3e60b36273e6489c964b45a7"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/5136198661e4cdfe3e60b36273e6489c964b45a7"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yNi4w"
   },
   {
     "name": "v1.25.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.25.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.25.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.25.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.25.1",
     "commit": {
       "sha": "ff79347d13655c942c17ba2a93a5dfb613791dcc",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ff79347d13655c942c17ba2a93a5dfb613791dcc"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ff79347d13655c942c17ba2a93a5dfb613791dcc"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yNS4x"
   },
   {
     "name": "v1.25.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.25.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.25.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.25.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.25.0",
     "commit": {
       "sha": "340d78bac39949859d35cd0b9901c949fa21ad58",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/340d78bac39949859d35cd0b9901c949fa21ad58"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/340d78bac39949859d35cd0b9901c949fa21ad58"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yNS4w"
   },
   {
     "name": "v1.24.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.24.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.24.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.24.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.24.0",
     "commit": {
       "sha": "5163f2c2dcc6d08b4061d3e17507855f94aef530",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/5163f2c2dcc6d08b4061d3e17507855f94aef530"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/5163f2c2dcc6d08b4061d3e17507855f94aef530"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yNC4w"
   },
   {
     "name": "v1.23.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.23.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.23.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.23.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.23.1",
     "commit": {
       "sha": "d2b8c73233ea3357f95ddd54dbd8962890d7d9df",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/d2b8c73233ea3357f95ddd54dbd8962890d7d9df"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/d2b8c73233ea3357f95ddd54dbd8962890d7d9df"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMy4x"
   },
   {
     "name": "v1.23.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.23.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.23.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.23.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.23.0",
     "commit": {
       "sha": "c9bff7371a63d66e31899ab43618929a8a1d3aab",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/c9bff7371a63d66e31899ab43618929a8a1d3aab"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/c9bff7371a63d66e31899ab43618929a8a1d3aab"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMy4w"
   },
   {
     "name": "v1.22.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.22.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.22.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.22.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.22.0",
     "commit": {
       "sha": "ff8091fbf9a24adda6d9044993bb25f346be632f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ff8091fbf9a24adda6d9044993bb25f346be632f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ff8091fbf9a24adda6d9044993bb25f346be632f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMi4w"
   },
   {
     "name": "v1.21.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.21.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.21.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.21.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.21.0",
     "commit": {
       "sha": "b1a7d1402c6575d58c2f9a0327bec50783d00f3f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/b1a7d1402c6575d58c2f9a0327bec50783d00f3f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/b1a7d1402c6575d58c2f9a0327bec50783d00f3f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMS4w"
   },
   {
     "name": "v1.20.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.20.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.20.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.20.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.20.1",
     "commit": {
       "sha": "940d90ecc40d481309a4709555e4972741b26b97",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/940d90ecc40d481309a4709555e4972741b26b97"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/940d90ecc40d481309a4709555e4972741b26b97"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMC4x"
   },
   {
     "name": "v1.20.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.20.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.20.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.20.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.20.0",
     "commit": {
       "sha": "f575ab68ea43fb90d6924b125d5d4585fe4e289d",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/f575ab68ea43fb90d6924b125d5d4585fe4e289d"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/f575ab68ea43fb90d6924b125d5d4585fe4e289d"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yMC4w"
   },
   {
     "name": "v1.19.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.19.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.19.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.19.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.19.0",
     "commit": {
       "sha": "02444e86f4621f7a87b3009e8ce9d5b04e472d14",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/02444e86f4621f7a87b3009e8ce9d5b04e472d14"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/02444e86f4621f7a87b3009e8ce9d5b04e472d14"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xOS4w"
   },
   {
     "name": "v1.18.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.18.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.18.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.18.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.18.1",
     "commit": {
       "sha": "bde1963374dd340760bafdf66ec52fcb8a6f9120",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/bde1963374dd340760bafdf66ec52fcb8a6f9120"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/bde1963374dd340760bafdf66ec52fcb8a6f9120"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xOC4x"
   },
   {
     "name": "v1.18.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.18.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.18.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.18.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.18.0",
     "commit": {
       "sha": "c2525bc78c7bcc58f275e2a353336ddecc6d033e",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/c2525bc78c7bcc58f275e2a353336ddecc6d033e"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/c2525bc78c7bcc58f275e2a353336ddecc6d033e"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xOC4w"
   },
   {
     "name": "v1.17.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.17.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.17.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.17.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.17.0",
     "commit": {
       "sha": "67c22ebb71e3856595bfcd0a4bc517978a8b0751",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/67c22ebb71e3856595bfcd0a4bc517978a8b0751"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/67c22ebb71e3856595bfcd0a4bc517978a8b0751"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNy4w"
   },
   {
     "name": "v1.16.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.16.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.16.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.16.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.16.2",
     "commit": {
       "sha": "0908e9183c4c9ae028ece5f47ddc8c49b578c1ac",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/0908e9183c4c9ae028ece5f47ddc8c49b578c1ac"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/0908e9183c4c9ae028ece5f47ddc8c49b578c1ac"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNi4y"
   },
   {
     "name": "v1.16.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.16.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.16.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.16.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.16.1",
     "commit": {
       "sha": "be5debb4806137754696f91bb7b5fae282cce813",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/be5debb4806137754696f91bb7b5fae282cce813"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/be5debb4806137754696f91bb7b5fae282cce813"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNi4x"
   },
   {
     "name": "v1.16.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.16.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.16.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.16.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.16.0",
     "commit": {
       "sha": "79d57a56dffc6be6e31ede71b127536995ad110a",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/79d57a56dffc6be6e31ede71b127536995ad110a"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/79d57a56dffc6be6e31ede71b127536995ad110a"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNi4w"
   },
   {
     "name": "v1.15.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.15.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.15.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.15.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.15.0",
     "commit": {
       "sha": "cb9188ed860f0b05b9d79721fd708ea835cdec6b",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/cb9188ed860f0b05b9d79721fd708ea835cdec6b"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/cb9188ed860f0b05b9d79721fd708ea835cdec6b"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNS4w"
   },
   {
     "name": "v1.14.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.14.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.14.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.14.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.14.3",
     "commit": {
       "sha": "8bbce17227170b38f9330d656d4fdaa102d5fad3",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/8bbce17227170b38f9330d656d4fdaa102d5fad3"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/8bbce17227170b38f9330d656d4fdaa102d5fad3"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNC4z"
   },
   {
     "name": "v1.14.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.14.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.14.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.14.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.14.2",
     "commit": {
       "sha": "dc078aca0577a79ceeaa6cd9e1b487c7e0fdd4d4",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/dc078aca0577a79ceeaa6cd9e1b487c7e0fdd4d4"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/dc078aca0577a79ceeaa6cd9e1b487c7e0fdd4d4"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNC4y"
   },
   {
     "name": "v1.14.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.14.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.14.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.14.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.14.1",
     "commit": {
       "sha": "fed82b23fce6dbd7d8e5a55f957509ea4cc43b75",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/fed82b23fce6dbd7d8e5a55f957509ea4cc43b75"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/fed82b23fce6dbd7d8e5a55f957509ea4cc43b75"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNC4x"
   },
   {
     "name": "v1.14.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.14.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.14.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.14.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.14.0",
     "commit": {
       "sha": "afc29b6230bc6044dfb8e52581294d325ee9343d",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/afc29b6230bc6044dfb8e52581294d325ee9343d"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/afc29b6230bc6044dfb8e52581294d325ee9343d"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xNC4w"
   },
   {
     "name": "v1.13.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.13.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.13.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.13.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.13.0",
     "commit": {
       "sha": "0604859b771c4febab891d3cf69b7a3a0bd518b6",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/0604859b771c4febab891d3cf69b7a3a0bd518b6"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/0604859b771c4febab891d3cf69b7a3a0bd518b6"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xMy4w"
   },
   {
     "name": "v1.12.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.12.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.12.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.12.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.12.1",
     "commit": {
       "sha": "dac7fee3cf40c8035fc0ec7055cce1f2dc8432aa",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/dac7fee3cf40c8035fc0ec7055cce1f2dc8432aa"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/dac7fee3cf40c8035fc0ec7055cce1f2dc8432aa"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xMi4x"
   },
   {
     "name": "v1.12.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.12.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.12.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.12.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.12.0",
     "commit": {
       "sha": "1e1e7e2ab03b1774d233c4291779c415aa426087",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1e1e7e2ab03b1774d233c4291779c415aa426087"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1e1e7e2ab03b1774d233c4291779c415aa426087"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xMi4w"
   },
   {
     "name": "v1.11.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.11.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.11.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.11.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.11.0",
     "commit": {
       "sha": "2ff707b8cfd938aef3751d45c5c7b9629cda6783",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/2ff707b8cfd938aef3751d45c5c7b9629cda6783"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/2ff707b8cfd938aef3751d45c5c7b9629cda6783"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xMS4w"
   },
   {
     "name": "v1.10.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.10.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.10.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.10.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.10.0",
     "commit": {
       "sha": "3ce1ffa73b9bac26330e59ebd8f40e9e8406b2b1",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/3ce1ffa73b9bac26330e59ebd8f40e9e8406b2b1"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/3ce1ffa73b9bac26330e59ebd8f40e9e8406b2b1"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xMC4w"
   },
   {
     "name": "v1.9.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.9.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.9.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.9.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.9.0",
     "commit": {
       "sha": "ee55877758ee91e076c4890a0fbd7ed21339eed0",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ee55877758ee91e076c4890a0fbd7ed21339eed0"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ee55877758ee91e076c4890a0fbd7ed21339eed0"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS45LjA="
   },
   {
     "name": "v1.8.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.8.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.8.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.8.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.8.1",
     "commit": {
       "sha": "f743290945a30db4fd7e19c80c75adcaa41bcc5b",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/f743290945a30db4fd7e19c80c75adcaa41bcc5b"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/f743290945a30db4fd7e19c80c75adcaa41bcc5b"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS44LjE="
   },
   {
     "name": "v1.8.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.8.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.8.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.8.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.8.0",
     "commit": {
       "sha": "92b8256533d1743c40c3bc26a92c92699b02f506",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/92b8256533d1743c40c3bc26a92c92699b02f506"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/92b8256533d1743c40c3bc26a92c92699b02f506"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS44LjA="
   },
   {
     "name": "v1.7.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.7.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.7.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.7.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.7.1",
     "commit": {
       "sha": "987d377f30ce10cf11589779943f6bb443a3b215",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/987d377f30ce10cf11589779943f6bb443a3b215"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/987d377f30ce10cf11589779943f6bb443a3b215"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS43LjE="
   },
   {
     "name": "v1.7.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.7.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.7.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.7.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.7.0",
     "commit": {
       "sha": "d5eeb8ab0206705cde20ecdf9933d7d67d744265",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/d5eeb8ab0206705cde20ecdf9933d7d67d744265"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/d5eeb8ab0206705cde20ecdf9933d7d67d744265"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS43LjA="
   },
   {
     "name": "v1.6.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.6.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.6.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.6.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.6.0",
     "commit": {
       "sha": "e651942f1e2878f1139e721b0f29533dfd7330d0",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/e651942f1e2878f1139e721b0f29533dfd7330d0"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/e651942f1e2878f1139e721b0f29533dfd7330d0"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS42LjA="
   },
   {
     "name": "v1.5.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.5.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.5.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.5.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.5.0",
     "commit": {
       "sha": "2a2469a906ad33b45e093d016701af8df8477c64",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/2a2469a906ad33b45e093d016701af8df8477c64"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/2a2469a906ad33b45e093d016701af8df8477c64"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS41LjA="
   },
   {
     "name": "v1.4.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.4.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.4.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.4.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.4.0",
     "commit": {
       "sha": "12213562af847b8348bece1d08681bd100c603d2",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/12213562af847b8348bece1d08681bd100c603d2"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/12213562af847b8348bece1d08681bd100c603d2"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS40LjA="
   },
   {
     "name": "v1.3.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.3.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.3.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.3.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.3.1",
     "commit": {
       "sha": "250752ef9dfa403e3802d3365523adeca2465be4",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/250752ef9dfa403e3802d3365523adeca2465be4"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/250752ef9dfa403e3802d3365523adeca2465be4"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4zLjE="
   },
   {
     "name": "v1.3.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.3.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.3.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.3.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.3.0",
     "commit": {
       "sha": "d05c638f17be51b09a564fb8d70deb5621d1f24b",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/d05c638f17be51b09a564fb8d70deb5621d1f24b"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/d05c638f17be51b09a564fb8d70deb5621d1f24b"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4zLjA="
   },
   {
     "name": "v1.2.4",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.2.4",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.2.4",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.2.4",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.2.4",
     "commit": {
       "sha": "698ae96bfd8ac9b4c2f51760292b14f462febf09",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/698ae96bfd8ac9b4c2f51760292b14f462febf09"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/698ae96bfd8ac9b4c2f51760292b14f462febf09"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yLjQ="
   },
   {
     "name": "v1.2.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.2.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.2.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.2.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.2.3",
     "commit": {
       "sha": "837c33b49e18cebf68729ac6883c587b77c8f13a",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/837c33b49e18cebf68729ac6883c587b77c8f13a"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/837c33b49e18cebf68729ac6883c587b77c8f13a"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yLjM="
   },
   {
     "name": "v1.2.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.2.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.2.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.2.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.2.2",
     "commit": {
       "sha": "2f6bef33d30ae6729dccaff729cdb230f930ef7d",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/2f6bef33d30ae6729dccaff729cdb230f930ef7d"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/2f6bef33d30ae6729dccaff729cdb230f930ef7d"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yLjI="
   },
   {
     "name": "v1.2.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.2.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.2.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.2.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.2.1",
     "commit": {
       "sha": "59ba490029321d4bf6284910394d89f93bf0a2b5",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/59ba490029321d4bf6284910394d89f93bf0a2b5"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/59ba490029321d4bf6284910394d89f93bf0a2b5"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4yLjE="
   },
   {
     "name": "v1.1.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.1.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.1.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.1.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.1.1",
     "commit": {
       "sha": "e0f711cb200557528c072d1b3c2cbea553177767",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/e0f711cb200557528c072d1b3c2cbea553177767"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/e0f711cb200557528c072d1b3c2cbea553177767"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xLjE="
   },
   {
     "name": "v1.1.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.1.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.1.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.1.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.1.0",
     "commit": {
       "sha": "ad7ece0169c2f0701577af3aa48eac65c6687f30",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ad7ece0169c2f0701577af3aa48eac65c6687f30"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ad7ece0169c2f0701577af3aa48eac65c6687f30"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4xLjA="
   },
   {
     "name": "v1.0.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.1",
     "commit": {
       "sha": "9991a892747ee764566a24db342ee4cbe5a65a64",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/9991a892747ee764566a24db342ee4cbe5a65a64"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/9991a892747ee764566a24db342ee4cbe5a65a64"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjE="
   },
   {
     "name": "v1.0.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0",
     "commit": {
       "sha": "1a1df3fa0bdea2d8b8fe3d0b63a56ab46358ef27",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1a1df3fa0bdea2d8b8fe3d0b63a56ab46358ef27"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1a1df3fa0bdea2d8b8fe3d0b63a56ab46358ef27"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjA="
   },
   {
     "name": "v1.0.0-next.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0-next.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0-next.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0-next.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0-next.2",
     "commit": {
       "sha": "94cfbee38420b05f7ead971dfe415dcf7962f51e",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/94cfbee38420b05f7ead971dfe415dcf7962f51e"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/94cfbee38420b05f7ead971dfe415dcf7962f51e"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjAtbmV4dC4y"
   },
   {
     "name": "v1.0.0-next.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0-next.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0-next.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0-next.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0-next.1",
     "commit": {
       "sha": "3b073d6c9e355fc8d18b0e0cd66b193806eac9a2",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/3b073d6c9e355fc8d18b0e0cd66b193806eac9a2"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/3b073d6c9e355fc8d18b0e0cd66b193806eac9a2"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjAtbmV4dC4x"
   },
   {
     "name": "v1.0.0-next.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0-next.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0-next.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0-next.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0-next.0",
     "commit": {
       "sha": "1734c2c6885e11b3fe9486039cc98af70aadaf97",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1734c2c6885e11b3fe9486039cc98af70aadaf97"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1734c2c6885e11b3fe9486039cc98af70aadaf97"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjAtbmV4dC4w"
   },
   {
     "name": "v1.0.0-bbqseb.41.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0-bbqseb.41.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0-bbqseb.41.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0-bbqseb.41.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0-bbqseb.41.0",
     "commit": {
       "sha": "7d318703310f9b1f3ed29d5c352a1329b7f5bc6e",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/7d318703310f9b1f3ed29d5c352a1329b7f5bc6e"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/7d318703310f9b1f3ed29d5c352a1329b7f5bc6e"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjAtYmJxc2ViLjQxLjA="
   },
   {
     "name": "v1.0.0-bbqseb.41",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v1.0.0-bbqseb.41",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v1.0.0-bbqseb.41",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v1.0.0-bbqseb.41",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v1.0.0-bbqseb.41",
     "commit": {
       "sha": "dc2392129296a3cbb4e7c9656e5b9d844c24b268",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/dc2392129296a3cbb4e7c9656e5b9d844c24b268"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/dc2392129296a3cbb4e7c9656e5b9d844c24b268"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MS4wLjAtYmJxc2ViLjQx"
   },
   {
     "name": "v0.7.7",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.7",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.7",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.7",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.7",
     "commit": {
       "sha": "26e18d506e64bc3d7cd001a7c196213f238d9706",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/26e18d506e64bc3d7cd001a7c196213f238d9706"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/26e18d506e64bc3d7cd001a7c196213f238d9706"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43Ljc="
   },
   {
     "name": "v0.7.6",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.6",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.6",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.6",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.6",
     "commit": {
       "sha": "6a7a4f44291b04bf88c141c3492da565f8ed91e6",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/6a7a4f44291b04bf88c141c3492da565f8ed91e6"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/6a7a4f44291b04bf88c141c3492da565f8ed91e6"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjY="
   },
   {
     "name": "v0.7.5",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.5",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.5",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.5",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.5",
     "commit": {
       "sha": "b5e59b6d87e9dc2b5fa3cd5fa3c1553378a6c403",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/b5e59b6d87e9dc2b5fa3cd5fa3c1553378a6c403"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/b5e59b6d87e9dc2b5fa3cd5fa3c1553378a6c403"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjU="
   },
   {
     "name": "v0.7.4",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.4",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.4",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.4",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.4",
     "commit": {
       "sha": "8bfbeac24e335ca376c71d368f1ffa1bae5348ba",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/8bfbeac24e335ca376c71d368f1ffa1bae5348ba"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/8bfbeac24e335ca376c71d368f1ffa1bae5348ba"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjQ="
   },
   {
     "name": "v0.7.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.3",
     "commit": {
       "sha": "cdbdff3c7a2c22c9deec35a8bae6ef22d5efa0b6",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/cdbdff3c7a2c22c9deec35a8bae6ef22d5efa0b6"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/cdbdff3c7a2c22c9deec35a8bae6ef22d5efa0b6"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjM="
   },
   {
     "name": "v0.7.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.2",
     "commit": {
       "sha": "3776980736f66200ee0495d941097602887b5397",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/3776980736f66200ee0495d941097602887b5397"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/3776980736f66200ee0495d941097602887b5397"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjI="
   },
   {
     "name": "v0.7.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.1",
     "commit": {
       "sha": "91df571a6f2bc217fe2e77853c07bc30530cfaaf",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/91df571a6f2bc217fe2e77853c07bc30530cfaaf"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/91df571a6f2bc217fe2e77853c07bc30530cfaaf"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjE="
   },
   {
     "name": "v0.7.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.7.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.7.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.7.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.7.0",
     "commit": {
       "sha": "aeb5b95548293b88492649d66b9486699d7b468b",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/aeb5b95548293b88492649d66b9486699d7b468b"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/aeb5b95548293b88492649d66b9486699d7b468b"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC43LjA="
   },
   {
     "name": "v0.6.6",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.6",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.6",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.6",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.6",
     "commit": {
       "sha": "46239dc02fe1d9b13ac69b1f4350f41354bed44f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/46239dc02fe1d9b13ac69b1f4350f41354bed44f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/46239dc02fe1d9b13ac69b1f4350f41354bed44f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjY="
   },
   {
     "name": "v0.6.5",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.5",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.5",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.5",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.5",
     "commit": {
       "sha": "79e8b22b0b1f2b43cbf76e9f07888af08d67a612",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/79e8b22b0b1f2b43cbf76e9f07888af08d67a612"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/79e8b22b0b1f2b43cbf76e9f07888af08d67a612"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjU="
   },
   {
     "name": "v0.6.4",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.4",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.4",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.4",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.4",
     "commit": {
       "sha": "38bd15ca1fca9ce2f4c20b11b32cbd462905795f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/38bd15ca1fca9ce2f4c20b11b32cbd462905795f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/38bd15ca1fca9ce2f4c20b11b32cbd462905795f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjQ="
   },
   {
     "name": "v0.6.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.3",
     "commit": {
       "sha": "532855b57925c97158a83301978800589ad8533e",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/532855b57925c97158a83301978800589ad8533e"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/532855b57925c97158a83301978800589ad8533e"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjM="
   },
   {
     "name": "v0.6.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.2",
     "commit": {
       "sha": "4d413dfbea2e5ee3dc075017b923b5cd05f3fbca",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/4d413dfbea2e5ee3dc075017b923b5cd05f3fbca"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/4d413dfbea2e5ee3dc075017b923b5cd05f3fbca"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjI="
   },
   {
     "name": "v0.6.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.1",
     "commit": {
       "sha": "76de60b1cba7d8227e40e4b34d70012f9fe8be81",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/76de60b1cba7d8227e40e4b34d70012f9fe8be81"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/76de60b1cba7d8227e40e4b34d70012f9fe8be81"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjE="
   },
   {
     "name": "v0.6.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.0",
     "commit": {
       "sha": "89c762ed1f93c7b433e597e69f6b4b006b0804c3",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/89c762ed1f93c7b433e597e69f6b4b006b0804c3"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/89c762ed1f93c7b433e597e69f6b4b006b0804c3"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjA="
   },
   {
     "name": "v0.6.0-rc.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.6.0-rc.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.6.0-rc.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.6.0-rc.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.6.0-rc.0",
     "commit": {
       "sha": "babe846edca29b3aab45ae251b90caa324729607",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/babe846edca29b3aab45ae251b90caa324729607"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/babe846edca29b3aab45ae251b90caa324729607"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC42LjAtcmMuMA=="
   },
   {
     "name": "v0.5.4",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.5.4",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.5.4",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.5.4",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.5.4",
     "commit": {
       "sha": "da34a3058e5b2cfbe903ef558d9ccb26a2238211",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/da34a3058e5b2cfbe903ef558d9ccb26a2238211"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/da34a3058e5b2cfbe903ef558d9ccb26a2238211"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC41LjQ="
   },
   {
     "name": "v0.5.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.5.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.5.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.5.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.5.3",
     "commit": {
       "sha": "d34665790e50c90e1a3287e5c4241e3d528206d6",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/d34665790e50c90e1a3287e5c4241e3d528206d6"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/d34665790e50c90e1a3287e5c4241e3d528206d6"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC41LjM="
   },
   {
     "name": "v0.5.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.5.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.5.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.5.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.5.2",
     "commit": {
       "sha": "1612ef3eb87964ea17d8a1e75396eb7d6f4ace82",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1612ef3eb87964ea17d8a1e75396eb7d6f4ace82"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1612ef3eb87964ea17d8a1e75396eb7d6f4ace82"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC41LjI="
   },
   {
     "name": "v0.5.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.5.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.5.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.5.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.5.1",
     "commit": {
       "sha": "936f66846493235ad7e945b1b1b56616386fa8e4",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/936f66846493235ad7e945b1b1b56616386fa8e4"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/936f66846493235ad7e945b1b1b56616386fa8e4"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC41LjE="
   },
   {
     "name": "v0.5.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.5.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.5.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.5.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.5.0",
     "commit": {
       "sha": "9dd973c2172291e5bb3f706d349c7d1d9fc7470b",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/9dd973c2172291e5bb3f706d349c7d1d9fc7470b"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/9dd973c2172291e5bb3f706d349c7d1d9fc7470b"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC41LjA="
   },
   {
     "name": "v0.4.12",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.12",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.12",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.12",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.12",
     "commit": {
       "sha": "20b734ba2dce6554041bb31f570031d1ce056027",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/20b734ba2dce6554041bb31f570031d1ce056027"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/20b734ba2dce6554041bb31f570031d1ce056027"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEy"
   },
   {
     "name": "v0.4.12-rc.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.12-rc.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.12-rc.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.12-rc.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.12-rc.3",
     "commit": {
       "sha": "e8ca3dd87f0e113404ea4dea09cd28beb5023553",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/e8ca3dd87f0e113404ea4dea09cd28beb5023553"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/e8ca3dd87f0e113404ea4dea09cd28beb5023553"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEyLXJjLjM="
   },
   {
     "name": "v0.4.12-rc.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.12-rc.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.12-rc.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.12-rc.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.12-rc.2",
     "commit": {
       "sha": "8049a962a67e502a84dfeda8c5545207ca0512a1",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/8049a962a67e502a84dfeda8c5545207ca0512a1"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/8049a962a67e502a84dfeda8c5545207ca0512a1"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEyLXJjLjI="
   },
   {
     "name": "v0.4.12-rc.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.12-rc.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.12-rc.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.12-rc.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.12-rc.1",
     "commit": {
       "sha": "1c3fb26905871ec0edd24611b6081efe281d6cdf",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1c3fb26905871ec0edd24611b6081efe281d6cdf"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1c3fb26905871ec0edd24611b6081efe281d6cdf"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEyLXJjLjE="
   },
   {
     "name": "v0.4.11",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.11",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.11",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.11",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.11",
     "commit": {
       "sha": "9b14d8d0cda3f701c0c2686f0ba045d14c046429",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/9b14d8d0cda3f701c0c2686f0ba045d14c046429"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/9b14d8d0cda3f701c0c2686f0ba045d14c046429"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEx"
   },
   {
     "name": "v0.4.10",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.10",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.10",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.10",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.10",
     "commit": {
       "sha": "89acea2bf88875fde47191cfc3065781d6bde791",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/89acea2bf88875fde47191cfc3065781d6bde791"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/89acea2bf88875fde47191cfc3065781d6bde791"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjEw"
   },
   {
     "name": "v0.4.9",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.9",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.9",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.9",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.9",
     "commit": {
       "sha": "cc74f4174d7625d52ba65f7eac38a0c59cc51ec0",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/cc74f4174d7625d52ba65f7eac38a0c59cc51ec0"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/cc74f4174d7625d52ba65f7eac38a0c59cc51ec0"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40Ljk="
   },
   {
     "name": "v0.4.8",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.8",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.8",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.8",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.8",
     "commit": {
       "sha": "ad11c6bbe89c02491372b6444d47fe6e35cd791f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ad11c6bbe89c02491372b6444d47fe6e35cd791f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ad11c6bbe89c02491372b6444d47fe6e35cd791f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40Ljg="
   },
   {
     "name": "v0.4.7",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.7",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.7",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.7",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.7",
     "commit": {
       "sha": "2e48a6819f164b99fee3ad04ab1ea99372a86a7c",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/2e48a6819f164b99fee3ad04ab1ea99372a86a7c"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/2e48a6819f164b99fee3ad04ab1ea99372a86a7c"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40Ljc="
   },
   {
     "name": "v0.4.6",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.6",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.6",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.6",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.6",
     "commit": {
       "sha": "22c28e0557fda9b905f4c056cabaa07cb0e09662",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/22c28e0557fda9b905f4c056cabaa07cb0e09662"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/22c28e0557fda9b905f4c056cabaa07cb0e09662"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjY="
   },
   {
     "name": "v0.4.5",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.5",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.5",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.5",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.5",
     "commit": {
       "sha": "1ff4880f8cef05e962b4b220e7437ea906beda30",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1ff4880f8cef05e962b4b220e7437ea906beda30"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1ff4880f8cef05e962b4b220e7437ea906beda30"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjU="
   },
   {
     "name": "v0.4.5-rc.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.5-rc.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.5-rc.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.5-rc.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.5-rc.2",
     "commit": {
       "sha": "ebe14aca23612a61ba3b59d0c2a4b593aefb1f85",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/ebe14aca23612a61ba3b59d0c2a4b593aefb1f85"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/ebe14aca23612a61ba3b59d0c2a4b593aefb1f85"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjUtcmMuMg=="
   },
   {
     "name": "v0.4.4",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.4",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.4",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.4",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.4",
     "commit": {
       "sha": "3301aa5a1c24df212002eece0d28eb98e47545e4",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/3301aa5a1c24df212002eece0d28eb98e47545e4"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/3301aa5a1c24df212002eece0d28eb98e47545e4"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjQ="
   },
   {
     "name": "v0.4.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.3",
     "commit": {
       "sha": "30032407d147184aa8a105d6e331b6582859708f",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/30032407d147184aa8a105d6e331b6582859708f"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/30032407d147184aa8a105d6e331b6582859708f"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjM="
   },
   {
     "name": "v0.4.2",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.2",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.2",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.2",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.2",
     "commit": {
       "sha": "5dc594ab84e645919adf9ba12cbdcadbd40140a2",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/5dc594ab84e645919adf9ba12cbdcadbd40140a2"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/5dc594ab84e645919adf9ba12cbdcadbd40140a2"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjI="
   },
   {
     "name": "v0.4.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.1",
     "commit": {
       "sha": "f01a26ef61fe9e9a8a23bf74543711e73fce5864",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/f01a26ef61fe9e9a8a23bf74543711e73fce5864"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/f01a26ef61fe9e9a8a23bf74543711e73fce5864"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjE="
   },
   {
     "name": "v0.4.0",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.4.0",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.4.0",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.4.0",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.4.0",
     "commit": {
       "sha": "79f7ea33b23531471f88b545eddba1bddd40c02c",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/79f7ea33b23531471f88b545eddba1bddd40c02c"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/79f7ea33b23531471f88b545eddba1bddd40c02c"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC40LjA="
   },
   {
     "name": "v0.3.8",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.3.8",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.3.8",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.3.8",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.3.8",
     "commit": {
       "sha": "8c6fa7460b9ad62da14cf7342a23295c32d43454",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/8c6fa7460b9ad62da14cf7342a23295c32d43454"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/8c6fa7460b9ad62da14cf7342a23295c32d43454"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC4zLjg="
   },
   {
     "name": "v0.3.7",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.3.7",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.3.7",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.3.7",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.3.7",
     "commit": {
       "sha": "e7eb70f8b16d37d47f42018308b329442de478ec",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/e7eb70f8b16d37d47f42018308b329442de478ec"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/e7eb70f8b16d37d47f42018308b329442de478ec"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC4zLjc="
   },
   {
     "name": "v0.3.6",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.3.6",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.3.6",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.3.6",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.3.6",
     "commit": {
       "sha": "539dd1fc3f2aa2e06f03848a072d1b4d041dbe29",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/539dd1fc3f2aa2e06f03848a072d1b4d041dbe29"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/539dd1fc3f2aa2e06f03848a072d1b4d041dbe29"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC4zLjY="
   },
   {
     "name": "v0.3.5",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.3.5",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.3.5",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.3.5",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.3.5",
     "commit": {
       "sha": "915df9dcb69d75ed4cb1039cc9c9491703d6c567",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/915df9dcb69d75ed4cb1039cc9c9491703d6c567"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/915df9dcb69d75ed4cb1039cc9c9491703d6c567"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC4zLjU="
   },
   {
     "name": "v0.2.1",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/v0.2.1",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/v0.2.1",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/v0.2.1",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/v0.2.1",
     "commit": {
       "sha": "4333fda0d13b7c7475cf96f27b1601a976ed62ac",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/4333fda0d13b7c7475cf96f27b1601a976ed62ac"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/4333fda0d13b7c7475cf96f27b1601a976ed62ac"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy92MC4yLjE="
   },
   {
     "name": "push",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/push",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/push",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/push",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/push",
     "commit": {
       "sha": "0964f9734069b4b2cd02df45eff569cc26d4b209",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/0964f9734069b4b2cd02df45eff569cc26d4b209"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/0964f9734069b4b2cd02df45eff569cc26d4b209"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy9wdXNo"
   },
   {
     "name": "core-0.3.3",
-    "zipball_url": "https://api.github.com/repos/SAP/luigi/zipball/refs/tags/core-0.3.3",
-    "tarball_url": "https://api.github.com/repos/SAP/luigi/tarball/refs/tags/core-0.3.3",
+    "zipball_url": "https://api.github.com/repos/luigi-project/luigi/zipball/refs/tags/core-0.3.3",
+    "tarball_url": "https://api.github.com/repos/luigi-project/luigi/tarball/refs/tags/core-0.3.3",
     "commit": {
       "sha": "1a93509fa93dcd23a786cbfffb4b1cd460ff0ef6",
-      "url": "https://api.github.com/repos/SAP/luigi/commits/1a93509fa93dcd23a786cbfffb4b1cd460ff0ef6"
+      "url": "https://api.github.com/repos/luigi-project/luigi/commits/1a93509fa93dcd23a786cbfffb4b1cd460ff0ef6"
     },
     "node_id": "MDM6UmVmMTM5NTkwNzAxOnJlZnMvdGFncy9jb3JlLTAuMy4z"
   }

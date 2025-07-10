@@ -20,8 +20,8 @@ We added a way to make the Shellbar padding responsive by using the `header.resp
 
 #### Multiple modal dialogs
 
-Luigi now allows you to open multiple modals by using the `modalSettings.keepPrevious` API function. When you set this to `true`, the previously opened modal will be kept allowing to open another model on top of it. By default, the previous modals are discarded. You can find more information in the relevant [documentation](https://docs.luigi-project.io/docs/luigi-client-api/?section=openasmodal) and [pull request](https://github.com/SAP/luigi/pull/2785). 
+Luigi now allows you to open multiple modals by using the `modalSettings.keepPrevious` API function. When you set this to `true`, the previously opened modal will be kept allowing to open another model on top of it. By default, the previous modals are discarded. You can find more information in the relevant [documentation](https://docs.luigi-project.io/docs/luigi-client-api/?section=openasmodal) and [pull request](https://github.com/luigi-project/luigi/pull/2785). 
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

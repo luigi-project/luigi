@@ -34,7 +34,6 @@ export const staticRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [LuigiPreloadComponent],
   imports: [RouterModule.forChild(staticRoutes)],
   providers: [
     {
@@ -45,8 +44,7 @@ export const staticRoutes: Routes = [
       provide: RouteReuseStrategy,
       useClass: LuigiRouteStrategy
     }
-  ],
-  exports: [LuigiPreloadComponent]
+  ]
 })
 export class LuigiAngularSupportModule {
   constructor(navigation: LuigiAutoRoutingService, context: LuigiContextService) {}
