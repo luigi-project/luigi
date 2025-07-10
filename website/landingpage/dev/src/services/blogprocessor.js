@@ -20,7 +20,7 @@ const hasValidDate = (dateStr) => {
 };
 
 const getSlug = (fileName) => {
-  return slugify(fileName.slice(0, -3)); // remove .md from the end
+  return slugify(fileName.slice(0, -3)); //remove .md from the end
 };
 
 /**
