@@ -8,7 +8,8 @@ import { toTitleCase } from '../../services/helpers';
 @Component({
   selector: 'app-dynamic',
   templateUrl: './dynamic.component.html',
-  styleUrls: ['./dynamic.component.css']
+  styleUrls: ['./dynamic.component.css'],
+  standalone: false
 })
 export class DynamicComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;
@@ -26,7 +27,10 @@ export class DynamicComponent implements OnInit, OnDestroy {
 
   private lcSubscription: Subscription = new Subscription();
 
-  constructor(private luigiService: LuigiContextService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private luigiService: LuigiContextService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.lcSubscription.add(
@@ -59,10 +63,7 @@ export class DynamicComponent implements OnInit, OnDestroy {
   }
 
   public slugify(str: string): string {
-    return str
-      .toLowerCase()
-      .split(' ')
-      .join('-');
+    return str.toLowerCase().split(' ').join('-');
   }
 
   public goBack() {

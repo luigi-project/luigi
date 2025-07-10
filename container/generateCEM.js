@@ -73,8 +73,7 @@ function parseContainerEvents(fileContent) {
     loc: true,
     range: true,
     tokens: true,
-    comment: true,
-    errorOnUnknownASTType: true
+    comment: true
   };
 
   const ast = parse(fileContent, options);
