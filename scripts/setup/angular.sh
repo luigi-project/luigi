@@ -12,6 +12,7 @@ else
 fi
 # steps to execute line by line
 echo ""
+npm i @angular/cli@latest -g
 ng new $folder --defaults --minimal --routing --skip-tests --skip-git && cd $folder # skip interactive prompts
 ng generate c home -s -t
 ng generate c sample1 -s -t

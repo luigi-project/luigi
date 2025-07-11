@@ -95,6 +95,7 @@ or execute these commands manually to get the same result:
 <!-- accordion:start -->
 ### Click to expand
 ```bash
+npm i @angular/cli@latest -g
 ng new my-angular-app --defaults --minimal --routing --skip-tests --skip-git && cd my-angular-app # skip interactive prompts
 ng generate c home -s -t
 ng generate c sample1 -s -t
