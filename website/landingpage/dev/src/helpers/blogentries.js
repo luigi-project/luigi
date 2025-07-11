@@ -13,7 +13,7 @@ module.exports = function blogentries() {
   const hiddenBlogsArray = blogsMapAll.slice(numberOfBlogsToBeVisibleOnLoad);
   const hiddenBlogsArrayLength = hiddenBlogsArray.length;
 
-    const blogHTMLDataLength = `<div id="blog-chunks-data" 
+  const blogHTMLDataLength = `<div id="blog-chunks-data" 
     data-chunk-step="${numberOfBlogsToBeVisibleOnLoad}" 
     data-chunk-total="${blogsListLength}"></div>`;
 
