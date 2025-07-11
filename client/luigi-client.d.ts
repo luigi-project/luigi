@@ -1,5 +1,4 @@
 // Type definitions for Luigi Client
-
 export as namespace LuigiClient;
 
 export declare interface AuthData {
@@ -10,66 +9,66 @@ export declare interface AuthData {
 }
 
 export declare interface ConfirmationModalSettings {
-  type?: string;
-  header?: string;
   body?: string;
   buttonConfirm?: string | boolean;
   buttonDismiss?: string;
+  header?: string;
+  type?: string;
 }
 
 export declare interface ModalSettings {
-  title?: string;
-  size?: 'fullscreen' | 'l' | 'm' | 's';
-  width?: string;
   height?: string;
   keepPrevious?: boolean;
-  closebtn_data_testid?: string;
+  size?: 'fullscreen' | 'l' | 'm' | 's';
+  title?: string;
+  width?: string;
 }
 
 export declare interface SplitViewSettings {
-  title?: string;
-  size?: number;
   collapsed?: boolean;
+  size?: number;
+  title?: string;
 }
 
-export enum SplitViewEvents {
-  'expand',
-  'collapse',
-  'resize',
-  'close'
-}
+export type SplitViewEvents = 'close' | 'collapse' | 'expand' | 'resize';
 
 export declare interface SplitViewInstance {
   collapse: () => void;
-  expand: () => void;
-  setSize: (value: number) => void;
-  on: (key: SplitViewEvents, callback: () => void) => string; //
   exists: () => boolean;
+  expand: () => void;
   getSize: () => number;
   isCollapsed: () => boolean;
   isExpanded: () => boolean;
+  on: (key: SplitViewEvents, callback: () => void) => string;
+  setSize: (value: number) => void;
 }
 
 export declare interface DrawerSettings {
-  header?: any;
-  size?: 'l' | 'm' | 's' | 'xs';
   backdrop?: boolean;
+  header?: any;
   overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
+}
+
+export declare interface NodeParams {
+  [key: string]: string;
+}
+
+export declare interface PathParams {
+  [key: string]: string;
 }
 
 export declare interface Context {
+  anchor?: string;
   authData?: AuthData;
-  context?: { parentNavigationContext?: string[] };
+  context?: { parentNavigationContexts?: string[] };
   internal?: {
     userSettings?: getUserSettings;
+    [key: string]: any;
   };
   nodeParams?: NodeParams;
   pathParams?: PathParams;
-  anchor?: string;
   [key: string]: any;
-}
-export declare interface NodeParams {
-  [key: string]: string;
 }
 
 export declare interface ClientPermissions {
@@ -77,16 +76,12 @@ export declare interface ClientPermissions {
 }
 
 export declare interface AlertSettings {
-  text?: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  closeAfter?: number;
   links?: {
     [key: string]: { text: string; url?: string; dismissKey?: string };
   };
-  closeAfter?: number;
-}
-
-export declare interface PathParams {
-  [key: string]: string;
+  text?: string;
+  type: 'info' | 'success' | 'warning' | 'error';
 }
 
 export declare interface CoreSearchParams {
@@ -274,7 +269,7 @@ export declare interface LinkManager {
    * @example
    * LuigiClient.linkManager().fromClosestContext().navigate('/users/groups/stakeholders')
    */
-  fromClosestContext: () => this;
+  fromClosestContext: () => LinkManager;
 
   /**
    * Sets the current navigation context to that of a specific parent node which has the {@link navigation-configuration.md navigationContext} field declared in the navigation configuration. This navigation context is then used by the `navigate` function.
@@ -284,7 +279,7 @@ export declare interface LinkManager {
    * @example
    * LuigiClient.linkManager().fromContext('project').navigate('/settings')
    */
-  fromContext: (navigationContext: string) => this;
+  fromContext: (navigationContext: string) => LinkManager;
 
   /**
    * Enables navigating to sibling nodes without knowing the absolute path
@@ -294,7 +289,7 @@ export declare interface LinkManager {
    * @example
    * LuigiClient.linkManager().fromParent().navigate('/sibling')
    */
-  fromParent: () => this;
+  fromParent: () => LinkManager;
 
   /**
    * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
@@ -304,7 +299,7 @@ export declare interface LinkManager {
    * @example
    * LuigiClient.linkManager().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
    */
-  fromVirtualTreeRoot: () => this;
+  fromVirtualTreeRoot: () => LinkManager;
 
   /**
    * Discards the active view and navigates back to the last visited view. Works with preserved views, and also acts as the substitute of the browser **back** button. **goBackContext** is only available when using preserved views.
@@ -392,7 +387,7 @@ export declare interface LinkManager {
    * // Can be chained with context setting functions such as:
    * LuigiClient.linkManager().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
    */
-  withParams: (nodeParams: NodeParams) => this;
+  withParams: (nodeParams: NodeParams) => LinkManager;
 
   /**
    * Sets options to customise route changing behaviour. The parameters are used by the `navigate` function. Use it optionally in combination with any of the navigation functions and receive it as part of the context object in Luigi Client.
@@ -407,7 +402,7 @@ export declare interface LinkManager {
    * { preventContextUpdate:true, preventHistoryEntry: true }
    * ).navigate('/overview')
    */
-  withOptions: (options: RouteChangingOptions) => this;
+  withOptions: (options: RouteChangingOptions) => LinkManager;
 
   /**
    * Opens a view in a modal. You can specify the modal's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty.  The default size of the modal is `l`, which means 80%. You can also use `m` (60%) and `s` (40%) to set the modal size. Optionally, use it in combination with any of the navigation functions.
@@ -484,7 +479,7 @@ export declare interface LinkManager {
    * LuigiClient.linkManager().withoutSync().navigate('/projects/xy/foobar');
    * LuigiClient.linkManager().withoutSync().fromClosestContext().navigate('settings');
    */
-  withoutSync: () => this;
+  withoutSync: () => LinkManager;
 
   /**
    * Updates path of the modalPathParam when internal navigation occurs
@@ -500,7 +495,7 @@ export declare interface LinkManager {
    * @example
    * LuigiClient.linkManager().newTab().navigate('/projects/xy/foobar');
    */
-  newTab: () => this;
+  newTab: () => LinkManager;
 
   /**
    * Keeps the URL's query parameters for a navigation request.
@@ -510,7 +505,7 @@ export declare interface LinkManager {
    * LuigiClient.linkManager().preserveQueryParams(true).navigate('/projects/xy/foobar');
    * LuigiClient.linkManager().preserveQueryParams(false).navigate('/projects/xy/foobar');
    */
-  preserveQueryParams: (preserve: boolean) => this;
+  preserveQueryParams: (preserve: boolean) => LinkManager;
 
   /**
    * Gets the luigi route associated with the current micro frontend.
@@ -588,14 +583,14 @@ export declare interface StorageManager {
    * @example
    * LuigiClient.storageManager().getAllKeys().then((keys) => console.log('keys are : '+keys));
    */
-  getAllKeys: () => Promise<String[]>;
+  getAllKeys: () => Promise<string[]>;
 }
 
 /**
  * Registers a listener called with the context object and the Luigi Core domain as soon as Luigi is instantiated. Defer your application bootstrap if you depend on authentication data coming from Luigi.
  * @param {Lifecycle~initListenerCallback} initFn the function that is called once Luigi is initialized, receives current context and origin as parameters
  * @param {boolean} disableTpcCheck if set to `true` third party cookie check will be disabled via LuigiClient.
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function addInitListener(initFn: (context: Context, origin?: string) => void, disableTpcCheck?: boolean): number;
 export type addInitListener = (
@@ -612,15 +607,15 @@ export type addInitListener = (
 /**
  * Removes an init listener.
  * @param {string} id the id that was returned by the `addInitListener` function.
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
-export function removeInitListener(id: number): boolean;
-export type removeInitListener = (id: number) => boolean;
+export function removeInitListener(id: string): boolean;
+export type removeInitListener = (id: string) => boolean;
 
 /**
  * Registers a listener called with the context object when the URL is changed. For example, you can use this when changing environments in a context switcher in order for the micro frontend to do an API call to the environment picked.
  * @param {function} contextUpdatedFn the listener function called each time Luigi context changes
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function addContextUpdateListener(contextUpdatedFn: (context: Context) => void): string;
 export type addContextUpdateListener = (contextUpdatedFn: (context: Context) => void) => string;
@@ -628,7 +623,7 @@ export type addContextUpdateListener = (contextUpdatedFn: (context: Context) => 
 /**
  * Removes a context update listener.
  * @param {string} id the id that was returned by the `addContextUpdateListener` function
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function removeContextUpdateListener(id: string): boolean;
 export type removeContextUpdateListener = (id: string) => boolean;
@@ -641,7 +636,7 @@ export type removeContextUpdateListener = (id: string) => boolean;
  *
  * Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.
  * @param {function} inactiveFn the listener function called each time a micro frontend turns into an inactive state
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function addInactiveListener(inactiveFn: () => void): string;
 export type addInactiveListener = (inactiveFn: () => void) => string;
@@ -649,7 +644,7 @@ export type addInactiveListener = (inactiveFn: () => void) => string;
 /**
  * Removes a listener for inactive micro frontends.
  * @param {string} id the id that was returned by the `addInactiveListener` function
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function removeInactiveListener(id: string): boolean;
 export type removeInactiveListener = (id: string) => boolean;
@@ -658,7 +653,7 @@ export type removeInactiveListener = (id: string) => boolean;
  * Registers a listener called when the micro frontend receives a custom message.
  * @param {string} customMessageId the custom message id
  * @param {Lifecycle~customMessageListenerCallback} customMessageListener the function that is called when the micro frontend receives the corresponding event
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @since 0.6.2
  */
 export function addCustomMessageListener(
@@ -681,7 +676,7 @@ export type addCustomMessageListener = (
 /**
  * Removes a custom message listener.
  * @param {string} id the id that was returned by the `addInitListener` function
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @since 0.6.2
  */
 export function removeCustomMessageListener(id: string): boolean;
@@ -690,7 +685,7 @@ export type removeCustomMessageListener = (id: string) => boolean;
 /**
  * Returns the currently valid access token.
  * @returns {string} current access token
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getToken(): AuthData['accessToken'];
 export type getToken = () => AuthData['accessToken'];
@@ -698,7 +693,7 @@ export type getToken = () => AuthData['accessToken'];
 /**
  * Returns the context object. Typically it is not required as the {@link #addContextUpdateListener addContextUpdateListener()} receives the same values.
  * @returns {Object} current context data
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getEventData(): Context;
 export type getEventData = () => Context;
@@ -706,20 +701,21 @@ export type getEventData = () => Context;
 /**
  * Returns the context object. It is an alias function for getEventData().
  * @returns {Object} current context data
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getContext(): Context;
 export type getContext = () => Context;
+
 /**
  * Sets node parameters in Luigi Core. The parameters will be added to the URL.
  * @param {Object} params
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * LuigiClient.addNodeParams({luigi:'rocks'});
  * LuigiClient.addNodeParams({luigi:'rocks', false});
  */
-export function addNodeParams(params: NodeParams, keepBrowserHistory: Boolean): void;
-export type addNodeParams = (params: NodeParams, keepBrowserHistory: Boolean) => void;
+export function addNodeParams(params: NodeParams, keepBrowserHistory: boolean): void;
+export type addNodeParams = (params: NodeParams, keepBrowserHistory: boolean) => void;
 
 /**
  * Returns the node parameters of the active URL.
@@ -728,7 +724,7 @@ export type addNodeParams = (params: NodeParams, keepBrowserHistory: Boolean) =>
  * > **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
  * @param {boolean} shouldDesanitise defines whether the specially encoded characters should be desanitised
  * @returns {Object} node parameters, where the object property name is the node parameter name without the prefix, and its value is the value of the node parameter. For example `{sort: 'asc', page: 3}`
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * const nodeParams = LuigiClient.getNodeParams()
  * const nodeParams = LuigiClient.getNodeParams(true)
@@ -738,10 +734,10 @@ export type getNodeParams = (shouldDesanitise?: boolean) => NodeParams;
 
 /**
  * @returns {Object} node parameters, where the object property name is the node parameter name without the prefix, and its value is the value of the node parameter. For example `{sort: 'asc', page: 3}`
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
-export function getActiveFeatureToggles(): Array<String>;
-export type getActiveFeatureToggles = () => Array<String>;
+export function getActiveFeatureToggles(): string[];
+export type getActiveFeatureToggles = () => string[];
 
 /**
  * Returns the dynamic path parameters of the active URL.
@@ -750,7 +746,7 @@ export type getActiveFeatureToggles = () => Array<String>;
  * <!-- add-attribute:class:warning -->
  * > **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in path parameters are HTML-encoded.
  * @returns {Object} path parameters, where the object property name is the path parameter name without the prefix, and its value is the actual value of the path parameter. For example ` {productId: 1234, ...}`
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getPathParams(): PathParams;
 export type getPathParams = () => PathParams;
@@ -758,27 +754,27 @@ export type getPathParams = () => PathParams;
 /**
  * Returns the anchor of active URL.
  * @returns {String} the anchor string
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * LuigiClient.getAnchor();
  */
-export function getAnchor(): String;
-export type getAnchor = () => String;
+export function getAnchor(): string;
+export type getAnchor = () => string;
 
 /**
  * Sets the anchor of active URL.
  * @param {string} anchor
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * LuigiClient.setAnchor('luigi');
  */
-export function setAnchor(anchor: String): void;
-export type setAnchor = (anchor: String) => void;
+export function setAnchor(anchor: string): void;
+export type setAnchor = (anchor: string) => void;
 
 /**
  * Allows you to change node labels within the same {@link navigation-advanced.md#view-groups view group}, e.g. in your node config: `label: 'my Node {viewGroupData.vg1}'`.
  * @param {Object} value a data object containing the view group name and desired label
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * LuigiClient.setViewGroupData({'vg1':' Luigi rocks!'})
  */
@@ -787,7 +783,7 @@ export type setViewGroupData = (value: Object) => void;
 
 /**
  * Read search query parameters which are sent from Luigi core
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @returns core search query parameters
  * @example
  * LuigiClient.getCoreSearchParams();
@@ -799,18 +795,18 @@ export type getCoreSearchParams = () => CoreSearchParams;
  * Sends search query parameters to Luigi core. If it is allowed on node level it will be added to url.
  * @param {Object} searchParams
  * @param {boolean} keepBrowserHistory
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @example
  * LuigiClient.addCoreSearchParams({luigi:'rocks'});
  * LuigiClient.addCoreSearchParams({luigi:'rocks', false});
  */
-export function addCoreSearchParams(searchParams: CoreSearchParams, keepBrowserHistory: Boolean): void;
-export type addCoreSearchParams = (searchParams: CoreSearchParams, keepBrowserHistory: Boolean) => void;
+export function addCoreSearchParams(searchParams: CoreSearchParams, keepBrowserHistory: boolean): void;
+export type addCoreSearchParams = (searchParams: CoreSearchParams, keepBrowserHistory: boolean) => void;
 
 /**
  * Returns the current client permissions as specified in the navigation node or an empty object. For details, see [Node parameters](navigation-parameters-reference.md).
  * @returns {Object} client permissions as specified in the navigation node
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getClientPermissions(): ClientPermissions;
 export type getClientPermissions = () => ClientPermissions;
@@ -818,7 +814,7 @@ export type getClientPermissions = () => ClientPermissions;
 /**
  * When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client.
  * @param {string} origin target origin
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @since 0.7.3
  */
 export function setTargetOrigin(targetOrigin: string): void;
@@ -832,7 +828,7 @@ export type setTargetOrigin = (targetOrigin: string) => void;
  * @example
  * import LuigiClient from '@luigi-project/client';
  * LuigiClient.sendCustomMessage({id: 'environment.created', production: false})
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  * @since 0.6.2
  */
 export function sendCustomMessage(message: object): void;
@@ -862,11 +858,12 @@ export type uxManager = () => UxManager;
  */
 export function storageManager(): StorageManager;
 export type storageManager = () => StorageManager;
+
 /**
  * Returns the current user settings.
  * @returns {Object} current user settings
  * @since 1.7.1
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function getUserSettings(): UserSettings;
 export type getUserSettings = () => UserSettings;
@@ -875,7 +872,7 @@ export type getUserSettings = () => UserSettings;
  * Check if LuigiClient is initialized
  * @returns {boolean} client initialized state
  * @since 1.12.0
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function isLuigiClientInitialized(): boolean;
 export type isLuigiClientInitialized = () => boolean;
@@ -883,7 +880,7 @@ export type isLuigiClientInitialized = () => boolean;
 /**
  * Starts the handshake with Luigi Core and thereafter resulting in initialization of Luigi Client. It is always ran by default when importing luigi-client package in your micro frontend. Note that when using 'defer-luigi-init' to defer default initialization you will need to initialize the handshake using this function manually wherever needed.
  * @since 1.12.0
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  */
 export function luigiClientInit(): void;
 export type luigiClientInit = () => void;
