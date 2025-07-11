@@ -530,8 +530,9 @@
 
   export function calculateFlyoutPosition(el) {
     if (vegaSideNav) {
-      const parentPos = el.getBoundingClientRect();
-      const flyout = el.querySelector('.fd-popover__body');
+      const liPopOver = el.closest('.fd-popover__control');
+      const parentPos = liPopOver.getBoundingClientRect();
+      const flyout = liPopOver.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
         `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px;`
@@ -1263,7 +1264,7 @@
                                 ></i>
                               </span>
                             {:else}
-                              <span class="fd-navigation__icon" role="presentation" aria-hidden="true">
+                              <span class="fd-navigation-list__icon" role="presentation" aria-hidden="true">
                                 <img
                                   src={nodes.metaInfo.icon}
                                   alt={nodes.metaInfo.altText ? nodes.metaInfo.altText : ''}
@@ -1314,6 +1315,19 @@
                                         }}
                                       >
                                         <div class="fd-navigation-list__content-container">
+                                          {#if isOpenUIiconName(node.icon)}
+                                            <span class="fd-navigation-list__icon">
+                                              <i class={getSapIconStr(node.icon)} role="presentation"></i>
+                                            </span>
+                                          {:else}
+                                            <span
+                                              class="fd-navigation-list__icon"
+                                              role="presentation"
+                                              aria-hidden="true"
+                                            >
+                                              <img src={node.icon} alt={node.altText ? node.altText : ''} />
+                                            </span>
+                                          {/if}
                                           <span
                                             class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                             !isSemiCollapsed &&
