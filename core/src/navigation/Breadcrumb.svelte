@@ -210,4 +210,8 @@
   :global(.lui-breadcrumb.semiCollapsed .vega) .lui-breadcrumb-container {
     left: var(--luigi__leftnav_collapsed--width);
   }
+
+  :global(.lui-breadcrumb .vega.no-side-nav) .lui-breadcrumb-container {
+    left: 0;
+  }
 </style>
