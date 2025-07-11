@@ -203,4 +203,15 @@
   :global(.lui-global-nav-visible) .lui-breadcrumb-container {
     left: $globalNavWidth;
   }
+
+  :global(.lui-breadcrumb .vega) .lui-breadcrumb-container {
+    left: var(--luigi__left-sidenav--width);
+  }
+  :global(.lui-breadcrumb.semiCollapsed .vega) .lui-breadcrumb-container {
+    left: var(--luigi__leftnav_collapsed--width);
+  }
+
+  :global(.lui-breadcrumb .vega.no-side-nav) .lui-breadcrumb-container {
+    left: 0;
+  }
 </style>

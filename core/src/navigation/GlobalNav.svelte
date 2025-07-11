@@ -33,6 +33,7 @@
       hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
       responsiveNavSetting = LuigiConfig.getConfigValue('settings.responsiveNavigation');
       showGlobalNav =
+        LuigiConfig.getConfigValue('settings.sideNav.style') !== 'vega' &&
         !(
           LuigiConfig.getConfigValue('settings.btpToolLayout') &&
           GenericHelpers.requestExperimentalFeature('btpToolLayout', false)

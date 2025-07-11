@@ -6,5 +6,5 @@ $combinedLayoutGap: 1rem;
 $leftNavWidthCollapsed: var(--luigi__leftnav_collapsed--width, 2.75rem);
 $zindex-dialog-box: 1000;
 $globalNavWidth: 69px;
-$navHeaderHeight: 3.25rem;
+$navHeaderHeight: var(--luigi__navheader--height, 3.25rem);
 $spinnerOpacity: opacity 0.25s;
