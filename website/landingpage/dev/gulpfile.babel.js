@@ -30,10 +30,7 @@ function loadConfig() {
 
 // Build the "dist" folder by running all of the below tasks
 // Sass must be run later so UnCSS can search for used classes in the others assets.
-gulp.task(
-  'build',
-  gulp.series(gulp.parallel(buildBlogFiles, pages, javascript, copy), sass)
-);
+gulp.task('build', gulp.series(gulp.parallel(buildBlogFiles, pages, javascript, copy), sass));
 
 // Build the site, run the server, and watch for file changes
 gulp.task('default', gulp.series('build', server, watch));
@@ -47,8 +44,8 @@ gulp.task('default', gulp.series('build', server, watch));
 // Copy files out of the assets folder
 // This task skips over the "img", "js", and "scss" folders, which are parsed separately
 function copy() {
-  gulp.src(PATHS.rootAssets).pipe(gulp.dest(PATHS.dist));
-  return gulp.src(PATHS.assets).pipe(gulp.dest(PATHS.dist + '/assets'));
+  gulp.src(PATHS.rootAssets, { encoding: false }).pipe(gulp.dest(PATHS.dist));
+  return gulp.src(PATHS.assets, { encoding: false }).pipe(gulp.dest(PATHS.dist + '/assets'));
 }
 
 // Copy page templates into finished HTML files
@@ -93,7 +90,6 @@ function sass() {
       }).on('error', function (err) {
         console.log(err.message + ' on line ' + err.lineNumber + ' in file : ' + err.fileName);
       })
-
     )
     .pipe($.postcss(postCssPlugins))
     .pipe($.if(PRODUCTION, $.cleanCss({ compatibility: 'ie9' })))
@@ -132,7 +128,7 @@ function javascript() {
     .pipe(
       $.if(
         PRODUCTION,
-        $.uglify().on('error', e => {
+        $.uglify().on('error', (e) => {
           console.log(e);
         })
       )
@@ -184,10 +180,7 @@ function buildBlogFiles(done) {
 function watch() {
   gulp.watch(PATHS.assets, copy);
   gulp
-    .watch([
-      __dirname + '/../../../blog/*.md',
-      'src/services/*.js'
-    ])
+    .watch([__dirname + '/../../../blog/*.md', 'src/services/*.js'])
     .on('all', gulp.series(buildBlogFiles, resetPages, pages, browser.reload));
   gulp
     .watch([
@@ -195,17 +188,9 @@ function watch() {
       '!src/pages/blog/20*.html' // skip processed blog entries
     ])
     .on('all', gulp.series(pages, browser.reload));
-  gulp
-    .watch('src/{layouts,partials}/**/*.html')
-    .on('all', gulp.series(resetPages, pages, browser.reload));
-  gulp
-    .watch('src/data/**/*.{js,json,yml}')
-    .on('all', gulp.series(resetPages, pages, browser.reload));
-  gulp
-    .watch('src/helpers/**/*.js')
-    .on('all', gulp.series(resetPages, pages, browser.reload));
+  gulp.watch('src/{layouts,partials}/**/*.html').on('all', gulp.series(resetPages, pages, browser.reload));
+  gulp.watch('src/data/**/*.{js,json,yml}').on('all', gulp.series(resetPages, pages, browser.reload));
+  gulp.watch('src/helpers/**/*.js').on('all', gulp.series(resetPages, pages, browser.reload));
   gulp.watch('src/assets/scss/**/*.scss').on('all', sass);
-  gulp
-    .watch('src/assets/js/**/*.js')
-    .on('all', gulp.series(javascript, browser.reload));
+  gulp.watch('src/assets/js/**/*.js').on('all', gulp.series(javascript, browser.reload));
 }
