@@ -260,7 +260,7 @@ describe('JS-TEST-APP 4', () => {
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'false');
     });
 
-    it.only('Open user menu by pressing space', () => {
+    it('Open user menu by pressing space', () => {
       cy.visitTestAppLoggedIn('/', newConfig);
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'true');
       cy.get('body').click();
@@ -345,5 +345,138 @@ describe('JS-TEST-APP 4', () => {
       cy.get('.iframeContainer').click();
       cy.get('#profilePopover').should('not.be.visible');
     });
+  });
+
+  describe('A11y for vega', () => {
+    let newConfig;
+    beforeEach(() => {
+      newConfig = structuredClone(defaultLuigiConfig);
+      newConfig.settings.sideNav = {
+        style: 'vega',
+        subCategoryDelimiter: '=>'
+      };
+      newConfig.settings.profileType = 'Fiori3';
+
+      newConfig.navigation.nodes[0].children.push(
+        {
+          pathSegment: 'mf1',
+          label: 'MF 1',
+          viewUrl: '/examples/microfrontends/multipurpose.html',
+          context: { test: 'tets' }
+        },
+        {
+          pathSegment: 'mf2',
+          label: 'MF 2',
+          viewUrl: '/examples/microfrontends/multipurpose.html',
+          context: { test: 'tets' }
+        },
+        {
+          pathSegment: 'node1',
+          label: 'Node 1',
+          category: { label: 'My Cat', collapsible: true, id: 'mycat' },
+          viewUrl: '/examples/microfrontends/multipurpose.html',
+          context: {
+            title: 'Node 1',
+            content: 'Content of node 1'
+          }
+        },
+        {
+          pathSegment: 'node2',
+          label: 'Node 2',
+          category: 'mycat',
+          viewUrl: '/examples/microfrontends/multipurpose.html',
+          context: {
+            title: 'Node 2',
+            content: 'Content of node 2'
+          }
+        },
+        {
+          label: 'Luigi Github Page',
+          category: {
+            id: 'myCat',
+            label: 'My Category',
+            collapsible: true,
+            icon: 'home'
+          },
+          externalLink: {
+            url: 'https://github.com/SAP/luigi'
+          }
+        },
+        {
+          label: 'Node1',
+          category: {
+            id: 'myCat=>subCat',
+            label: 'My Subcategory',
+            collapsible: true,
+            icon: 'group'
+          },
+          externalLink: {
+            url: 'https://sap.github.io/fundamental-styles'
+          }
+        },
+        {
+          label: 'Node2',
+          category: 'myCat=>subCat',
+          viewUrl: '/examples/microfrontends/multipurpose.html'
+        },
+        {
+          label: 'Node1',
+          category: 'myCat=>subCat2',
+          viewUrl: '/examples/microfrontends/multipurpose.html'
+        },
+        {
+          label: 'Node2',
+          category: 'myCat=>subCat2',
+          viewUrl: '/examples/microfrontends/multipurpose.html'
+        },
+        {
+          label: 'Parent Cat Node',
+          category: 'myCat',
+          viewUrl: '/examples/microfrontends/multipurpose.html'
+        },
+        {
+          category: {
+            id: 'cat2',
+            label: 'Cat 2',
+            isGroup: true
+          }
+        },
+        {
+          label: 'blabla',
+          pathSegment: 'blabla',
+          category: 'cat2=>sub1',
+          viewUrl: '/examples/microfrontends/multipurpose.html'
+        }
+      );
+    });
+    it('Left nav a11y with vega', () => {
+      cy.visitTestApp('/home', newConfig);
+      cy.document().then((doc) => {
+        const link = doc.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/node_modules/@luigi-project/core/luigi_horizon.css';
+        doc.head.appendChild(link);
+      });
+      cy.wait(500);
+      cy.get('body').click();
+      for (let i = 0; i < 5; i++) {
+        cy.tab();
+      }
+      cy.get('.fd-app__sidebar .fd-navigation-list__text').contains('Section one').type('{enter}');
+      cy.get('[title="Section one"]').should('have.class', 'is-selected');
+
+      cy.get('.fd-navigation-list .level-2').should('not.exist');
+      cy.tab().type('{enter}');
+      cy.tab().type('{enter}');
+      cy.tab().type('{enter}');
+      cy.tab().type('{enter}');
+      cy.tab().type('{enter}');
+      cy.get('.fd-navigation-list .level-2').should('be.visible');
+      cy.get('.fd-navigation-list .level-2').contains('Node 1').should('be.visible');
+    });
+    // it.only('More btn in left nav vega style', () => {
+    //   cy.visitTestApp('/home', newConfig);
+    //   cy.get('.fd-shellbar__button.fd-button.fd-button--transparent.lui-burger').click();
+    // });
   });
 });
