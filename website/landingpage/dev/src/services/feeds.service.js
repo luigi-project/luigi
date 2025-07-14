@@ -1,7 +1,11 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import { writeFileSync } from 'fs';
 import { Feed } from 'feed';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 class BlogFeedsService {
   constructor() {
     this.feedPath = path.join(path.resolve(__dirname), '..', '..', '..', 'public', 'blog', 'feeds');
@@ -32,7 +36,7 @@ class BlogFeedsService {
 
     this.feed.addCategory('Technology');
 
-    blogEntries.forEach(post => {
+    blogEntries.forEach((post) => {
       const blog = post;
       this.feed.addItem({
         title: post.title,
@@ -40,7 +44,7 @@ class BlogFeedsService {
         link: `https://luigi-project.io/blog/${post.slug}`,
         description: post.seoMetaDescription,
         content: post.htmlContent, // or htmlExcerpt?
-        author: post.author.map(name => ({ name })),
+        author: post.author.map((name) => ({ name })),
         // contributor: [{name, email, link}],
         date: new Date(post.date)
         // image: post.image
