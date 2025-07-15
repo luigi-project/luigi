@@ -628,7 +628,7 @@ runTimeErrorHandler: {
 - **attributes**:
   - **sameWindow** defines if the external URL is opened in a new or current tab. The default value for this parameter
  is `false`.
-  - **URL** is the external URL that the node leads to. If you are using [localization](https://docs.luigi-project.io/docs/i18n) and translating your page into different languages, you can also add a **{i18n.currentLocale}** parameter to the URL part of your configuration.
+  - **url** is the external URL that the node leads to. If you are using [localization](https://docs.luigi-project.io/docs/i18n) and translating your page into different languages, you can also add a **{i18n.currentLocale}** parameter to the URL part of your configuration.
 
 ### hideFromNav
 - **type**: boolean
@@ -1056,7 +1056,7 @@ The profile section is a configurable drop-down list available in the top naviga
  is ignored. It has the following attributes:
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
-    - **URL** is the external URL that the link leads to.
+    - **url** is the external URL that the link leads to.
 
 ### logout
 - **type**: object
@@ -1108,7 +1108,7 @@ The product switcher is a pop-up window available in the top navigation bar. It 
  is ignored. It has the following attributes:
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
-    - **URL** is the external URL that the link leads to.
+    - **url** is the external URL that the link leads to.
 
 ### label
 - **type**: string
