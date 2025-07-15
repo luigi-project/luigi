@@ -12,11 +12,11 @@ export interface TopNavData {
 
 export interface AppSwitcher {
   showMainAppEntry?: boolean;
-  items?: AppSwitcherItems[];
-  itemRenderer?: (item: AppSwitcherItems, slot: HTMLElement, appSwitcherApiObj?: any) => void;
+  items?: AppSwitcherItem[];
+  itemRenderer?: (item: AppSwitcherItem, slot: HTMLElement, appSwitcherApiObj?: any) => void;
 }
 
-export interface AppSwitcherItems {
+export interface AppSwitcherItem {
   title?: string;
   subtitle?: string;
   link?: string;
@@ -25,11 +25,16 @@ export interface AppSwitcherItems {
 
 export interface selectionConditions {
   route?: string;
-  contextCriteria?: Record<string, any>;
+  contextCriteria?: ContextCriteria[];
+}
+
+export interface ContextCriteria {
+  key: string;
+  value: string;
 }
 export interface ProfileSettings {
   logout: ProfileLogout;
-  items?: ProfileItems[];
+  items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
 }
 
@@ -40,7 +45,7 @@ export interface ProfileLogout {
   altText?: string;
 }
 
-export interface ProfileItems {
+export interface ProfileItem {
   label?: string;
   link?: string;
   externalLink?: ExternalLink;
@@ -328,7 +333,7 @@ export class NavigationService {
         subTitle: headerSettings.subTitle,
         link: '/'
       };
-      if (appSwitcher.items.some((item: AppSwitcherItems) => item.link === mainAppEntry.link)) {
+      if (appSwitcher.items.some((item: AppSwitcherItem) => item.link === mainAppEntry.link)) {
         return appSwitcher;
       }
       appSwitcher.items.unshift(mainAppEntry);
