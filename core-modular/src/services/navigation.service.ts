@@ -43,7 +43,7 @@ export interface ProfileLogout {
 export interface ProfileItems {
   label?: string;
   link?: string;
-  externalLink?: ExternalLinkItems;
+  externalLink?: ExternalLink;
   icon?: string;
   testId?: string;
   altText?: string;
@@ -88,11 +88,6 @@ export interface Node {
   pageErrorHandler?: PageErrorHandler;
   externalLink?: ExternalLink;
   hideSideNav?: boolean;
-}
-
-export interface ExternalLink {
-  URL: string;
-  sameWindow?: boolean;
 }
 
 export interface PageErrorHandler {
@@ -140,7 +135,7 @@ export interface ProductSwitcher {
 
 export interface ProductSwitcherItems {
   altText?: string;
-  externalLink?: ExternalLinkItems;
+  externalLink?: ExternalLink;
   icon?: string;
   label?: string;
   link?: string;
@@ -149,7 +144,7 @@ export interface ProductSwitcherItems {
   testId?: string;
 }
 
-export interface ExternalLinkItems {
+export interface ExternalLink {
   url?: string;
   sameWindow?: boolean;
 }
