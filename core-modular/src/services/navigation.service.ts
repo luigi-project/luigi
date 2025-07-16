@@ -133,12 +133,12 @@ export interface ProductSwitcher {
   altText?: string;
   columns?: number;
   icon?: string;
-  items?: [ProductSwitcherItems];
+  items?: [ProductSwitcherItem];
   label?: string;
   testId?: string;
 }
 
-export interface ProductSwitcherItems {
+export interface ProductSwitcherItem {
   altText?: string;
   externalLink?: ExternalLink;
   icon?: string;
