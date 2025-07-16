@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     <script type="text/javascript">
       const tokenLifetimeDays = 7;
 
-      const getParameterByName = name => {
+      const getParameterByName = (name) => {
         return new URLSearchParams(location.search).get(name);
       };
 
-      const setAuthData = data => {
+      const setAuthData = (data) => {
         const storageType = getParameterByName('storageType') || 'localStorage';
         switch (storageType) {
           case 'localStorage':
@@ -19,23 +19,46 @@
             break;
           default:
             console.error(
-              'Configuration Error: Invalid auth.storage setting. Must be either localStorage or sessionStorage to be used with OAuth2 Provider.'
+              'Configuration Error: Invalid auth.storage setting. Must be either localStorage or sessionStorage to be used with OAuth2 Provider.',
             );
         }
       };
 
+      // const getHashParams = () => {
+      //   let hash = encodeURIComponent(window.location.hash.replace('#', ''));
+      //   return decodeURIComponent(hash)
+      //     .split('&')
+      //     .reduce(function(result, item) {
+      //       var parts = item.split('=');
+      //       result[parts[0]] = parts[1];
+      //       return result;
+      //     }, {});
+      // };
+
       const getHashParams = () => {
-        const hash = encodeURIComponent(window.location.hash.replace('#', ''));
-        return decodeURIComponent(hash)
-          .split('&')
-          .reduce(function(result, item) {
-            var parts = item.split('=');
-            result[parts[0]] = parts[1];
-            return result;
-          }, {});
+        const hash = window.location.hash.substring(1); // removes the '#'
+        const params = new URLSearchParams(hash);
+        const allowedParams = [
+          'access_token',
+          'id_token',
+          'expires_in',
+          'scope',
+          'state',
+          'error',
+          'error_description',
+        ];
+        const result = {};
+
+        allowedParams.forEach((param) => {
+          if (params.has(param)) {
+            result[param] = params.get(param);
+          }
+        });
+
+        return result;
       };
 
-      const processExpDate = expiresInString => {
+      const processExpDate = (expiresInString) => {
         let expirationDate;
         const expiresIn = Number(expiresInString);
         if (!isNaN(expiresIn) && expiresIn > 0) {
@@ -46,16 +69,16 @@
         return expirationDate;
       };
 
-      const parseJwt = token => {
+      const parseJwt = (token) => {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(
           atob(base64)
             .split('')
-            .map(function(c) {
+            .map(function (c) {
               return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             })
-            .join('')
+            .join(''),
         );
 
         return JSON.parse(jsonPayload);
@@ -77,13 +100,13 @@
             accessToken: token,
             accessTokenExpirationDate: processExpDate(expires_in),
             scope: hashParams['scope'],
-            idToken: hashParams['id_token']
+            idToken: hashParams['id_token'],
           };
 
           setAuthData(data);
 
           const decodedState = atob(decodeURIComponent(hashParams['state'])).split(
-            '_luigiNonce='
+            '_luigiNonce=',
           );
           const appState = decodeURI(decodedState[0] || '');
           const nonce = decodedState[1];
@@ -92,7 +115,7 @@
             document.getElementsByTagName('body')[0].innerHTML =
               'Something went wrong. Try to log in again.';
             throw new Error(
-              'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.'
+              'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
             );
           }
 
