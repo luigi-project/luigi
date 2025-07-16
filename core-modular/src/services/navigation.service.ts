@@ -12,11 +12,11 @@ export interface TopNavData {
 
 export interface AppSwitcher {
   showMainAppEntry?: boolean;
-  items?: AppSwitcherItems[];
-  itemRenderer?: (item: AppSwitcherItems, slot: HTMLElement, appSwitcherApiObj?: any) => void;
+  items?: AppSwitcherItem[];
+  itemRenderer?: (item: AppSwitcherItem, slot: HTMLElement, appSwitcherApiObj?: any) => void;
 }
 
-export interface AppSwitcherItems {
+export interface AppSwitcherItem {
   title?: string;
   subtitle?: string;
   link?: string;
@@ -25,11 +25,16 @@ export interface AppSwitcherItems {
 
 export interface selectionConditions {
   route?: string;
-  contextCriteria?: Record<string, any>;
+  contextCriteria?: ContextCriteria[];
+}
+
+export interface ContextCriteria {
+  key: string;
+  value: string;
 }
 export interface ProfileSettings {
   logout: ProfileLogout;
-  items?: ProfileItems[];
+  items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
 }
 
@@ -40,10 +45,10 @@ export interface ProfileLogout {
   altText?: string;
 }
 
-export interface ProfileItems {
+export interface ProfileItem {
   label?: string;
   link?: string;
-  externalLink?: ExternalLinkItems;
+  externalLink?: ExternalLink;
   icon?: string;
   testId?: string;
   altText?: string;
@@ -90,11 +95,6 @@ export interface Node {
   hideSideNav?: boolean;
 }
 
-export interface ExternalLink {
-  URL: string;
-  sameWindow?: boolean;
-}
-
 export interface PageErrorHandler {
   timeout: number;
   viewUrl?: string;
@@ -133,14 +133,14 @@ export interface ProductSwitcher {
   altText?: string;
   columns?: number;
   icon?: string;
-  items?: [ProductSwitcherItems];
+  items?: [ProductSwitcherItem];
   label?: string;
   testId?: string;
 }
 
-export interface ProductSwitcherItems {
+export interface ProductSwitcherItem {
   altText?: string;
-  externalLink?: ExternalLinkItems;
+  externalLink?: ExternalLink;
   icon?: string;
   label?: string;
   link?: string;
@@ -149,7 +149,7 @@ export interface ProductSwitcherItems {
   testId?: string;
 }
 
-export interface ExternalLinkItems {
+export interface ExternalLink {
   url?: string;
   sameWindow?: boolean;
 }
@@ -333,7 +333,7 @@ export class NavigationService {
         subTitle: headerSettings.subTitle,
         link: '/'
       };
-      if (appSwitcher.items.some((item: AppSwitcherItems) => item.link === mainAppEntry.link)) {
+      if (appSwitcher.items.some((item: AppSwitcherItem) => item.link === mainAppEntry.link)) {
         return appSwitcher;
       }
       appSwitcher.items.unshift(mainAppEntry);
