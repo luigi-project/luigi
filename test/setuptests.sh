@@ -35,7 +35,6 @@ waitForWebServer() {
   done
 
   cypress run --env configFile=setuptest.json,url=$TESTURL --browser chrome -c video=false
-
   killWebserver $PORT
 }
 
