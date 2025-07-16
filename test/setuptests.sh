@@ -2,8 +2,9 @@
 
 CLI=$1
 PORT=$2
-TESTURL=$3
-URL=$4
+MFE=$3
+TESTURL=$4
+URL=$5
 
 killWebserver() {
   PORT=$1
@@ -25,6 +26,7 @@ killWebserver() {
 waitForWebServer() {
   PORT=$1
   TESTURL=$2
+  MFE=$3
   PROC=""
 
   while [ "$PROC" == "" ]
@@ -35,6 +37,11 @@ waitForWebServer() {
   done
 
   cypress run --env configFile=setuptest.json,url=$TESTURL --browser chrome -c video=false
+
+  if [ -n "$MFE" ]; then
+    killWebserver $MFE
+  fi
+
   killWebserver $PORT
 }
 
@@ -53,6 +60,6 @@ pwd
 cp ../luigi/test/e2e-test-application/cypress/e2e/test3/0-setuptests/setup-test.cy.js ./cypress/integration/setup-test.spec.js
 
 #Run actual test
-(set -e && waitForWebServer $PORT $TESTURL) & (
+(set -e && waitForWebServer $PORT $TESTURL $MFE) & (
 curl -s $URL > ./setup.sh &&
 printf '\n' | source ./setup.sh test)
