@@ -30,6 +30,9 @@
           .split('&')
           .reduce(function (result, item) {
             var parts = item.split('=');
+            if (!parts[0].includes('redirect')) {
+              result[parts[0]] = parts[1];
+            }
             result[parts[0]] = parts[1];
             return result;
           }, {});
