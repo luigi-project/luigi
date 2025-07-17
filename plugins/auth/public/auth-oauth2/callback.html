@@ -24,38 +24,15 @@
         }
       };
 
-      // const getHashParams = () => {
-      //   let hash = encodeURIComponent(window.location.hash.replace('#', ''));
-      //   return decodeURIComponent(hash)
-      //     .split('&')
-      //     .reduce(function(result, item) {
-      //       var parts = item.split('=');
-      //       result[parts[0]] = parts[1];
-      //       return result;
-      //     }, {});
-      // };
-
       const getHashParams = () => {
-        const hash = window.location.hash.substring(1); // removes the '#'
-        const params = new URLSearchParams(hash);
-        const allowedParams = [
-          'access_token',
-          'id_token',
-          'expires_in',
-          'scope',
-          'state',
-          'error',
-          'error_description',
-        ];
-        const result = {};
-
-        allowedParams.forEach((param) => {
-          if (params.has(param)) {
-            result[param] = params.get(param);
-          }
-        });
-
-        return result;
+        let hash = encodeURIComponent(window.location.hash.replace('#', ''));
+        return decodeURIComponent(hash)
+          .split('&')
+          .reduce(function (result, item) {
+            var parts = item.split('=');
+            result[parts[0]] = parts[1];
+            return result;
+          }, {});
       };
 
       const processExpDate = (expiresInString) => {
@@ -119,7 +96,14 @@
             );
           }
 
-          window.location.href = appState;
+          if (appState.startsWith(window.location.origin)) {
+            window.location.href = appState;
+          } else {
+            window.location.href = '' + appState;
+            console.log(
+              `Preventing redirect to ${appState} as it does not match the current origin.`,
+            );
+          }
         } else {
           // else tree only applies to idtoken auths, I guess
           const errorDescription = hashParams['error_description'];
