@@ -99,7 +99,7 @@
           if (appState.startsWith(window.location.origin)) {
             window.location.href = appState;
           } else {
-            window.location.href = '' + appState;
+            window.location.href = '/';
             console.log(
               `Preventing redirect to ${appState} as it does not match the current origin.`,
             );
