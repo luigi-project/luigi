@@ -2620,7 +2620,7 @@
   }
 
   //Make border radius for links inside fd-menu only for the first and last elements
-  :global(.fd-menu) {
+  :global(#app:not(.vega) .fd-menu) {
     :global(.fd-menu__list) {
       &:first-child {
         :global(.fd-menu__item) {

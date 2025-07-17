@@ -301,13 +301,11 @@
     text-align: left;
   }
 
-  li > a.fd-menu__link,
   li > button.fd-menu__link {
     background-color: var(--sapList_Background, #fff);
 
     &:hover {
       background-color: var(--sapList_Hover_Background, #f5f5f5);
-      border-radius: 0 !important;
     }
   }
 </style>
