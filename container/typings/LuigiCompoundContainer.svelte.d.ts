@@ -22,7 +22,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * children = [{ viewUrl: '/main.js', context: { label: 'WC', ...}, layoutConfig: {column: '1 / -1', ...}, eventListeners: [{ source: 'input1', ...}}]}];
    * myContainer.compoundConfig = { renderer, children };
    */
-  compoundConfig: Object;
+  compoundConfig: object;
 
   /**
    * If set to true defers from initializing the microfronted automatically. In that case init() can be used.
@@ -50,7 +50,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" node-params='{"node":"param"}'></luigi-container>
    * @example myContainer.nodeParams = {foo: bar}
    */
-  nodeParams: Object;
+  nodeParams: object;
 
   /**
    * If set to true, the Luigi compound container webcomponent will not use the shadow DOM for rendering.
@@ -68,7 +68,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" search-params='{"search":"param"}'></luigi-container>
    * @example myContainer.searchParams = {foo: bar}
    */
-  searchParams: Object;
+  searchParams: object;
 
   /**
    * The path parameters to be passed to the compound micro frontend.
@@ -77,7 +77,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" path-params='{"path":"param"}'></luigi-container>
    * @example myContainer.pathParams = {foo: "bar"}
    */
-  pathParams: Object;
+  pathParams: object;
 
   /**
    * The stringified context to be passed to the compound microfrontend.
@@ -95,7 +95,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" client-permissions='{"permission": "adminGroup"}'></luigi-container>
    * @example myContainer.clientPermissions = {permission: "adminGroup"}
    */
-  clientPermissions: Object;
+  clientPermissions: object;
 
   /**
    * The user settings to be passed to the compound micro frontend.
@@ -104,7 +104,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" user-settings='{"language": "de", "theme":"sap_horizon"}'></luigi-container>
    * @example myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
    */
-  userSettings: Object;
+  userSettings: object;
 
   /**
    * The anchor value to be passed to the compound micro frontend.
@@ -194,7 +194,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * containerElement.updateContext({newContextData: 'some data'})
    * @since 1.0.0
    */
-  updateContext(contextObj: Object): void;
+  updateContext(contextObj: object): void;
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.

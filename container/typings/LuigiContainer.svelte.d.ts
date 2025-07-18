@@ -107,7 +107,6 @@ export default class LuigiContainer extends HTMLElement {
   /**
    * If set to true, skips handshake and ready event is fired immediately.
    * @since 1.0.0
-   * TODO: https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML says booleans should not use "true"/"false", find a consistent style for our docs.
    * @example <luigi-container viewurl="/index.html" skipInitCheck></luigi-container>
    * @example myContainer.skipInitCheck = true
    */
@@ -120,7 +119,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" node-params='{"node":"param"}'></luigi-container>
    * @example myContainer.nodeParams = {foo: bar}
    */
-  nodeParams: Object;
+  nodeParams: object;
 
   /**
    * If set to true, the Luigi container webcomponent will not use the shadow DOM for rendering.
@@ -138,7 +137,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" search-params='{"search":"param"}'></luigi-container>
    * @example myContainer.searchParams = {foo: bar}
    */
-  searchParams: Object;
+  searchParams: object;
 
   /**
    * The path parameters to be passed to the web-component-based micro frontend.
@@ -147,7 +146,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" path-params='{"path":"param"}'></luigi-container>
    * @example myContainer.pathParams = {foo: "bar"}
    */
-  pathParams: Object;
+  pathParams: object;
 
   /**
    * The clientPermissions to be passed to the web-component-based micro frontend.
@@ -156,7 +155,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" client-permissions='{"permission": "adminGroup"}'></luigi-container>
    * @example myContainer.clientPermissions = {permission: "adminGroup"}
    */
-  clientPermissions: Object;
+  clientPermissions: object;
 
   /**
    * The user settings to be passed to the web-component-based micro frontend.
@@ -165,7 +164,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example <luigi-container viewurl="/index.html" user-settings='{"language": "de", "theme":"sap_horizon"}'></luigi-container>
    * @example myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
    */
-  userSettings: Object;
+  userSettings: object;
 
   /**
    * The anchor value to be passed to the web-component-based micro frontend.
@@ -231,7 +230,7 @@ export default class LuigiContainer extends HTMLElement {
    * containerElement.updateContext({newContextData: 'some data'})
    * @since 1.0.0
    */
-  updateContext(contextObj: Object, internal?: Object): void;
+  updateContext(contextObj: object, internal?: object): void;
 
   /**
    * Send a custom message to the microfronted.
@@ -241,7 +240,7 @@ export default class LuigiContainer extends HTMLElement {
    * containerElement.sendCustomMessage('my-message-id', {dataToSend: 'some data'})
    * @since 1.0.0
    */
-  sendCustomMessage(id: string, data?: Object): void;
+  sendCustomMessage(id: string, data?: object): void;
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -294,5 +293,5 @@ export default class LuigiContainer extends HTMLElement {
    * The authData value to be passed to the iframe-based micro frontend.
    * @since 1.2.0
    */
-  authData: Object;
+  authData: object;
 }
