@@ -30,9 +30,6 @@
           .split('&')
           .reduce(function (result, item) {
             var parts = item.split('=');
-            if (!parts[0].includes('redirect')) {
-              result[parts[0]] = parts[1];
-            }
             result[parts[0]] = parts[1];
             return result;
           }, {});
@@ -98,8 +95,9 @@
               'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
             );
           }
+          const appStateUrl = new URL(appState);
 
-          if (appState.startsWith(window.location.origin)) {
+          if (appStateUrl.origin === window.location.origin) {
             window.location.href = appState;
           } else {
             window.location.href = '/';
