@@ -56,6 +56,9 @@
          "pre-commit": "git diff --quiet HEAD -- container || npm run lint --prefix=container && npm run code-quality ./scripts/hooks/remove-test-prefixes.sh && ./scripts/hooks/generate-docu.sh &&  ./scripts/hooks/prevent-illegal-characters.sh"
       }
    },
+   "browserslist": [
+      "defaults"
+   ],
    "codeQuality": {
       "usePrettier": true
    },
