@@ -271,6 +271,7 @@
     vertical-align: middle;
     margin-right: 5px;
   }
+
   .nav-icon {
     height: 2em;
   }
