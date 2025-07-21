@@ -108,8 +108,14 @@
             // else tree only applies to idtoken auths, I guess
             const errorDescription = hashParams['error_description'];
             console.error('error', errorDescription);
-            window.location.href =
-              '/?error=' + error + '&errorDescription=' + errorDescription;
+
+            const params = new URLSearchParams();
+            params.set('error', encodeURIComponent(error));
+            params.set('errorDescription', encodeURIComponent(errorDescription));
+
+            window.location.href = '/?' + params.toString();
+            // window.location.href =
+            //   '/?error=' + error + '&errorDescription=' + errorDescription;
           }
         } else {
           window.location.href = '/';
