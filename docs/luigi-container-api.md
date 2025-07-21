@@ -514,7 +514,7 @@ Send a custom message to the microfronted.
 #### Parameters
 
 *   `id` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** a string containing the message id
-*   `data` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** data to be sent alongside the custom message
+*   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** data to be sent alongside the custom message
 
 #### Examples
 
