@@ -86,6 +86,15 @@
             '_luigiNonce=',
           );
           const appState = decodeURI(decodedState[0] || '');
+          const appStateUrl = new URL(appState);
+
+          if (appStateUrl.origin !== window.location.origin) {
+            console.log(
+              `Preventing redirect to ${appState} as it does not match the current origin.`,
+            );
+            return;
+          }
+
           const nonce = decodedState[1];
 
           if (nonce !== sessionStorage.getItem('luigi.nonceValue')) {
@@ -95,16 +104,16 @@
               'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
             );
           }
-          const appStateUrl = new URL(appState);
+          // const appStateUrl = new URL(appState);
 
-          if (appStateUrl.origin === window.location.origin) {
-            window.location.href = appStateUrl.href;
-          } else {
-            window.location.href = '/';
-            console.log(
-              `Preventing redirect to ${appState} as it does not match the current origin.`,
-            );
-          }
+          // if (appStateUrl.origin === window.location.origin) {
+          window.location.href = appStateUrl.href;
+          // } else {
+          //   window.location.href = '/';
+          //   console.log(
+          //     `Preventing redirect to ${appState} as it does not match the current origin.`,
+          //   );
+          // }
         } else {
           // else tree only applies to idtoken auths, I guess
           const errorDescription = hashParams['error_description'];
