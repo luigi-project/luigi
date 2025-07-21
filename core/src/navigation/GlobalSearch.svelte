@@ -152,8 +152,8 @@
   }
 
   .fd-popover:has(.luigi-search) {
+    margin-top: -1px;
     max-height: calc(var(--sapElement_LineHeight) - 2px);
-    transform: translateY(-1px);
   }
 
   .luigi-search {
