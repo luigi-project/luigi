@@ -49,12 +49,12 @@ export const RoutingModule = {
   },
 
   handleExternalLinkNavigation: (externalLink: ExternalLink) => {
-    if (externalLink.URL) {
+    if (externalLink.url) {
       const sameWindow = externalLink.sameWindow || false;
       if (sameWindow) {
-        window.location.href = externalLink.URL;
+        window.location.href = externalLink.url;
       } else {
-        const newWindow = window.open(externalLink.URL, '_blank');
+        const newWindow = window.open(externalLink.url, '_blank');
         if (newWindow) {
           newWindow.focus();
         }
