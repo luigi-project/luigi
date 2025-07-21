@@ -246,7 +246,7 @@ myContainer.skipInitCheck = true
 
 The parameters to be passed to the web-component-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -286,7 +286,7 @@ myContainer.noShadow = true
 
 The search parameters to be passed to the web-component-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -306,7 +306,7 @@ myContainer.searchParams = {foo: bar}
 
 The path parameters to be passed to the web-component-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -326,7 +326,7 @@ myContainer.pathParams = {foo: "bar"}
 
 The clientPermissions to be passed to the web-component-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -346,7 +346,7 @@ myContainer.clientPermissions = {permission: "adminGroup"}
 
 The user settings to be passed to the web-component-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -514,7 +514,7 @@ Send a custom message to the microfronted.
 #### Parameters
 
 *   `id` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** a string containing the message id
-*   `data` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** data to be sent alongside the custom message
+*   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** data to be sent alongside the custom message
 
 #### Examples
 
@@ -627,7 +627,7 @@ Returns **void**
 
 The authData value to be passed to the iframe-based micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 **Meta**
 

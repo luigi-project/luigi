@@ -44,7 +44,7 @@ myContainer.viewurl = "/index.html"
 The configuration for the compound microfrontend.
 Take a look at the [compound parameter](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=compound) for details.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -102,7 +102,7 @@ myContainer.locale = "en_us"
 
 The parameters to be passed to the compound micro frontend. Will not be passed to the compound children.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -142,7 +142,7 @@ myContainer.noShadow = true
 
 The search parameters to be passed to the compound micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -162,7 +162,7 @@ myContainer.searchParams = {foo: bar}
 
 The path parameters to be passed to the compound micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -202,7 +202,7 @@ myContainer.context = {label: "Dashboard"}
 
 The clientPermissions to be passed to the compound micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -222,7 +222,7 @@ myContainer.clientPermissions = {permission: "adminGroup"}
 
 The user settings to be passed to the compound micro frontend.
 
-Type: [object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 #### Examples
 
@@ -415,7 +415,7 @@ Function that updates the context of the compound microfrontend.
 
 #### Parameters
 
-*   `contextObj` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** The context data
+*   `contextObj` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** The context data
 
 #### Examples
 
