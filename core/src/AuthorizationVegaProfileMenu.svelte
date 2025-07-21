@@ -203,13 +203,14 @@
           <ul class="fd-menu__list fd-user-menu__menu-list" role="menu">
             {#if hasUserSettings}
               <li
-                class="fd-menu__item"
+                class="fd-menu__item lui-anchor-node"
                 role="presentation"
+                tabindex="-1"
                 on:click|preventDefault={onUserSettingsClick}
                 on:keyup={(event) => handleKeyUp(event)}
               >
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a class="fd-menu__link" role="menuitem" data-testid="settings-link">
+                <a class="fd-menu__link" role="menuitem" data-testid="settings-link" tabindex="0">
                   <span class="fd-menu__addon-before">
                     <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
                     {#if profileNav.settings?.icon}
