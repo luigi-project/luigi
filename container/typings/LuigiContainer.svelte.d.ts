@@ -240,7 +240,7 @@ export default class LuigiContainer extends HTMLElement {
    * containerElement.sendCustomMessage('my-message-id', {dataToSend: 'some data'})
    * @since 1.0.0
    */
-  sendCustomMessage(id: string, data?: Object): void;
+  sendCustomMessage(id: string, data?: object): void;
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
