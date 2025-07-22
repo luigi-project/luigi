@@ -108,8 +108,15 @@
           window.location.href = newUrl.href;
         } else {
           // else tree only applies to idtoken auths, I guess
-          const errorDescription = hashParams['error_description'];
+          let errorDescription = hashParams['error_description'];
           console.error('error', errorDescription);
+          if (errorDescription && errorDescription.match(/https?:\/\//i)) {
+            console.warn('Blocked potential open redirect via errorDescription');
+            errorDescription = 'Invalid error description';
+            // throw new Error(
+            //   'Blocked potential open redirect via errorDescription',
+            // );
+          }
 
           const params = new URLSearchParams();
           params.set('error', error);
