@@ -98,8 +98,6 @@
 
           const appStateUrl = new URL(appState);
           if (appStateUrl.origin === window.location.origin) {
-            // window.location.href =
-            //   appStateUrl.pathname + appStateUrl.search + appStateUrl.hash;
             const newUrl = new URL(window.location.href);
             newUrl.pathname = appStateUrl.pathname;
             newUrl.search = appStateUrl.search;
