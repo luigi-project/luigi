@@ -110,12 +110,9 @@
           // else tree only applies to idtoken auths, I guess
           let errorDescription = hashParams['error_description'];
           console.error('error', errorDescription);
-          if (errorDescription && errorDescription.match(/https?:\/\//i)) {
-            console.warn('Blocked potential open redirect via errorDescription');
-            errorDescription = 'Invalid error description';
-            // throw new Error(
-            //   'Blocked potential open redirect via errorDescription',
-            // );
+          const containsUrl = /(https?:)?\/\/[^\s]+/i.test(errorDescription);
+          if (containsUrl) {
+            errorDescription = 'Invalid error description.';
           }
 
           const params = new URLSearchParams();
