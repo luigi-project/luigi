@@ -117,7 +117,7 @@
           console.error('error', errorDescription);
           window.location.href =
             '/?error=' +
-            error +
+            encodeURIComponent(error) +
             '&errorDescription=' +
             encodeURIComponent(errorDescription);
         }
