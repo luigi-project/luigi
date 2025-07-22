@@ -72,54 +72,55 @@
         const error = hashParams['error'];
         const { exp } = parseJwt(hashParams['id_token']);
         const expires_in = hashParams['expires_in'] || exp;
-        const decodedState = atob(decodeURIComponent(hashParams['state'])).split(
-          '_luigiNonce=',
-        );
-        const appState = decodeURI(decodedState[0] || '');
-        const appStateUrl = new URL(appState);
-        if (appStateUrl.origin === window.location.origin) {
-          // window.location.href =
-          //   appStateUrl.pathname + appStateUrl.search + appStateUrl.hash;
-          const newUrl = new URL(window.location.href);
-          newUrl.pathname = appStateUrl.pathname;
-          newUrl.search = appStateUrl.search;
-          newUrl.hash = appStateUrl.hash;
+        if (!error) {
+          const data = {
+            accessToken: token,
+            accessTokenExpirationDate: processExpDate(expires_in),
+            scope: hashParams['scope'],
+            idToken: hashParams['id_token'],
+          };
 
-          if (!error) {
-            const data = {
-              accessToken: token,
-              accessTokenExpirationDate: processExpDate(expires_in),
-              scope: hashParams['scope'],
-              idToken: hashParams['id_token'],
-            };
+          setAuthData(data);
 
-            setAuthData(data);
+          const decodedState = atob(decodeURIComponent(hashParams['state'])).split(
+            '_luigiNonce=',
+          );
+          const appState = decodeURI(decodedState[0] || '');
+          const nonce = decodedState[1];
 
+          if (nonce !== sessionStorage.getItem('luigi.nonceValue')) {
+            document.getElementsByTagName('body')[0].innerHTML =
+              'Something went wrong. Try to log in again.';
+            throw new Error(
+              'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
+            );
+          }
 
-            const nonce = decodedState[1];
-
-            if (nonce !== sessionStorage.getItem('luigi.nonceValue')) {
-              document.getElementsByTagName('body')[0].innerHTML =
-                'Something went wrong. Try to log in again.';
-              throw new Error(
-                'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
-              );
-            }
-
+          const appStateUrl = new URL(appState);
+          if (appStateUrl.origin === window.location.origin) {
+            const newUrl = new URL(window.location.href);
+            newUrl.pathname = appStateUrl.pathname;
+            newUrl.search = appStateUrl.search;
+            newUrl.hash = appStateUrl.hash;
             window.location.href = newUrl.href;
           } else {
-            // else tree only applies to idtoken auths, I guess
-            const errorDescription = hashParams['error_description'];
-            console.error('error', errorDescription);
-            window.location.href = '/?error=' + error + '&errorDescription=' + errorDescription;
+            window.location.href = '/';
+            console.log(
+              `Preventing redirect to ${appState} as it does not match the current origin.`,
+            );
           }
+        } else {
+          // else tree only applies to idtoken auths, I guess
+          const errorDescription = hashParams['error_description'];
+          console.error('error', errorDescription);
+          const params = new URLSearchParams();
+          params.set('error', error);
+          params.set('errorDescription', errorDescription);
+          const url = new URL('/', window.location.href);
+          url.search = params;
+          window.location.href = url.href;
         }
-        else {
-          window.location.href = '/';
-          console.log(
-            `Preventing redirect to ${appState} as it does not match the current origin.`,
-          );
-        }
+      }
     </script>
   </body>
 </html>
