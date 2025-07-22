@@ -241,7 +241,6 @@ myContainer.skipInitCheck = true
 **Meta**
 
 *   **since**: 1.0.0
-    TODO: https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML says booleans should not use "true"/"false", find a consistent style for our docs.
 
 ### nodeParams
 
