@@ -116,7 +116,7 @@
           const errorDescription = hashParams['error_description'];
           console.error('error', errorDescription);
           window.location.href =
-            '/?error=' + error + '&errorDescription=' + errorDescription;
+            '/?error=' + error + '&errorDescription=' + encodeURIComponent(errorDescription);
         }
       }
     </script>
