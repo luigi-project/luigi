@@ -177,6 +177,7 @@ class NavigationHelpersClass {
             displayLabel += ' ';
           }
           result[displayLabel] = result[metaInfo.id];
+          metaInfo.label = displayLabel;
         }
         delete result[metaInfo.id];
       }
