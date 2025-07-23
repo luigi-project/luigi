@@ -25,7 +25,7 @@
       };
 
       const getHashParams = () => {
-        const hash = encodeURIComponent(window.location.hash.replace('#', ''));
+        const hash = encodeURIComponent(window.location.hash.substring(1));
         return decodeURIComponent(hash)
           .split('&')
           .reduce(function (result, item) {
