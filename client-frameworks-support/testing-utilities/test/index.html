@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Luigi Mock Engine Testing MFE</title>
@@ -18,9 +18,7 @@
     <div class="fd-layout-panel">
       <div class="fd-layout-panel__header">
         <div class="fd-layout-panel__head">
-          <h3 class="fd-title fd-title--h3">
-            UX Manager testing panel
-          </h3>
+          <h3 class="fd-title fd-title--h3">UX Manager testing panel</h3>
           <div class="fd-layout-panel__actions">
             <button id="uxbutton1" class="fd-button" data-arg1="alert">
               Test MockModule Alert
@@ -42,9 +40,7 @@
     <div class="fd-layout-panel">
       <div class="fd-layout-panel__header">
         <div class="fd-layout-panel__head">
-          <h3 class="fd-title fd-title--h3">
-            Link Manager testing panel
-          </h3>
+          <h3 class="fd-title fd-title--h3">Link Manager testing panel</h3>
           <div class="fd-layout-panel__actions">
             <button id="button1" class="fd-button" data-arg1="modal">
               Test MockModule Modal
@@ -65,7 +61,7 @@
   </body>
 </html>
 <script type="module">
-  import { LuigiMockEngine } from './node_modules/@luigi-project/testing-utilities/dist/index.js';
+  import { LuigiMockEngine } from './node_modules/@luigi-project/testing-utilities/dist/luigi-mock-engine.js';
 
   let initPostMessageMthd = await Promise.resolve(LuigiMockEngine.initPostMessageHook());
   let buttonArray = [
@@ -76,7 +72,7 @@
     'uxbutton1',
     'uxbutton2',
     'uxbutton3',
-    'uxbutton4'
+    'uxbutton4',
   ];
 
   // Attach post message hook from MockModule
@@ -91,7 +87,7 @@
       case 'modal':
         LuigiClient.linkManager().openAsModal('projects/pr1/users', {
           title: 'Users',
-          size: 'm'
+          size: 'm',
         });
         break;
 
@@ -99,7 +95,7 @@
         LuigiClient.linkManager().openAsSplitView('projects/pr1/logs', {
           title: 'Logs',
           size: 40,
-          collapsed: true
+          collapsed: true,
         });
         break;
 
@@ -107,7 +103,7 @@
         LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {
           header: true,
           backdrop: true,
-          size: 's'
+          size: 's',
         });
         break;
 
@@ -119,7 +115,7 @@
       case 'alert':
         const settings = {
           text: 'This is just a test alert for external micro frontend.',
-          type: 'success'
+          type: 'success',
         };
         LuigiClient.uxManager().showAlert(settings);
         break;
@@ -130,12 +126,12 @@
           header: 'Confirmation',
           body: 'Are you sure you want to do this?',
           buttonConfirm: 'Yes',
-          buttonDismiss: 'No'
+          buttonDismiss: 'No',
         };
         LuigiClient.uxManager()
           .showConfirmationModal(modalSettings)
           .then(() => {})
-          .catch(e => {});
+          .catch((e) => {});
         break;
 
       case 'loadIndicator':
@@ -152,7 +148,7 @@
   };
 
   // Attach event listeners to Buttons
-  buttonArray.forEach(btn => {
+  buttonArray.forEach((btn) => {
     document.getElementById(btn).addEventListener('click', callMockModule);
   });
 </script>
