@@ -150,6 +150,12 @@
       outline: none;
     }
   }
+
+  .fd-popover:has(.luigi-search) {
+    margin-top: -1px;
+    max-height: calc(var(--sapElement_LineHeight) - 2px);
+  }
+
   .luigi-search {
     &[aria-hidden='true'] {
       visibility: hidden;
@@ -159,6 +165,7 @@
     &__input {
       width: 184px;
     }
+
     &-popover__body {
       top: calc(2.25rem + 5px);
 
