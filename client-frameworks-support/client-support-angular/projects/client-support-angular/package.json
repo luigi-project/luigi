@@ -22,5 +22,5 @@
     "@luigi-project/client": "^2.0.0",
     "@luigi-project/testing-utilities": "^2.0.0"
   },
-  "version": "20.0.1"
+  "version": "2.23.0"
 }
