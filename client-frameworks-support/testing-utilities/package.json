@@ -29,7 +29,7 @@
     "microfrontends",
     "testing"
   ],
-  "version": "2.22.1",
+  "version": "2.23.0",
   "engines": {
     "node": ">=18.19.1"
   }
