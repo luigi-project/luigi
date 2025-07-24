@@ -237,6 +237,7 @@ For example, to allow 'fullscreen' for non-modal iframes:
 You can set the following values:
   * `simple` displays basic profile menu list of entities.
   * `Fiori3` displays renewed profile menu layout according to the Fiori 3 styleguides. It contains the avatar of a user, if applicable, and additional description. **since**: v1.14.0
+  * `vega` displays renewed profile menu layout according to the `Vega` styleguides. **since**: v2.23.0
 - **default**: if you don't specify any value for **profileType**, the `simple` layout will be used as a default one.
 
 ### responsiveNavigation
@@ -253,6 +254,50 @@ You can set the following values:
 You can set the following values:
   * `button` renders a **button** tag.
 - **default**: if you don't specify any value for  **semiCollapsibleButtonStyle**, the control is rendered as an **i** tag.
+
+### sideNav.style
+- **description**: Displays the updated side navigation layout styled according to the Vega design guidelines. Must be set to `vega`. **since** v2.23.0
+
+#### sideNav.subCategoryDelimiter
+- **description**: With the vega theme, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.
+- **since** v2.23.0
+- **example**:
+```javascript
+{
+  label: 'Node',
+  category: {
+      id: 'myCat',
+      label: 'My Category',
+      collapsible: true,
+      icon: 'home'
+  },
+  pathSegment: 'node',
+  viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+}, {
+  label: 'Node1',
+  category: {
+      id: 'myCat::subCat',
+      label: 'My Subcategory',
+      collapsible: true,
+      icon: 'group'
+  },
+  pathSegment: 'node1',
+  viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+  context: {
+      title: 'node1',
+      content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+  }
+}, {
+  label: 'Node2',
+  category: 'myCat::subCat',
+  pathSegment: 'node2',
+  viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+  context: {
+      title: 'node2',
+      content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+  }
+}
+```
 
 ### sideNavCompactMode
 - **description**: reduces the dimensions of the side navigation and allows you to display more information.
