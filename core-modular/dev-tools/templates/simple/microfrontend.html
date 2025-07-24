@@ -23,7 +23,9 @@
       <h1>Luigi Simple Development Template</h1>
       <p>Some content</p>
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
-      <button onclick="showAlert()">alert</button>
+      <button onclick="showAlert()">show alert</button>
+      <button onclick="addBackdrop()">add backdrop</button>
+      <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="showModal()">show MF2 in modal</button>
     </div>
     <script>
@@ -55,6 +57,14 @@
       window.addEventListener('hashchange', () => {
         div.innerHTML = location.hash;
       });
+
+      function addBackdrop() {
+        LuigiClient.uxManager().addBackdrop();
+      }
+
+      function removeBackdrop() {
+        LuigiClient.uxManager().removeBackdrop();
+      }
 
       function showModal() {
         LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });

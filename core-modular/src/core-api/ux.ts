@@ -50,4 +50,8 @@ export class UX {
       });
     });
   };
+
+  addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
+
+  removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
 }
