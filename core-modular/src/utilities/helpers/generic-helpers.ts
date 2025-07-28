@@ -51,5 +51,27 @@ export const GenericHelpers = {
    */
   trimTrailingSlash: (str: string) => {
     return GenericHelpers.isString(str) ? str.replace(/\/+$/, '') : '';
+  },
+
+  /**
+   * Checks if input is an object.
+   * @param objectToCheck mixed
+   * @returns {boolean}
+   */
+  isObject(objectToCheck: object) {
+    return !!(objectToCheck && typeof objectToCheck === 'object' && !Array.isArray(objectToCheck));
+  },
+
+  /*
+   * Gets value of the given property on the given object.
+   */
+  getConfigValueFromObject(object: Record<string, any>, property: string) {
+    let propIndex = 0;
+    let nextValue: any = object;
+    const propertyPath = property.split('.');
+    while (nextValue && propIndex < propertyPath.length) {
+      nextValue = nextValue[propertyPath[propIndex++]];
+    }
+    return nextValue;
   }
 };
