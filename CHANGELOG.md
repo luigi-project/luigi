@@ -25,6 +25,16 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.23.1] (2025-07-28)
+
+#### :bug: Fixed
+* [#4395](https://github.com/luigi-project/luigi/pull/4395) Fix: handle undefined iframe in sendMessage method ([@robertIsaac](https://github.com/robertIsaac))
+
+
+
+
+
+
 ## [v2.23.0] (2025-07-23)
 
 #### :rocket: Added
@@ -2053,3 +2063,4 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.22.0]: https://github.com/luigi-project/luigi/compare/v2.21.3...v2.22.0
 [v2.22.1]: https://github.com/luigi-project/luigi/compare/v2.22.0...v2.22.1
 [v2.23.0]: https://github.com/luigi-project/luigi/compare/v2.22.1...v2.23.0
+[v2.23.1]: https://github.com/luigi-project/luigi/compare/v2.23.0...v2.23.1
