@@ -108,7 +108,7 @@ function renderAppSwitcherItems(shellbar, appSwitcherData, lastSelectedItem = nu
 }
 
 function renderProductSwitcherItems(productSwitcherConfig) {
-  document.querySelector('.tool-layout > #productswitch-popover')?.remove();
+  document.querySelector('ui5-navigation-layout > #productswitch-popover')?.remove();
   const productSwitchPopover = document.createElement('ui5-popover');
   const productSwitch = document.createElement('ui5-product-switch');
   productSwitchPopover.setAttribute('id', 'productswitch-popover');
@@ -131,7 +131,7 @@ function renderProductSwitcherItems(productSwitcherConfig) {
     productSwitch.appendChild(productSwitchItem);
   });
 
-  document.querySelector('.tool-layout').appendChild(productSwitchPopover);
+  document.querySelector('ui5-navigation-layout').appendChild(productSwitchPopover);
 }
 
 function onProductSwitcherClick(event) {
@@ -163,7 +163,7 @@ function renderCategoryPopover(catObj) {
     catList.appendChild(catLi);
   });
   catPopover.appendChild(catList);
-  document.querySelector('.tool-layout').appendChild(catPopover);
+  document.querySelector('ui5-navigation-layout').appendChild(catPopover);
 }
 
 function createCategoryClickHandler(id) {
@@ -202,13 +202,12 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 const connector = {
   renderMainLayout: () => {
     if (!document.getElementById('app')) {
-      const appRoot = document.createElement('div');
+      const appRoot = document.createElement('ui5-navigation-layout');
       appRoot.id = 'app';
-      appRoot.classList.add('tool-layout');
+      // appRoot.classList.add('tool-layout');
       appRoot.innerHTML = `
-        <div class="luigi-backdrop--overlay"></div>
-        <ui5-shellbar></ui5-shellbar>
-        <ui5-side-navigation></ui5-side-navigation>
+        <ui5-shellbar slot="header"></ui5-shellbar>
+        <ui5-side-navigation slot="sideContent"></ui5-side-navigation>
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content"></div>
@@ -221,7 +220,7 @@ const connector = {
   },
 
   renderTopNav: (topNavData) => {
-    const shellbar = document.querySelector('.tool-layout > ui5-shellbar');
+    const shellbar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
     let lastSelectedItem;
 
     if (topNavData.productSwitcher) {
@@ -415,7 +414,7 @@ const connector = {
     }
   },
   getContainerWrapper: () => {
-    return document.querySelector('.tool-layout > .content-wrapper > .content');
+    return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
   renderModal: (lc, modalSettings, onCloseCallback) => {
     const dialog = document.createElement('ui5-dialog');
@@ -568,14 +567,6 @@ const connector = {
     dialog.appendChild(ui5Toolbar);
     document.body.appendChild(dialog);
     dialog.open = true;
-  },
-
-  addBackdrop: () => {
-    document.body.classList.add('backdrop-visible');
-  },
-
-  removeBackdrop: () => {
-    document.body.classList.remove('backdrop-visible');
   }
 };
 
