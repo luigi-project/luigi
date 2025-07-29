@@ -58,7 +58,7 @@ export class UX {
 
   openUserSettings = (settings: UserSettings) => {
     this.luigi.getEngine()._connector?.openUserSettings(settings);
-  }
+  };
 
   closeUserSettings = () => {
     this.luigi.getEngine()._connector?.closeUserSettings();

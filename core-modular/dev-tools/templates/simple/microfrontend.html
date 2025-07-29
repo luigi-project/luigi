@@ -62,7 +62,10 @@
       }
 
       function openUserSettings() {
-        LuigiClient.sendCustomMessage({id: 'usersettingsdialog', usersettings: {dialog: true}});
+        LuigiClient.sendCustomMessage({
+          id: 'usersettingsdialog',
+          usersettings: { dialog: true },
+        });
       }
     </script>
   </body>

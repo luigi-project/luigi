@@ -644,15 +644,19 @@ const connector = {
 Luigi.getEngine().bootstrap(connector);
 
 // handle custom events
-window.addEventListener('message', (event) => {
-  if (event?.data?.msg !== 'custom') {
-    return;
-  }
+window.addEventListener(
+  'message',
+  (event) => {
+    if (event?.data?.msg !== 'custom') {
+      return;
+    }
 
-  if (event?.data?.data?.usersettings?.dialog) {
-    globalThis.Luigi.ux().openUserSettings({
-      size: 'm',
-      title: 'User Settings'
-    });
-  }
-}, false);
+    if (event?.data?.data?.usersettings?.dialog) {
+      globalThis.Luigi.ux().openUserSettings({
+        size: 'm',
+        title: 'User Settings'
+      });
+    }
+  },
+  false
+);
