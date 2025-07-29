@@ -206,6 +206,7 @@ const connector = {
       appRoot.id = 'app';
       appRoot.classList.add('tool-layout');
       appRoot.innerHTML = `
+        <div class="luigi-backdrop--overlay"></div>
         <ui5-shellbar></ui5-shellbar>
         <ui5-side-navigation></ui5-side-navigation>
         <div class="content-wrapper">
@@ -637,6 +638,14 @@ const connector = {
 
     dialog.open = false;
     document.body.removeChild(dialog);
+  },
+
+  addBackdrop: () => {
+    document.body.classList.add('backdrop-visible');
+  },
+
+  removeBackdrop: () => {
+    document.body.classList.remove('backdrop-visible');
   }
 };
 

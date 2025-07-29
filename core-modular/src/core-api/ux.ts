@@ -63,4 +63,8 @@ export class UX {
   closeUserSettings = () => {
     this.luigi.getEngine()._connector?.closeUserSettings();
   };
+
+  addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
+
+  removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
 }
