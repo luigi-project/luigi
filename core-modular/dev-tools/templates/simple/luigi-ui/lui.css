@@ -113,3 +113,19 @@ ui5-shellbar {
 .luigi-alert--overlay ui5-message-strip{
     margin: 5px;
 }
+
+.luigi-backdrop--overlay {
+    inset: 0;
+    position: fixed;
+    z-index: -1;
+}
+
+.backdrop-visible .luigi-backdrop--overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 11;
+}
+
+.backdrop-visible .content-wrapper {
+    position: relative;
+    z-index: 11;
+}
