@@ -25,6 +25,7 @@
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
       <button onclick="showAlert()">alert</button>
       <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="openUserSettings()">open UserSettings</button>
     </div>
     <script>
       function showAlert() {
@@ -58,6 +59,10 @@
 
       function showModal() {
         LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
+      function openUserSettings() {
+        LuigiClient.sendCustomMessage({id: 'usersettingsdialog', usersettings: {dialog: true}});
       }
     </script>
   </body>

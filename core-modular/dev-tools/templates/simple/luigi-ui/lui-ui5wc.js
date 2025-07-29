@@ -567,8 +567,92 @@ const connector = {
     dialog.appendChild(ui5Toolbar);
     document.body.appendChild(dialog);
     dialog.open = true;
+  },
+
+  openUserSettings: (settings) => {
+    const processUserSettingGroups = () => {
+      const config = window.Luigi?.getConfig();
+      const userSettingGroups = [];
+      const userSettingGroupsFromConfig = config?.userSettings?.userSettingGroups || {};
+      const userSettingsSchema = Object.assign({}, userSettingGroupsFromConfig);
+
+      if (userSettingsSchema instanceof Object) {
+        for (const item in userSettingsSchema) {
+          const innerObj = {};
+
+          innerObj[item] = userSettingsSchema[item];
+          userSettingGroups.push(innerObj);
+        }
+
+        return userSettingGroups;
+      }
+
+      return userSettingGroups;
+    };
+    const userSettingData = processUserSettingGroups();
+    const dialog = document.createElement('ui5-dialog');
+    const lc = document.createElement('div');
+    const bar = document.createElement('ui5-bar');
+    const btn = document.createElement('ui5-button');
+
+    dialog.classList.add('lui-dialog');
+    dialog.setAttribute('header-text', settings?.title);
+    setDialogSize(dialog, settings);
+
+    bar.setAttribute('slot', 'header');
+    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.title}</ui5-title>`;
+    dialog.appendChild(bar);
+
+    btn.innerHTML = 'X';
+    btn.onclick = () => {
+      dialog.open = false;
+    };
+    btn.setAttribute('slot', 'endContent');
+    bar.appendChild(btn);
+
+    if (Array.isArray(userSettingData) && userSettingData.length > 0) {
+      lc.innerHTML = `
+        <ui5-title level="H3">${userSettingData[0].privacy.label}</ui5-title>
+        <p>${userSettingData[0].privacy.settings.policy.label}</p>
+        <p>${userSettingData[0].privacy.settings.time.label} - ${userSettingData[0].privacy.settings.time.options[0]}</p>
+      `;
+    } else {
+      lc.innerHTML = `
+        <ui5-title level="H3">No user setting groups</ui5-title>
+        <p>There are no user setting groups in the settings section of the Luigi config defined.}</p>
+      `;
+    }
+
+    dialog.appendChild(lc);
+    document.body.appendChild(dialog);
+    dialog.open = true;
+  },
+
+  closeUserSettings: () => {
+    const dialog = document.queryElement('ui5-dialog');
+
+    if (!dialog) {
+      return;
+    }
+
+    dialog.open = false;
+    document.body.removeChild(dialog);
   }
 };
 
 // eslint-disable-next-line no-undef
 Luigi.getEngine().bootstrap(connector);
+
+// handle custom events
+window.addEventListener('message', (event) => {
+  if (event?.data?.msg !== 'custom') {
+    return;
+  }
+
+  if (event?.data?.data?.usersettings?.dialog) {
+    globalThis.Luigi.ux().openUserSettings({
+      size: 'm',
+      title: 'User Settings'
+    });
+  }
+}, false);

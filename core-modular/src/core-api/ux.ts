@@ -1,5 +1,10 @@
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { type AlertSettings, type ProcessedAlertSettings, type ConfirmationModalSettings } from '../modules/ux-module';
+import {
+  type AlertSettings,
+  type ProcessedAlertSettings,
+  type ConfirmationModalSettings,
+  type UserSettings
+} from '../modules/ux-module';
 import type { Luigi } from './luigi';
 
 export class UX {
@@ -49,5 +54,13 @@ export class UX {
         }
       });
     });
+  };
+
+  openUserSettings = (settings: UserSettings) => {
+    this.luigi.getEngine()._connector?.openUserSettings(settings);
+  }
+
+  closeUserSettings = () => {
+    this.luigi.getEngine()._connector?.closeUserSettings();
   };
 }

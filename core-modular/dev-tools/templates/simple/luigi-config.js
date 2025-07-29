@@ -217,6 +217,38 @@ window.onload = () => {
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
       }
+    },
+    userSettings: {
+      userSettingsProfileMenuEntry: {
+        label: 'My Settings',
+        icon: 'settings'
+      },
+      userSettingsDialog: {
+        dialogHeader: 'My UserSettings',
+        saveBtn: 'Save',
+        dismissBtn: 'Cancel'
+      },
+      userSettingGroups: {
+        privacy: {
+          label: 'Privacy',
+          title: 'Privacy',
+          icon: 'private',
+          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+          settings: {
+            policy: {
+              type: 'string',
+              label: 'Privacy policy has not been defined.',
+              placeholder: '...'
+            },
+            time: {
+              type: 'enum',
+              style: 'button',
+              label: 'Time Format',
+              options: ['12 h', '24 h']
+            }
+          }
+        }
+      }
     }
   });
 };

@@ -24,5 +24,11 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
+    containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.openUserSettings(event.detail);
+    });
+    containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
+    });
   }
 };

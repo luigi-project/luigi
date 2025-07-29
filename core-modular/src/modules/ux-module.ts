@@ -38,9 +38,14 @@ export interface ConfirmationModalSettings {
   buttonConfirm?: string;
   buttonDismiss?: string;
 }
+
 export interface ConfirmationModalHandler {
   confirm(): void;
   dismiss(): void;
+}
+
+export interface UserSettings {
+  [key: string]: number | string | boolean;
 }
 
 export const UXModule = {
