@@ -58,14 +58,14 @@ export const GenericHelpers = {
    * @param objectToCheck mixed
    * @returns {boolean}
    */
-  isObject(objectToCheck: object) {
+  isObject(objectToCheck: object): boolean {
     return !!(objectToCheck && typeof objectToCheck === 'object' && !Array.isArray(objectToCheck));
   },
 
   /*
    * Gets value of the given property on the given object.
    */
-  getConfigValueFromObject(object: Record<string, any>, property: string) {
+  getConfigValueFromObject(object: Record<string, any>, property: string): any {
     let propIndex = 0;
     let nextValue: any = object;
     const propertyPath = property.split('.');
