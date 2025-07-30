@@ -27,6 +27,7 @@
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="setDocumentTitle()">set document title</button>
     </div>
     <script>
       function showAlert() {
@@ -68,6 +69,10 @@
 
       function showModal() {
         LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
+      function setDocumentTitle() {
+        LuigiClient.sendCustomMessage({id: 'set-document-title-request', title: 'my-title'});
       }
     </script>
   </body>
