@@ -4,8 +4,14 @@
 function storeExpandedState(uid, expanded) {
   const stored = localStorage.getItem('luigi.preferences.navigation.expandedCategories');
   try {
-    const arr = stored ? JSON.parse(stored) : [];
-    arr.push(uid);
+    let arr = stored ? JSON.parse(stored) : [];
+    if (expanded) {
+      arr.push(uid);
+    } else {
+      arr = arr.filter((item) => {
+        return item !== uid;
+      });
+    }
     localStorage.setItem('luigi.preferences.navigation.expandedCategories', JSON.stringify(arr));
   } catch (e) {
     // ?
