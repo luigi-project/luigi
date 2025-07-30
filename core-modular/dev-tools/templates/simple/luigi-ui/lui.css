@@ -20,7 +20,7 @@ ui5-side-navigation {
 }
 
 .content-wrapper {
-    min-height: 0;
+    height: 100%;
 }
 
 .ui5-tabcontainer-hidden {
@@ -59,20 +59,6 @@ ui5-side-navigation {
 ui5-shellbar::part(root) {
     padding-inline-start: 0.75rem;
     padding-inline-end: 1.25rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 0.125rem 0 color-mix(in srgb, var(--sapContent_ShadowColor) 16%, transparent),
-        0 0.5rem 1rem 0 color-mix(in srgb, var(--sapContent_ShadowColor) 16%, transparent);
-}
-
-.tool-layout {
-    height: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem 0.5rem 0 0.5rem;
-    /* background: color-mix(in srgb, black 4%, var(--sapBackgroundColor)); */
-    display: grid;
-    gap: 0.5rem;
-    grid-template-rows: auto 1fr;
-    grid-template-columns: auto 1fr;
 }
 
 ui5-shellbar {
@@ -85,9 +71,6 @@ ui5-shellbar {
     height: 100%;
     overflow: hidden;
     background: var(--sapBackgroundColor);
-    border-radius: 0.5rem 0.5rem 0 0;
-    box-shadow: 0 0 0.125rem 0 color-mix(in srgb, var(--sapContent_ShadowColor) 16%, transparent),
-        0 0.5rem 1rem 0 color-mix(in srgb, var(--sapContent_ShadowColor) 16%, transparent);
 }
 
 .content luigi-container,
