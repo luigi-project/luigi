@@ -72,7 +72,10 @@
       }
 
       function setDocumentTitle() {
-        LuigiClient.sendCustomMessage({id: 'set-document-title-request', title: 'my-title'});
+        LuigiClient.sendCustomMessage({
+          id: 'set-document-title-request',
+          title: 'my-title',
+        });
       }
     </script>
   </body>

@@ -597,12 +597,16 @@ const connector = {
 Luigi.getEngine().bootstrap(connector);
 
 // handle custom events
-window.addEventListener('message', (event) => {
-  if (event?.data?.msg !== 'custom') {
-    return;
-  }
+window.addEventListener(
+  'message',
+  (event) => {
+    if (event?.data?.msg !== 'custom') {
+      return;
+    }
 
-  if (event?.data?.data?.title) {
-    globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
-  }
-}, false);
+    if (event?.data?.data?.title) {
+      globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+    }
+  },
+  false
+);
