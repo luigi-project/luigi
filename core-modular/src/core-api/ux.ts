@@ -1,4 +1,5 @@
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
 import {
   type AlertSettings,
   type ProcessedAlertSettings,
@@ -54,6 +55,10 @@ export class UX {
         }
       });
     });
+  };
+
+  processUserSettingGroups = (): any[] => {
+    return UserSettingsHelper.processUserSettingGroups(this.luigi.getConfig());
   };
 
   openUserSettings = (settings: UserSettings) => {

@@ -1,9 +1,8 @@
 import { GenericHelpers } from './generic-helpers';
 
 class UserSettingsHelperClass {
-  processUserSettingGroups(): any[] {
+  processUserSettingGroups(config: any): any[] {
     const userSettingGroups: any[] = [];
-    const config = (window as any).Luigi?.getConfig();
     const userSettingGroupsFromConfig = config?.userSettings?.userSettingGroups;
     const userSettingGroupsFromOldConfig = config?.settings?.userSettings?.userSettingGroups;
     // regarding backwards compatibility

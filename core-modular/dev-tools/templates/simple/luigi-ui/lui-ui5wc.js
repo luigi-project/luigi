@@ -582,26 +582,7 @@ const connector = {
       };
     }
 
-    const processUserSettingGroups = () => {
-      const config = window.Luigi?.getConfig();
-      const userSettingGroups = [];
-      const userSettingGroupsFromConfig = config?.userSettings?.userSettingGroups || {};
-      const userSettingsSchema = Object.assign({}, userSettingGroupsFromConfig);
-
-      if (userSettingsSchema instanceof Object) {
-        for (const item in userSettingsSchema) {
-          const innerObj = {};
-
-          innerObj[item] = userSettingsSchema[item];
-          userSettingGroups.push(innerObj);
-        }
-
-        return userSettingGroups;
-      }
-
-      return userSettingGroups;
-    };
-    const userSettingData = processUserSettingGroups();
+    const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
     const dialog = document.createElement('ui5-dialog');
     const lc = document.createElement('div');
     const bar = document.createElement('ui5-bar');
