@@ -79,5 +79,22 @@ export const GenericHelpers = {
     }
 
     return window.location.origin;
+  },
+
+  /**
+   * Gets value of the given property on the given object.
+   * @param object mixed
+   * @param property name of the given property
+   */
+  getConfigValueFromObject(object: Record<string, any>, property: string): any {
+    let propIndex = 0;
+    let nextValue: any = object;
+    const propertyPath = property.split('.');
+
+    while (nextValue && propIndex < propertyPath.length) {
+      nextValue = nextValue[propertyPath[propIndex++]];
+    }
+
+    return nextValue;
   }
 };
