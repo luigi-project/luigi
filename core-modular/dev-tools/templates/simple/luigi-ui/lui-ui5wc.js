@@ -641,7 +641,7 @@ const connector = {
   },
 
   closeUserSettings: () => {
-    const dialog = document.queryElement('ui5-dialog');
+    const dialog = document.querySelector('ui5-dialog');
 
     if (!dialog) {
       return;
