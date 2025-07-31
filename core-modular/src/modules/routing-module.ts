@@ -1,6 +1,7 @@
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
@@ -11,6 +12,15 @@ export const RoutingModule = {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
         const path = NavigationHelpers.normalizePath(location.hash);
+        
+        const [, query] = path.split("?");
+        const urlSearchParams = new URLSearchParams(query);
+        const paramsObj: Record<string, string> = {};
+        urlSearchParams.forEach((value, key) => {
+          paramsObj[key] = value;
+        });
+        const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
+        //TODO need to be send to the microfrontend in context object
         const redirect = navService.shouldRedirect(path);
         if (redirect) {
           luigi.navigation().navigate(redirect);
