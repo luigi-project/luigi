@@ -576,6 +576,12 @@ const connector = {
   },
 
   openUserSettings: (settings) => {
+    if (!settings) {
+      settings = {
+        title: 'User Settings'
+      };
+    }
+
     const processUserSettingGroups = () => {
       const config = window.Luigi?.getConfig();
       const userSettingGroups = [];
