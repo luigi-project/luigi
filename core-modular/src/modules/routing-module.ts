@@ -13,7 +13,7 @@ export const RoutingModule = {
         console.log('HashChange', location.hash);
         const path = NavigationHelpers.normalizePath(location.hash);
         
-        const [, query] = path.split("?");
+        const query = path.includes("?") ? path.split("?")[1] : undefined;
         const urlSearchParams = new URLSearchParams(query);
         const paramsObj: Record<string, string> = {};
         urlSearchParams.forEach((value, key) => {
