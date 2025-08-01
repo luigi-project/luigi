@@ -1,10 +1,10 @@
 import { GenericHelpers } from './generic-helpers';
 
 class UserSettingsHelperClass {
-  processUserSettingGroups(config: any): any[] {
+  processUserSettingGroups(userSettings: any, storedSettings: any): any[] {
     const userSettingGroups: any[] = [];
-    const userSettingGroupsFromConfig = config?.userSettings?.userSettingGroups;
-    const userSettingGroupsFromOldConfig = config?.settings?.userSettings?.userSettingGroups;
+    const userSettingGroupsFromConfig = userSettings?.userSettingGroups;
+    const userSettingGroupsFromOldConfig = storedSettings?.userSettings?.userSettingGroups;
     // regarding backwards compatibility
     const userSettingsSchema = userSettingGroupsFromConfig
       ? userSettingGroupsFromConfig

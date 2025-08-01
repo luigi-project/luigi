@@ -58,7 +58,10 @@ export class UX {
   };
 
   processUserSettingGroups = (): any[] => {
-    return UserSettingsHelper.processUserSettingGroups(this.luigi.getConfig());
+    const userSettings = this.luigi.getConfigValue('userSettings');
+    const storedSettings = this.luigi.getConfigValue('settings');
+
+    return UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
   };
 
   openUserSettings = (settings: UserSettings) => {
