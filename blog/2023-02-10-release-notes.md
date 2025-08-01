@@ -22,7 +22,7 @@ Luigi v2.0 will no longer be able to support Angular versions 13 or below. The [
 
 #### Renaming GitHub branch to `main`
 
-For Luigi v2.0, we renamed our GitHub default branch from `master` to `main`. This means that if you have cloned the [Luigi repository](https://github.com/SAP/luigi), you need to switch to the `main` branch. You can use the following commands to do so:
+For Luigi v2.0, we renamed our GitHub default branch from `master` to `main`. This means that if you have cloned the [Luigi repository](https://github.com/luigi-project/luigi), you need to switch to the `main` branch. You can use the following commands to do so:
 
 ```bash
 git branch -m master main
@@ -32,5 +32,5 @@ git branch -u upstream/main main
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
 

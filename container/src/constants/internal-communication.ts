@@ -93,6 +93,11 @@ export namespace LuigiInternalMessageID {
   export const GET_CURRENT_ROUTE_REQUEST = 'luigi.navigation.currentRoute';
 
   /**
+   * A message sent to the microfrontend from parent with the current app route
+   */
+  export const SEND_CURRENT_ROUTE_ANSWER = 'luigi.navigation.currentRoute.answer';
+
+  /**
    * A message sent to the Microfrontend with the payload being the context being sent
    */
   export const SEND_CONTEXT_OBJECT = 'luigi.navigate';
@@ -116,6 +121,11 @@ export namespace LuigiInternalMessageID {
    * A message emmitted from the Microfrontend when a request to check on the validity of a path is sent
    */
   export const CHECK_PATH_EXISTS_REQUEST = 'luigi.navigation.pathExists';
+
+  /**
+   * A message sent to the microfrontend from parent with the result of checking validity of a path
+   */
+  export const SEND_PATH_EXISTS_ANSWER = 'luigi.navigation.pathExists.answer';
 
   /**
    * A message emmitted from the Microfrontend when a request to set the 'dirty status' (ex: avoid closing if usaved changes) is sent

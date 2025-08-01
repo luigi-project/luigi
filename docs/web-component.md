@@ -255,6 +255,6 @@ Below is a Luigi web component example configuration which shows 3 web component
 
 ## Examples 
 
-You can find an example of Luigi web components in [Luigi Fiddle](https://fiddle.luigi-project.io) in the last navigation entry on the left. The source code for Fiddle is available on [GitHub](https://github.com/SAP/luigi/tree/main/website/fiddle) as well.
+You can find an example of Luigi web components in [Luigi Fiddle](https://fiddle.luigi-project.io) in the last navigation entry on the left. The source code for Fiddle is available on [GitHub](https://github.com/luigi-project/luigi/tree/main/website/fiddle) as well.
 
-Additionally, our e2e test application includes [web components](https://github.com/SAP/luigi/blob/main/test/e2e-test-application/src/luigi-config/extended/projectDetailNav.js#L319) and [compound](https://github.com/SAP/luigi/blob/main/test/e2e-test-application/src/luigi-config/extended/projectDetailNav.js#L11) examples as well. To install the e2e app, follow the instructions on [GitHub](https://github.com/SAP/luigi/tree/main/test/e2e-test-application#luigi-sample-and-e2e-test-application-written-in-angular). 
+Additionally, our e2e test application includes [web components](https://github.com/luigi-project/luigi/blob/main/test/e2e-test-application/src/luigi-config/extended/projectDetailNav.js#L319) and [compound](https://github.com/luigi-project/luigi/blob/main/test/e2e-test-application/src/luigi-config/extended/projectDetailNav.js#L11) examples as well. To install the e2e app, follow the instructions on [GitHub](https://github.com/luigi-project/luigi/tree/main/test/e2e-test-application#luigi-sample-and-e2e-test-application-written-in-angular). 

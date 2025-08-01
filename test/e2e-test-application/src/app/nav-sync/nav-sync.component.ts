@@ -10,7 +10,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-nav-sync',
   templateUrl: './nav-sync.component.html',
-  styleUrls: ['./nav-sync.component.css']
+  styleUrls: ['./nav-sync.component.css'],
+  standalone: false
 })
 export class NavSyncComponent implements OnInit, OnDestroy {
   segments: String[] = ['one', 'two', 'three', 'four'];
@@ -24,12 +25,12 @@ export class NavSyncComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subs.add(
       this.route.url.subscribe(
-        segments => {
+        (segments) => {
           this.currentSegment = segments[segments.length - 1].path;
           const nextIndex = this.segments.indexOf(this.currentSegment) + 1;
           this.nextSegment = this.segments[nextIndex] ? this.segments[nextIndex] : this.segments[0];
         },
-        err => {}
+        (err) => {}
       )
     );
     this.updateLuigiConfig(true);

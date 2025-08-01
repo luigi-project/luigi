@@ -9,9 +9,9 @@ export { Events as LuigiEvents } from './constants/communication';
 export default Events;
 
 if (!customElements.get('luigi-container')) {
-  customElements.define('luigi-container', (LuigiContainer as ComponentType).element);
+  customElements.define('luigi-container', (LuigiContainer as unknown as ComponentType).element);
 }
 
 if (!customElements.get('luigi-compound-container')) {
-  customElements.define('luigi-compound-container', (LuigiCompoundContainer as ComponentType).element);
+  customElements.define('luigi-compound-container', (LuigiCompoundContainer as unknown as ComponentType).element);
 }

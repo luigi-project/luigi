@@ -12,15 +12,15 @@ You can read about the new features in Luigi v1.25.0 in the release notes below.
 
 #### Ignore events from inactive iframes
 
-With the changes made in Luigi v1.25, you will have the configurable option to no longer trigger events when an iframe micro frontend is not active. For reference, see the [pull request](https://github.com/SAP/luigi/pull/2908).
+With the changes made in Luigi v1.25, you will have the configurable option to no longer trigger events when an iframe micro frontend is not active. For reference, see the [pull request](https://github.com/luigi-project/luigi/pull/2908).
 
 #### getActiveFeatureToggles in Luigi Web Components
 
-We added the function [getActiveFeatureToggleList](https://docs.luigi-project.io/docs/luigi-core-api/?section=examples-58) to the Luigi Web Components API. For more information, see the [pull request](https://github.com/SAP/luigi/pull/2893). 
+We added the function [getActiveFeatureToggleList](https://docs.luigi-project.io/docs/luigi-core-api/?section=examples-58) to the Luigi Web Components API. For more information, see the [pull request](https://github.com/luigi-project/luigi/pull/2893). 
 
 #### Create React App Luigi Template
 
-[Create React App](https://github.com/facebook/create-react-app) is a simple way to create React apps with no build configuration. With this release, Luigi added a new template to enable you to quickly deploy React micro frontends with Luigi. You can find the template on our [GitHub repository](https://github.com/SAP/luigi/tree/main/cra-template).
+[Create React App](https://github.com/facebook/create-react-app) is a simple way to create React apps with no build configuration. With this release, Luigi added a new template to enable you to quickly deploy React micro frontends with Luigi. You can find the template on our [GitHub repository](https://github.com/luigi-project/luigi/tree/main/cra-template).
 
 #### Implement tests by using luigi mock module
 
@@ -36,8 +36,8 @@ Starting from this release, you can use the new parameter [header.disabled](http
 
 #### New js-test-application for e2e tests
 
-We introduced a new Vanilla JS test application to replace using Luigi Fiddle locally as a test application. The new test application has no default Luigi config. A test has to call the application with a specific config. For more information, see the [pull request](https://github.com/SAP/luigi/pull/2861).
+We introduced a new Vanilla JS test application to replace using Luigi Fiddle locally as a test application. The new test application has no default Luigi config. A test has to call the application with a specific config. For more information, see the [pull request](https://github.com/luigi-project/luigi/pull/2861).
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

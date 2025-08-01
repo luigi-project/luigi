@@ -3,33 +3,37 @@ import path from 'path';
 import frontmatter from 'frontmatter';
 import { marked } from 'marked';
 import slugify from 'slugify';
-import { BlogFeeds } from './feeds.service';
+import { BlogFeeds } from './feeds.service.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const luigiRootFolder = __dirname + '/../../../../../';
 const blogMdPath = path.join(luigiRootFolder, 'blog');
 const blogHtmlPath = path.join(__dirname, '..', 'pages', 'blog');
 
-const hasValidDate = dateStr => {
+const hasValidDate = (dateStr) => {
   // Tests YYYY-MM-DD
   const dateRegExp = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/g;
   return dateRegExp.test(dateStr);
 };
 
-const getSlug = fileName => {
-  return slugify(fileName.slice(0, -3)); // remove .md from the end
+const getSlug = (fileName) => {
+  return slugify(fileName.slice(0, -3)); //remove .md from the end
 };
 
 /**
  * Format english date from YYYY-MM-DD
  * @returns string 1. Mar, 2020
  */
-const formatDate = date => {
+const formatDate = (date) => {
   const d = new Date(Date.parse(date));
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return d.toLocaleDateString('en-US', options);
 };
 
-const getAuthors = authors => {
+const getAuthors = (authors) => {
   let authorStr;
   if (!authors) {
     return '';
@@ -56,11 +60,11 @@ const generateBlogEntry = (blog, content, showButton = false) => {
 
 export const getBlogEntries = (singleSlug = false) => {
   return readdirSync(blogMdPath)
-    .filter(fileName => !singleSlug || singleSlug == getSlug(fileName))
-    .filter(fileName => hasValidDate(fileName))
+    .filter((fileName) => !singleSlug || singleSlug == getSlug(fileName))
+    .filter((fileName) => hasValidDate(fileName))
     .sort()
     .reverse()
-    .map(fileName => {
+    .map((fileName) => {
       const fileContent = readFileSync(path.join(blogMdPath, fileName)).toString();
       const mdData = frontmatter(fileContent.split('<!-- Excerpt -->')[0]);
       const date = fileName.substr(0, 10); // 10 is length of the date
@@ -82,8 +86,8 @@ export const getBlogEntries = (singleSlug = false) => {
     });
 };
 
-const writeBlogFiles = blogEntries => {
-  blogEntries.forEach(entry => {
+const writeBlogFiles = (blogEntries) => {
+  blogEntries.forEach((entry) => {
     const blogHtml = `---
 title: ${entry.title}
 seoMetaDescription: ${entry.seoMetaDescription}

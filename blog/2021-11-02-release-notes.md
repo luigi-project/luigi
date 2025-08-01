@@ -27,7 +27,7 @@ Luigi.setConfig({
 })
 ```
 
-You can find more information [here](https://github.com/SAP/luigi/pull/2304) or in the [general settings](https://docs.luigi-project.io/docs/general-settings) documentation.
+You can find more information [here](https://github.com/luigi-project/luigi/pull/2304) or in the [general settings](https://docs.luigi-project.io/docs/general-settings) documentation.
 
 
 #### TooltipText parameter
@@ -41,9 +41,9 @@ The new Luigi Client method `updateModalSettings` allows you to change the size 
 
 #### Core API templating for compound children and external link nodes
 
-We enabled Core API templating for compound children and external link nodes, meaning it's possible to use `{i18n.currentLocale}` with a viewUrl. You can find more information [here](https://github.com/SAP/luigi/pull/2288).
+We enabled Core API templating for compound children and external link nodes, meaning it's possible to use `{i18n.currentLocale}` with a viewUrl. You can find more information [here](https://github.com/luigi-project/luigi/pull/2288).
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
 

@@ -1,7 +1,7 @@
 version = 1
 SPDX-PackageName = "Luigi"
 SPDX-PackageSupplier = "Philipp Pracht <philipp.pracht@sap.com>"
-SPDX-PackageDownloadLocation = "https://github.com/SAP/luigi"
+SPDX-PackageDownloadLocation = "https://github.com/luigi-project/luigi"
 
 [[annotations]]
 path = "**"

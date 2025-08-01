@@ -20,8 +20,8 @@ container/cypress/screenshots
 whitesource.config.json
 plugin*.js
 core/dev-tools/latest_build.log
-core/dev-tools/simple-app
-core-modular/dev-tools/simple-app
+core/dev-tools/simple-app*
+core-modular/dev-tools/simple-app*
 /full_eslint_report.html
 test/e2e-test-application/cypress/screenshots
 **/.DS_Store

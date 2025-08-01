@@ -15,7 +15,7 @@ mkdir $folder && cd $folder
 echo "Creating folders and downloading example assets"
 mkdir -p ./webapp/home ./webapp/libs ./webapp/sample1 ./webapp/sample2 ./webapp/i18n
 
-export UI5EX_REPO_URL="https://raw.githubusercontent.com/SAP/luigi/main/core/examples/luigi-example-openui5"
+export UI5EX_REPO_URL="https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-openui5"
 
 curl --silent $UI5EX_REPO_URL/webapp/sample2/Sample2.view.xml > ./webapp/sample2/Sample2.view.xml
 curl --silent $UI5EX_REPO_URL/webapp/sample2/sample2.html > ./webapp/sample2/sample2.html
