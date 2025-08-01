@@ -1,5 +1,11 @@
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { type AlertSettings, type ProcessedAlertSettings, type ConfirmationModalSettings } from '../modules/ux-module';
+import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
+import {
+  type AlertSettings,
+  type ProcessedAlertSettings,
+  type ConfirmationModalSettings,
+  type UserSettings
+} from '../modules/ux-module';
 import type { Luigi } from './luigi';
 
 export class UX {
@@ -49,6 +55,21 @@ export class UX {
         }
       });
     });
+  };
+
+  processUserSettingGroups = (): any[] => {
+    const userSettings = this.luigi.getConfigValue('userSettings');
+    const storedSettings = this.luigi.getConfigValue('settings');
+
+    return UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
+  };
+
+  openUserSettings = (settings: UserSettings) => {
+    this.luigi.getEngine()._connector?.openUserSettings(settings);
+  };
+
+  closeUserSettings = () => {
+    this.luigi.getEngine()._connector?.closeUserSettings();
   };
 
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
