@@ -18,6 +18,12 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: any) => {
       UXModule.handleConfirmationModalRequest(event.payload, containerElement);
     });
+    containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator();
+    });
+    containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator();
+    });
     containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.addBackdrop();
     });
