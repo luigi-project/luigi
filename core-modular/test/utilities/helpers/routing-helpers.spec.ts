@@ -3,6 +3,27 @@ const chai = require('chai');
 const assert = chai.assert;
 
 describe('Routing-helpers', () => {
+  let luigi: any = {};
+  beforeEach(() => {
+     luigi = {
+      config: {},
+      engine: {},
+      getConfig: () => ({ routing: { contentViewParamPrefix: '~' } }),
+      getEngine: () => ({}),
+      setConfig: () => {},
+      navigation: () => ({ navigate: () => {} }),
+      uxManager: () => ({}),
+      linkManager: () => ({}),
+      getConfigValue: (key: string) => {
+        if (key === 'routing.contentViewParamPrefix') {
+          return luigi.getConfig().routing.contentViewParamPrefix;
+        }
+        return null;
+      },
+      getActiveFeatureToggles: () => []
+    };
+  });
+
   it('addParamsOnHashRouting should add parameters to hash routing', () => {
     const params = { param1: 'value1', param2: 'value2' };
     const hash = '#/some/path?existingParam=existingValue';
@@ -44,5 +65,32 @@ describe('Routing-helpers', () => {
     assert.equal(searchParams.get('prefix_param1'), 'value1');
     assert.equal(searchParams.get('prefix_param2'), 'value2');
     assert.equal(searchParams.get('prefix_existingParam'), undefined);
+  });
+
+  it('filterNodeParams should filter and sanitize node parameters', () => {
+    const params = {
+      '~param1': 'value1',
+      '~param2': 'value2',
+      'otherParam': 'value3'
+    };
+    
+    const filteredParams = RoutingHelpers.filterNodeParams(params, luigi as any);
+    assert.deepEqual(filteredParams, { param1: 'value1', param2: 'value2' });
+  });
+
+  it('getContentViewParamPrefix should return the configured content view param prefix', () => {
+    luigi.getConfig = () => ({ routing: { contentViewParamPrefix: '~' } });
+    const prefix = RoutingHelpers.getContentViewParamPrefix(luigi);
+    assert.equal(prefix, '~');
+  });
+
+  it('sanitizeParamsMap should sanitize parameter keys and values', () => {
+    const paramsMap = {
+      'param1': 'value1',
+      'param2': '<script>alert("xss")</script>'
+    };
+    const sanitizedMap = RoutingHelpers.sanitizeParamsMap(paramsMap);
+    assert.equal(sanitizedMap['param1'], 'value1');
+    assert.equal(sanitizedMap['param2'], '&lt;script&gt;alert(&quot;xss&quot;)&lt;&sol;script&gt;');
   });
 });

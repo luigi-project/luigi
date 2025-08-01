@@ -1,7 +1,7 @@
 import type { Link, ProcessedTextAndLinks } from '../../modules/ux-module';
 
 // Helper methods that deal with character escaping.
-class EscapingHelpersClass {
+export const EscapingHelpers = {
   sanitizeHtml(text = '') {
     return text
       .replace(/&/g, '&amp;')
@@ -10,7 +10,7 @@ class EscapingHelpersClass {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/javascript:/g, '');
-  }
+  },
 
   restoreSanitizedBrs(text = '') {
     return text
@@ -18,7 +18,7 @@ class EscapingHelpersClass {
       .replace(/&lt;br \/&gt;/g, '<br>')
       .replace(/&lt;br&gt;/g, '<br>')
       .replace(/&lt;br &gt;/g, '<br>');
-  }
+  },
 
   restoreSanitizedElements(text = '') {
     let result = text;
@@ -47,11 +47,11 @@ class EscapingHelpersClass {
     }
 
     return result;
-  }
+  },
 
   sanatizeHtmlExceptTextFormatting(text = '') {
     return this.restoreSanitizedElements(this.sanitizeHtml(text));
-  }
+  },
 
   sanitizeParam(param = '') {
     return String(param)
@@ -60,11 +60,11 @@ class EscapingHelpersClass {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/\//g, '&sol;');
-  }
+  },
 
   escapeKeyForRegexp(str = '') {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-  }
+  },
 
   processTextAndLinks(text = '', links: Link, uniqueID: any): ProcessedTextAndLinks {
     let sanitizedText = this.restoreSanitizedBrs(this.sanitizeHtml(text));
@@ -91,5 +91,3 @@ class EscapingHelpersClass {
     }, initialValue);
   }
 }
-
-export const EscapingHelpers = new EscapingHelpersClass();

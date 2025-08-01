@@ -98,4 +98,23 @@ export class Routing {
   sanitizeUrl(url: string): string | undefined {
     return new URL(location.href).origin === new URL(url).origin ? url : undefined;
   }
+
+  addNodeParams(params: Record<string, any>, keepBrowserHistory: boolean ): void {
+      if (!GenericHelpers.isObject(params)) {
+        console.log('Params argument must be an object');
+        return;
+      }
+  
+      const paramPrefix = RoutingHelpers.getContentViewParamPrefix(this.luigi);
+      const url = new URL(location.href);
+      if (this.luigi.getConfigValue('routing.useHashRouting')) {
+        url.hash = RoutingHelpers.addParamsOnHashRouting(params, url.hash, paramPrefix);
+      } else {
+        RoutingHelpers.modifySearchParams(params, url.searchParams, paramPrefix);
+      }
+  
+      this.handleBrowserHistory(keepBrowserHistory, url);
+      // TODO
+      //this.luigi.configChanged();
+    }
 }
