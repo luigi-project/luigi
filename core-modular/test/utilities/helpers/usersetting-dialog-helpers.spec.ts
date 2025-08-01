@@ -40,7 +40,8 @@ describe('UserSettings-helpers', () => {
         icon: 'private',
         settings: {
           policy: {
-            type: 'string', label: 'Privacy policy has not been defined.'
+            type: 'string',
+            label: 'Privacy policy has not been defined.'
           },
           time: { type: 'enum', label: 'Time Format', options: ['12 h', '24 h'] }
         }
@@ -72,7 +73,7 @@ describe('UserSettings-helpers', () => {
   it('prepare user settings data from schema', () => {
     let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema);
     assert.equal(processedUserSettingGroups.length, 4);
-        assert.deepEqual(processedUserSettingGroups[0], {
+    assert.deepEqual(processedUserSettingGroups[0], {
       userAccount: {
         label: 'User Account',
         sublabel: 'username',
@@ -94,16 +95,14 @@ describe('UserSettings-helpers', () => {
 
   it('getUserSettingsIframesInDom', () => {
     document.querySelector.returns({
-      children:
-        [
-          {
-            frame1: {}
-          },
-          {
-            frame2: {}
-          }
-        ]
-
+      children: [
+        {
+          frame1: {}
+        },
+        {
+          frame2: {}
+        }
+      ]
     });
     const iframeCtn = UserSettingsHelper.getUserSettingsIframesInDom();
     assert.equal(iframeCtn.length, 2);
