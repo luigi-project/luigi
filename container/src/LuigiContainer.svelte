@@ -41,13 +41,29 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          if (this.containerInitialized) {
-            if (name === 'context') {
-              this.updateContext(JSON.parse(newValue));
+          if (!this.containerInitialized) return;
+
+          const attributeMap = {
+            'context': 'context',
+            'node-params': 'nodeParams',
+            'path-params': 'pathParams',
+            'search-params': 'searchParams',
+          };
+
+          if (name === 'auth-data') {
+            ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
+            return;
+          }
+
+          if (attributeMap[name]) {
+            try {
+              this[attributeMap[name]] = JSON.parse(newValue);
+              console.log(`${attributeMap[name]}`, this[attributeMap[name]]);
+            } catch (e) {
+              console.warn(`Cannot parse ${name}:`, e);
             }
-            if (name === 'auth-data') {
-              ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
-            }
+
+            this.updateContext(this.context, this.internal, this.nodeParams, this.pathParams, this.searchParams);
           }
         }
 
@@ -137,13 +153,15 @@
           data
         );
       };
-
-      thisComponent.updateContext = (contextObj: object, internal?: object) => {
+      thisComponent.updateContext = (contextObj: object, internal?: object, nodeParamsObj?: object, pathParamsObj?: object, searchParamsObj?: object) => {
         context = contextObj;
+        nodeParams = nodeParamsObj;
+        pathParams = pathParams;
+        searchParams = searchParams;
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          ContainerAPI.updateContext(contextObj, internal, iframeHandle);
+          ContainerAPI.updateContext(contextObj, internal, iframeHandle, nodeParamsObj, pathParamsObj, searchParamsObj);
         }
       };
 
