@@ -3,7 +3,7 @@ export const StateHelpers = {
     let last = '';
     const result: any[] = [];
 
-    [...scope].sort().forEach(scopeItem => {
+    [...scope].sort().forEach((scopeItem) => {
       if (scopeItem && !result.includes(scopeItem)) {
         if (!last || scopeItem.indexOf(last) !== 0) {
           result.push(scopeItem);
@@ -18,10 +18,10 @@ export const StateHelpers = {
   expandScope(scope): any[] {
     const result: any[] = [];
 
-    scope.forEach(scopeItem => {
+    scope.forEach((scopeItem) => {
       let subs = '';
 
-      scopeItem.split('.').forEach(partialItem => {
+      scopeItem.split('.').forEach((partialItem) => {
         subs = subs + (subs ? '.' : '') + partialItem;
         result.push(subs);
       });
@@ -32,7 +32,7 @@ export const StateHelpers = {
 
   doOnStoreChange(store, fn, scope = []): void {
     store.subscribe(fn);
-    this.expandScope(scope).forEach(scopeItem => {
+    this.expandScope(scope).forEach((scopeItem) => {
       store.subscribeToScope(fn, scopeItem);
     });
   }

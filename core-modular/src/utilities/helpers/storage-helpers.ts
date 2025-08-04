@@ -106,8 +106,8 @@ class StorageHelpersClass {
     const keyPrefix = this.buildPrefix(hostname);
 
     Object.keys(this.storage)
-      .filter(key => key.startsWith(keyPrefix))
-      .forEach(key => this.storage.removeItem(key));
+      .filter((key) => key.startsWith(keyPrefix))
+      .forEach((key) => this.storage.removeItem(key));
   }
 
   has(hostname: string, params: Record<string, string>): boolean {
@@ -123,8 +123,8 @@ class StorageHelpersClass {
     const keyPrefix = this.buildPrefix(hostname);
 
     return Object.keys(this.storage)
-      .filter(key => key.startsWith(keyPrefix))
-      .map(key => key.substring(keyPrefix.length));
+      .filter((key) => key.startsWith(keyPrefix))
+      .map((key) => key.substring(keyPrefix.length));
   }
 
   checkKey(params: Record<string, string>): void {
