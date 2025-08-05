@@ -138,6 +138,7 @@
           data
         );
       };
+      
       thisComponent.updateContext = (contextObj: object, internal?: object) => {
         context = contextObj;
         if (webcomponent) {
