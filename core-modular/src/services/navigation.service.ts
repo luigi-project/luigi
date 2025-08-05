@@ -307,7 +307,11 @@ export class NavigationService {
       if (item.category?.isGroup && item.category?.nodes && item.category?.nodes.length > 0) {
         for (let index = 0; index < item.category?.nodes.length; index++) {
           const subitem = item.category?.nodes[index];
-          if((subitem.node && !subitem.node.hideFromNav && subitem.node.label) || (subitem.category?.nodes && subitem.category.nodes.filter((node) => !node.node?.hideFromNav && node.node?.label).length > 0)) {
+          if (
+            (subitem.node && !subitem.node.hideFromNav && subitem.node.label) ||
+            (subitem.category?.nodes &&
+              subitem.category.nodes.filter((node) => !node.node?.hideFromNav && node.node?.label).length > 0)
+          ) {
             return true;
           }
         }
