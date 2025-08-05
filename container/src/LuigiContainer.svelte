@@ -41,24 +41,13 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          if (!this.containerInitialized) return;
-          const parsedValue = JSON.parse(newValue);
-          switch (name) {
-            case 'context':
-              this.updateContext(parsedValue);
-              break;
-            case 'node-params':
-              this.nodeParams = parsedValue;
-              break;
-            case 'path-params':
-              this.pathParams = parsedValue;
-              break;
-            case 'search-params':
-              this.searchParams = parsedValue;
-              break;
-            case 'auth-data':
-              ContainerAPI.updateAuthData(this.iframeHandle, parsedValue);
-              break;
+          if (this.containerInitialized) {
+            if (name === 'context') {
+              this.updateContext(JSON.parse(newValue));
+            }
+            if (name === 'auth-data') {
+              ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
+            }
           }
         }
 
