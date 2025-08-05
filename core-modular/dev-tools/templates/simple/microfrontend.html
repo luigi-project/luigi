@@ -24,9 +24,11 @@
       <p>Some content</p>
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
       <button onclick="showAlert()">show alert</button>
+      <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="showLoadingIndicator()">show loading indicator</button>
+      <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
-      <button onclick="showModal()">show MF2 in modal</button>
     </div>
     <script>
       function showAlert() {
@@ -58,16 +60,24 @@
         div.innerHTML = location.hash;
       });
 
+      function showModal() {
+        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
+      function showLoadingIndicator() {
+        LuigiClient.uxManager().showLoadingIndicator();
+      }
+
+      function hideLoadingIndicator() {
+        LuigiClient.uxManager().hideLoadingIndicator();
+      }
+
       function addBackdrop() {
         LuigiClient.uxManager().addBackdrop();
       }
 
       function removeBackdrop() {
         LuigiClient.uxManager().removeBackdrop();
-      }
-
-      function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
       }
     </script>
   </body>
