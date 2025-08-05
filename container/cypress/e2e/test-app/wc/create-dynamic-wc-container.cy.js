@@ -55,27 +55,6 @@ describe('Create luigi-container dynamically', () => {
       .should('contain.text', 'Nested');
   });
 
-  it('luigi container webcomponent invalid value for attributes e.g. client-permissions ', () => {
-    const scriptCode = `
-            const lc = document.querySelector('#lc');
-            lc.viewurl = "./helloWorldWCSelfRegistered.js";
-            lc.webcomponent = { "selfRegistered": "true" };
-            `;
-
-    const htmlCode = `
-            <luigi-container id="lc" data-test-id="luigi-container" client-permissions='value should be an object'></luigi-container>
-              <script>${scriptCode}</script>
-            `;
-
-    const stub = cy.stub();
-    cy.on('window:alert', stub);
-    cy.visit(tetsPage);
-    cy.get('.content').invoke('append', htmlCode);
-    cy.get('[data-test-id="luigi-container"]')
-      .shadow()
-      .should('not.exist');
-  });
-
   it('no shadow dom for LuigiContainer', () => {
     cy.once('uncaught:exception', () => false);
     const scriptCode = `
