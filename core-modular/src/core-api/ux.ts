@@ -1,3 +1,4 @@
+import { DirtyStatusHelpers } from '../utilities/helpers/dirty-status-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { type AlertSettings, type ProcessedAlertSettings, type ConfirmationModalSettings } from '../modules/ux-module';
 import type { Luigi } from './luigi';
@@ -54,4 +55,12 @@ export class UX {
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
 
   removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
+
+  updateDirtyStatus = (isDirty: boolean, source: any) => DirtyStatusHelpers.updateDirtyStatus(isDirty, source);
+
+  readDirtyStatus = (): boolean => DirtyStatusHelpers.readDirtyStatus();
+
+  setDirtyStatus = (isDirty: boolean, source: any) => this.luigi.getEngine()._connector?.setDirtyStatus(isDirty, source);
+
+  getDirtyStatus = () => this.luigi.getEngine()._connector?.getDirtyStatus();
 }

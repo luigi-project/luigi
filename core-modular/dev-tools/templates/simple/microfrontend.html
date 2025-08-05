@@ -24,9 +24,11 @@
       <p>Some content</p>
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
       <button onclick="showAlert()">show alert</button>
+      <button onclick="showModal()">show MF2 in modal</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
-      <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="setDirtyStatus()">set dirty status</button>
+      <button onclick="getDirtyStatus()">get dirty status</button>
     </div>
     <script>
       function showAlert() {
@@ -58,6 +60,10 @@
         div.innerHTML = location.hash;
       });
 
+      function showModal() {
+        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
       function addBackdrop() {
         LuigiClient.uxManager().addBackdrop();
       }
@@ -66,8 +72,15 @@
         LuigiClient.uxManager().removeBackdrop();
       }
 
-      function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      function setDirtyStatus() {
+        LuigiClient.uxManager().setDirtyStatus(true);
+      }
+
+      function getDirtyStatus() {
+        LuigiClient.sendCustomMessage({
+          id: 'get-dirty-status',
+          dirtyStatus: true
+        });
       }
     </script>
   </body>

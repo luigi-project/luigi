@@ -573,8 +573,46 @@ const connector = {
     dialog.appendChild(ui5Toolbar);
     document.body.appendChild(dialog);
     dialog.open = true;
+  },
+
+  addBackdrop: () => {
+    document.body.classList.add('backdrop-visible');
+  },
+
+  removeBackdrop: () => {
+    document.body.classList.remove('backdrop-visible');
+  },
+
+  setDirtyStatus: (isDirty, source) => {
+    globalThis.Luigi.ux().updateDirtyStatus(isDirty, source);
+    globalThis.Luigi.ux().showAlert({
+      text: 'Dirty status has been set to: ' + isDirty,
+      type: 'info'
+    });
+  },
+
+  getDirtyStatus: () => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Dirty status is equal to: ' + globalThis.Luigi.ux().readDirtyStatus(),
+      type: 'info'
+    });
   }
 };
 
 // eslint-disable-next-line no-undef
 Luigi.getEngine().bootstrap(connector);
+
+// handle custom events
+window.addEventListener(
+  'message',
+  (event) => {
+    if (event?.data?.msg !== 'custom') {
+      return;
+    }
+
+    if (event?.data?.data?.dirtyStatus) {
+      connector.getDirtyStatus();
+    }
+  },
+  false
+);

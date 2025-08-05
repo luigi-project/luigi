@@ -31,6 +31,10 @@ export interface LuigiConnector {
   addBackdrop(): void;
 
   removeBackdrop(): void;
+
+  setDirtyStatus(isDirty: boolean, source: any): void;
+
+  getDirtyStatus(): void;
 }
 
 export type { Node };
