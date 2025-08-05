@@ -42,28 +42,23 @@
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
           if (!this.containerInitialized) return;
-
-          const attributeMap = {
-            'context': 'context',
-            'node-params': 'nodeParams',
-            'path-params': 'pathParams',
-            'search-params': 'searchParams',
-          };
-
-          if (name === 'auth-data') {
-            ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
-            return;
-          }
-
-          if (attributeMap[name]) {
-            try {
-              this[attributeMap[name]] = JSON.parse(newValue);
-              console.log(`${attributeMap[name]}`, this[attributeMap[name]]);
-            } catch (e) {
-              console.warn(`Cannot parse ${name}:`, e);
-            }
-
-            this.updateContext(this.context, this.internal, this.nodeParams, this.pathParams, this.searchParams);
+          const parsedValue = JSON.parse(newValue);
+          switch (name) {
+            case 'context':
+              this.updateContext(parsedValue);
+              break;
+            case 'node-params':
+              this.nodeParams = parsedValue;
+              break;
+            case 'path-params':
+              this.pathParams = parsedValue;
+              break;
+            case 'search-params':
+              this.searchParams = parsedValue;
+              break;
+            case 'auth-data':
+              ContainerAPI.updateAuthData(this.iframeHandle, parsedValue);
+              break;
           }
         }
 
@@ -153,15 +148,12 @@
           data
         );
       };
-      thisComponent.updateContext = (contextObj: object, internal?: object, nodeParamsObj?: object, pathParamsObj?: object, searchParamsObj?: object) => {
+      thisComponent.updateContext = (contextObj: object, internal?: object) => {
         context = contextObj;
-        nodeParams = nodeParamsObj;
-        pathParams = pathParams;
-        searchParams = searchParams;
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          ContainerAPI.updateContext(contextObj, internal, iframeHandle, nodeParamsObj, pathParamsObj, searchParamsObj);
+          ContainerAPI.updateContext(contextObj, internal, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
 
