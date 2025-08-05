@@ -63,6 +63,7 @@ describe('Create luigi-container dynamically', () => {
       lc.webcomponent = true;
       lc.noShadow = true;
     `;
+    
     const htmlCode = `
       <luigi-container data-test-id="luigi-container" id="lc"></luigi-container>
       <script>${scriptCode}</script>
