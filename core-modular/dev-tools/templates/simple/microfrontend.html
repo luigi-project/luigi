@@ -25,6 +25,8 @@
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
       <button onclick="showAlert()">show alert</button>
       <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="showLoadingIndicator()">show loading indicator</button>
+      <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="setDirtyStatus()">set dirty status</button>
@@ -62,6 +64,14 @@
 
       function showModal() {
         LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
+      function showLoadingIndicator() {
+        LuigiClient.uxManager().showLoadingIndicator();
+      }
+
+      function hideLoadingIndicator() {
+        LuigiClient.uxManager().hideLoadingIndicator();
       }
 
       function addBackdrop() {

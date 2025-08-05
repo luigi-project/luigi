@@ -52,6 +52,10 @@ export class UX {
     });
   };
 
+  showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();
+
+  hideLoadingIndicator = () => this.luigi.getEngine()._connector?.hideLoadingIndicator();
+
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
 
   removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();

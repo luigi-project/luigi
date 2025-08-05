@@ -112,3 +112,11 @@ ui5-shellbar {
     position: relative;
     z-index: 11;
 }
+
+.luigi-busy-indicator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-27px, -8px);
+    z-index: 999;
+}
