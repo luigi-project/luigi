@@ -103,6 +103,7 @@ export interface PageErrorHandler {
 }
 
 export interface Category {
+  isGroup?: boolean;
   id: string;
   label?: string;
   icon?: string;
@@ -260,6 +261,62 @@ export class NavigationService {
     return res.reverse();
   }
 
+  applyNavGroups(items: NavItem[]): NavItem[] {
+    const categoryById: Record<string, NavItem> = {};
+    const subCatEntries: NavItem[] = [];
+    const subCatDelim = '::';
+    const converted: NavItem[] = [];
+
+    items.forEach((entry) => {
+      if (entry.node) {
+        //single nodes
+        converted.push(entry);
+      } else if (entry.category) {
+        // categories
+        const catId = entry.category.id;
+        if (catId && catId.indexOf(subCatDelim) > 0) {
+          // subcat
+          subCatEntries.push(entry);
+        } else {
+          // supercat
+          const isGroup = entry.category.isGroup;
+          categoryById[catId] = entry;
+          converted.push(entry);
+        }
+      }
+    });
+
+    subCatEntries.forEach((entry) => {
+      const superCatId = entry.category?.id.split(subCatDelim)[0] || '';
+      const potentialSuperCat = categoryById[superCatId];
+      if (!potentialSuperCat) {
+        // dunno yet what to do in this case
+      } else if (potentialSuperCat.category) {
+        if (!potentialSuperCat.category.isGroup) {
+          // convert to super cat
+          potentialSuperCat.category.isGroup = true;
+        }
+        if (!potentialSuperCat.category.nodes) {
+          potentialSuperCat.category.nodes = [];
+        }
+        potentialSuperCat.category.nodes.push(entry);
+      }
+    });
+
+    return converted.filter((item) => {
+      if (item.category?.isGroup && item.category?.nodes && item.category?.nodes.length > 0) {
+        for (let index = 0; index < item.category?.nodes.length; index++) {
+          const subitem = item.category?.nodes[index];
+          if((subitem.node && !subitem.node.hideFromNav && subitem.node.label) || (subitem.category?.nodes && subitem.category.nodes.filter((node) => !node.node?.hideFromNav && node.node?.label).length > 0)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return true;
+    });
+  }
+
   getLeftNavData(path: string): LeftNavData {
     const pathData = this.getPathData(path);
 
@@ -291,6 +348,9 @@ export class NavigationService {
     } else {
       navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
     }
+
+    // convert
+    navItems = this.applyNavGroups(navItems);
 
     return {
       selectedNode: selectedNode,
