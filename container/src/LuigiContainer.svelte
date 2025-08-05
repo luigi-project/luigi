@@ -11,7 +11,7 @@
       context: { type: 'String', reflect: false, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
       dirtyStatus: { type: 'Boolean', reflect: false, attribute: 'dirty-status' },
-      documentTitle: { type: 'String', reflect: false, attribute: 'document-title' },
+      documentTitle: { type: 'String', reflect: true, attribute: 'document-title' },
       hasBack: { type: 'Boolean', reflect: false, attribute: 'has-back' },
       label: { type: 'String', reflect: false, attribute: 'label' },
       locale: { type: 'String', reflect: false, attribute: 'locale' },
@@ -41,6 +41,7 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
+          super.attributeChangedCallback(name, oldValue, newValue);
           if (this.containerInitialized) {
             if (name === 'context') {
               this.updateContext(JSON.parse(newValue));

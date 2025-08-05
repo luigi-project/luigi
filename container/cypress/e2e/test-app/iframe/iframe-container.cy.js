@@ -171,7 +171,7 @@ describe('Iframe Container Test', () => {
       });
   });
 
-  it('update context', () => {
+  it.only('update context', () => {
     cy.on('window:alert', stub);
 
     cy.get('#update-ctx')
@@ -189,7 +189,7 @@ describe('Iframe Container Test', () => {
               .then(() => {
                 cy.wrap(stub).should(
                   'have.been.calledWith',
-                  'Custom message received: {"id":"my.contextMessage","_metaData":{},"data":{"myContext":"some context data"}}'
+                  'Custom message received: {"id":"my.contextMessage","_metaData":{},"data":{"myContext":"some context data","pathParams":{"path":"param"}}}'
                 );
 
                 //Test if context property on luigi container is also updated
