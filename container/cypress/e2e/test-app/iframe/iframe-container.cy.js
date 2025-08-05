@@ -171,7 +171,7 @@ describe('Iframe Container Test', () => {
       });
   });
 
-  it.only('update context', () => {
+  it('update context', () => {
     cy.on('window:alert', stub);
 
     cy.get('#update-ctx')
