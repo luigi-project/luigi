@@ -89,6 +89,6 @@ class DirtyStatusHelpersClass {
 
     return this.unsavedChanges.dirtySet ? this.unsavedChanges.dirtySet.size > 0 : this.unsavedChanges.isDirty;
   }
-};
+}
 
 export const DirtyStatusHelpers = new DirtyStatusHelpersClass();

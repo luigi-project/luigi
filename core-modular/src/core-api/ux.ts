@@ -60,7 +60,8 @@ export class UX {
 
   readDirtyStatus = (): boolean => DirtyStatusHelpers.readDirtyStatus();
 
-  setDirtyStatus = (isDirty: boolean, source: any) => this.luigi.getEngine()._connector?.setDirtyStatus(isDirty, source);
+  setDirtyStatus = (isDirty: boolean, source: any) =>
+    this.luigi.getEngine()._connector?.setDirtyStatus(isDirty, source);
 
   getDirtyStatus = () => this.luigi.getEngine()._connector?.getDirtyStatus();
 }

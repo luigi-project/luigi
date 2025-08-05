@@ -38,7 +38,10 @@ describe('DirtyStatus-helpers', () => {
     it('stores correct data when status is set to true', () => {
       DirtyStatusHelpers.clearDirtyState();
       DirtyStatusHelpers.updateDirtyStatus(true, 'some-source');
-      assert.equal(window.localStorage.getItem('luigi.dirtyStore'), '{"dirtySet":["some-source"],"persistUrl":"http://localhost/"}');
+      assert.equal(
+        window.localStorage.getItem('luigi.dirtyStore'),
+        '{"dirtySet":["some-source"],"persistUrl":"http://localhost/"}'
+      );
     });
   });
 });

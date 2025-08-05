@@ -25,7 +25,9 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
     containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.setDirtyStatus(event.detail?.data?.dirty, event.detail?.source?.origin);
+      CommunicationModule.luigi
+        .getEngine()
+        ._connector?.setDirtyStatus(event.detail?.data?.dirty, event.detail?.source?.origin);
     });
   }
 };
