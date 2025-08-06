@@ -11,22 +11,22 @@ export const RoutingModule = {
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
-        const path = NavigationHelpers.normalizePath(location.hash);
+        const pathRaw = NavigationHelpers.normalizePath(location.hash);
         
-        const query = path.includes("?") ? path.split("?")[1] : undefined;
+        const [path, query] = pathRaw.split("?");
         const urlSearchParams = new URLSearchParams(query);
         const paramsObj: Record<string, string> = {};
         urlSearchParams.forEach((value, key) => {
           paramsObj[key] = value;
         });
         const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
-        //TODO need to be send to the microfrontend in context object
         const redirect = navService.shouldRedirect(path);
         if (redirect) {
           luigi.navigation().navigate(redirect);
           return;
         }
         const currentNode = navService.getCurrentNode(path);
+        currentNode.nodeParams = nodeParams || {};
         luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
         luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
         luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
