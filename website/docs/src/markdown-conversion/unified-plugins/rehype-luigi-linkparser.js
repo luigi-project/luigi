@@ -24,7 +24,7 @@ export default function luigiLinkParser(options) {
   };
 
   function modify(node, prop) {
-    const githubMain = 'https://github.com/SAP/luigi/blob/main/';
+    const githubMain = 'https://github.com/luigi-project/luigi/blob/main/';
     if (hasProperty(node, prop)) {
       var parsed = url.parse(node.properties[prop]);
       if (

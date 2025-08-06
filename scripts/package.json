@@ -5,10 +5,11 @@
     "docu": "npm run docu:container && npm run docu:client && npm run docu:core && npm run docu:element",
     "docu:generate:section": "npm run docu:client:generate:section && npm run docu:core:generate:sections",
     "docu:container": "npm run docu:container:validate && npm run docu:container:generate:sections",
-    "docu:container:validate": "documentation lint ../container/typings/LuigiContainer.svelte.d.ts ../container/typings/LuigiCompoundContainer.svelte.d.ts",
-    "docu:container:generate:sections": "npm run docu:container:generate:container-api && npm run docu:container:generate:compound-container-api",
+    "docu:container:validate": "documentation lint ../container/typings/LuigiContainer.svelte.d.ts ../container/typings/LuigiCompoundContainer.svelte.d.ts ../container/typings/constants/events.d.ts",
+    "docu:container:generate:sections": "npm run docu:container:generate:container-api && npm run docu:container:generate:compound-container-api && npm run docu:container:generate:event-payloads && npm run parse-md-files",
     "docu:container:generate:container-api": "documentation readme ../container/typings/LuigiContainer.svelte.d.ts --parse-extension ts -f md --readme-file=../docs/luigi-container-api.md --section=\"API Reference\" --markdown-toc=false --quiet --github false",
     "docu:container:generate:compound-container-api": "documentation readme ../container/typings/LuigiCompoundContainer.svelte.d.ts --parse-extension ts -f md --readme-file=../docs/luigi-compound-container-api.md --section=\"API Reference\" --markdown-toc=false --quiet --github false",
+    "docu:container:generate:event-payloads": "documentation readme ../container/typings/constants/events.d.ts --parse-extension ts -f md --readme-file=../docs/luigi-container-events.md --section=\"Event Reference\" --markdown-toc=false --quiet --github false",
     "docu:client": "npm run docu:client:validate && npm run docu:client:generate:section",
     "docu:client:generate:section": "documentation readme ../client/src/luigi-client.js ../client/luigi-client-wc-docu-mixin.js -f md --readme-file=../docs/luigi-client-api.md --section=\"API Reference\" --markdown-toc=false --quiet --github false",
     "docu:element": "documentation readme ../client/src/luigi-element.js -f md --readme-file=../docs/luigi-element-api.md --section=\"API Reference\" --markdown-toc=false --quiet --github false",
@@ -27,7 +28,8 @@
     "docu:core:generate:theming": "documentation readme ../core/src/core-api/theming.js --shallow -f md --section=\"Luigi.theming()\" --readme-file=../docs/luigi-core-api.md --markdown-toc=false --github false --quiet",
     "docu:core:generate:featuretoggles": "documentation readme ../core/src/core-api/featuretoggles.js --shallow -f md --section=\"Luigi.featureToggles()\" --readme-file=../docs/luigi-core-api.md --markdown-toc=false --github false --quiet",
     "release": "babel-node tools/release-cli/release-cli.js",
-    "publish:nightly": "babel-node tools/publish-nightly.js"
+    "publish:nightly": "babel-node tools/publish-nightly.js",
+    "parse-md-files": "node tools/parse-md-files.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.8",

@@ -5,7 +5,7 @@
   "main": "plugin.js",
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "publishConfig": {
     "tag": "luigi-plugin-auth-oauth2"
@@ -16,5 +16,5 @@
     "oauth2",
     "provider"
   ],
-  "version": "2.21.3"
+  "version": "2.23.1"
 }

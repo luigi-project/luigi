@@ -19,7 +19,7 @@ As of v1.4.0, Luigi also offers support for feature toggles. [Feature toggles](h
 
 #### Luigi example with NextJS
 
-Have you ever wondered if you can use Luigi with NextJS? The answer is "yes", and in this release we included a new example Luigi application that is running on top of NextJS. You can install the example and try it yourself by following the steps [here](https://github.com/SAP/luigi/tree/main/core/examples/luigi-example-next).
+Have you ever wondered if you can use Luigi with NextJS? The answer is "yes", and in this release we included a new example Luigi application that is running on top of NextJS. You can install the example and try it yourself by following the steps [here](https://github.com/luigi-project/luigi/tree/main/core/examples/luigi-example-next).
 
 #### Fundamental Styles update
 
@@ -33,4 +33,4 @@ The Luigi Client API also includes a new function, [closeCurrentModal](https://d
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

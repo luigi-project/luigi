@@ -32,6 +32,10 @@ export interface LuigiConnector {
 
   getDocumentTitle(): string;
 
+  showLoadingIndicator(): void;
+
+  hideLoadingIndicator(): void;
+
   addBackdrop(): void;
 
   removeBackdrop(): void;

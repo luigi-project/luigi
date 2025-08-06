@@ -43,6 +43,12 @@ export default defineConfig({
   assetsInclude: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
   base: '',
   build: {
+    minify: 'terser',
+    terserOptions: {
+      mangle: {
+        reserved: ['$'],
+      },
+    },
     sourcemap: true,
     chunkSizeWarningLimit: 650,
     rollupOptions: {

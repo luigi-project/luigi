@@ -27,6 +27,7 @@
   let moreButton;
   let moreLink;
   let isBtpToolLayoutActive;
+  let unSubscribeFn;
 
   //TODO refactor
   const __this = {
@@ -127,7 +128,7 @@
           hasMoreBtnElements = true;
         } else {
           // Hide tab from 'more' dropdown
-          document.querySelector('li[uid="' + uid + '"]').classList.add('hide_element');
+          document.querySelector('li[uid="' + uid + '"]')?.classList.add('hide_element');
         }
       });
 
@@ -141,7 +142,7 @@
    */
   const clearTabNav = () => {
     // Check if tabs container header exists
-    if (tabsContainerHeader !== undefined) {
+    if (tabsContainerHeader) {
       // Get all tab elements
       const tabs = [...tabsContainerHeader.children];
 
@@ -188,7 +189,7 @@
       LuigiConfig.getConfigBooleanValue('settings.btpToolLayout') &&
       LuigiConfig.getConfigBooleanValue('settings.experimental.btpToolLayout');
     handleHorizontalNavHeightChange();
-    StateHelpers.doOnStoreChange(store, () => {
+    unSubscribeFn = StateHelpers.doOnStoreChange(store, () => {
       setTabNavData();
     }, ['navigation.viewgroupdata']);
   });
@@ -196,6 +197,7 @@
   onDestroy(() => {
     resetResizeObserver();
     document.documentElement.style.removeProperty('--luigi__horizontal-nav--live-height');
+    unSubscribeFn();
   });
 
   // [svelte-upgrade warning]

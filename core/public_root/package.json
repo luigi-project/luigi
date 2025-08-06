@@ -5,7 +5,7 @@
   "main": "luigi.js",
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "publishConfig": {
     "tag": "luigi"
@@ -18,5 +18,5 @@
     "micro-frontends",
     "microfrontends"
   ],
-  "version": "2.21.3"
+  "version": "2.23.1"
 }

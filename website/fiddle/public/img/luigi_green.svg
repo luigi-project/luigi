@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 169.88515 166.26293"
+   version="1.1"
+   id="svg7"
+   sodipodi:docname="luigi.svg"
+   width="169.88515"
+   height="166.26292"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="3.4567802"
+     inkscape:cx="84.905601"
+     inkscape:cy="65.523403"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_2" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">.cls-1{fill:#0b74de;}</style>
+  </defs>
+  <title
+     id="title1">Luigi-logo_rgb</title>
+  <g
+     id="Layer_2"
+     data-name="Layer 2"
+     transform="translate(0.00382611,0.00252058)">
+    <g
+       id="g7"
+       style="fill:#1ABF00;fill-opacity:1">
+      <path
+         class="cls-1"
+         d="M 116.58,166.26 H 53.25 A 13.68,13.68 0 0 1 42.49,161.08 L 3,111.57 A 13.67,13.67 0 0 1 0.35,99.93 L 14.44,38.19 a 13.69,13.69 0 0 1 7.45,-9.34 L 79,1.37 a 13.67,13.67 0 0 1 11.94,0 L 148,28.85 a 13.68,13.68 0 0 1 7.44,9.34 l 14.09,61.74 a 13.7,13.7 0 0 1 -2.65,11.64 l -39.49,49.51 a 13.65,13.65 0 0 1 -10.81,5.18 z M 81.46,6.59 24.4,34.07 a 7.9,7.9 0 0 0 -4.31,5.4 L 6,101.22 A 7.91,7.91 0 0 0 7.54,108 L 47,157.47 a 7.92,7.92 0 0 0 6.23,3 h 63.33 a 7.92,7.92 0 0 0 6.23,-3 L 162.3,108 a 7.94,7.94 0 0 0 1.54,-6.74 l -14.1,-61.75 a 7.92,7.92 0 0 0 -4.31,-5.4 L 88.38,6.59 a 7.93,7.93 0 0 0 -6.92,0 z"
+         id="path6"
+         style="fill:#1ABF00;fill-opacity:1" />
+      <path
+         id="polygon6"
+         class="cls-1"
+         style="fill:#1ABF00;fill-opacity:1"
+         d="M 77.56,114.14 72.82,109.4 61.65,98.23 56.91,93.49 61.65,88.75 103.45,46.95 92.27,35.77 34.55,93.49 77.56,136.5 88.74,125.32 Z" />
+      <path
+         id="rect6"
+         class="cls-1"
+         style="fill:#1ABF00;fill-opacity:1"
+         d="M 66.375323,93.491461 108.17948,51.687308 119.35883,62.866667 77.554681,104.67082 Z" />
+      <path
+         id="rect7"
+         class="cls-1"
+         style="fill:#1ABF00;fill-opacity:1"
+         d="M 82.299608,109.40146 124.10376,67.597314 135.28312,78.776671 93.478965,120.58082 Z" />
+    </g>
+  </g>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Luigi-logo_rgb</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

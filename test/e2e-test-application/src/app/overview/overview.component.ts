@@ -4,7 +4,8 @@ import { linkManager, uxManager, sendCustomMessage, addCustomMessageListener } f
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.css']
+  styleUrls: ['./overview.component.css'],
+  standalone: false
 })
 export class OverviewComponent implements OnInit {
   public linkManager = linkManager;

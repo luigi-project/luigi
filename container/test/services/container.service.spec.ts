@@ -43,15 +43,26 @@ describe('getContainerManager messageListener', () => {
       data: {
         msg: LuigiInternalMessageID.ALERT_REQUEST,
         data: {
-          id: 'navRequest'
+          settings: {
+            id: 'navRequest',
+            text: 'Some alert text',
+            type: 'info'
+          }
         }
       }
     };
     cm.messageListener(event);
     expect(dispatchedEvent.type).toEqual(Events.ALERT_REQUEST);
-    expect(dispatchedEvent.detail).toEqual({
-      data: { data: { id: 'navRequest' }, msg: 'luigi.ux.alert.show' },
-      source: {}
+    expect(typeof dispatchedEvent?.callback).toEqual('function');
+    expect(dispatchedEvent.detail.data).toEqual({
+      msg: 'luigi.ux.alert.show',
+      data: {
+        settings: {
+          id: 'navRequest',
+          text: 'Some alert text',
+          type: 'info'
+        }
+      }
     });
   });
 
@@ -164,11 +175,29 @@ describe('getContainerManager messageListener', () => {
       source: cw,
       data: {
         msg: LuigiInternalMessageID.SHOW_CONFIRMATION_MODAL_REQUEST,
-        params: 'modal-show'
+        data: {
+          settings: {
+            type: 'confirmation',
+            header: 'Confirmation',
+            body: 'Are you sure you want to do this?',
+            buttonConfirm: 'Yes',
+            buttonDismiss: 'No'
+          }
+        }
       }
     };
     cm.messageListener(event);
     expect(dispatchedEvent.type).toEqual(Events.SHOW_CONFIRMATION_MODAL_REQUEST);
+    expect(typeof dispatchedEvent?.callback).toEqual('function');
+    expect(dispatchedEvent.detail).toEqual({
+      settings: {
+        type: 'confirmation',
+        header: 'Confirmation',
+        body: 'Are you sure you want to do this?',
+        buttonConfirm: 'Yes',
+        buttonDismiss: 'No'
+      }
+    });
   });
 
   it('test loading indicator show request', () => {
@@ -289,18 +318,7 @@ describe('getContainerManager messageListener', () => {
     };
     cm.messageListener(event);
     expect(dispatchedEvent.type).toEqual(Events.GET_CURRENT_ROUTE_REQUEST);
-  });
-
-  it('test getCurrentRoute request', () => {
-    const event = {
-      source: cw,
-      data: {
-        msg: LuigiInternalMessageID.GET_CURRENT_ROUTE_REQUEST,
-        params: 'get-currentroute-request'
-      }
-    };
-    cm.messageListener(event);
-    expect(dispatchedEvent.type).toEqual(Events.GET_CURRENT_ROUTE_REQUEST);
+    expect(typeof dispatchedEvent?.callback).toEqual('function');
   });
 
   it('test navigation completed request', () => {
@@ -337,6 +355,7 @@ describe('getContainerManager messageListener', () => {
     };
     cm.messageListener(event);
     expect(dispatchedEvent.type).toEqual(Events.CHECK_PATH_EXISTS_REQUEST);
+    expect(typeof dispatchedEvent?.callback).toEqual('function');
   });
 
   it('test set dirty status request', () => {

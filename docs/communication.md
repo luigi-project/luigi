@@ -7,7 +7,7 @@
       "collapsible": true
     },
     "metaData": {
-      "categoryPosition": 7,
+      "categoryPosition": 8,
       "position": 1
     }
   }
@@ -62,10 +62,10 @@ For Luigi Client to process the message, add and remove message listeners as des
 In the `communication:` section of the Luigi config, you can add the `skipEventsWhenInactive` parameter in order to ignore events normally sent from Luigi Client to Luigi Core when an iframe/micro frontend is not currently selected or active. 
 
 For example, you can ignore any of these events (or others, as needed):
-- [luigi.navigation.open](https://github.com/SAP/luigi/blob/main/client/src/linkManager.js#L82) - skipping this event will prevent the inactive iframe from opening
-- [luigi.navigate.ok](https://github.com/SAP/luigi/blob/main/client/src/lifecycleManager.js#L124) - skipping this event will prevent navigation 
-- [luigi.ux.confirmationModal.show](https://github.com/SAP/luigi/blob/main/client/src/uxManager.js#L102) -  skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal) 
-- [luigi.ux.alert.show](https://github.com/SAP/luigi/blob/main/client/src/uxManager.js#L172) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert) 
+- [luigi.navigation.open](https://github.com/luigi-project/luigi/blob/main/client/src/linkManager.js#L82) - skipping this event will prevent the inactive iframe from opening
+- [luigi.navigate.ok](https://github.com/luigi-project/luigi/blob/main/client/src/lifecycleManager.js#L124) - skipping this event will prevent navigation 
+- [luigi.ux.confirmationModal.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.js#L102) -  skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal) 
+- [luigi.ux.alert.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.js#L172) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert) 
 
 ### skipEventsWhenInactive
 - **type**: array of strings

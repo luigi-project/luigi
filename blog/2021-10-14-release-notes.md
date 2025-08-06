@@ -19,15 +19,15 @@ will be translated to its actual path: `http://localhost:4200/projects/pr2/setti
 
 #### Improved user settings
 
-The dropdown in Luigi's [user settings](https://docs.luigi-project.io/docs/user-settings) dialog was refactored to the latest Fiori3 specifications to be easily accessible via keyboard. You can find more information [here](https://github.com/SAP/luigi/pull/2293).
+The dropdown in Luigi's [user settings](https://docs.luigi-project.io/docs/user-settings) dialog was refactored to the latest Fiori3 specifications to be easily accessible via keyboard. You can find more information [here](https://github.com/luigi-project/luigi/pull/2293).
 
-Also, the Profile dropdown entities in user settings are now accessible via keyboard. You can learn more [here](https://github.com/SAP/luigi/pull/2256).
+Also, the Profile dropdown entities in user settings are now accessible via keyboard. You can learn more [here](https://github.com/luigi-project/luigi/pull/2256).
 
 #### getCurrentLocale works with Luigi Client Web Components
 
-With our newest release, you can use the [getCurrentLocale](https://docs.luigi-project.io/docs/luigi-client-api/?section=getcurrentlocale) function within [Web Components](https://docs.luigi-project.io/docs/web-component) of Luigi Client. For more information see the changes [here](https://github.com/SAP/luigi/pull/2219).
+With our newest release, you can use the [getCurrentLocale](https://docs.luigi-project.io/docs/luigi-client-api/?section=getcurrentlocale) function within [Web Components](https://docs.luigi-project.io/docs/web-component) of Luigi Client. For more information see the changes [here](https://github.com/luigi-project/luigi/pull/2219).
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
 

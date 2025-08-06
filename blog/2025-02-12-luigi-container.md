@@ -21,4 +21,4 @@ The `showAlert` function returns a promise for micro frontends based on web comp
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.6.0).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.6.0).

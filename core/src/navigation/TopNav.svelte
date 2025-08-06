@@ -3,6 +3,7 @@
   import BadgeCounter from './BadgeCounter.svelte';
   import Authorization from '../Authorization.svelte';
   import AuthorizationSimpleProfileMenu from '../AuthorizationSimpleProfileMenu.svelte';
+  import AuthorizationVegaProfileMenu from '../AuthorizationVegaProfileMenu.svelte';
   import TopNavDropDown from '../TopNavDropDown.svelte';
   import ContextSwitcher from './ContextSwitcher.svelte';
   import ProductSwitcher from './ProductSwitcher.svelte';
@@ -258,6 +259,12 @@
     const uInfo = event.detail;
     userInfo = uInfo ? uInfo : {};
   }
+
+  function handleToggleDropdownStateKeyEvent(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      toggleDropdownState(event.currentTarget.getAttribute('aria-controls'));
+    }
+  }
 </script>
 
 <svelte:window on:click={closeAllDropdowns} on:blur={closeAllDropdowns} />
@@ -336,6 +343,7 @@
                   <div class="fd-shellbar__action fd-shellbar__action--hide fd-shellbar__action--desktop">
                     <div class="fd-popover fd-popover--right">
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
+                      <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
                         <button
                           title={resolveTooltipText(node, getNodeLabel(node))}
@@ -421,6 +429,7 @@
             <div class="fd-shellbar-collapse">
               <div class="fd-popover fd-popover--right">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
                   <div class="fd-shellbar-collapse--control" aria-expanded="false" aria-haspopup="true" role="button">
                     <button
@@ -447,6 +456,7 @@
                         <li class="fd-menu__item">
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <!-- svelte-ignore a11y-missing-attribute -->
+                          <!-- svelte-ignore a11y-no-static-element-interactions -->
                           <a
                             class="fd-menu__link"
                             on:click|stopPropagation={() => {
@@ -463,6 +473,7 @@
                         <li class="fd-menu__item">
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <!-- svelte-ignore a11y-missing-attribute -->
+                          <!-- svelte-ignore a11y-no-static-element-interactions -->
                           <a class="fd-menu__link" on:click|stopPropagation={openMobileContextSwitcher}>
                             <i
                               class="sap-icon fd-top-nav__icon {contextSwitcherConfig.icon &&
@@ -536,6 +547,7 @@
                         <li class="fd-menu__item">
                           <!-- svelte-ignore a11y-click-events-have-key-events -->
                           <!-- svelte-ignore a11y-missing-attribute -->
+                          <!-- svelte-ignore a11y-no-static-element-interactions -->
                           <a
                             class="fd-menu__link"
                             on:click|stopPropagation={openMobileProductSwitcher}
@@ -598,34 +610,29 @@
               <!-- svelte-ignore a11y-click-events-have-key-events -->
               <!-- svelte-ignore a11y-no-static-element-interactions -->
               <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
-                {#if userInfo.picture}
-                  <button
-                    class="fd-avatar fd-avatar--xs fd-avatar--circle fd-avatar--thumbnail"
-                    aria-controls="profilePopover"
-                    aria-expanded="true"
-                    aria-haspopup="true"
-                    title={userInfo.name ? userInfo.name : undefined}
-                    tabindex="0"
-                    style="background-image:url('{userInfo.picture}')"
-                    on:click={() => toggleDropdownState('profilePopover')}
-                    data-testid="luigi-topnav-profile-btn"
-                  />
-                {:else}
-                  <button
-                    class="fd-avatar fd-avatar--xs fd-avatar--circle fd-shellbar__avatar--circle"
-                    aria-expanded="true"
-                    aria-haspopup="true"
-                    title={userInfo.name ? userInfo.name : undefined}
-                    tabindex="0"
-                    on:click={() => toggleDropdownState('profilePopover')}
-                    data-testid="luigi-topnav-profile-initials"
+                <div
+                  class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
+                  aria-controls="profilePopover"
+                  aria-expanded="true"
+                  aria-haspopup="true"
+                  title={userInfo.name || undefined}
+                  tabindex="0"
+                  on:click={() => toggleDropdownState('profilePopover')}
+                  on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
+                  data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
+                >
+                  <span
+                    class="fd-avatar fd-avatar--xs fd-avatar--circle fd-shellbar__avatar--circle {userInfo.picture
+                      ? 'fd-avatar--thumbnail'
+                      : ''}"
+                    style={userInfo.picture ? `background-image:url('${userInfo.picture}')` : ''}
                   >
-                    {userInfo.initials ? userInfo.initials : ''}
-                  </button>
-                {/if}
+                    {!userInfo.picture ? userInfo.initials || '' : ''}
+                  </span>
+                </div>
               </div>
               <div
-                class="fd-popover__body fd-popover__body--right"
+                class="fd-popover__body fd-popover__body--no-arrow fd-popover__body--right"
                 aria-hidden={!(dropDownStates.profilePopover || false)}
                 id="profilePopover"
                 on:click|stopPropagation
@@ -635,6 +642,47 @@
                   on:userInfoUpdated={userInfoUpdate}
                   {addNavHrefForAnchor}
                 />
+              </div>
+            </div>
+          {:else if profileTypeSettings === 'vega'}
+            <div class="fd-user-menu">
+              <div class="fd-popover">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+                  <div
+                    class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
+                    aria-controls="profilePopover"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                    title={userInfo.name || undefined}
+                    tabindex="0"
+                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
+                    data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
+                  >
+                    <span
+                      class="fd-avatar fd-avatar--xs fd-avatar--circle fd-shellbar__avatar--circle {userInfo.picture
+                        ? 'fd-avatar--thumbnail'
+                        : ''}"
+                      style={userInfo.picture ? `background-image:url('${userInfo.picture}')` : ''}
+                    >
+                      {!userInfo.picture ? userInfo.initials || '' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="fd-popover__body fd-popover__body--right"
+                  aria-hidden={!(dropDownStates.profilePopover || false)}
+                  id="profilePopover"
+                  on:click|stopPropagation
+                >
+                  <AuthorizationVegaProfileMenu
+                    on:toggleDropdownState={() => toggleDropdownState('profilePopover')}
+                    on:userInfoUpdated={userInfoUpdate}
+                    {addNavHrefForAnchor}
+                  />
+                </div>
               </div>
             </div>
           {:else}
@@ -710,7 +758,7 @@
     outline: none;
   }
 
-  .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
+  #app:not(.vega) .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
     padding: 0 0.5rem;
   }
 
@@ -771,6 +819,10 @@
     display: inline-block;
     vertical-align: middle;
     min-width: 16px;
+  }
+
+  .fd-user-menu {
+    background-color: transparent;
   }
 
   .fd-user-menu .fd-shellbar__button {
