@@ -166,8 +166,12 @@
                       <!-- svelte-ignore a11y-missing-attribute -->
                       <a class="fd-menu__link" on:click|preventDefault={() => {}}>
                         <div class="fd-product-switch__text">
-                          <div class="fd-product-switch__title">{result.label}</div>
-                          <div class="fd-product-switch__subtitle">{result.description}</div>
+                          <div class="fd-product-switch__title">
+                            {result.label}
+                          </div>
+                          <div class="fd-product-switch__subtitle">
+                            {result.description}
+                          </div>
                         </div>
                       </a>
                     {:else}
@@ -294,13 +298,10 @@
       width: calc(100% - 90px);
       left: 0;
       top: 0;
-      height: 100%;
       z-index: 2;
       padding-left: 1rem;
       padding-right: 0.25rem;
-      .fd-shellbar__input-group {
-        margin-top: 6px;
-      }
+      height: 40px;
     }
 
     .lui-global-search-cancel-btn.lui-global-search-cancel-btn--active {
@@ -313,7 +314,8 @@
       top: 0;
       z-index: 2;
       width: 90px;
-      height: 100%;
+      height: 40px;
+
       .fd-shellbar__button {
         margin-top: 4px;
       }
@@ -338,9 +340,29 @@
   :global(.fd-shellbar__group) {
     flex-grow: 1;
   }
-
   @media (max-width: 599px) {
     :global(.fd-shellbar__logo) {
+      display: none;
+    }
+
+    :global(.fd-input-group.fd-shellbar__input-group.luigi-search-input-ctn.fd-shellbar__search-field) {
+      min-width: 0;
+    }
+  }
+
+  :global(.fd-input-group.fd-shellbar__input-group.luigi-search-input-ctn.fd-shellbar__search-field) {
+    max-width: none;
+  }
+
+  :global(
+      .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-cancel.fd-input-group__addon--button,
+      .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-submit.fd-input-group__addon--button
+    ) {
+    display: inherit;
+  }
+
+  @media (min-width: 600px) {
+    :global(.fd-shellbar__group.lui-global-search-cancel-btn.lui-global-search-cancel-btn--active) {
       display: none;
     }
   }

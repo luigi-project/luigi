@@ -25,4 +25,4 @@ With this version you have the possibility to specify [sandbox](https://docs.lui
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.2.0).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.2.0).

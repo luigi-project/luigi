@@ -78,7 +78,6 @@ export class WebComponentService {
    * @param msg the message to be delivered
    * @param data the data to be sent
    * @param callback the callback function to be called
-   * @param callbackName name of the callback function
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatchLuigiEvent(msg: string, data: object, callback?: (arg?: any) => void) {

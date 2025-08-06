@@ -5,17 +5,18 @@ import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-pro
 @Component({
   selector: 'app-miscellaneous2',
   templateUrl: './miscellaneous2.component.html',
-  styleUrls: ['./miscellaneous2.component.css']
+  styleUrls: ['./miscellaneous2.component.css'],
+  standalone: false
 })
 export class Miscellaneous2Component implements OnInit {
   constructor() {}
   consoleText: string = 'InitListener called';
 
   ngOnInit() {
-    addInitListener(context => {
+    addInitListener((context) => {
       this.consoleText = 'InitListener called';
     });
-    addContextUpdateListener(context => {
+    addContextUpdateListener((context) => {
       this.consoleText = 'ContextUpdateListener called';
     });
   }

@@ -7,7 +7,7 @@
       "collapsible": true
     },
     "metaData": {
-      "categoryPosition": 6,
+      "categoryPosition": 7,
       "position": 0
     }
   }

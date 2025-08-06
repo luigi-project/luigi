@@ -102,6 +102,7 @@
   let btpToolLayout =
     LuigiConfig.getConfigValue('settings.btpToolLayout') &&
     GenericHelpers.requestExperimentalFeature('btpToolLayout', true);
+  let vegaLayout = LuigiConfig.getConfigValue('settings.sideNav.style') === 'vega';
 
   export let isSearchFieldVisible;
   export let inputElem;
@@ -1811,6 +1812,7 @@
 <svelte:window on:resize={onResize} on:keydown={handleKeyDown} />
 <div
   id="app"
+  class:vega={vegaLayout}
   class:no-nav={hideNav}
   class:no-side-nav={hideSideNav}
   class:no-top-nav={isHeaderDisabled}
@@ -2042,6 +2044,10 @@
     --luigi__breadcrumb--height: 2.75rem;
     --luigi__shellbar--height: 2.75rem;
     --luigi__horizontal-nav--height: 2.75rem;
+  }
+
+  .vega {
+    --luigi__leftnav_collapsed--width: var(--fdSideNav_Width, 4rem);
   }
 
   .fd-tool-layout {
@@ -2613,7 +2619,7 @@
   }
 
   //Make border radius for links inside fd-menu only for the first and last elements
-  :global(.fd-menu) {
+  :global(#app:not(.vega) .fd-menu) {
     :global(.fd-menu__list) {
       &:first-child {
         :global(.fd-menu__item) {

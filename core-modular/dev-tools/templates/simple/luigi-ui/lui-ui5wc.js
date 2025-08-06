@@ -216,7 +216,9 @@ const connector = {
         <ui5-side-navigation slot="sideContent"></ui5-side-navigation>
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
-          <div class="content"></div>
+          <div class="content">
+            <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
+          </div>
         </div>
         <div class="luigi-alert--overlay"><div>
         <div class="luigi-confirmation-modal--overlay"><div>
@@ -575,6 +577,7 @@ const connector = {
     dialog.open = true;
   },
 
+<<<<<<< HEAD
   openUserSettings: (settings) => {
     if (!settings) {
       settings = {
@@ -630,6 +633,22 @@ const connector = {
 
     dialog.open = false;
     document.body.removeChild(dialog);
+=======
+  showLoadingIndicator: () => {
+    const loadingIndicator = document.querySelector('ui5-busy-indicator');
+
+    if (loadingIndicator) {
+      loadingIndicator.active = true;
+    }
+  },
+
+  hideLoadingIndicator: () => {
+    const loadingIndicator = document.querySelector('ui5-busy-indicator');
+
+    if (loadingIndicator) {
+      loadingIndicator.active = false;
+    }
+>>>>>>> eace0714b2c213f5a5decb9bae38c3c656d2b9c5
   },
 
   addBackdrop: () => {

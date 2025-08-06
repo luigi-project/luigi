@@ -68,7 +68,7 @@ class Navigation {
       {
         label: 'Github',
         externalLink: {
-          url: 'https://github.com/SAP/luigi'
+          url: 'https://github.com/luigi-project/luigi'
         },
         icon: 'github'
       }
@@ -94,7 +94,7 @@ class Navigation {
       {
         label: 'Luigi in Github',
         externalLink: {
-          url: 'https://github.com/SAP/luigi',
+          url: 'https://github.com/luigi-project/luigi',
           sameWindow: false
         }
       }

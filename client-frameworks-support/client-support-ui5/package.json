@@ -10,15 +10,15 @@
     "build": "rollup --config --bundleConfigAsCjs"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.7.3"
+    "@luigi-project/client": "^2.22.1"
   },
   "devDependencies": {
-    "rollup": "^4.22.5",
+    "rollup": "^4.44.1",
     "rollup-plugin-copy": "^3.5.0"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://github.com/SAP/luigi.git"
+    "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "keywords": [
     "luigi",

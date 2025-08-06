@@ -76,7 +76,7 @@ if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
  * FNS
  */
 async function getReleases() {
-  const input = await asyncRequest('https://api.github.com/repos/SAP/luigi/releases', {
+  const input = await asyncRequest('https://api.github.com/repos/luigi-project/luigi/releases', {
     headers: {
       'User-Agent': 'Luigi Release CLI'
     }
@@ -222,7 +222,7 @@ function addToChangelog(versionText, changelog, lastline) {
     // strip committers part
     changelog = changelog.slice(0, changelog.indexOf('#### Committers'));
 
-    const lastline = `[v${input.version}]: https://github.com/SAP/luigi/compare/${prevVersion}...v${input.version}`;
+    const lastline = `[v${input.version}]: https://github.com/luigi-project/luigi/compare/${prevVersion}...v${input.version}`;
 
     logHeadline('\nPrepared Changelog:');
     console.log(changelog);

@@ -1,5 +1,5 @@
 <!--   Thank you for your contribution. Before you submit the pull request:
-1. Follow the contributing guidelines: https://github.com/SAP/luigi/blob/main/CONTRIBUTING.md
+1. Follow the contributing guidelines: https://github.com/luigi-project/luigi/blob/main/CONTRIBUTING.md
 2. Test your changes and attach their results to the pull request.
 3. Update any relevant documentation.
 4. Sign the Contributor License Agreement.

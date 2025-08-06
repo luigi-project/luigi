@@ -213,6 +213,7 @@
                   <div class="fd-form-item">
                     <div class="fd-popover">
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
+                      <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <div
                         class="fd-popover__control"
                         aria-expanded="false"

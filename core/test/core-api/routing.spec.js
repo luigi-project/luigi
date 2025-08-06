@@ -5,7 +5,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const sinon = require('sinon');
 
-describe('Luigi routing', function() {
+describe('Luigi routing', function () {
   let locationSpy;
 
   beforeEach(() => {
@@ -95,10 +95,7 @@ describe('Luigi routing', function() {
   });
   describe('SearchParams hash routing', () => {
     beforeEach(() => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
     });
     afterEach(() => {
       sinon.restore();
@@ -120,6 +117,12 @@ describe('Luigi routing', function() {
         return new URL('http://some.url.de/#/');
       });
       assert.deepEqual(LuigiRouting.getSearchParams(), {});
+    });
+    it('get searchparams avoiding prototype pollution', () => {
+      locationSpy.mockImplementation(() => {
+        return new URL('http://some.url.de/#/?test=tets&luigi=rocks&__proto__=polluted');
+      });
+      assert.deepEqual(LuigiRouting.getSearchParams(), { test: 'tets', luigi: 'rocks' });
     });
     it('add searchparams hash routing', () => {
       window.state = {};
@@ -191,10 +194,7 @@ describe('Luigi routing', function() {
 
   describe('modifySearchParams', () => {
     beforeEach(() => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);
     });
     afterEach(() => {
       sinon.restore();
@@ -309,10 +309,7 @@ describe('Luigi routing', function() {
 
   describe('Anchor with hash routing', () => {
     beforeEach(() => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
     });
     afterEach(() => {
       sinon.restore();
