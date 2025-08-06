@@ -118,7 +118,7 @@ function renderProductSwitcherItems(productSwitcherConfig) {
   const productSwitchPopover = document.createElement('ui5-popover');
   const productSwitch = document.createElement('ui5-product-switch');
   productSwitchPopover.setAttribute('id', 'productswitch-popover');
-  productSwitchPopover.setAttribute('placement-type', 'Bottom');
+  productSwitchPopover.setAttribute('placement', 'Bottom');
   productSwitchPopover.appendChild(productSwitch);
   productSwitcherConfig.items?.forEach((item) => {
     const productSwitchItem = document.createElement('ui5-product-switch-item');
@@ -153,7 +153,7 @@ function onProductSwitcherClick(event) {
 
 function renderCategoryPopover(catObj) {
   const catPopover = document.createElement('ui5-popover');
-  catPopover.setAttribute('placement-type', 'Bottom');
+  catPopover.setAttribute('placement', 'Bottom');
   (catObj.id && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`)) ||
     (catObj.label && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`));
   const catList = document.createElement('ui5-list');
@@ -183,6 +183,59 @@ function createCategoryClickHandler(id) {
       popover.open = true;
     }
   };
+}
+
+function renderProfilePopover(profileObj) {
+  const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
+  const profilePopover = document.createElement('ui5-popover');
+  const profileList = document.createElement('ui5-list');
+
+  profilePopover.setAttribute('id', 'profile-popover');
+  profilePopover.setAttribute('placement', 'Bottom');
+
+  profileObj.items?.forEach((item) => {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', item.label);
+    profileLi.innerText = item.label;
+
+    profileLi.addEventListener('click', () => {
+      window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
+    });
+
+    profileList.appendChild(profileLi);
+  });
+
+  if (userSettingData) {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', 'User Settings');
+    profileLi.innerText = 'User Settings';
+
+    profileLi.addEventListener('click', () => {
+      connector.openUserSettings({
+        size: 'm',
+        title: 'User Settings'
+      });
+    });
+
+    profileList.appendChild(profileLi);
+  }
+
+  profilePopover.appendChild(profileList);
+  document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
+}
+
+function onProfileClick(event) {
+  const popover = document.getElementById('profile-popover');
+
+  if (popover.open) {
+    popover.open = false;
+  } else {
+    event.preventDefault();
+    popover.opener = event.detail.targetRef;
+    popover.open = true;
+  }
 }
 
 const replacePlaceholdersWithUI5Links = (text, linksObj) => {
@@ -262,10 +315,6 @@ const connector = {
       }
     }
 
-    // if(topNavData.profile){
-    //   console.log('topNavData.profile', topNavData.profile);
-    // }
-
     if (!shellbar._lastTopNavData) {
       shellbar.setAttribute('primary-title', topNavData.appTitle);
       // initial rendering
@@ -283,8 +332,16 @@ const connector = {
         };
         shellbar.addEventListener('logo-click', shellbar._logoEL);
       }
-      // html+=`<ui5-avatar slot="profile" shape="Circle" size="M" initials="CI" color-scheme="Accent7"></ui5-avatar>`;
-      // shellbar.addEventListener('profile-click', Profile)
+      if (topNavData.profile) {
+        if (topNavData.profile.staticUserInfoFn) {
+          topNavData.profile.staticUserInfoFn().then((value) => {
+            shellbar._userInfo = value;
+          });
+        }
+        html+=`<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
+        renderProfilePopover(topNavData.profile);
+        shellbar.addEventListener('profile-click', onProfileClick);
+      }
       shellbar.innerHTML = html;
 
       (topNavData.topNodes || []).forEach((item) => {
@@ -671,7 +728,7 @@ window.addEventListener(
     }
 
     if (event?.data?.data?.usersettings?.dialog) {
-      globalThis.Luigi.ux().openUserSettings({
+      connector.openUserSettings({
         size: 'm',
         title: 'User Settings'
       });

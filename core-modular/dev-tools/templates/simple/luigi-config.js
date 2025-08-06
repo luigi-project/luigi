@@ -216,7 +216,28 @@ window.onload = () => {
             }
           ]
         }
-      ]
+      ],
+      profile: {
+        items: [
+          {
+            label: 'Luigi in Github',
+            externalLink: {
+              url: 'https://github.com/luigi-project/luigi',
+              sameWindow: false
+            }
+          }
+        ],
+        staticUserInfoFn: () => {
+          return new Promise((resolve) => {
+            resolve({
+              name: 'Static User',
+              initials: 'LU',
+              email: 'other.luigi.user@example.com',
+              description: 'Luigi Developer'
+            });
+          });
+        }
+      },
     },
     routing: {
       useHashRouting: true
