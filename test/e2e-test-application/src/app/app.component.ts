@@ -6,7 +6,8 @@ import { LuigiContextService } from '@luigi-project/client-support-angular';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class AppComponent implements OnInit {
   public title = 'app';
@@ -14,7 +15,7 @@ export class AppComponent implements OnInit {
   constructor(private luigiService: LuigiContextService) {}
 
   ngOnInit() {
-    this.luigiService.contextObservable().subscribe(ctxObj => {
+    this.luigiService.contextObservable().subscribe((ctxObj) => {
       if (ctxObj.contextType === 0) {
         sendCustomMessage({ id: 'my-micro-frontend-is-ready' });
       }

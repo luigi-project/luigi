@@ -53,21 +53,46 @@ describe('Iframe Container Test', () => {
       });
   });
 
-  it('showAlert', () => {
-    cy.on('window:alert', stub);
+  it('showConfirmationModal callback', () => {
+    cy.get(containerSelector).then((targetCnt) => {
+      cy.spy(targetCnt[0], 'notifyConfirmationModalClosed').as('notifyConfirmationModalClosed');
 
-    cy.get(containerSelector)
-      .shadow()
-      .get('iframe')
-      .then((iframe) => {
-        const $body = iframe.contents().find('body');
-        cy.wrap($body)
-          .contains('test showAlert')
-          .click()
-          .then(() => {
-            cy.wrap(stub).should('have.been.calledWith', 'show-alert-request message received: {"isTrusted":true}');
-          });
-      });
+      cy.get(targetCnt)
+        .shadow()
+        .get('iframe')
+        .then((iframe) => {
+          const $body = iframe.contents().find('body');
+
+          cy.wrap($body)
+            .contains('test confirmation modal callback')
+            .click()
+            .then(() => {
+              cy.get('@notifyConfirmationModalClosed').should('have.been.called');
+              cy.wrap($body).contains('showConfirmationModal: true');
+            });
+        });
+    });
+  });
+
+  it('showAlert callback', () => {
+    cy.get(containerSelector).then((targetCnt) => {
+      cy.spy(targetCnt[0], 'notifyAlertClosed').as('notifyAlertClosed');
+
+      cy.get(targetCnt)
+        .shadow()
+        .get('iframe')
+        .then((iframe) => {
+          const $body = iframe.contents().find('body');
+
+          cy.wrap($body)
+            .contains('test alert callback')
+            .click()
+            .then(() => {
+              cy.get('@notifyAlertClosed').should('have.been.called');
+              cy.wrap($body).contains('showAlert: true');
+            });
+        });
+    });
   });
 
   it('showAlert with notifyAlertClosed', () => {
@@ -315,6 +340,62 @@ describe('Iframe Container Test', () => {
           .then(() => {
             cy.wrap($body).contains('searchParams: {"search":"param"}');
           });
+      });
+  });
+
+  it('getCurrentRoute', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('test get current route')
+            .click()
+            .then(() => {
+              cy.get('@postMessage')
+                .should('be.calledWith', Cypress.sinon.match.object, 'http://localhost:8080')
+                .its('firstCall.args.0')
+                .should('deep.include', { msg: 'luigi.navigation.currentRoute.answer' });
+              cy.wrap($body).contains('getCurrentRoute: /test/route');
+            });
+        });
+      });
+  });
+
+  it('getPathExists', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('test check path exists')
+            .click()
+            .then(() => {
+              cy.get('@postMessage')
+                .should('be.calledWith', Cypress.sinon.match.object, 'http://localhost:8080')
+                .its('firstCall.args.0')
+                .should('deep.include', { msg: 'luigi.navigation.pathExists.answer' });
+              cy.wrap($body).contains('pathExists: true');
+            });
+        });
       });
   });
 });

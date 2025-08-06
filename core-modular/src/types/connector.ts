@@ -28,6 +28,10 @@ export interface LuigiConnector {
     containerHandler: ConfirmationModalHandler
   ): void;
 
+  showLoadingIndicator(): void;
+
+  hideLoadingIndicator(): void;
+
   addBackdrop(): void;
 
   removeBackdrop(): void;

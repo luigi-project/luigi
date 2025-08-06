@@ -18,8 +18,8 @@ meta -->
 
 ## Overview
 
-This [authorization plugin](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oidc) contains a library that allows your application to extend the [Luigi framework](https://github.com/SAP/luigi/tree/main/core) with an OpenID Connect authorization provider.
-Further configuration details can be found in the [main documentation](https://docs.luigi-project.io/docs/authorization-configuration#openid-connect-configuration). We support Authorization Code with PKCE and Implicit Grant flow. If you don't need Implict flow please use [OIDC plugin with PKCE](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oidc-pkce) instead of this one.
+This [authorization plugin](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oidc) contains a library that allows your application to extend the [Luigi framework](https://github.com/luigi-project/luigi/tree/main/core) with an OpenID Connect authorization provider.
+Further configuration details can be found in the [main documentation](https://docs.luigi-project.io/docs/authorization-configuration#openid-connect-configuration). We support Authorization Code with PKCE and Implicit Grant flow. If you don't need Implict flow please use [OIDC plugin with PKCE](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oidc-pkce) instead of this one.
 
 ## Installation
 

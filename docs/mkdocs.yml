@@ -26,9 +26,15 @@ nav:
     - Luigi Client Installation: luigi-client-setup.md
     - Framework support libraries: framework-support-libraries.md
     - Advanced configuration options: advanced-options-luigi-client.md
+  - Luigi Container: 
+    - Luigi Container: luigi-container.md
+    - Luigi Compound Container: luigi-compound-container.md
+    - Luigi Container Events: luigi-container-events.md
   - API Reference: 
     - Luigi Core API: luigi-core-api.md
     - Luigi Client API: luigi-client-api.md
+    - Luigi Container API: luigi-container-api.md
+    - Luigi Compound Container API: luigi-compound-container-api.md
     - Luigi Element API: luigi-element-api.md
   - Advanced: 
     - Advanced scenarios: advanced-scenarios.md

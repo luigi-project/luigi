@@ -24,9 +24,9 @@ Luigi v2.2 allows you to add a [breadcrumbs](https://developer.mozilla.org/en-US
 
 #### Prevent re-rendering of web components 
 
-In certain cases, such as when web components got a context update, they were re-rendered. We fixed this in Luigi v2.2. For more information, see the [pull request](https://github.com/SAP/luigi/pull/3226). 
+In certain cases, such as when web components got a context update, they were re-rendered. We fixed this in Luigi v2.2. For more information, see the [pull request](https://github.com/luigi-project/luigi/pull/3226). 
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).
 

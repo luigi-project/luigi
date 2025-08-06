@@ -130,6 +130,11 @@ elif [ "$1" = "luigi-client-support-ui5-release" ]; then
   echo "$PWD"
   checkRequiredFiles "client-frameworks-support/client-support-ui5/dist" "package.json" "README.md" "ui5-support-lib.js"
   publishPackage "client-frameworks-support/client-support-ui5" "client-frameworks-support/client-support-ui5/dist"
+elif [ "$1" = "luigi-client-support-angular-release" ]; then
+  echo "$PWD"
+  checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular" "package.json" "README.md" "index.d.ts"
+  checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular/fesm2022" "luigi-project-client-support-angular.mjs" "luigi-project-client-support-angular.mjs.map"
+  publishPackage "client-frameworks-support/client-support-angular" "client-frameworks-support/client-support-angular/dist/client-support-angular"
 elif [ "$1" = "auth-oidc-pkce-plugin-release" ]; then
   echo "$PWD"
   checkRequiredFiles "plugins/auth/public/auth-oidc-pkce" "plugin.js" "README.md"
@@ -146,12 +151,6 @@ else
   if ( prepublishCheck "plugins/auth/public/auth-oidc" ); then
     checkRequiredFiles "plugins/auth/public/auth-oidc" "plugin.js" "README.md"
     publishPackage "plugins" "plugins/auth/public/auth-oidc"
-  fi
-
-  # Luigi Client Support Anguar
-  if ( prepublishCheck "client-frameworks-support/client-support-angular/dist/client-support-angular"); then
-    checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular" "public-api.d.ts" "README.md"
-    publishPackage "client-frameworks-support/client-support-angular" "client-frameworks-support/client-support-angular/dist/client-support-angular"
   fi
 
   # Luigi Testing Utilities

@@ -73,8 +73,7 @@ function parseContainerEvents(fileContent) {
     loc: true,
     range: true,
     tokens: true,
-    comment: true,
-    errorOnUnknownASTType: true
+    comment: true
   };
 
   const ast = parse(fileContent, options);
@@ -108,6 +107,8 @@ function parseContainerEvents(fileContent) {
                   return line.trim();
                 })
                 .join(' ')
+                .replace('@returns {void}', '')
+                .replaceAll('<br>', '')
                 .trim();
               if (cleanedComment && cleanedComment.indexOf('@deprecated') > 0) {
                 console.log('IGNORING', name, ': marked as deprecated');

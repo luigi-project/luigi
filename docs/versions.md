@@ -47,9 +47,9 @@ Additionally, you need to copy callback assets to your Core application.
 
 To install the plugins, follow these installation guides:
 
-- [OAuth2 Implicit Grant](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oauth2)
-- [OpenID Connect (OIDC)](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oidc)
-- [OpenID Connect (OIDC) with PKCE](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oidc-pkce)
+- [OAuth2 Implicit Grant](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oauth2)
+- [OpenID Connect (OIDC)](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oidc)
+- [OpenID Connect (OIDC) with PKCE](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oidc-pkce)
 
 <!-- add-attribute:class:warning -->
 > **NOTE:** If you already had a custom provider defined, you only need to rename the provider key to `idpProvider`.
@@ -79,7 +79,7 @@ Luigi v2.0 introduced two new important changes in regards to previous versions.
 
 ### Internet Explorer 11 (IE11)
 
-As of Luigi v2.0, **Internet Explorer 11 is no longer supported**. Luigi is compatible with all other modern browsers. We recommend that you switch to another web browser such as Chrome or Edge. If you still need to use IE11, you can use Luigi versions lower than 2.0, all of which can be found on our [GitHub repository](https://github.com/SAP/luigi/releases).
+As of Luigi v2.0, **Internet Explorer 11 is no longer supported**. Luigi is compatible with all other modern browsers. We recommend that you switch to another web browser such as Chrome or Edge. If you still need to use IE11, you can use Luigi versions lower than 2.0, all of which can be found on our [GitHub repository](https://github.com/luigi-project/luigi/releases).
 
 ### Update to Angular 14 and 15
 

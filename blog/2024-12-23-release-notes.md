@@ -16,4 +16,4 @@ The 'getCurrentRoute' function has been added to the [Luigi Element API](https:/
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

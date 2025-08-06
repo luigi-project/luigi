@@ -54,7 +54,7 @@ The **Luigi Compound Container** works similarly to Luigi's compound web compone
 
 #### Examples
 
-You can find a Luigi Container test application on [GitHub](https://github.com/SAP/luigi/tree/main/container/test-app). Check out the [documentation](https://docs.luigi-project.io/docs/luigi-container?section=examples) for installation instructions.
+You can find a Luigi Container test application on [GitHub](https://github.com/luigi-project/luigi/tree/main/container/test-app). Check out the [documentation](https://docs.luigi-project.io/docs/luigi-container?section=examples) for installation instructions.
 
 You can also take a look at our [Luigi Container UI5 tutorial](https://developers.sap.com/tutorials/luigi-container.html) which shows you how to install and use Luigi Container inside an UI5 app.
 

@@ -613,13 +613,22 @@ runTimeErrorHandler: {
 ```
 - **since**: 1.15.0
 
+### drawer
+- **type**: object
+- **description**: opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
+- **attributes**: 
+  - **header**: boolean or object: By default, the header is visible. Title is node label and `x` is displayed to close the drawer view. The header could also be an object with a title attribute to specify an own title for the drawer component.
+  - **backdrop**: boolean: By default, it is set to false. If it is set to true the rest of the screen has a backdrop.
+  - **size**: `("l" | "m" | "s" | "xs")` size of the drawer (optional, default "s")
+- **since**: 1.6.0
+
 ### externalLink
 - **type**: object
 - **description**: indicates that the node links to an external URL. If this parameter is defined, **pathSegment** and **link** parameters are ignored.
 - **attributes**:
   - **sameWindow** defines if the external URL is opened in a new or current tab. The default value for this parameter
  is `false`.
-  - **URL** is the external URL that the node leads to. If you are using [localization](https://docs.luigi-project.io/docs/i18n) and translating your page into different languages, you can also add a **{i18n.currentLocale}** parameter to the URL part of your configuration.
+  - **url** is the external URL that the node leads to. If you are using [localization](https://docs.luigi-project.io/docs/i18n) and translating your page into different languages, you can also add a **{i18n.currentLocale}** parameter to the URL part of your configuration.
 
 ### hideFromNav
 - **type**: boolean
@@ -1047,7 +1056,7 @@ The profile section is a configurable drop-down list available in the top naviga
  is ignored. It has the following attributes:
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
-    - **URL** is the external URL that the link leads to.
+    - **url** is the external URL that the link leads to.
 
 ### logout
 - **type**: object
@@ -1099,7 +1108,7 @@ The product switcher is a pop-up window available in the top navigation bar. It 
  is ignored. It has the following attributes:
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
-    - **URL** is the external URL that the link leads to.
+    - **url** is the external URL that the link leads to.
 
 ### label
 - **type**: string

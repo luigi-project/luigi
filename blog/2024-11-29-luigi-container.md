@@ -14,4 +14,4 @@ You can read about the new features in Luigi Container v1.5 in the release notes
 
 With this release we added the possibility for Luigi Container to [updateViewUrl](https://docs.luigi-project.io/docs/luigi-container-api?section=updateviewurl) for iframe based micro frontends.
 
-See our [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.5.0).
+See our [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.5.0).

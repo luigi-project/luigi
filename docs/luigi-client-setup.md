@@ -67,7 +67,7 @@ import LuigiClient from '@luigi-project/client';
 ### Next.JS
 
 <!-- add-attribute:class:success -->
-> **TIP:** You can find an Next.JS example using Luigi Client [here](https://github.com/SAP/luigi/blob/main/core/examples/luigi-example-next/pages/sample1.js).
+> **TIP:** You can find an Next.JS example using Luigi Client [here](https://github.com/luigi-project/luigi/blob/main/core/examples/luigi-example-next/pages/sample1.js).
 
 1. Add this line to the imports section of the `src/App.js` file:
 

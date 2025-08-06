@@ -77,7 +77,7 @@ export const UIModule = {
         viewGroupContainer.style.display = 'block';
         viewGroupContainer.updateViewUrl(currentNode.viewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
-        viewGroupContainer.updateContext(currentNode.context);
+        viewGroupContainer.updateContext(currentNode.context || {});
       } else {
         containerWrapper?.appendChild(createContainer(currentNode, luigi));
       }

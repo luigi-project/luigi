@@ -19,8 +19,8 @@ With Luigi version v1.3.0, the new v0.10.0 of Fundamental Library Styles were in
 
 #### Support for authorization code flow with PKCE
 
-If you use OIDC for authorization, you can now authenticate using [PKCE](https://oauth.net/2/pkce/). You can see the full changes in the code [here](https://github.com/SAP/luigi/pull/1478). Fun fact: this issue was fixed by an external developer. We'd like to remind you that Luigi is 100% open source and we love receiving contributions and suggestions on GitHub. If you have any ideas, don't hesitate to participate.
+If you use OIDC for authorization, you can now authenticate using [PKCE](https://oauth.net/2/pkce/). You can see the full changes in the code [here](https://github.com/luigi-project/luigi/pull/1478). Fun fact: this issue was fixed by an external developer. We'd like to remind you that Luigi is 100% open source and we love receiving contributions and suggestions on GitHub. If you have any ideas, don't hesitate to participate.
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

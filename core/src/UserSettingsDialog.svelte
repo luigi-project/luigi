@@ -341,58 +341,73 @@
 
 <svelte:window on:resize={onResize} on:keydown={handleKeyDown} />
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<div class="fd-dialog fd-dialog--active lui-usersettings-dialog" tabindex="0">
+<section class="fd-dialog fd-settings fd-dialog--active lui-usersettings-dialog" tabindex="0">
   <div
-    class="fd-dialog__content lui-usersettings-dialog-size"
+    class="fd-dialog__content fd-settings__dialog-content lui-usersettings-dialog-size"
     role="dialog"
     aria-modal="true"
     aria-labelledby="dialog-title-2"
   >
-    <div class="fd-dialog__body lui-usersettings-body">
-      <div class="lui-usersettings-left-nav">
-        <div class="fd-side-nav">
-          <div class="fd-side-nav__group-header">
-            <h2 class="fd-title fd-title--h5" id="dialog-title-2">{$getTranslation(dialogHeader)}</h2>
+    <div class="fd-dialog__body fd-settings__dialog-body lui-usersettings-body">
+      <div class="fd-settings__container">
+        <div class="fd-settings__list-area lui-usersettings-left-nav">
+          <div class="fd-bar fd-bar--subheader">
+            <div class="fd-bar__left">
+              <div class="fd-bar__element">
+                <h5 class="fd-title fd-title--h5" id="dialog-title-2" aria-label="text">
+                  {$getTranslation(dialogHeader)}
+                </h5>
+              </div>
+            </div>
           </div>
-          <div class="fd-side-nav__main-navigation lui-fd-side-nav__main-navigation">
-            <ul class="fd-list fd-list--byline fd-list--navigation lui-us-list">
+          <div class="fd-settings__list-container lui-fd-side-nav__main-navigation">
+            <ul class="fd-list fd-list--byline fd-list--navigation fd-settings__list lui-us-list" role="list">
               {#each Object.entries(userSettingGroups) as [key, userSettingGroup], index}
                 {#each Object.entries(userSettingGroup) as userSettingsGroupProperty}
+                  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                   <li
                     class="fd-list__item fd-list__item--link lui-us-navlist__item"
                     data-testid="us-navigation-item"
                     on:click|preventDefault={() => openEditor(userSettingsGroupProperty, event)}
                     on:keydown={(event) => handleKeyUp(event, [index])}
+                    role="listitem"
                     tabindex="0"
                   >
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a tabindex="-1" class="fd-list__link" href="#">
+                    <a tabindex="-1" class="fd-list__link fd-list__link--navigation-indicator" href="#">
                       {#if userSettingsGroupProperty[1].icon}
-                        {#if hasOpenUIicon(userSettingsGroupProperty[1])}
-                          <span class="fd-list__thumbnail {userSettingsGroupProperty[1].iconClassAttribute || ''}">
-                            <i role="presentation" class={getSapIconStr(userSettingsGroupProperty[1].icon)} />
-                          </span>
-                        {:else}
-                          <span
-                            class={userSettingsGroupProperty[1].iconClassAttribute || 'fd-image--s fd-list__thumbnail'}
-                            aria-label={userSettingsGroupProperty[1].altText
-                              ? userSettingsGroupProperty[1].altText
-                              : ''}
-                            style="background-image:url('{userSettingsGroupProperty[1].icon}'); background-size:cover;"
-                          />
-                          {#if userSettingsGroupProperty[1].initials}
+                        <div class="fd-list__avatar">
+                          {#if hasOpenUIicon(userSettingsGroupProperty[1])}
                             <span
-                              class={userSettingsGroupProperty[1].iconClassAttribute + ' lui-profile-initials' ||
-                                'fd-image--s fd-list__thumbnail'}
+                              class="fd-list__icon {userSettingsGroupProperty[1].iconClassAttribute ||
+                                ''} fd-list__thumbnail"
+                            >
+                              <i role="presentation" class={getSapIconStr(userSettingsGroupProperty[1].icon)} />
+                            </span>
+                          {:else}
+                            <span
+                              class="fd-list__icon {userSettingsGroupProperty[1].iconClassAttribute ||
+                                'fd-image--s fd-list__thumbnail'}"
                               aria-label={userSettingsGroupProperty[1].altText
                                 ? userSettingsGroupProperty[1].altText
                                 : ''}
-                            >
-                              {userSettingsGroupProperty[1].initials ? userSettingsGroupProperty[1].initials : ''}
-                            </span>
+                              style="background-image:url('
+                                {userSettingsGroupProperty[1].icon}
+                              '); background-size:cover"
+                            />
+                            {#if userSettingsGroupProperty[1].initials}
+                              <span
+                                class="fd-list__icon {userSettingsGroupProperty[1].iconClassAttribute +
+                                  ' lui-profile-initials' || 'fd-image--s fd-list__thumbnail'}"
+                                aria-label={userSettingsGroupProperty[1].altText
+                                  ? userSettingsGroupProperty[1].altText
+                                  : ''}
+                              >
+                                {userSettingsGroupProperty[1].initials ? userSettingsGroupProperty[1].initials : ''}
+                              </span>
+                            {/if}
                           {/if}
-                        {/if}
-                        <i role="presentation" class="sap-icon" />
+                        </div>
                       {/if}
 
                       <div class="fd-list__content">
@@ -400,11 +415,11 @@
                           {$getTranslation(
                             userSettingsGroupProperty[1].label ? userSettingsGroupProperty[1].label : ''
                           )}
-                        </div>
-                        <div class="fd-list__byline">
-                          {$getTranslation(
-                            userSettingsGroupProperty[1].sublabel ? userSettingsGroupProperty[1].sublabel : ''
-                          )}
+                          {#if userSettingsGroupProperty[1].sublabel}
+                            <div class="fd-list__byline">
+                              {$getTranslation(userSettingsGroupProperty[1].sublabel)}
+                            </div>
+                          {/if}
                         </div>
                       </div>
                     </a>
@@ -414,31 +429,41 @@
             </ul>
           </div>
         </div>
-      </div>
-      <div class="fd-side-nav__group-header lui-usersettings-dialog-sub-header">
-        <button
-          class="fd-button fd-button--transparent fd-button--compact lui-usersettings-content-header__back-btn"
-          on:click={toggleNavMobile}
-        >
-          <i class="sap-icon--navigation-left-arrow" />
-        </button>
-        <h2 class="fd-title fd-title--h5">{$getTranslation(userSettingsGroupTitle)}</h2>
-      </div>
-
-      <div class="lui-usersettings-content">
-        <div class="usersettingseditor mf-wrapper">
-          {#if userSettingGroup}
-            <UserSettingsEditor
-              storedUserSettingData={storedUserSettings}
-              {userSettingGroup}
-              on:updateSettingsObject={updateSettingsObject}
-              bind:closeDropDown
-              bind:isComboOpen
-            />
-          {/if}
+        <div class="fd-settings__detail-area">
+          <div class="fd-bar fd-bar--header fd-settings__header">
+            <div class="fd-bar__left">
+              <div class="fd-bar__element">
+                <button
+                  class="fd-button fd-button--transparent fd-button--compact lui-usersettings-content-header__back-btn"
+                  on:click={toggleNavMobile}
+                  aria-label="button"
+                >
+                  <i class="sap-icon--navigation-left-arrow"></i>
+                </button>
+              </div>
+              <div class="fd-bar__element">
+                <h5 class="fd-title fd-title--h5" aria-label="text">
+                  {$getTranslation(userSettingsGroupTitle)}
+                </h5>
+              </div>
+            </div>
+          </div>
+          <div class="fd-settings__content fd-settings__content--no-background lui-usersettings-content">
+            <div class="usersettingseditor mf-wrapper">
+              {#if userSettingGroup}
+                <UserSettingsEditor
+                  storedUserSettingData={storedUserSettings}
+                  {userSettingGroup}
+                  on:updateSettingsObject={updateSettingsObject}
+                  bind:closeDropDown
+                  bind:isComboOpen
+                />
+              {/if}
+            </div>
+            <div class="iframeUserSettingsCtn iframe-wrapper" />
+            <div class="wcUserSettingsCtn wc-wrapper" />
+          </div>
         </div>
-        <div class="iframeUserSettingsCtn iframe-wrapper" />
-        <div class="wcUserSettingsCtn wc-wrapper" />
       </div>
     </div>
     <footer class="fd-dialog__footer fd-bar fd-bar--footer">
@@ -464,7 +489,7 @@
       </div>
     </footer>
   </div>
-</div>
+</section>
 
 <style>
   :root {
@@ -476,10 +501,13 @@
     z-index: 999;
   }
 
-  .lui-usersettings-dialog-size {
+  .fd-settings .lui-usersettings-dialog-size {
     width: 58rem;
     height: 80vh;
     max-height: calc(100% - 2.5rem - 6%);
+    min-height: auto;
+    max-width: calc(100vw - 10%);
+    min-width: 20rem;
     position: relative;
   }
 
@@ -495,13 +523,21 @@
     align-items: center;
   }
 
-  .lui-usersettings-left-nav {
+  #app:not(.vega) .lui-usersettings-left-nav {
     position: absolute;
     top: 0;
     left: 0;
     width: var(--left-fd-side-nav-width);
     height: 100%;
     z-index: 2;
+  }
+
+  #app.vega .lui-usersettings-left-nav .fd-list__avatar {
+    position: relative;
+  }
+
+  #app.vega .lui-usersettings-left-nav .fd-list__avatar:not(:has(.fd-avatar)) .fd-list__icon {
+    padding-left: 5px;
   }
 
   .lui-usersettings-left-nav .fd-list__byline {
@@ -514,23 +550,13 @@
   }
 
   .lui-fd-side-nav__main-navigation {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
     overflow-y: auto;
-    top: var(--dialog-header-height);
     background-color: var(--sapBackgroundColor, #f7f7f7);
     border-right: 1px solid var(--sapList_GroupHeaderBorderColor, #d9d9d9);
   }
 
   .lui-usersettings-content {
-    position: absolute;
-    left: var(--left-fd-side-nav-width);
-    top: 0;
-    right: 0;
-    bottom: 0;
     overflow-wrap: break-word;
-    margin-top: var(--dialog-header-height);
     overflow-y: auto;
     background-color: var(--sapBackgroundColor, #f7f7f7);
   }
@@ -569,10 +595,18 @@
     left: var(--left-fd-side-nav-width);
     max-width: 55rem;
     font-size: var(--sapFontHeader3Size, 20px);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--sapList_GroupHeaderBorderColor, #d9d9d9);
+  }
+
+  #app:not(.vega) .fd-settings .fd-settings__header {
+    --fdBar_Padding_Bottom: 0.25rem;
+    --fdSettings_Header_Margin_Top: 0.5px;
+    --fdBar_Height: 3rem;
   }
 
   /*customization of FD Styles to align with Fiori 3*/
-  h2.fd-title {
+  #app:not(.vega) h5.fd-title {
     font-size: var(--sapFontHeader3Size, 20px);
     color: var(--sapGroup_TitleTextColor);
   }
@@ -594,8 +628,19 @@
 
   .lui-profile-initials {
     position: absolute;
+    left: 1rem;
     z-index: 1;
     background-color: var(--fdAvatar_BackgroundColor, var(--sapAccentColor6, #286eb4));
+  }
+
+  #app.vega .lui-usersettings-left-nav .lui-profile-initials {
+    left: 0;
+  }
+
+  .lui-us-group-header {
+    padding: 0.6rem 1rem;
+    border-right: 0.0625rem solid var(--sapPageFooter_BorderColor);
+    border-bottom: 1px solid var(--sapList_GroupHeaderBorderColor, #d9d9d9);
   }
 
   /*Fiori 3 guidlines*/
@@ -608,8 +653,17 @@
 
   @media (max-width: 600px) {
     :global(.usersettings-leftNavVisible) .lui-usersettings-left-nav {
-      width: 0;
+      flex: 0;
+      min-width: 0;
       overflow: hidden;
+    }
+
+    .lui-usersettings-left-nav .fd-title {
+      padding-left: 48px;
+    }
+
+    :global(.usersettings-leftNavVisible) .lui-usersettings-left-nav .fd-title {
+      padding-left: 0;
     }
 
     /*micro frontend and iframe wrappers inside the right-side dialog body*/
@@ -633,19 +687,31 @@
     }
 
     .lui-usersettings-left-nav {
-      width: 100%;
+      flex: 1;
+      min-width: 100%;
       transition: 0.5s;
     }
 
     .lui-usersettings-dialog-sub-header {
       left: 0;
+      display: flex;
     }
 
     .lui-usersettings-content-header__back-btn {
       margin-right: 0.5em;
       display: inline-block;
+      position: absolute;
+      top: 0.5rem;
+      left: 1rem;
+      z-index: 11;
+      transform: rotate(180deg);
+    }
+
+    :global(.usersettings-leftNavVisible) .lui-usersettings-content-header__back-btn {
       position: relative;
-      z-index: 1;
+      top: 0;
+      left: 0;
+      transform: none;
     }
   }
 </style>
