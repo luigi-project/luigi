@@ -577,7 +577,6 @@ const connector = {
     dialog.open = true;
   },
 
-<<<<<<< HEAD
   openUserSettings: (settings) => {
     if (!settings) {
       settings = {
@@ -633,7 +632,8 @@ const connector = {
 
     dialog.open = false;
     document.body.removeChild(dialog);
-=======
+  },
+
   showLoadingIndicator: () => {
     const loadingIndicator = document.querySelector('ui5-busy-indicator');
 
@@ -648,7 +648,6 @@ const connector = {
     if (loadingIndicator) {
       loadingIndicator.active = false;
     }
->>>>>>> eace0714b2c213f5a5decb9bae38c3c656d2b9c5
   },
 
   addBackdrop: () => {
