@@ -1,15 +1,13 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { type AlertSettings, type ProcessedAlertSettings, type ConfirmationModalSettings } from '../modules/ux-module';
 import type { Luigi } from './luigi';
 
 export class UX {
   luigi: Luigi;
-  documentTitle: Writable<string>;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
-    this.documentTitle = writable();
   }
 
   showAlert = (alertSettings: AlertSettings) => {
@@ -55,12 +53,12 @@ export class UX {
   };
 
   setDocumentTitle = (documentTitle: string) => {
-    this.documentTitle.set(documentTitle);
+    this.luigi.getEngine()._ux?.documentTitle?.set(documentTitle);
     this.luigi.getEngine()._connector?.setDocumentTitle(documentTitle);
   };
 
   getDocumentTitle = (): string => {
-    return get(this.documentTitle) || '';
+    return get(this.luigi.getEngine()._ux?.documentTitle) || '';
   };
 
   showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();

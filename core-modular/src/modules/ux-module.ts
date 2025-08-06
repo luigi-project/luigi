@@ -1,4 +1,5 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
+import { writable, type Writable } from 'svelte/store';
 import type { Luigi } from '../core-api/luigi';
 
 export interface AlertSettings {
@@ -38,6 +39,7 @@ export interface ConfirmationModalSettings {
   buttonConfirm?: string;
   buttonDismiss?: string;
 }
+
 export interface ConfirmationModalHandler {
   confirm(): void;
   dismiss(): void;
@@ -45,9 +47,11 @@ export interface ConfirmationModalHandler {
 
 export const UXModule = {
   luigi: undefined as Luigi | undefined,
+  documentTitle: undefined as any,
   init: (luigi: Luigi) => {
     console.log('ux init...');
     UXModule.luigi = luigi;
+    UXModule.documentTitle = writable('') as Writable<string>;
   },
   processAlert: (
     alertSettings: AlertSettings,
