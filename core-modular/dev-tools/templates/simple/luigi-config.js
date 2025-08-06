@@ -237,7 +237,7 @@ window.onload = () => {
             });
           });
         }
-      },
+      }
     },
     routing: {
       useHashRouting: true

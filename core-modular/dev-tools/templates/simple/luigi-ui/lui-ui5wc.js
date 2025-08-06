@@ -338,7 +338,7 @@ const connector = {
             shellbar._userInfo = value;
           });
         }
-        html+=`<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
+        html += `<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
         renderProfilePopover(topNavData.profile);
         shellbar.addEventListener('profile-click', onProfileClick);
       }
