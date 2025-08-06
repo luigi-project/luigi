@@ -41,7 +41,11 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          super.attributeChangedCallback(name, oldValue, newValue);
+          try{
+            super.attributeChangedCallback(name, oldValue, newValue);
+          } catch (e) {
+            console.error('Error in super.attributeChangedCallback', e);
+          }
           if (this.containerInitialized) {
             if (name === 'context') {
               this.updateContext(JSON.parse(newValue));
