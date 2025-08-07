@@ -29,7 +29,11 @@
       <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
+<<<<<<< HEAD
+      <button onclick="openUserSettings()">open UserSettings</button>
+=======
       <button onclick="setDocumentTitle()">set document title</button>
+>>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
     </div>
     <script>
       function showAlert() {
@@ -81,10 +85,17 @@
         LuigiClient.uxManager().removeBackdrop();
       }
 
+<<<<<<< HEAD
+      function openUserSettings() {
+        LuigiClient.sendCustomMessage({
+          id: 'usersettingsdialog',
+          usersettings: { dialog: true },
+=======
       function setDocumentTitle() {
         LuigiClient.sendCustomMessage({
           id: 'set-document-title-request',
           title: 'my-title',
+>>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
         });
       }
     </script>

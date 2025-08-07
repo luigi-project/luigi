@@ -45,6 +45,10 @@ export interface ConfirmationModalHandler {
   dismiss(): void;
 }
 
+export interface UserSettings {
+  [key: string]: number | string | boolean;
+}
+
 export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
