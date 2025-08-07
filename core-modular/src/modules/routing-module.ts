@@ -1,6 +1,7 @@
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
@@ -10,13 +11,22 @@ export const RoutingModule = {
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
-        const path = NavigationHelpers.normalizePath(location.hash);
+        const pathRaw = NavigationHelpers.normalizePath(location.hash);
+        
+        const [path, query] = pathRaw.split("?");
+        const urlSearchParams = new URLSearchParams(query);
+        const paramsObj: Record<string, string> = {};
+        urlSearchParams.forEach((value, key) => {
+          paramsObj[key] = value;
+        });
+        const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
         const redirect = navService.shouldRedirect(path);
         if (redirect) {
           luigi.navigation().navigate(redirect);
           return;
         }
         const currentNode = navService.getCurrentNode(path);
+        currentNode.nodeParams = nodeParams || {};
         luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
         luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
         luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
