@@ -40,6 +40,8 @@ describe('Navigation-helpers', () => {
       ],
       rootNodes: []
     };
-    NavigationHelpers.updateHeaderTitle(appSwitcherData, pathData);
+
+    const result = NavigationHelpers.updateHeaderTitle(appSwitcherData, pathData);
+    expect(result).toEqual('');
   });
 });

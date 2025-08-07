@@ -216,7 +216,28 @@ window.onload = () => {
             }
           ]
         }
-      ]
+      ],
+      profile: {
+        items: [
+          {
+            label: 'Luigi in Github',
+            externalLink: {
+              url: 'https://github.com/luigi-project/luigi',
+              sameWindow: false
+            }
+          }
+        ],
+        staticUserInfoFn: () => {
+          return new Promise((resolve) => {
+            resolve({
+              name: 'Static User',
+              initials: 'LU',
+              email: 'other.luigi.user@example.com',
+              description: 'Luigi Developer'
+            });
+          });
+        }
+      }
     },
     routing: {
       useHashRouting: true
@@ -227,6 +248,38 @@ window.onload = () => {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
+      }
+    },
+    userSettings: {
+      userSettingsProfileMenuEntry: {
+        label: 'My Settings',
+        icon: 'settings'
+      },
+      userSettingsDialog: {
+        dialogHeader: 'My UserSettings',
+        saveBtn: 'Save',
+        dismissBtn: 'Cancel'
+      },
+      userSettingGroups: {
+        privacy: {
+          label: 'Privacy',
+          title: 'Privacy',
+          icon: 'private',
+          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+          settings: {
+            policy: {
+              type: 'string',
+              label: 'Privacy policy has not been defined.',
+              placeholder: '...'
+            },
+            time: {
+              type: 'enum',
+              style: 'button',
+              label: 'Time Format',
+              options: ['12 h', '24 h']
+            }
+          }
+        }
       }
     }
   });
