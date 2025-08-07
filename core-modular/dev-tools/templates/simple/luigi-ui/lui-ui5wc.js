@@ -599,8 +599,38 @@ const connector = {
 
   removeBackdrop: () => {
     document.body.classList.remove('backdrop-visible');
+  },
+
+  setDocumentTitle: (title) => {
+    if (title && title !== '') {
+      document.title = title;
+      globalThis.Luigi.ux().showAlert({
+        text: 'Document title has been updated successfully',
+        type: 'success'
+      });
+    } else {
+      globalThis.Luigi.ux().showAlert({
+        text: 'Document title cannot be updated with invalid string',
+        type: 'error'
+      });
+    }
   }
 };
 
 // eslint-disable-next-line no-undef
 Luigi.getEngine().bootstrap(connector);
+
+// handle custom events
+window.addEventListener(
+  'message',
+  (event) => {
+    if (event?.data?.msg !== 'custom') {
+      return;
+    }
+
+    if (event?.data?.data?.title) {
+      globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+    }
+  },
+  false
+);
