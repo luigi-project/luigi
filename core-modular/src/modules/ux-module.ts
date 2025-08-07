@@ -51,7 +51,7 @@ export const UXModule = {
   init: (luigi: Luigi) => {
     console.log('ux init...');
     UXModule.luigi = luigi;
-    UXModule.documentTitle = writable('') as Writable<string>;
+    UXModule.documentTitle = writable() as Writable<string>;
   },
   processAlert: (
     alertSettings: AlertSettings,

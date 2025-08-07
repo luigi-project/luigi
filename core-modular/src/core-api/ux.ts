@@ -58,7 +58,7 @@ export class UX {
   };
 
   getDocumentTitle = (): string => {
-    return get(this.luigi.getEngine()._ux?.documentTitle) || '';
+    return get(this.luigi.getEngine()._ux?.documentTitle) || window.document.title || '';
   };
 
   showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();
