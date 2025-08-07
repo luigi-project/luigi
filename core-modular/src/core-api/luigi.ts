@@ -1,15 +1,19 @@
+import { writable } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
-import { Navigation } from './navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
 
 export class Luigi {
   config: any;
+  _store: any;
 
-  constructor(private engine: LuigiEngine) {}
+  constructor(private engine: LuigiEngine) {
+    this._store = this.createConfigStore();
+  }
 
-  getEngine() {
+  getEngine(): LuigiEngine {
     return this.engine;
   }
 
@@ -30,7 +34,7 @@ export class Luigi {
    * Luigi.getConfigValue('auth.use')
    * Luigi.getConfigValue('settings.sideNavFooterText')
    */
-  getConfigValue(property: string) {
+  getConfigValue(property: string): any {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   };
 
@@ -38,12 +42,52 @@ export class Luigi {
     return new Navigation(this);
   };
 
-  ux = (): any => {
+  ux = (): UX => {
     return new UX(this);
   };
 
-  routing = (): any => {
+  routing = (): Routing => {
     return new Routing(this);
   };
   // ...
+
+  private createConfigStore(): any {
+    const { subscribe, update, reset } = writable({});
+    const scopeSubscribers = {};
+    let unSubscriptions = [];
+
+    return {
+      subscribe: (fn) => {
+        // subscribe fn returns unsubscription fn
+        unSubscriptions.push(subscribe(fn));
+      },
+      update,
+      reset,
+      subscribeToScope: (fn, scope) => {
+        let subscribers = scopeSubscribers[scope];
+
+        if (!subscribers) {
+          subscribers = new Set();
+          scopeSubscribers[scope] = subscribers;
+        }
+
+        subscribers.add(fn);
+      },
+      fire: (scope, data) => {
+        let subscribers = scopeSubscribers[scope];
+
+        if (subscribers) {
+          [...subscribers].forEach((fn) => {
+            fn(data);
+          });
+        }
+      },
+      clear: () => {
+        unSubscriptions.forEach((sub) => {
+          sub();
+        });
+        unSubscriptions = [];
+      }
+    };
+  }
 }
