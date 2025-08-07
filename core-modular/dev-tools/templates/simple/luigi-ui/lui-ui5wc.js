@@ -742,16 +742,15 @@ window.addEventListener(
       return;
     }
 
-<<<<<<< HEAD
     if (event?.data?.data?.usersettings?.dialog) {
       connector.openUserSettings({
         size: 'm',
         title: 'User Settings'
       });
-=======
+    }
+
     if (event?.data?.data?.title) {
       globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
->>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
     }
   },
   false
