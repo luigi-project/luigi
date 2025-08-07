@@ -29,6 +29,10 @@ export interface LuigiConnector {
     containerHandler: ConfirmationModalHandler
   ): void;
 
+  setDocumentTitle(documentTitle: string): void;
+
+  getDocumentTitle(): string;
+
   showLoadingIndicator(): void;
 
   hideLoadingIndicator(): void;

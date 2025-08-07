@@ -1,3 +1,4 @@
+import { get } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
 import {
@@ -70,6 +71,15 @@ export class UX {
 
   closeUserSettings = () => {
     this.luigi.getEngine()._connector?.closeUserSettings();
+  };
+
+  setDocumentTitle = (documentTitle: string) => {
+    this.luigi.getEngine()._ux?.documentTitle?.set(documentTitle);
+    this.luigi.getEngine()._connector?.setDocumentTitle(documentTitle);
+  };
+
+  getDocumentTitle = (): string => {
+    return get(this.luigi.getEngine()._ux?.documentTitle) || window.document.title || '';
   };
 
   showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();

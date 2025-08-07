@@ -713,6 +713,21 @@ const connector = {
 
   removeBackdrop: () => {
     document.body.classList.remove('backdrop-visible');
+  },
+
+  setDocumentTitle: (title) => {
+    if (title && title !== '') {
+      document.title = title;
+      globalThis.Luigi.ux().showAlert({
+        text: 'Document title has been updated successfully',
+        type: 'success'
+      });
+    } else {
+      globalThis.Luigi.ux().showAlert({
+        text: 'Document title cannot be updated with invalid string',
+        type: 'error'
+      });
+    }
   }
 };
 
@@ -727,11 +742,16 @@ window.addEventListener(
       return;
     }
 
+<<<<<<< HEAD
     if (event?.data?.data?.usersettings?.dialog) {
       connector.openUserSettings({
         size: 'm',
         title: 'User Settings'
       });
+=======
+    if (event?.data?.data?.title) {
+      globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+>>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
     }
   },
   false

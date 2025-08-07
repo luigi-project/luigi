@@ -65,6 +65,7 @@ export const UIModule = {
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
         viewGroupContainer.updateViewUrl(currentNode.viewUrl);
+        viewGroupContainer.updateContext(currentNode.context || {});
       } else {
         containerWrapper?.appendChild(createContainer(currentNode, luigi));
       }
