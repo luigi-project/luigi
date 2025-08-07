@@ -32,6 +32,10 @@
 <<<<<<< HEAD
       <button onclick="openUserSettings()">open UserSettings</button>
 =======
+<<<<<<< HEAD
+      <button onclick="openUserSettings()">open UserSettings</button>
+=======
+>>>>>>> 2e7860c7858c3c04ff80a4ccbb17dd7acd24fb04
       <button onclick="setDocumentTitle()">set document title</button>
 >>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
     </div>
@@ -85,17 +89,17 @@
         LuigiClient.uxManager().removeBackdrop();
       }
 
-<<<<<<< HEAD
       function openUserSettings() {
         LuigiClient.sendCustomMessage({
           id: 'usersettingsdialog',
           usersettings: { dialog: true },
-=======
+        });
+      }
+
       function setDocumentTitle() {
         LuigiClient.sendCustomMessage({
           id: 'set-document-title-request',
           title: 'my-title',
->>>>>>> 3431eb0cf827f432a6ef2dee9558a68e44c9da7d
         });
       }
     </script>
