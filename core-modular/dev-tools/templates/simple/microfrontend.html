@@ -31,6 +31,8 @@
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="setDirtyStatus()">set dirty status</button>
       <button onclick="getDirtyStatus()">get dirty status</button>
+      <button onclick="openUserSettings()">open UserSettings</button>
+      <button onclick="setDocumentTitle()">set document title</button>
     </div>
     <script>
       function showAlert() {
@@ -90,6 +92,20 @@
         LuigiClient.sendCustomMessage({
           id: 'get-dirty-status',
           dirtyStatus: true,
+        });
+      }
+
+      function openUserSettings() {
+        LuigiClient.sendCustomMessage({
+          id: 'usersettingsdialog',
+          usersettings: { dialog: true },
+        });
+      }
+
+      function setDocumentTitle() {
+        LuigiClient.sendCustomMessage({
+          id: 'set-document-title-request',
+          title: 'my-title',
         });
       }
     </script>

@@ -18,6 +18,9 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: any) => {
       UXModule.handleConfirmationModalRequest(event.payload, containerElement);
     });
+    containerElement.addEventListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(event.detail.title);
+    });
     containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator();
     });
@@ -34,6 +37,12 @@ export const CommunicationModule = {
       CommunicationModule.luigi
         .getEngine()
         ._connector?.setDirtyStatus(event.detail?.data?.dirty, event.detail?.source?.origin);
+    });
+    containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.openUserSettings(event.detail);
+    });
+    containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
     });
   }
 };

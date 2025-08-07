@@ -3,7 +3,8 @@ import type {
   AlertHandler,
   AlertSettings,
   ConfirmationModalHandler,
-  ConfirmationModalSettings
+  ConfirmationModalSettings,
+  UserSettings
 } from '../modules/ux-module';
 
 export interface LuigiConnector {
@@ -28,6 +29,10 @@ export interface LuigiConnector {
     containerHandler: ConfirmationModalHandler
   ): void;
 
+  setDocumentTitle(documentTitle: string): void;
+
+  getDocumentTitle(): string;
+
   showLoadingIndicator(): void;
 
   hideLoadingIndicator(): void;
@@ -39,6 +44,10 @@ export interface LuigiConnector {
   setDirtyStatus(isDirty: boolean, source: any): void;
 
   getDirtyStatus(): void;
+
+  openUserSettings(settings: UserSettings): void;
+
+  closeUserSettings(): void;
 }
 
 export type { Node };
