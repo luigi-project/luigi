@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { Navigation } from './navigation';
@@ -52,18 +52,20 @@ export class Luigi {
   // ...
 
   private createConfigStore(): any {
-    const { subscribe, update, reset } = writable({});
-    const scopeSubscribers = {};
-    let unSubscriptions = [];
+    const { subscribe, update } = writable({});
+    const scopeSubscribers: Record<any, any> = {};
+    let unSubscriptions: any[] = [];
 
     return {
-      subscribe: (fn) => {
+      subscribe: (fn: Subscriber<{}>) => {
         // subscribe fn returns unsubscription fn
         unSubscriptions.push(subscribe(fn));
       },
       update,
-      reset,
-      subscribeToScope: (fn, scope) => {
+      reset: (fn: Updater<{}>) => {
+        update(fn);
+      },
+      subscribeToScope: (fn: Subscriber<{}>, scope: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (!subscribers) {
@@ -73,7 +75,7 @@ export class Luigi {
 
         subscribers.add(fn);
       },
-      fire: (scope, data) => {
+      fire: (scope: any, data: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (subscribers) {
