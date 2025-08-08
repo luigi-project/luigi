@@ -715,6 +715,13 @@ const connector = {
     document.body.classList.remove('backdrop-visible');
   },
 
+  getDirtyStatus: () => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Dirty status is equal to: ' + globalThis.Luigi.ux().getDirtyStatus(),
+      type: 'info'
+    });
+  },
+
   setDocumentTitle: (title) => {
     if (title && title !== '') {
       document.title = title;
@@ -740,6 +747,10 @@ window.addEventListener(
   (event) => {
     if (event?.data?.msg !== 'custom') {
       return;
+    }
+
+    if (event?.data?.data?.dirtyStatus) {
+      connector.getDirtyStatus();
     }
 
     if (event?.data?.data?.usersettings?.dialog) {

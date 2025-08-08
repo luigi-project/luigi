@@ -41,6 +41,10 @@ export interface LuigiConnector {
 
   removeBackdrop(): void;
 
+  setDirtyStatus(isDirty: boolean, source: any): void;
+
+  getDirtyStatus(): void;
+
   openUserSettings(settings: UserSettings): void;
 
   closeUserSettings(): void;

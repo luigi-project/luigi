@@ -29,6 +29,8 @@
       <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
+      <button onclick="setDirtyStatus()">set dirty status</button>
+      <button onclick="getDirtyStatus()">get dirty status</button>
       <button onclick="openUserSettings()">open UserSettings</button>
       <button onclick="setDocumentTitle()">set document title</button>
     </div>
@@ -80,6 +82,21 @@
 
       function removeBackdrop() {
         LuigiClient.uxManager().removeBackdrop();
+      }
+
+      function setDirtyStatus() {
+        LuigiClient.uxManager().setDirtyStatus(true);
+        LuigiClient.uxManager().showAlert({
+          text: 'Dirty status has been set to: true',
+          type: 'info',
+        });
+      }
+
+      function getDirtyStatus() {
+        LuigiClient.sendCustomMessage({
+          id: 'get-dirty-status',
+          dirtyStatus: true,
+        });
       }
 
       function openUserSettings() {
