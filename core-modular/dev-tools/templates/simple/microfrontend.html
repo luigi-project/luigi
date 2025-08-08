@@ -86,6 +86,10 @@
 
       function setDirtyStatus() {
         LuigiClient.uxManager().setDirtyStatus(true);
+        LuigiClient.uxManager().showAlert({
+          text: 'Dirty status has been set to: true',
+          type: 'info'
+        });
       }
 
       function getDirtyStatus() {

@@ -91,7 +91,5 @@ export class UX {
 
   removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
 
-  setDirtyStatus = (isDirty: boolean, source: any) => DirtyStatusHelpers.updateDirtyStatus(isDirty, source);
-
   getDirtyStatus = (): boolean => DirtyStatusHelpers.readDirtyStatus();
 }

@@ -715,14 +715,6 @@ const connector = {
     document.body.classList.remove('backdrop-visible');
   },
 
-  setDirtyStatus: (isDirty, source) => {
-    globalThis.Luigi.ux().setDirtyStatus(isDirty, source);
-    globalThis.Luigi.ux().showAlert({
-      text: 'Dirty status has been set to: ' + isDirty,
-      type: 'info'
-    });
-  },
-
   getDirtyStatus: () => {
     globalThis.Luigi.ux().showAlert({
       text: 'Dirty status is equal to: ' + globalThis.Luigi.ux().getDirtyStatus(),
