@@ -716,7 +716,7 @@ const connector = {
   },
 
   setDirtyStatus: (isDirty, source) => {
-    globalThis.Luigi.ux().updateDirtyStatus(isDirty, source);
+    globalThis.Luigi.ux().setDirtyStatus(isDirty, source);
     globalThis.Luigi.ux().showAlert({
       text: 'Dirty status has been set to: ' + isDirty,
       type: 'info'
@@ -725,7 +725,7 @@ const connector = {
 
   getDirtyStatus: () => {
     globalThis.Luigi.ux().showAlert({
-      text: 'Dirty status is equal to: ' + globalThis.Luigi.ux().readDirtyStatus(),
+      text: 'Dirty status is equal to: ' + globalThis.Luigi.ux().getDirtyStatus(),
       type: 'info'
     });
   },
