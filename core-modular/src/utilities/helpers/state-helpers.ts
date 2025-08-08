@@ -1,5 +1,7 @@
+import type { Subscriber } from 'svelte/store';
+
 export const StateHelpers = {
-  optimizeScope(scope): any[] {
+  optimizeScope(scope: any[]): any[] {
     let last = '';
     const result: any[] = [];
 
@@ -15,13 +17,13 @@ export const StateHelpers = {
     return result;
   },
 
-  expandScope(scope): any[] {
+  expandScope(scope: any[]): any[] {
     const result: any[] = [];
 
     scope.forEach((scopeItem) => {
       let subs = '';
 
-      scopeItem.split('.').forEach((partialItem) => {
+      scopeItem.split('.').forEach((partialItem: any) => {
         subs = subs + (subs ? '.' : '') + partialItem;
         result.push(subs);
       });
@@ -30,7 +32,7 @@ export const StateHelpers = {
     return [...new Set(result)];
   },
 
-  doOnStoreChange(store, fn, scope = []): void {
+  doOnStoreChange(store: any, fn: Subscriber<{}>, scope = []): void {
     store.subscribe(fn);
     this.expandScope(scope).forEach((scopeItem) => {
       store.subscribeToScope(fn, scopeItem);
