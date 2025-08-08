@@ -578,8 +578,8 @@
 
     setTimeout(() => {
       const popover = parent.querySelector('.fd-popover__body');
-      const rect = popover.getBoundingClientRect();
-      if (rect.top + rect.height > window.innerHeight) {
+      const rect = popover?.getBoundingClientRect();
+      if (rect && rect.top + rect.height > window.innerHeight) {
         parent.style.setProperty('--lui_popover_offset', rect.top + rect.height - window.innerHeight + 'px');
       }
     });
