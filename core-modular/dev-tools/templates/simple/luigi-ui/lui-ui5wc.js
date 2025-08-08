@@ -257,6 +257,38 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
   return container.innerHTML;
 };
 
+function renderNodeOrCategory(item, leftNavData) {
+  let html = '';
+  if (item.node) {
+    html += `<ui5-side-navigation-item
+                            text="${item.node.label}"
+                            icon="${item.node.icon}"
+                            luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
+                            ${item.selected ? 'selected' : ''}
+                            ></ui5-side-navigation-item>`;
+  } else if (item.category) {
+    if (item.category?.nodes?.length > 0) {
+      html += `<ui5-side-navigation-item
+                                text="${item.category.label}"
+                                icon="${item.category.icon}"
+                                category-uid="${leftNavData.basePath + ':' + item.category.id}"
+                                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+
+      item.category.nodes.forEach((item) => {
+        html += `<ui5-side-navigation-sub-item
+                                text="${item.node.label}"
+                                icon="${item.node.icon}"
+                                luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
+                                ${item.selected ? 'selected' : ''}
+                                ></ui5-side-navigation-sub-item>`;
+      });
+
+      html += '</ui5-side-navigation-item>';
+    }
+  }
+  return html;
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -404,32 +436,15 @@ const connector = {
       let html = '';
       if (leftNavData.items) {
         leftNavData.items.forEach((item) => {
-          if (item.node) {
-            html += `<ui5-side-navigation-item
-                                    text="${item.node.label}"
-                                    icon="${item.node.icon}"
-                                    luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                                    ${item.selected ? 'selected' : ''}
-                                    ></ui5-side-navigation-item>`;
-          } else if (item.category?.nodes?.length > 0) {
-            html += `<ui5-side-navigation-item
-                                    text="${item.category.label}"
-                                    icon="${item.category.icon}"
-                                    category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                                    ${
-                                      readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''
-                                    }>`;
-
-            item.category.nodes.forEach((item) => {
-              html += `<ui5-side-navigation-sub-item
-                                    text="${item.node.label}"
-                                    icon="${item.node.icon}"
-                                    luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                                    ${item.selected ? 'selected' : ''}
-                                    ></ui5-side-navigation-sub-item>`;
+          if (item.node || (item.category && !item.category.isGroup)) {
+            html += renderNodeOrCategory(item, leftNavData);
+          } else if (item.category && item.category.isGroup) {
+            html += `<ui5-side-navigation-group text="${item.category.label}" category-uid="${leftNavData.basePath + ':' + item.category.id}"
+            ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+            item.category.nodes.forEach((subitem) => {
+              html += renderNodeOrCategory(subitem, leftNavData);
             });
-
-            html += '</ui5-side-navigation-item>';
+            html += `</ui5-side-navigation-group>`;
           }
         });
       }
