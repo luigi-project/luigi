@@ -36,7 +36,7 @@ export class Luigi {
    */
   getConfigValue(property: string): any {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
-  };
+  }
 
   navigation = (): Navigation => {
     return new Navigation(this);
