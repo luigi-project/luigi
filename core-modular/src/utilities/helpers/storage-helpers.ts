@@ -33,12 +33,12 @@ class StorageHelpersClass {
     }
   }
 
-  process(microfrontendId, hostname, id, operation, params): void {
+  process(microfrontendId: string, hostname: string, id: string, operation: string, params: object): void {
     try {
       this.checkInit();
       this.checkStorageBrowserSupport();
 
-      const operationFunction = this[operation];
+      const operationFunction = (this as any)[operation];
 
       if (typeof operationFunction !== 'function') {
         throw operation + ' is not a supported operation for the storage';
@@ -157,9 +157,9 @@ class StorageHelpersClass {
     }
   }
 
-  sendBackOperation(microfrontendId, id, status, result): any {
+  sendBackOperation(microfrontendId: string, id: string, status: 'OK' | 'ERROR', result: any): any {
     // TODO
-    let message = {
+    let message: Record<string, any> = {
       msg: 'storage',
       data: {
         id,
