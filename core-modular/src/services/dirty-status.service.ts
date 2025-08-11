@@ -1,4 +1,4 @@
-class DirtyStatusServiceClass {
+export class DirtyStatusService {
   unsavedChanges: {
     isDirty?: boolean;
     persistUrl?: string | null;
@@ -74,5 +74,3 @@ class DirtyStatusServiceClass {
     return this.unsavedChanges.dirtySet ? this.unsavedChanges.dirtySet.size > 0 : !!this.unsavedChanges.isDirty;
   }
 }
-
-export const DirtyStatusService = new DirtyStatusServiceClass();

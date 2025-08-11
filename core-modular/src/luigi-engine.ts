@@ -6,6 +6,7 @@ import type { LuigiConnector } from './types/connector';
 import { UIModule } from './modules/ui-module';
 import { CommunicationModule } from './modules/communicaton-module';
 import { UX } from './core-api/ux';
+import { DirtyStatusService } from './services/dirty-status.service';
 import { UXModule } from './modules/ux-module';
 
 export class LuigiEngine {
@@ -13,6 +14,7 @@ export class LuigiEngine {
 
   _connector: LuigiConnector | undefined;
   _app: any;
+  dirtyStatusService = new DirtyStatusService();
   _ui = UIModule;
   _comm = CommunicationModule;
   _ux = UXModule;
@@ -30,6 +32,6 @@ export class LuigiEngine {
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);
-    UXModule.init(luigi);
+    UXModule.init(luigi, this.dirtyStatusService);
   }
 }

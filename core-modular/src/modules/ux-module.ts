@@ -53,10 +53,13 @@ export interface UserSettings {
 export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
-  init: (luigi: Luigi) => {
+  dirtyStatusService: undefined as DirtyStatusService | undefined,
+  
+  init: (luigi: Luigi, dirtyStatusService: DirtyStatusService) => {
     console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable() as Writable<string>;
+    UXModule.dirtyStatusService = dirtyStatusService;
   },
   processAlert: (
     alertSettings: AlertSettings,
@@ -109,6 +112,9 @@ export const UXModule = {
   },
 
   handleDirtyStatusRequest: (isDirty: boolean, source: any) => {
-    DirtyStatusService.updateDirtyStatus(isDirty, source);
+    if (!UXModule.luigi) {
+      throw new Error('Luigi is not initialized.');
+    }
+    UXModule.luigi.getEngine().dirtyStatusService.updateDirtyStatus(isDirty, source);
   }
 };
