@@ -1,6 +1,7 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import { writable, type Writable } from 'svelte/store';
 import type { Luigi } from '../core-api/luigi';
+import { DirtyStatusService } from '../services/dirty-status.service';
 
 export interface AlertSettings {
   text?: string;
@@ -105,5 +106,9 @@ export const UXModule = {
         containerElement.notifyConfirmationModalClosed(false);
       }
     });
+  },
+
+  handleDirtyStatusRequest: (isDirty: boolean, source: any) => {
+    DirtyStatusService.updateDirtyStatus(isDirty, source);
   }
 };

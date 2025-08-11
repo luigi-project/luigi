@@ -1,4 +1,5 @@
 import { get } from 'svelte/store';
+import { DirtyStatusService } from '../services/dirty-status.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
 import {
@@ -89,4 +90,6 @@ export class UX {
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
 
   removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
+
+  getDirtyStatus = (): boolean => DirtyStatusService.readDirtyStatus();
 }
