@@ -55,11 +55,10 @@ export const UXModule = {
   documentTitle: undefined as any,
   dirtyStatusService: undefined as DirtyStatusService | undefined,
   
-  init: (luigi: Luigi, dirtyStatusService: DirtyStatusService) => {
+  init: (luigi: Luigi) => {
     console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable() as Writable<string>;
-    UXModule.dirtyStatusService = dirtyStatusService;
   },
   processAlert: (
     alertSettings: AlertSettings,

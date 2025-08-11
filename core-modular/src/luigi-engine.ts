@@ -32,6 +32,6 @@ export class LuigiEngine {
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);
-    UXModule.init(luigi, this.dirtyStatusService);
+    UXModule.init(luigi);
   }
 }
