@@ -53,7 +53,6 @@ export interface UserSettings {
 export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
-  dirtyStatusService: undefined as DirtyStatusService | undefined,
   
   init: (luigi: Luigi) => {
     console.log('ux init...');
