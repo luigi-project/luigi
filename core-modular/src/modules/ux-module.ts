@@ -60,7 +60,7 @@ export const UXModule = {
     console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable() as Writable<string>;
-    dirtyStatusService = serviceRegistry.get<DirtyStatusService>('dirtyStatusService');
+    dirtyStatusService = serviceRegistry.get(DirtyStatusService);
   },
   processAlert: (
     alertSettings: AlertSettings,

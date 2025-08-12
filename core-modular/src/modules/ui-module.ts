@@ -33,7 +33,7 @@ export const UIModule = {
   init: (luigi: Luigi) => {
     console.log('Init UI...');
     luigi.getEngine()._connector?.renderMainLayout();
-    const navService = serviceRegistry.get<NavigationService>('navigationService');
+    const navService = serviceRegistry.get(NavigationService);
     const pathRaw = NavigationHelpers.normalizePath(location.hash);
     const [path, query] = pathRaw.split('?');
     const urlSearchParams = new URLSearchParams(query);

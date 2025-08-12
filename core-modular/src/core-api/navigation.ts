@@ -11,7 +11,7 @@ export class Navigation {
   constructor(luigi: Luigi) {
     this.luigi = luigi;
     this.hashRouting = luigi.getConfig().routing?.useHashRouting;
-    this.navService = serviceRegistry.get<NavigationService>('navigationService');
+    this.navService = serviceRegistry.get(NavigationService);
   }
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
