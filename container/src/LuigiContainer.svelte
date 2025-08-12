@@ -41,6 +41,11 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
+          try{
+            super.attributeChangedCallback(name, oldValue, newValue);
+          } catch (e) {
+            console.error('Error in super.attributeChangedCallback', e);
+          }
           if (this.containerInitialized) {
             if (name === 'context') {
               this.updateContext(JSON.parse(newValue));
@@ -137,13 +142,13 @@
           data
         );
       };
-
+      
       thisComponent.updateContext = (contextObj: object, internal?: object) => {
         context = contextObj;
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          ContainerAPI.updateContext(contextObj, internal, iframeHandle);
+          ContainerAPI.updateContext(contextObj, internal, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
 

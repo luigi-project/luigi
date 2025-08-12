@@ -75,7 +75,7 @@ describe('Create luigi-container dynamically', () => {
       .shadow()
       .should('not.exist');
   });
-
+  
   it('no shadow dom for LuigiContainer', () => {
     cy.once('uncaught:exception', () => false);
     const scriptCode = `
@@ -84,6 +84,7 @@ describe('Create luigi-container dynamically', () => {
       lc.webcomponent = true;
       lc.noShadow = true;
     `;
+    
     const htmlCode = `
       <luigi-container data-test-id="luigi-container" id="lc"></luigi-container>
       <script>${scriptCode}</script>
