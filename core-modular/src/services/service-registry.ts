@@ -23,7 +23,7 @@ interface ServiceEntry<T> {
  * ```
  */
 class ServiceRegistry {
-  private services = new Map<string, ServiceEntry<any>>();
+  private services = new Map<any, ServiceEntry<any>>();
 
   /**
    * Registers a service with the service registry.
@@ -33,8 +33,8 @@ class ServiceRegistry {
    * @param factory - A factory function that creates an instance of the service.
    * @param singleton - If true, the service will be treated as a singleton. Defaults to true.
    */
-  register<T>(name: ServiceId<T>, factory: ServiceFactory<T>, singleton = true): void {
-    this.services.set(name, { factory, singleton });
+  register<T>(param: typeof T, factory: ServiceFactory<T>, singleton = true): void {
+    this.services.set(param, { factory, singleton });
   }
 
   /**
@@ -48,11 +48,11 @@ class ServiceRegistry {
    * @returns The instance of the requested service.
    * @throws {Error} If the service is not registered.
    */
-  get<T>(name: ServiceId<T>): T {
-    const entry = this.services.get(name);
+  get<T>(param: typeof T): T {
+    const entry = this.services.get(param);
 
     if (!entry) {
-      throw new Error(`Service '${name}' is not registered.`);
+      throw new Error(`Service '${param}' is not registered.`);
     }
 
     if (entry.singleton) {

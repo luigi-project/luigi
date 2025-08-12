@@ -13,7 +13,7 @@ import type { Luigi } from './luigi';
 
 export class UX {
   luigi: Luigi;
-  dirtyStatusService = serviceRegistry.get<DirtyStatusService>('dirtyStatusService');
+  dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;

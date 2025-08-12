@@ -28,8 +28,8 @@ export class LuigiEngine {
 
   init(): void {
     const luigi = (window as any).Luigi;
-    serviceRegistry.register('dirtyStatusService', () => new DirtyStatusService());
-    serviceRegistry.register('navigationService', () => new NavigationService(luigi));
+    serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
+    serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);

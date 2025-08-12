@@ -6,7 +6,7 @@ import { serviceRegistry } from '../services/service-registry';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
-    const navService = serviceRegistry.get<NavigationService>('navigationService');
+    const navService = serviceRegistry.get(NavigationService);
     const luigiConfig = luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
     if (luigiConfig.routing?.useHashRouting) {
