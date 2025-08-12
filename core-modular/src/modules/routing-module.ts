@@ -2,18 +2,19 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { serviceRegistry } from '../services/service-registry';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
-    const navService = new NavigationService(luigi);
+    const navService = serviceRegistry.get<NavigationService>('navigationService');
     const luigiConfig = luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
         const pathRaw = NavigationHelpers.normalizePath(location.hash);
-        
-        const [path, query] = pathRaw.split("?");
+
+        const [path, query] = pathRaw.split('?');
         const urlSearchParams = new URLSearchParams(query);
         const paramsObj: Record<string, string> = {};
         urlSearchParams.forEach((value, key) => {

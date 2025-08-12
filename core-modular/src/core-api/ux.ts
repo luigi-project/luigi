@@ -2,6 +2,7 @@ import { get } from 'svelte/store';
 import { DirtyStatusService } from '../services/dirty-status.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
+import { serviceRegistry } from '../services/service-registry';
 import {
   type AlertSettings,
   type ProcessedAlertSettings,
@@ -12,6 +13,7 @@ import type { Luigi } from './luigi';
 
 export class UX {
   luigi: Luigi;
+  dirtyStatusService = serviceRegistry.get<DirtyStatusService>('dirtyStatusService');
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -91,5 +93,5 @@ export class UX {
 
   removeBackdrop = () => this.luigi.getEngine()._connector?.removeBackdrop();
 
-  getDirtyStatus = (): boolean => this.luigi.getEngine().dirtyStatusService.readDirtyStatus();
+  getDirtyStatus = (): boolean => this.dirtyStatusService.readDirtyStatus();
 }

@@ -1,20 +1,19 @@
 import { mount } from 'svelte';
 import App from './App.svelte';
-import { Navigation } from './core-api/navigation';
 import { RoutingModule } from './modules/routing-module';
 import type { LuigiConnector } from './types/connector';
 import { UIModule } from './modules/ui-module';
 import { CommunicationModule } from './modules/communicaton-module';
-import { UX } from './core-api/ux';
+
 import { DirtyStatusService } from './services/dirty-status.service';
 import { UXModule } from './modules/ux-module';
-
+import { serviceRegistry } from './services/service-registry';
+import { NavigationService } from './services/navigation.service';
 export class LuigiEngine {
   config: any;
 
   _connector: LuigiConnector | undefined;
   _app: any;
-  dirtyStatusService = new DirtyStatusService();
   _ui = UIModule;
   _comm = CommunicationModule;
   _ux = UXModule;
@@ -29,6 +28,8 @@ export class LuigiEngine {
 
   init(): void {
     const luigi = (window as any).Luigi;
+    serviceRegistry.register('dirtyStatusService', () => new DirtyStatusService());
+    serviceRegistry.register('navigationService', () => new NavigationService(luigi));
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);
