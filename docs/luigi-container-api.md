@@ -26,6 +26,7 @@ In addition you can use standard `addEventListener` function to react on events 
 ### viewurl
 
 The URL of the microfrontend to be rendered.
+If a `viewUrl` is later set, you must call the `init()` method to initialize the `LuigiContainer`.
 
 Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 

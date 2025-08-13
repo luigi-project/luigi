@@ -7,6 +7,7 @@ export declare interface WebComponentSettings {
 export default class LuigiContainer extends HTMLElement {
   /**
    * The URL of the microfrontend to be rendered.
+   * If a `viewUrl` is later set, you must call the `init()` method to initialize the `LuigiContainer`.
    * @since 1.0.0
    *
    * @example <luigi-container viewurl="/index.html"></luigi-container>
