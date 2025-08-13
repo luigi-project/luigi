@@ -1,5 +1,4 @@
 type ServiceFactory<T> = (...args: any[]) => T;
-type ServiceId<T> = string & { __type?: T };
 
 interface ServiceEntry<T> {
   factory: ServiceFactory<T>;
