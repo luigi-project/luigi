@@ -1,6 +1,5 @@
 import { DirtyStatusService } from "../../src/services/dirty-status.service";
-import chai from 'chai';
-const assert = chai.assert;
+import { assert } from 'chai';
 
 describe('Dirty Status Service', ()=>{
     let dirtyStatusService: DirtyStatusService;
