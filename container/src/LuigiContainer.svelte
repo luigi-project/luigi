@@ -240,7 +240,7 @@
     thisComponent.init = () => {
       initialize(thisComponent);
     };
-    if (!deferInit) {
+    if (!deferInit && viewurl) {
       initialize(thisComponent);
     }
   });
