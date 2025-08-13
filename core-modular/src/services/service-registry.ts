@@ -33,7 +33,7 @@ class ServiceRegistry {
    * @param factory - A factory function that creates an instance of the service.
    * @param singleton - If true, the service will be treated as a singleton. Defaults to true.
    */
-  register<T>(param: (new (...args: any[]) => T), factory: ServiceFactory<T>, singleton = true): void {
+  register<T>(param: new (...args: any[]) => T, factory: ServiceFactory<T>, singleton = true): void {
     this.services.set(param, { factory, singleton });
   }
 
@@ -48,7 +48,7 @@ class ServiceRegistry {
    * @returns The instance of the requested service.
    * @throws {Error} If the service is not registered.
    */
-  get<T>(param: (new (...args: any[]) => T)): T {
+  get<T>(param: new (...args: any[]) => T): T {
     const entry = this.services.get(param);
 
     if (!entry) {
