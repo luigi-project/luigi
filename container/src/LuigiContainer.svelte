@@ -43,6 +43,11 @@
         attributeChangedCallback(name, oldValue, newValue) {
           try{
             super.attributeChangedCallback(name, oldValue, newValue);
+            if( name === 'viewurl' && oldValue === null) {
+              if(this.deferInit!==true ){
+                this.init();
+              }
+            }
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
           }
@@ -98,6 +103,7 @@
   export let userSettings: any;
   export let viewurl: string;
   export let webcomponent: any;
+  let hasTriggered = false;
   /* eslint-enable */
 
   const iframeHandle: IframeHandle = {};
@@ -105,6 +111,13 @@
   let containerInitialized = false;
 
   const webcomponentService = new WebComponentService();
+
+  $: {
+   if (!hasTriggered && viewurl != null) {
+      hasTriggered = true;
+      initialize(mainComponent.parentNode);
+    } 
+  }
 
   // Only needed for get rid of "unused export property" svelte compiler warnings
   export const unwarn = () => {
