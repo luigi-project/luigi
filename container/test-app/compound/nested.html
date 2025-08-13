@@ -10,6 +10,7 @@
     <h3>This page is used to test Compound-Container nested functionality</h3>
 
     <!-- Used for testing nested compound container functionality -->
+     <div  style="border:1px solid red;">
     <luigi-compound-container
       id="nested-wc-compound-container"
       context='{"label": "Dashboard2", "title":"Dashboard2"}'
@@ -17,11 +18,21 @@
       webcomponent="true"
       node-params='{"Das ist ein":"compound tets"}'
     ></luigi-compound-container>
+    </div>
+    <div style="border:1px solid green;">
+    <button class="setViewUrl" onclick="setViewUrl()">setViewUrl</button>
+     <luigi-compound-container
+      id="nested-wc-compound-container2"
+      context='{"label": "Dashboard2", "title":"Dashboard2"}'
+      webcomponent="true"
+    ></luigi-compound-container>
+    </div>
 
     <script>
       var layoutMFEDomain = 'https://luigiwebcomponents.gitlab.io/layouts';
 
-      document.getElementById('nested-wc-compound-container').compoundConfig = {
+      
+      let config = {
         children: [
           {
             viewUrl: layoutMFEDomain + '/panelHeader.js',
@@ -72,6 +83,8 @@
           },
         ],
       };
+      document.getElementById('nested-wc-compound-container').compoundConfig = config;
+      document.getElementById('nested-wc-compound-container2').compoundConfig = config;
 
       const INITIALIZED = 'initialized';
       const ALERT_REQUEST = 'show-alert-request';
@@ -108,6 +121,13 @@
             }
           },
         );
+      }
+
+      function setViewUrl(){
+        let lcc2 = document.getElementById('nested-wc-compound-container2');
+        viewUrl = './compound/nested.js';
+        lcc2.init();
+
       }
     </script>
   </body>
