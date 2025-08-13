@@ -7,7 +7,6 @@ export declare interface WebComponentSettings {
 export default class LuigiCompoundContainer extends HTMLElement {
   /**
    * The URL used for the renderer.
-   * If a `viewUrl` is later set, you must call the `init()` method to initialize the `LuigiCompoundContainer`.
    *
    * @since 1.0.0
    * @example <luigi-container viewurl="/index.html"></luigi-container>

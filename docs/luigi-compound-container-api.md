@@ -26,7 +26,6 @@ In addition you can use standard `addEventListener` function to react on events 
 ### viewurl
 
 The URL used for the renderer.
-If a `viewUrl` is later set, you must call the `init()` method to initialize the `LuigiCompoundContainer`.
 
 Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)
 

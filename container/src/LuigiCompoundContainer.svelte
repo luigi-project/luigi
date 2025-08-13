@@ -49,6 +49,16 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
+          try {
+            super.attributeChangedCallback(name, oldValue, newValue);
+          } catch (e) {
+            console.warn('Error in attributeChangedCallback', e);
+          }
+          if( name === 'viewurl') {
+              if(viewurl !== null && this.deferInit !== true && !containerInitialized){
+                this.init();
+              }
+            }
           if (this.containerInitialized && name === 'context') {
             this.updateContext(JSON.parse(newValue));
           }
@@ -98,6 +108,12 @@
 
   const containerService = new ContainerService();
   const webcomponentService = new WebComponentService();
+
+  $: {
+   if (!containerInitialized && viewurl != null) {
+      initialize(mainComponent.parentNode);
+    } 
+  }
 
   // Only needed for get rid of "unused export property" svelte compiler warnings
   export const unwarn = () => {

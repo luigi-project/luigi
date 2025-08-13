@@ -71,11 +71,9 @@ describe('Create luigi-container dynamically', () => {
     cy.on('window:alert', stub);
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', htmlCode);
-    cy.get('[data-test-id="luigi-container"]')
-      .shadow()
-      .should('not.exist');
+    cy.get('[data-test-id="luigi-container"]').shadow().should('not.exist');
   });
-  
+
   it('no shadow dom for LuigiContainer', () => {
     cy.once('uncaught:exception', () => false);
     const scriptCode = `
@@ -84,7 +82,7 @@ describe('Create luigi-container dynamically', () => {
       lc.webcomponent = true;
       lc.noShadow = true;
     `;
-    
+
     const htmlCode = `
       <luigi-container data-test-id="luigi-container" id="lc"></luigi-container>
       <script>${scriptCode}</script>
@@ -93,9 +91,7 @@ describe('Create luigi-container dynamically', () => {
     cy.on('window:alert', stub);
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', htmlCode);
-    cy.get('[data-test-id="luigi-container"]')
-      .shadow()
-      .should('not.exist');
+    cy.get('[data-test-id="luigi-container"]').shadow().should('not.exist');
   });
   it('no viewurl for LuigiContainer', () => {
     const scriptCode = `
@@ -103,22 +99,21 @@ describe('Create luigi-container dynamically', () => {
       lc.webcomponent = true;
       function setViewUrl(){
         lc.viewurl = "./wc/helloWorldWC.js";
-        lc.init();
       }
       `;
-     const htmlCode = `
+    const htmlCode = `
       <button class="setViewUrl" onclick="setViewUrl()">Set View URL</button>
       <luigi-container data-test-id="luigi-container" id="lc"></luigi-container>
       <script>${scriptCode}</script>
     `;
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', htmlCode);
+    cy.get('[data-test-id="luigi-container"]').shadow().should('not.exist');
+    cy.get('.setViewUrl').click();
     cy.get('[data-test-id="luigi-container"]')
       .shadow()
-      .should('not.exist');
-    cy.get('.setViewUrl').click();
-      cy.get('[data-test-id="luigi-container"]')
-      .shadow().find('luigi-wc-687474703a2f2f6c6f63616c686f73743a383038302f77632f77632f68656c6c6f576f726c6457432e6a73').shadow()
+      .find('luigi-wc-687474703a2f2f6c6f63616c686f73743a383038302f77632f77632f68656c6c6f576f726c6457432e6a73')
+      .shadow()
       .should('contain.text', 'WC based Container');
   });
 });

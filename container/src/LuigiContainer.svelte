@@ -43,13 +43,13 @@
         attributeChangedCallback(name, oldValue, newValue) {
           try{
             super.attributeChangedCallback(name, oldValue, newValue);
-            if( name === 'viewurl' && oldValue === null) {
-              if(this.deferInit!==true ){
-                this.init();
-              }
-            }
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
+          }
+          if( name === 'viewurl') {
+            if(viewurl !== null && this.deferInit !== true && !this.containerInitialized){
+              this.init();
+            }
           }
           if (this.containerInitialized) {
             if (name === 'context') {
@@ -113,8 +113,7 @@
   const webcomponentService = new WebComponentService();
 
   $: {
-   if (!hasTriggered && viewurl != null) {
-      hasTriggered = true;
+   if (!containerInitialized && viewurl != null) {
       initialize(mainComponent.parentNode);
     } 
   }
