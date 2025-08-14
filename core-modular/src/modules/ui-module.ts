@@ -1,8 +1,9 @@
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import {RoutingHelpers} from '../utilities/helpers/routing-helpers';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
+import { serviceRegistry } from '../services/service-registry';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
@@ -32,10 +33,9 @@ export const UIModule = {
   init: (luigi: Luigi) => {
     console.log('Init UI...');
     luigi.getEngine()._connector?.renderMainLayout();
-    const navService = new NavigationService(luigi);
+    const navService = serviceRegistry.get(NavigationService);
     const pathRaw = NavigationHelpers.normalizePath(location.hash);
-            
-    const [path, query] = pathRaw.split("?");
+    const [path, query] = pathRaw.split('?');
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
     urlSearchParams.forEach((value, key) => {
@@ -44,7 +44,7 @@ export const UIModule = {
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
     const redirect = navService.shouldRedirect(path);
     if (redirect) {
-      luigi.navigation().navigate(redirect) ;
+      luigi.navigation().navigate(redirect);
       return;
     }
 

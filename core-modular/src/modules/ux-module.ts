@@ -1,6 +1,8 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import { writable, type Writable } from 'svelte/store';
 import type { Luigi } from '../core-api/luigi';
+import { serviceRegistry } from '../services/service-registry';
+import { DirtyStatusService } from '../services/dirty-status.service';
 
 export interface AlertSettings {
   text?: string;
@@ -49,6 +51,8 @@ export interface UserSettings {
   [key: string]: number | string | boolean;
 }
 
+let dirtyStatusService: DirtyStatusService;
+
 export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
@@ -56,6 +60,7 @@ export const UXModule = {
     console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable() as Writable<string>;
+    dirtyStatusService = serviceRegistry.get(DirtyStatusService);
   },
   processAlert: (
     alertSettings: AlertSettings,
@@ -105,5 +110,12 @@ export const UXModule = {
         containerElement.notifyConfirmationModalClosed(false);
       }
     });
+  },
+
+  handleDirtyStatusRequest: (isDirty: boolean, source: any) => {
+    if (!UXModule.luigi) {
+      throw new Error('Luigi is not initialized.');
+    }
+    dirtyStatusService.updateDirtyStatus(isDirty, source);
   }
 };

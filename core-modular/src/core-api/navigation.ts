@@ -1,6 +1,7 @@
 import { NavigationService } from '../services/navigation.service';
 import type { ModalSettings } from '../services/navigation.service';
 import type { Luigi } from './luigi';
+import { serviceRegistry } from '../services/service-registry';
 
 export class Navigation {
   luigi: Luigi;
@@ -10,7 +11,7 @@ export class Navigation {
   constructor(luigi: Luigi) {
     this.luigi = luigi;
     this.hashRouting = luigi.getConfig().routing?.useHashRouting;
-    this.navService = new NavigationService(luigi);
+    this.navService = serviceRegistry.get(NavigationService);
   }
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {

@@ -8,6 +8,7 @@
     "@luigi-project/container": "^1.7.1",
     "@sveltejs/vite-plugin-svelte": "4.0.0",
     "@tsconfig/svelte": "^5.0.4",
+    "@types/chai": "^5.2.2",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.17",
     "babel-jest": "^30.0.0",

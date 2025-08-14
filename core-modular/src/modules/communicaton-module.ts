@@ -33,6 +33,9 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
+    containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: any) => {
+      UXModule.handleDirtyStatusRequest(event.detail?.data?.dirty, event.detail?.source);
+    });
     containerElement.addEventListener(Events.ADD_NODE_PARAMS_REQUEST, (event: any) => {
       luigi.routing().addNodeParams(event.payload.data, event.payload.keepBrowserHistory);
     });

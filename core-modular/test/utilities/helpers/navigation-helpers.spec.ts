@@ -1,5 +1,5 @@
 import { NavigationHelpers } from '../../../src/utilities/helpers/navigation-helpers';
-const chai = require('chai');
+import chai from 'chai';
 const assert = chai.assert;
 
 describe('Navigation-helpers', () => {
