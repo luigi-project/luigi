@@ -103,8 +103,10 @@
   const iframeHandle: IframeHandle = {};
   let mainComponent: ContainerElement;
   let containerInitialized = false;
+  let thisComponent: any;
 
   const webcomponentService = new WebComponentService();
+
 
   // Only needed for get rid of "unused export property" svelte compiler warnings
   export const unwarn = () => {
@@ -235,16 +237,21 @@
 
   onMount(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thisComponent: any = mainComponent.parentNode;
+    thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
       initialize(thisComponent);
     };
-    if (!deferInit) {
+    if (!deferInit && viewurl) {
       initialize(thisComponent);
     }
   });
 
+  $: {
+    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
+      initialize(thisComponent);
+    }
+  }
   onDestroy(async () => {});
 </script>
 
