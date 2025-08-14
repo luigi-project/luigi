@@ -46,11 +46,6 @@
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
           }
-          if( name === 'viewurl') {
-            if(viewurl !== null && this.deferInit !== true && !this.containerInitialized){
-              this.init();
-            }
-          }
           if (this.containerInitialized) {
             if (name === 'context') {
               this.updateContext(JSON.parse(newValue));
@@ -103,20 +98,15 @@
   export let userSettings: any;
   export let viewurl: string;
   export let webcomponent: any;
-  let hasTriggered = false;
   /* eslint-enable */
 
   const iframeHandle: IframeHandle = {};
   let mainComponent: ContainerElement;
   let containerInitialized = false;
+  let thisComponent: any;
 
   const webcomponentService = new WebComponentService();
 
-  $: {
-   if (!containerInitialized && viewurl != null) {
-      initialize(mainComponent.parentNode);
-    } 
-  }
 
   // Only needed for get rid of "unused export property" svelte compiler warnings
   export const unwarn = () => {
@@ -247,7 +237,7 @@
 
   onMount(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thisComponent: any = mainComponent.parentNode;
+    thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
       initialize(thisComponent);
@@ -257,6 +247,11 @@
     }
   });
 
+  $: {
+    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
+      initialize(thisComponent);
+    }
+  }
   onDestroy(async () => {});
 </script>
 
