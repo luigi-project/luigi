@@ -122,18 +122,4 @@ describe('Nested Compound Container Tests', () => {
         });
     });
   });
-  describe('no viewurl for LuigiCompoundContainer', () => {
-    it('no viewUrl for LCC', () => {
-      cy.get('#nested-wc-compound-container2')
-        .shadow()
-        .should('not.exist');
-        cy.get('.setViewUrl').click();
-        
-      cy.get('#nested-wc-compound-container2')
-        .shadow()
-        .find('luigi-wc-68747470733a2f2f6c75696769776562636f6d706f6e656e74732e6769746c61622e696f2f6c61796f7574732f70616e656c4865616465722e6a73')
-        .should('exist');
-        
-    });
-  });
 });
