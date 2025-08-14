@@ -1,0 +1,122 @@
+html,
+body {
+    margin: 0;
+    position: relativ;
+    height: 100%;
+    background: var(--sapBackgroundColor);
+}
+
+ui5-side-navigation {
+    min-height: 0;
+}
+
+.left-nav-hidden ui5-side-navigation,
+.left-nav-hidden ui5-shellbar #toggle {
+    display: none;
+}
+
+.left-nav-hidden .content-wrapper {
+    grid-column: 1 / span 2;
+}
+
+.content-wrapper {
+    height: 100%;
+}
+
+.ui5-tabcontainer-hidden {
+    display: none;
+}
+
+.lui-dialog::part(header),
+.lui-dialog::part(footer) {
+  padding-inline: 0;
+}
+
+.lui-dialog--large {
+  height: 80%;
+  width: 80%;
+}
+
+.lui-dialog--medium {
+  height: 80%;
+  width: 60%;
+}
+
+.lui-dialog--small {
+  height: 80%;
+  width: 40%;
+}
+
+.lui-dialog--fullscreen {
+  height: 100vh;
+  width: 100vw;
+  min-width: none;
+  min-height: none;
+  max-width: none;
+  max-height: none;
+}
+
+ui5-shellbar::part(root) {
+    padding-inline-start: 0.75rem;
+    padding-inline-end: 1.25rem;
+}
+
+ui5-shellbar {
+    grid-column: 1 / span 2;
+    grid-row: 1 / 2;
+}
+
+.content {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: var(--sapBackgroundColor);
+}
+
+.content luigi-container,
+.content luigi-compound-container {
+    display: block;
+    overflow: auto;
+    height: 100%;
+}
+
+
+.lui-dialog::part(header),
+.lui-dialog::part(footer) {
+    padding-inline: 0;
+}
+
+.luigi-alert--overlay{
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.luigi-alert--overlay ui5-message-strip{
+    margin: 5px;
+}
+
+.luigi-backdrop--overlay {
+    inset: 0;
+    position: fixed;
+    z-index: -1;
+}
+
+.backdrop-visible .luigi-backdrop--overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 11;
+}
+
+.backdrop-visible .content-wrapper {
+    position: relative;
+    z-index: 11;
+}
+
+.luigi-busy-indicator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-27px, -8px);
+    z-index: 999;
+}
