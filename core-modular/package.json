@@ -6,7 +6,7 @@
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-typescript": "^7.24.5",
     "@luigi-project/container": "^1.7.2",
-    "@sveltejs/vite-plugin-svelte": "4.0.0",
+    "@sveltejs/vite-plugin-svelte": "6.1.2",
     "@tsconfig/svelte": "^5.0.4",
     "@types/chai": "^5.2.2",
     "@types/jest": "^30.0.0",
@@ -29,7 +29,7 @@
     "svelte": "5.1.2",
     "svelte-preprocess": "6.0.3",
     "typescript": "^5.8.3",
-    "vite": "5.2.13",
+    "vite": "7.1.2",
     "vite-plugin-dts": "4.3.0"
   },
   "scripts": {
