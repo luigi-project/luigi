@@ -1,6 +1,7 @@
 import Events from '@luigi-project/container';
 import { UXModule } from './ux-module';
 import type { Luigi } from '../core-api/luigi';
+import { RoutingModule } from './routing-module';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -44,6 +45,9 @@ export const CommunicationModule = {
     });
     containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
+    });
+    containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: any) => {
+      RoutingModule.addSearchParamsFromClient(event.detail.data, event.detail.keepBrowserHistory, luigi);
     });
   }
 };

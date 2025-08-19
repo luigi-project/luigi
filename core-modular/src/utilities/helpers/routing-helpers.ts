@@ -1,5 +1,7 @@
 import type { Luigi } from '../../core-api/luigi';
+import type { Node } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
+import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
  
@@ -49,7 +51,7 @@ export const RoutingHelpers = {
 
   /**
    * Extracts and sanitizes node-specific parameters from the provided params object.
-   * 
+   *
    * This method filters the input `params` to include only those keys that start with
    * a specific prefix, determined by `getContentViewParamPrefix(luigi)`. The prefix is
    * removed from the key names in the resulting object. The resulting map is then
@@ -84,7 +86,7 @@ export const RoutingHelpers = {
    * @param luigi - The Luigi instance used to access configuration values.
    * @returns The content view parameter prefix as a string.
    */
-   getContentViewParamPrefix(luigi: Luigi): any {
+  getContentViewParamPrefix(luigi: Luigi): any {
     let prefix = luigi?.getConfigValue('routing.nodeParamPrefix');
     if (prefix === false) {
       prefix = '';
@@ -92,7 +94,7 @@ export const RoutingHelpers = {
       prefix = this.defaultContentViewParamPrefix;
     }
     return prefix;
-  }, 
+  },
 
   /**
    * Sanitizes the keys and values of a parameter map by applying the `EscapingHelpers.sanitizeParam` function
@@ -102,9 +104,54 @@ export const RoutingHelpers = {
    * @returns A new object with both keys and values sanitized.
    */
   sanitizeParamsMap(paramsMap: Record<string, string>): Record<string, string> {
-      return Object.entries(paramsMap).reduce((sanitizedMap: Record<string, string>, paramPair) => {
+    return Object.entries(paramsMap).reduce(
+      (sanitizedMap: Record<string, string>, paramPair) => {
         sanitizedMap[EscapingHelpers.sanitizeParam(paramPair[0])] = EscapingHelpers.sanitizeParam(paramPair[1]);
         return sanitizedMap;
-      }, {} as Record<string, string>);
+      },
+      {} as Record<string, string>
+    );
+  },
+
+  /**
+   * Prepares and filters the search parameters from the Luigi routing context
+   * based on the current node's client permissions. Only parameters explicitly
+   * allowed with `read: true` in the node's `clientPermissions.urlParameters`
+   * are included in the returned object.
+   *
+   * @param currentNode - The current navigation node containing client permissions.
+   * @param luigi - The Luigi instance providing access to routing and search parameters.
+   * @returns An object containing only the permitted search parameters for the client.
+   */
+  prepareSearchParamsForClient(currentNode: Node, luigi: Luigi): {} {
+    const filteredObj: Record<string, any> = {};
+    if (currentNode && currentNode.clientPermissions && currentNode.clientPermissions.urlParameters) {
+      Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {
+        if (
+          key in luigi.routing().getSearchParams() &&
+          currentNode.clientPermissions?.urlParameters &&
+          currentNode.clientPermissions.urlParameters[key]?.read === true
+        ) {
+          filteredObj[key] = (luigi.routing().getSearchParams() as Record<string, any>)[key];
+        }
+      });
     }
+    return filteredObj;
+  },
+
+  /**
+   * Retrieves the current path and query string from the browser's location hash.
+   *
+   * @returns An object containing the normalized path and the query string.
+   * @remarks
+   * - The path is normalized using `NavigationHelpers.normalizePath`.
+   * - The query string is extracted from the portion after the '?' in the hash.
+   * - If there is no query string, `query` will be `undefined`.
+   */
+  getCurrentPath(): { path: string; query: string } {
+    //TODO intentNavigation implementation
+    const pathRaw = NavigationHelpers.normalizePath(location.hash);
+    const [path, query] = pathRaw.split('?');
+    return { path, query };
+  }
 };
