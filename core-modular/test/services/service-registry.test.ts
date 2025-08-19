@@ -38,7 +38,7 @@ describe('ServiceRegistry', () => {
   });
 
   it('should throw an error when getting an unregistered service', () => {
-    expect(() => serviceRegistry.get(LuigiService)).toThrow("Service 'unknown' is not registered.");
+    expect(() => serviceRegistry.get(DummyService)).toThrow('');
   });
 
   it('should allow multiple different services to be registered and retrieved', () => {

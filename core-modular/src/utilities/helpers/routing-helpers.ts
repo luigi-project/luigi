@@ -4,7 +4,6 @@ import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
- 
   defaultContentViewParamPrefix: '~',
 
   /**
