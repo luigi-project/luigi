@@ -1,8 +1,7 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
+  "extends": "../tsconfig.json",
   "include": [
-    "src/**/*",
-    "src/node_modules",
+    "./**/*",
   ],
   "exclude": [
     "node_modules/*",
@@ -11,6 +10,6 @@
   ],
   "compilerOptions": {
     "module": "ESNext",
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true
   },
 }
