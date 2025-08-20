@@ -81,7 +81,7 @@ export interface Node {
   pathSegment?: string;
   label?: string;
   icon?: string;
-  children?: Node[];
+  children: Node[];
   category?: any;
   tabNav?: boolean;
   viewUrl?: string;
@@ -218,11 +218,7 @@ export class NavigationService {
     if (path == '') {
       // poor mans implementation, full path resolution TBD
       return pathData.rootNodes[0].pathSegment;
-    } else if (
-      pathData.selectedNode &&
-      !pathData.selectedNode.viewUrl &&
-      pathData.selectedNode.children?.length
-    ) {
+    } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
       return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
     return undefined;

@@ -122,6 +122,7 @@ describe('Routing-helpers', () => {
       getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
     });
     const currentNode = {
+      children: [],
       clientPermissions: {
         urlParameters: {
           param1: { read: true },
@@ -137,7 +138,9 @@ describe('Routing-helpers', () => {
     sinon.stub(luigi, 'routing').returns({
       getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
     });
-    const currentNode = {};
+    const currentNode = {
+      children: []
+    };
     const filteredParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
     assert.deepEqual(filteredParams, {});
   });
