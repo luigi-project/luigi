@@ -114,7 +114,10 @@ export class Routing {
       }
   
       this.handleBrowserHistory(keepBrowserHistory, url);
-      // TODO
-      //this.luigi.configChanged();
+      if (this.luigi.getConfigValue('routing.useHashRouting')) {
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      }else{
+        //TODO LuigiConfig.configChanged(); or similar with pathrouting
+      }
     }
 }

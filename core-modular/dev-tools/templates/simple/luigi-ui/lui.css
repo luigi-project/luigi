@@ -113,6 +113,7 @@ ui5-shellbar {
     z-index: 11;
 }
 
+/*TODO change css because loading indicator can't be a child of content*/
 .luigi-busy-indicator {
     position: absolute;
     left: 50%;
