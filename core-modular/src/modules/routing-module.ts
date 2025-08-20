@@ -19,7 +19,6 @@ export const RoutingModule = {
           paramsObj[key] = value;
         });
         const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
-        const searchParams = RoutingHelpers.prepareSearchParamsForClient(navService.getCurrentNode(path), luigi);
         const redirect = navService.shouldRedirect(path);
         if (redirect) {
           luigi.navigation().navigate(redirect);
@@ -27,7 +26,7 @@ export const RoutingModule = {
         }
         const currentNode = navService.getCurrentNode(path);
         currentNode.nodeParams = nodeParams || {};
-        currentNode.searchParams = searchParams || {};
+        currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
         luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
         luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
@@ -89,7 +88,7 @@ export const RoutingModule = {
     const currentNode = navService.getCurrentNode(pathObj.path);
     const localSearchParams = { ...searchParams };
 
-    if (currentNode && currentNode.clientPermissions && currentNode.clientPermissions.urlParameters) {
+    if (currentNode?.clientPermissions?.urlParameters) {
       const filteredObj: Record<string, any> = {};
       Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {
         if (key in localSearchParams && currentNode.clientPermissions.urlParameters[key].write === true) {

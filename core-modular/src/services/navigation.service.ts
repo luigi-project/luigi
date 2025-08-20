@@ -221,8 +221,7 @@ export class NavigationService {
     } else if (
       pathData.selectedNode &&
       !pathData.selectedNode.viewUrl &&
-      Array.isArray(pathData.selectedNode.children) &&
-      pathData.selectedNode.children.length > 0
+      pathData.selectedNode.children?.length
     ) {
       return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
