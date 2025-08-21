@@ -35,11 +35,11 @@ export const UIModule = {
     console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.luigi = luigi;
-    luigi.getEngine()._connector?.renderMainLayout();    
+    luigi.getEngine()._connector?.renderMainLayout();
     UIModule.update();
   },
   update: (scope?: string) => {
-    if(scope) {
+    if (scope) {
       // TBD
     } else {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
