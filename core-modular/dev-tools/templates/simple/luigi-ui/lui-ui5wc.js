@@ -301,8 +301,8 @@ const connector = {
         <ui5-side-navigation slot="sideContent"></ui5-side-navigation>
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
-          <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           <div class="content">
+            <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           </div>
         </div>
         <div class="luigi-alert--overlay"><div>

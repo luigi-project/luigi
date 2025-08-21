@@ -63,7 +63,7 @@ export const UIModule = {
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
       containerWrapper.childNodes.forEach((element: any) => {
-        if(element.tagName?.indexOf('LUIGI-') === 0) {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
             if (currentNode.viewGroup === element.viewGroup) {
               viewGroupContainer = element;
