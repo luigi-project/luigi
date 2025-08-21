@@ -63,14 +63,16 @@ export const UIModule = {
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
       containerWrapper.childNodes.forEach((element: any) => {
-        if (element.viewGroup) {
-          if (currentNode.viewGroup === element.viewGroup) {
-            viewGroupContainer = element;
+        if(element.tagName?.indexOf('LUIGI-') === 0) {
+          if (element.viewGroup) {
+            if (currentNode.viewGroup === element.viewGroup) {
+              viewGroupContainer = element;
+            } else {
+              element.style.display = 'none';
+            }
           } else {
-            element.style.display = 'none';
+            element.remove();
           }
-        } else {
-          element.remove();
         }
       });
       if (viewGroupContainer) {
