@@ -29,33 +29,42 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
 };
 
 export const UIModule = {
-  navService: undefined,
+  navService: undefined as unknown as NavigationService,
+  luigi: undefined as unknown as Luigi,
   init: (luigi: Luigi) => {
     console.log('Init UI...');
-    luigi.getEngine()._connector?.renderMainLayout();
-    const navService = serviceRegistry.get(NavigationService);
-    const pathRaw = NavigationHelpers.normalizePath(location.hash);
-    const [path, query] = pathRaw.split('?');
-    const urlSearchParams = new URLSearchParams(query);
-    const paramsObj: Record<string, string> = {};
-    urlSearchParams.forEach((value, key) => {
-      paramsObj[key] = value;
-    });
-    const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
-    const redirect = navService.shouldRedirect(path);
-    if (redirect) {
-      luigi.navigation().navigate(redirect);
-      return;
-    }
+    UIModule.navService = serviceRegistry.get(NavigationService);
+    UIModule.luigi = luigi;
+    luigi.getEngine()._connector?.renderMainLayout();    
+    UIModule.update();
+  },
+  update: (scope?: string) => {
+    if(scope) {
+      // TBD
+    } else {
+      const pathRaw = NavigationHelpers.normalizePath(location.hash);
+      const [path, query] = pathRaw.split('?');
+      const urlSearchParams = new URLSearchParams(query);
+      const paramsObj: Record<string, string> = {};
+      urlSearchParams.forEach((value, key) => {
+        paramsObj[key] = value;
+      });
+      const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, UIModule.luigi);
+      const redirect = UIModule.navService.shouldRedirect(path);
+      if (redirect) {
+        UIModule.luigi.navigation().navigate(redirect);
+        return;
+      }
 
-    luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
-    luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
-    luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
+      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(path));
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(path));
 
-    const currentNode = navService.getCurrentNode(path);
-    currentNode.nodeParams = nodeParams || {};
-    if (currentNode) {
-      UIModule.updateMainContent(currentNode, luigi);
+      const currentNode = UIModule.navService.getCurrentNode(path);
+      currentNode.nodeParams = nodeParams || {};
+      if (currentNode) {
+        UIModule.updateMainContent(currentNode, UIModule.luigi);
+      }
     }
   },
   updateMainContent: (currentNode: any, luigi: Luigi) => {
