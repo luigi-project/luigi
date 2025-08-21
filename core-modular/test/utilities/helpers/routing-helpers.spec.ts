@@ -1,17 +1,21 @@
+import { get } from 'lodash';
 import { RoutingHelpers } from '../../../src/utilities/helpers/routing-helpers';
+import { Routing } from '../../../src/core-api/routing';
 const chai = require('chai');
+const sinon = require('sinon');
 const assert = chai.assert;
 
 describe('Routing-helpers', () => {
   let luigi: any = {};
   beforeEach(() => {
-     luigi = {
+    luigi = {
       config: {},
       engine: {},
       getConfig: () => ({ routing: { contentViewParamPrefix: '~' } }),
       getEngine: () => ({}),
       setConfig: () => {},
       navigation: () => ({ navigate: () => {} }),
+      routing: () => ({ getSearchParams: () => ({}) }),
       uxManager: () => ({}),
       linkManager: () => ({}),
       getConfigValue: (key: string) => {
@@ -22,6 +26,9 @@ describe('Routing-helpers', () => {
       },
       getActiveFeatureToggles: () => []
     };
+  });
+  afterEach(() => {
+    sinon.restore();
   });
 
   it('addParamsOnHashRouting should add parameters to hash routing', () => {
@@ -71,9 +78,9 @@ describe('Routing-helpers', () => {
     const params = {
       '~param1': 'value1',
       '~param2': 'value2',
-      'otherParam': 'value3'
+      otherParam: 'value3'
     };
-    
+
     const filteredParams = RoutingHelpers.filterNodeParams(params, luigi as any);
     assert.deepEqual(filteredParams, { param1: 'value1', param2: 'value2' });
   });
@@ -86,11 +93,55 @@ describe('Routing-helpers', () => {
 
   it('sanitizeParamsMap should sanitize parameter keys and values', () => {
     const paramsMap = {
-      'param1': 'value1',
-      'param2': '<script>alert("xss")</script>'
+      param1: 'value1',
+      param2: '<script>alert("xss")</script>'
     };
     const sanitizedMap = RoutingHelpers.sanitizeParamsMap(paramsMap);
     assert.equal(sanitizedMap['param1'], 'value1');
     assert.equal(sanitizedMap['param2'], '&lt;script&gt;alert(&quot;xss&quot;)&lt;&sol;script&gt;');
+  });
+
+  it('getCurrentPath should return the current path and query', () => {
+    const pathRaw = '#/some/path?param1=value1&param2=value2';
+    location.hash = pathRaw; // Simulate the hash in the URL
+    const currentPath = RoutingHelpers.getCurrentPath();
+    assert.equal(currentPath.path, 'some/path');
+    assert.equal(currentPath.query, 'param1=value1&param2=value2');
+  });
+
+  it('getCurrentPath should return the current path and query', () => {
+    const pathRaw = '#/some/path';
+    location.hash = pathRaw; // Simulate the hash in the URL
+    const currentPath = RoutingHelpers.getCurrentPath();
+    assert.equal(currentPath.path, 'some/path');
+    assert.equal(currentPath.query, undefined);
+  });
+
+  it('prepareSearchParamsForClient should filter search params based on client permissions', () => {
+    sinon.stub(luigi, 'routing').returns({
+      getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
+    });
+    const currentNode = {
+      children: [],
+      clientPermissions: {
+        urlParameters: {
+          param1: { read: true },
+          param2: { read: false }
+        }
+      }
+    };
+    const filteredParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+    assert.deepEqual(filteredParams, { param1: 'value1' });
+  });
+
+  it('prepareSearchParamsForClient should return an empty object if no client permissions are defined', () => {
+    sinon.stub(luigi, 'routing').returns({
+      getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
+    });
+    const currentNode = {
+      children: []
+    };
+    const filteredParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+    assert.deepEqual(filteredParams, {});
   });
 });
