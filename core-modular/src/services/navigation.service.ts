@@ -438,4 +438,23 @@ export class NavigationService {
     };
     return tabNavData;
   }
+
+  /**
+   * Handles changes between navigation nodes by invoking a configured hook function.
+   *
+   * This method retrieves the `navigation.nodeChangeHook` function from the Luigi configuration.
+   * If the hook is defined and is a function, it is called with the previous and next node as arguments.
+   * If the hook is defined but not a function, a warning is logged to the console.
+   *
+   * @param prevNode - The previous navigation node, or `undefined` if there was no previous node.
+   * @param nextNode - The new navigation node that is being navigated to.
+   */
+  onNodeChange(prevNode: Node | undefined, nextNode: Node): void {
+    const invokedFunction = this.luigi.getConfigValue('navigation.nodeChangeHook');
+    if (typeof invokedFunction === 'function') {
+      invokedFunction(prevNode, nextNode);
+    } else if (invokedFunction !== undefined) {
+      console.warn('nodeChangeHook is not a function!');
+    }
+  }
 }
