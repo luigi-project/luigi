@@ -62,7 +62,7 @@ export const UIModule = {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
-      containerWrapper.childNodes.forEach((element: any) => {
+      [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
             if (currentNode.viewGroup === element.viewGroup) {
