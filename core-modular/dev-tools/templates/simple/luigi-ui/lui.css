@@ -114,9 +114,12 @@ ui5-shellbar {
 }
 
 .luigi-busy-indicator {
+    height: 100%;
+    width: 100%;
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-27px, -8px);
+    background: var(--sapBackgroundColor);
     z-index: 999;
+}
+.luigi-busy-indicator:not([active]) {
+    display: none;
 }

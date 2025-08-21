@@ -93,6 +93,9 @@ export interface Node {
   pageErrorHandler?: PageErrorHandler;
   externalLink?: ExternalLink;
   hideSideNav?: boolean;
+  clientPermissions?: {
+    urlParameters?: Record<string, any>;
+  };
 }
 
 export interface PageErrorHandler {
@@ -215,7 +218,7 @@ export class NavigationService {
     if (path == '') {
       // poor mans implementation, full path resolution TBD
       return pathData.rootNodes[0].pathSegment;
-    } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length > 0) {
+    } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
       return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
     return undefined;
@@ -345,7 +348,7 @@ export class NavigationService {
       lastElement = [...pathDataTruncatedChildren].pop();
     }
 
-    if (selectedNode && pathData.rootNodes.includes(selectedNode)) {
+    if (selectedNode && selectedNode.children && pathData.rootNodes.includes(selectedNode)) {
       navItems = this.buildNavItems(selectedNode.children);
     } else if (selectedNode && selectedNode.tabNav) {
       navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode) : [];

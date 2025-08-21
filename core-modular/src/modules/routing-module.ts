@@ -12,9 +12,7 @@ export const RoutingModule = {
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
-        const pathRaw = NavigationHelpers.normalizePath(location.hash);
-
-        const [path, query] = pathRaw.split('?');
+        const { path, query } = RoutingHelpers.getCurrentPath();
         const urlSearchParams = new URLSearchParams(query);
         const paramsObj: Record<string, string> = {};
         urlSearchParams.forEach((value, key) => {
@@ -28,6 +26,7 @@ export const RoutingModule = {
         }
         const currentNode = navService.getCurrentNode(path);
         currentNode.nodeParams = nodeParams || {};
+        currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
         luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
         luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
@@ -69,6 +68,39 @@ export const RoutingModule = {
         if (newWindow) {
           newWindow.focus();
         }
+      }
+    }
+  },
+
+  /**
+   * Adds search parameters to the URL based on client permissions defined in the current navigation node.
+   *
+   * Only parameters explicitly allowed (with `write: true` permission) in the current node's `clientPermissions.urlParameters`
+   * are added to the URL. Parameters without permission will trigger a warning in the console and will not be added.
+   *
+   * @param searchParams - An object containing key-value pairs of search parameters to be added to the URL.
+   * @param keepBrowserHistory - If `true`, the browser history will be preserved when updating the URL.
+   * @param luigi - The Luigi core instance used to interact with the routing API.
+   */
+  addSearchParamsFromClient(searchParams: Record<string, any>, keepBrowserHistory: boolean, luigi: Luigi): void {
+    const navService = serviceRegistry.get(NavigationService);
+    const pathObj = RoutingHelpers.getCurrentPath();
+    const currentNode = navService.getCurrentNode(pathObj.path);
+    const localSearchParams = { ...searchParams };
+
+    if (currentNode?.clientPermissions?.urlParameters) {
+      const filteredObj: Record<string, any> = {};
+      Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {
+        if (key in localSearchParams && currentNode.clientPermissions.urlParameters[key].write === true) {
+          filteredObj[key] = localSearchParams[key];
+          delete localSearchParams[key];
+        }
+      });
+      for (const key in localSearchParams) {
+        console.warn(`No permission to add the search param "${key}" to the url`);
+      }
+      if (Object.keys(filteredObj).length > 0) {
+        luigi.routing().addSearchParams(filteredObj, keepBrowserHistory);
       }
     }
   }
