@@ -41,6 +41,18 @@ export const UIModule = {
   update: (scope?: string) => {
     if (scope) {
       // TBD
+      /*
+        navigation
+        navigation.nodes
+        navigation.profile
+        navigation.contextSwitcher
+        navigation.viewgroupdata
+        navigation.productSwitcher
+        settings
+        settings.theming
+        settings.footer
+        settings.header
+      */
     } else {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
       const [path, query] = pathRaw.split('?');
