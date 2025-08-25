@@ -190,3 +190,81 @@ To define all subsequent nodes, use the category id:
 },
 ...
 ```
+### category with subcategory
+
+With Luigi version 2.23.0 it is possible to define subcategories. 
+The following configuration demonstrates how to do that:
+
+```javascript
+Luigi.setConfig({
+    navigation: {
+        nodes: [{
+            pathSegment: 'home',
+            hideFromNav: true,
+            children: [{
+                pathSegment: 'overview',
+                label: 'Overview',
+                icon: 'home',
+                viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+                context: {
+                    title: 'Welcome to Luigi Fiddle!',
+                    content: 'Click on "Modify Config" at the bottom right and play around with your Luigi configuration'
+                }
+            }, {
+                pathSegment: 'node1',
+                label: 'Node 1',
+                category: {
+                    id: 'cat',
+                    label: 'Category',
+                    collapsible: true
+                },
+                viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+                context: {
+                    title: 'Welcome to Node 1'
+                }
+            },
+            {
+                pathSegment: 'node2',
+                label: 'Node 2',
+                category: 'cat',
+                viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+                context: {
+                    title: 'Welcome to Node 2'
+                }
+            },
+            {
+                pathSegment: 'node3',
+                label: 'Node 3',
+                category: {
+                    id: 'cat::subCat',
+                    label: 'Subcategory',
+                    collapsible: true,
+                    icon: 'group'
+                },
+                viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+                context: {
+                    title: 'Welcome to Node 3'
+                }
+            },
+            {
+                pathSegment: 'node4',
+                label: 'Node 4',
+                category: 'cat::subCat',
+                viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+                context: {
+                    title: 'Welcome to Node 4'
+                }
+            }]
+        }],
+    },
+    settings: {
+        sideNav: {
+            style: 'vega'
+        }
+    }
+});
+```
+
+You can define a subcategory by using the syntax `category: { id: 'mfe::subCat', ... }`. The double colon `::` is used to define a subcategory.
+The double colon is the default delimiter and can be changed with the property [settings.sideNav.subCategoryDelimiter](https://docs.luigi-project.io/docs/general-settings?section=sidenavsubcategorydelimiter).
+Additionally, the [settings.sideNav.style](https://docs.luigi-project.io/docs/general-settings?section=sidenavstyle) property must be set to `vega`. The `vega` theme is also available starting from Luigi version 2.23.0.
