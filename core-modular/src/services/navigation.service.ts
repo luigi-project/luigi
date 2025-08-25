@@ -1,4 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
 export interface TopNavData {
@@ -451,7 +452,7 @@ export class NavigationService {
    */
   onNodeChange(prevNode: Node | undefined, nextNode: Node): void {
     const invokedFunction = this.luigi.getConfigValue('navigation.nodeChangeHook');
-    if (typeof invokedFunction === 'function') {
+    if (GenericHelpers.isFunction(invokedFunction)) {
       invokedFunction(prevNode, nextNode);
     } else if (invokedFunction !== undefined) {
       console.warn('nodeChangeHook is not a function!');
