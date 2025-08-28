@@ -1,6 +1,7 @@
 import { get } from 'lodash';
-import { GenericHelpers } from './generic-helpers';
+import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
+import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
   normalizePath: (raw: string) => {
@@ -72,5 +73,30 @@ export const NavigationHelpers = {
       return title;
     }
     return;
+  },
+
+  handleUnresponsiveClient(node: any): void {
+    if (node.errorFn) {
+      node.errorFn();
+    } else {
+      console.warn('Something went wrong with a client! You will be redirected to another page.');
+      /* TODO */
+      // const path = node.redirectPath || '/';
+      // Routing.navigateTo(path);
+    }
+  },
+
+  getAllViewGroupSettings: (luigi: Luigi): any => {
+    return luigi?.getConfigValue('navigation.viewGroupSettings');
+  },
+
+  getViewGroupSettings: (viewGroup: any, luigi: Luigi): Record<string, any> => {
+    const viewGroupSettings = NavigationHelpers.getAllViewGroupSettings(luigi);
+
+    if (viewGroup && viewGroupSettings && viewGroupSettings[viewGroup]) {
+      return viewGroupSettings[viewGroup];
+    } else {
+      return {};
+    }
   }
 };

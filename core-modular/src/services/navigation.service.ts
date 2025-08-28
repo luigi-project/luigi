@@ -113,6 +113,7 @@ export interface Category {
   nodes?: NavItem[];
   collabsible?: boolean;
 }
+
 export interface NavItem {
   node?: Node;
   category?: Category;

@@ -302,7 +302,9 @@ const connector = {
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content">
-            <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
+            <div class="luigi-busy-indicator-wrapper">
+              <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
+            </div>
           </div>
         </div>
         <div class="luigi-alert--overlay"><div>
@@ -710,6 +712,7 @@ const connector = {
     const loadingIndicator = document.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
+      loadingIndicator.parentNode.style.display = 'block';
       loadingIndicator.active = true;
     }
   },
@@ -718,6 +721,7 @@ const connector = {
     const loadingIndicator = document.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
+      loadingIndicator.parentNode.style.display = 'none';
       loadingIndicator.active = false;
     }
   },

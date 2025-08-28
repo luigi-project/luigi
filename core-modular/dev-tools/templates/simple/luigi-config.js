@@ -58,7 +58,10 @@ window.onload = () => {
               pathSegment: 'c2',
               label: 'MFE2',
               icon: 'calendar',
-              viewUrl: '/microfrontend.html#child2',
+              loadingIndicator: {
+                enabled: true
+              },
+              viewUrl: '/microfrontend2.html#child2',
               viewGroup: 'vg1'
             },
             {

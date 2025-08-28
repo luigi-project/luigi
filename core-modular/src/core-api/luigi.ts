@@ -21,6 +21,7 @@ export class Luigi {
   setConfig = (cfg: any) => {
     this.config = cfg;
     this.engine.init();
+    this.luigiAfterInit();
   };
 
   getConfig = (): any => {
@@ -50,6 +51,20 @@ export class Luigi {
     return new Routing(this);
   };
   // ...
+
+  private luigiAfterInit(): void {
+    const shouldHideAppLoadingIndicator: boolean = GenericHelpers.getConfigBooleanValue(
+      this.getConfig(),
+      'settings.appLoadingIndicator.hideAutomatically'
+    );
+
+    if (shouldHideAppLoadingIndicator) {
+      // Timeout needed, otherwise loading indicator might not be present yet and when displayed will not be hidden
+      setTimeout(() => {
+        this.ux().hideLoadingIndicator();
+      }, 0);
+    }
+  }
 
   private createConfigStore(): any {
     const { subscribe, update } = writable({});
