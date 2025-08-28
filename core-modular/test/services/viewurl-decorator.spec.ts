@@ -9,7 +9,7 @@ describe('ViewUrlDecorator', () => {
   beforeEach(() => {
     (ViewUrlDecorator as any).decorators = [];
     sinon.stub(GenericHelpers);
-    GenericHelpers.prependOrigin.callsFake(url => url);
+    GenericHelpers.prependOrigin.callsFake((url) => url);
   });
 
   afterEach(() => {

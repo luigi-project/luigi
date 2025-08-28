@@ -209,7 +209,7 @@ export class IframeService {
   async navigateIframe(config: any, component: any, node: any): Promise<void> {
     clearTimeout(this.timeoutHandle);
 
-    const componentData = {...component};
+    const componentData = { ...component };
     let viewUrl = componentData.viewUrl;
 
     if (viewUrl) {

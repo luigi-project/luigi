@@ -199,7 +199,7 @@ export const GenericHelpers = {
 
     if (params) {
       if (parenthesis) {
-        processedString = replace(processedString, /{([\s\S]+?)}/g, val => {
+        processedString = replace(processedString, /{([\s\S]+?)}/g, (val) => {
           let repl = val.slice(1, -1).trim();
 
           if (repl.indexOf(prefix) === 0) {
@@ -209,7 +209,7 @@ export const GenericHelpers = {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach(entry => {
+        Object.entries(params).forEach((entry) => {
           processedString = processedString.replace(
             new RegExp(GenericHelpers.escapeRegExp(prefix + entry[0]), 'g'),
             encodeURIComponent(entry[1] as any)
@@ -219,7 +219,10 @@ export const GenericHelpers = {
     }
 
     if (parenthesis) {
-      processedString = processedString.replace(new RegExp('\\{' + GenericHelpers.escapeRegExp(prefix) + '[^\\}]+\\}', 'g'), '');
+      processedString = processedString.replace(
+        new RegExp('\\{' + GenericHelpers.escapeRegExp(prefix) + '[^\\}]+\\}', 'g'),
+        ''
+      );
     }
 
     return processedString;

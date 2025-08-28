@@ -75,7 +75,7 @@ export const IframeHelpers = {
   removeIframe: (iframe: Node, node: Node): void => {
     const children = Array.from(node.children);
 
-    children.forEach(child => {
+    children.forEach((child) => {
       if (child === iframe) {
         (node as any).removeChild(child);
       }
@@ -87,7 +87,7 @@ export const IframeHelpers = {
       return false;
     }
 
-    const componentData = {...component};
+    const componentData = { ...component };
     const previousUrl = GenericHelpers.getUrlWithoutHash(componentData.previousNodeValues.viewUrl);
     const nextUrl = GenericHelpers.getUrlWithoutHash(componentData.viewUrl);
     const previousViewGroup = componentData.previousNodeValues.viewGroup;
@@ -98,7 +98,7 @@ export const IframeHelpers = {
 
   isSameViewGroup: (config: any, component: any): boolean => {
     if (config.iframe) {
-      const componentData = {...component};
+      const componentData = { ...component };
       const previousUrl = GenericHelpers.getUrlWithoutHash(componentData.previousNodeValues.viewUrl);
       const nextUrl = GenericHelpers.getUrlWithoutHash(componentData.viewUrl);
       const previousUrlOrigin = previousUrl ? IframeHelpers.getLocation(previousUrl as string) : '';
@@ -158,18 +158,20 @@ export const IframeHelpers = {
   ]
   */
   getMicrofrontendsInDom: (): MicrofrontendElement[] => {
-    return IframeHelpers.getMicrofrontendTypes().map(({ type, selector }) => {
-      return Array.from(document.querySelectorAll(selector)).map(container => ({
-        active: GenericHelpers.isElementVisible(container),
-        container,
-        id: (container as any).luigi.id,
-        type
-      }));
-    }).reduce((acc, val) => acc.concat(val), []); // flatten
+    return IframeHelpers.getMicrofrontendTypes()
+      .map(({ type, selector }) => {
+        return Array.from(document.querySelectorAll(selector)).map((container) => ({
+          active: GenericHelpers.isElementVisible(container),
+          container,
+          id: (container as any).luigi.id,
+          type
+        }));
+      })
+      .reduce((acc, val) => acc.concat(val), []); // flatten
   },
 
   getMicrofrontendIframes: (): Element[] => {
-    return IframeHelpers.getMicrofrontendsInDom().map(mfObj => mfObj.container);
+    return IframeHelpers.getMicrofrontendsInDom().map((mfObj) => mfObj.container);
   },
 
   getCurrentWebcomponentCtnInDom: (): Element | null => {
@@ -186,8 +188,8 @@ export const IframeHelpers = {
 
   getIframesWithType: (type: string): Element[] => {
     return IframeHelpers.getMicrofrontendsInDom()
-      .filter(mfObj => mfObj.type === type)
-      .map(mfObj => mfObj.container);
+      .filter((mfObj) => mfObj.type === type)
+      .map((mfObj) => mfObj.container);
   },
 
   getMainIframes: (): Element[] => {
@@ -200,8 +202,8 @@ export const IframeHelpers = {
 
   getVisibleIframes: (): Element[] => {
     return IframeHelpers.getMicrofrontendsInDom()
-      .filter(mfObj => mfObj.active)
-      .map(mfObj => mfObj.container);
+      .filter((mfObj) => mfObj.active)
+      .map((mfObj) => mfObj.container);
   },
 
   sendMessageToIframe: (iframe: any, message: any): void => {
@@ -217,14 +219,21 @@ export const IframeHelpers = {
   },
 
   sendMessageToVisibleIframes: (message: any): void => {
-    IframeHelpers.getVisibleIframes().forEach(iframe => IframeHelpers.sendMessageToIframe(iframe, message));
+    IframeHelpers.getVisibleIframes().forEach((iframe) => IframeHelpers.sendMessageToIframe(iframe, message));
   },
 
   broadcastMessageToAllIframes: (message: any): void => {
-    IframeHelpers.getMicrofrontendIframes().forEach(iframe => IframeHelpers.sendMessageToIframe(iframe, message));
+    IframeHelpers.getMicrofrontendIframes().forEach((iframe) => IframeHelpers.sendMessageToIframe(iframe, message));
   },
 
-  createIframe: (viewUrl: string, viewGroup: any, currentNode: any, microFrontendType: string, componentData: any, luigi: Luigi): any => {
+  createIframe: (
+    viewUrl: string,
+    viewGroup: any,
+    currentNode: any,
+    microFrontendType: string,
+    componentData: any,
+    luigi: Luigi
+  ): any => {
     const luigiDefaultSandboxRules = [
       'allow-forms', // Allows the resource to submit forms. If this keyword is not used, form submission is blocked.
       'allow-modals', // Lets the resource open modal windows.
@@ -297,7 +306,7 @@ export const IframeHelpers = {
       ...IframeHelpers.getMicrofrontendIframes(),
       { contentWindow: window, luigi: { viewUrl: window.location.href } }
     ];
-    const iframe: any = allMessagesSources.find(iframe => IframeHelpers.isMessageSource(event, iframe));
+    const iframe: any = allMessagesSources.find((iframe) => IframeHelpers.isMessageSource(event, iframe));
 
     if (!iframe || !iframe.luigi || !iframe.luigi.viewUrl) {
       return undefined;
@@ -327,7 +336,7 @@ export const IframeHelpers = {
   disableA11yOfInactiveIframe: (srcIframe: any): void => {
     const nodeList = document.querySelectorAll('*');
 
-    [...nodeList].forEach(el => {
+    [...nodeList].forEach((el) => {
       if (!el.getAttribute('oldTab')) {
         el.setAttribute('oldTab', el.getAttribute('tabindex') as string);
       }
@@ -341,7 +350,7 @@ export const IframeHelpers = {
   enableA11yOfInactiveIframe: (): void => {
     const nodeList = document.querySelectorAll('*');
 
-    [...nodeList].forEach(el => {
+    [...nodeList].forEach((el) => {
       const restoreVal = el.getAttribute('oldTab');
 
       if (el.getAttribute('oldTab') === 'null') {
@@ -364,7 +373,7 @@ export const IframeHelpers = {
   disableA11YKeyboardExceptClassName: (targetElementClassName: string): void => {
     const nodeList = document.querySelectorAll('*');
 
-    [...nodeList].forEach(element => {
+    [...nodeList].forEach((element) => {
       const isNotAChildOfTargetElement = !element.closest(targetElementClassName);
       const prevTabIndex: any = element.getAttribute('tabindex');
 
@@ -385,7 +394,7 @@ export const IframeHelpers = {
   enableA11YKeyboardBackdropExceptClassName: (targetElementClassName: string): void => {
     const nodeList = document.querySelectorAll('*');
 
-    [...nodeList].forEach(element => {
+    [...nodeList].forEach((element) => {
       const restoreVal = element.getAttribute('oldtab');
       const isNotAChildOfTargetElement = !element.closest(targetElementClassName);
 

@@ -35,42 +35,27 @@ describe('Iframe-helpers', () => {
 
   describe('createIframe', () => {
     it('createIframe', () => {
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.com/',
-        null,
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => null}
-      );
+      const iframe = IframeHelpers.createIframe('http://luigi.url.com/', null, null, 'main', null, {
+        getConfigValue: (prop: string) => null
+      });
 
       assert.equal(iframe.src, 'http://luigi.url.com/');
       sinon.assert.notCalled(ViewUrlDecorator.applyDecorators);
     });
 
     it('createIframe with view group', () => {
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.de/',
-        'ananas',
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => null}
-      );
+      const iframe = IframeHelpers.createIframe('http://luigi.url.de/', 'ananas', null, 'main', null, {
+        getConfigValue: (prop: string) => null
+      });
 
       assert.equal(iframe.src, 'http://luigi.url.de/');
       assert.equal(iframe.vg, 'ananas');
     });
 
     it('createIframe with customrules', () => {
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.com/',
-        null,
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => customSandboxRules}
-      );
+      const iframe = IframeHelpers.createIframe('http://luigi.url.com/', null, null, 'main', null, {
+        getConfigValue: (prop: string) => customSandboxRules
+      });
 
       assert.equal(
         iframe.sandbox,
@@ -79,27 +64,17 @@ describe('Iframe-helpers', () => {
     });
 
     it('createIframe with allowrules', () => {
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.com/',
-        null,
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => allowRules}
-      );
+      const iframe = IframeHelpers.createIframe('http://luigi.url.com/', null, null, 'main', null, {
+        getConfigValue: (prop: string) => allowRules
+      });
 
       assert.equal(iframe.allow, 'microphone; geolocation;');
     });
 
     it('createIframe with workarounds for allowrules', () => {
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.com/',
-        null,
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => allowRulesWorkAround}
-      );
+      const iframe = IframeHelpers.createIframe('http://luigi.url.com/', null, null, 'main', null, {
+        getConfigValue: (prop: string) => allowRulesWorkAround
+      });
 
       assert.equal(iframe.allow, 'microphone; geolocation;');
     });
@@ -110,20 +85,15 @@ describe('Iframe-helpers', () => {
       const node = {
         pathSegment: 'tets'
       };
-      const iframe = IframeHelpers.createIframe(
-        'http://luigi.url.com/',
-        'vg1',
-        node,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => {
+      const iframe = IframeHelpers.createIframe('http://luigi.url.com/', 'vg1', node, 'main', null, {
+        getConfigValue: (prop: string) => {
           if (prop === 'settings.iframeCreationInterceptor') {
             return interceptor;
           } else {
             return [];
           }
-        }}
-      );
+        }
+      });
 
       assert(interceptor.calledWith(iframe, 'vg1', node, 'main'));
     });
@@ -131,14 +101,9 @@ describe('Iframe-helpers', () => {
     it('createIframe with viewUrlDecorator', () => {
       const mockUrl = 'http://luigi.url.com/';
       ViewUrlDecorator.hasDecorators.returns(true);
-      const iframe = IframeHelpers.createIframe(
-        mockUrl,
-        null,
-        null,
-        'main',
-        null,
-        {getConfigValue: (prop: string) => null}
-      );
+      const iframe = IframeHelpers.createIframe(mockUrl, null, null, 'main', null, {
+        getConfigValue: (prop: string) => null
+      });
 
       assert.equal(iframe.src, mockUrl);
 
@@ -149,14 +114,9 @@ describe('Iframe-helpers', () => {
     it('createIframe with viewUrlDecorator and decode url', () => {
       const mockUrl = 'http://luigi.url.com/';
       ViewUrlDecorator.hasDecorators.returns(true);
-      const iframe = IframeHelpers.createIframe(
-        mockUrl,
-        undefined,
-        { decodeViewUrl: true },
-        'main',
-        null,
-        {getConfigValue: (prop: string) => null}
-      );
+      const iframe = IframeHelpers.createIframe(mockUrl, undefined, { decodeViewUrl: true }, 'main', null, {
+        getConfigValue: (prop: string) => null
+      });
 
       assert.equal(iframe.src, mockUrl);
 
