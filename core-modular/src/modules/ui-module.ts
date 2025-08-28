@@ -4,6 +4,7 @@ import { NavigationService, type ModalSettings } from '../services/navigation.se
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
+import { RoutingService } from '../services/routing.service';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
@@ -87,7 +88,15 @@ export const UIModule = {
   },
   openModal: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const routingService = serviceRegistry.get(RoutingService);
+    const modalHandler: any = {
+      close: () => {
+        if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+          routingService.removeModalDataFromUrl(false);
+        }
+      }
+    };
+    luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback, modalHandler);
   },
   openDrawer: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = createContainer(node, luigi);
