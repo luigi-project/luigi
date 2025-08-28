@@ -18,7 +18,7 @@ meta -->
 
 ## Overview
 
-This [authorization plugin](https://github.com/SAP/luigi/tree/main/plugins/auth/public/auth-oauth2) contains a library that allows your application to extend the [Luigi framework](https://github.com/SAP/luigi/tree/main/core) with an OAuth2 authorization provider.
+This [authorization plugin](https://github.com/luigi-project/luigi/tree/main/plugins/auth/public/auth-oauth2) contains a library that allows your application to extend the [Luigi framework](https://github.com/luigi-project/luigi/tree/main/core) with an OAuth2 authorization provider.
 Further configuration details can be found in the [main documentation](https://docs.luigi-project.io/docs/authorization-configuration#oauth2-implicit-grant-configuration).
 
 ## Installation

@@ -148,7 +148,7 @@ auth: {
 
 The OpenID Connect configuration allows you to specify the **automaticSilentRenew** option. When set to `true`, Luigi attempts to automatically renew the token in the background before it expires. Be aware that this mechanism requires the browser to support [third-party cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Third-party_cookies).
 
-To detect whether the user's browser supports the mechanism, use the script in the [`third-party-cookies`](https://github.com/SAP/luigi/tree/main/core/third-party-cookies) catalog. Deploy this file on a domain different from your main application's and set **thirdPartyCookiesScriptLocation** to the `init.html` file. During initialization, Luigi detects the cookies support and produces a warning in the console if cookies are disabled in the user's browser.
+To detect whether the user's browser supports the mechanism, use the script in the [`third-party-cookies`](https://github.com/luigi-project/luigi/tree/main/core/third-party-cookies) catalog. Deploy this file on a domain different from your main application's and set **thirdPartyCookiesScriptLocation** to the `init.html` file. During initialization, Luigi detects the cookies support and produces a warning in the console if cookies are disabled in the user's browser.
 
 When Luigi fails to renew the token and then logs the user out, it adds the `?reason=tokenExpired&thirdPartyCookies=[VALUE]` query parameters to the logout page redirect URL. Luigi replaces **[VALUE]**  with one of these options:
 - `disabled` means that third party cookies are disabled.
@@ -304,7 +304,7 @@ Luigi.setConfig({
 ​
 After authorization is successful on the authorization provider's side, it redirects back to `Luigi callback.html` **redirect_uri**. The provider verifies the authorization data, saves it in  **localStorage** for Luigi, and redirects to the Luigi main page.
 
-You can use the Luigi implementations of [OAuth2](https://github.com/SAP/luigi/blob/main/plugins/auth/src/auth-oauth2/index.js) and [OpenID Connect](https://github.com/SAP/luigi/blob/main/plugins/auth/src/auth-oidc-pkce/index.js) (or older [OIDC plugin](https://github.com/SAP/luigi/blob/main/plugins/auth/src/auth-oidc/index.js) for implict flow) as examples when creating your own authorization provider.
+You can use the Luigi implementations of [OAuth2](https://github.com/luigi-project/luigi/blob/main/plugins/auth/src/auth-oauth2/index.js) and [OpenID Connect](https://github.com/luigi-project/luigi/blob/main/plugins/auth/src/auth-oidc-pkce/index.js) (or older [OIDC plugin](https://github.com/luigi-project/luigi/blob/main/plugins/auth/src/auth-oidc/index.js) for implict flow) as examples when creating your own authorization provider.
 
 <!-- add-attribute:class:warning -->
 >**NOTE:** Read more about authorization helpers in the [Core API: AuthorizationStore](luigi-core-api.md#AuthorizationStore) section.

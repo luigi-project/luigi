@@ -37,7 +37,7 @@ export namespace Events {
 
   /**
    * Event fired when a navigation has been requested by the micro frontend. <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload}
    * @type {NavigationRequestPayload}
    * @example
    * {
@@ -57,7 +57,7 @@ export namespace Events {
   /**
    * Event fired when the micro frontend requests to show an alert. <br>
    * Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert). <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload}
    * @type {AlertRequestPayload}
    * @example
    * {
@@ -95,7 +95,7 @@ export namespace Events {
 
   /**
    * Event fired when the micro frontend requests the addition of search parameters to the URL. <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload}
    * @type {ParamsRequestPayload}
    * @example
    * {
@@ -110,7 +110,7 @@ export namespace Events {
 
   /**
    * Event fired when the micro frontend requests the addition of node parameters to the URL. <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload}
    * @type {ParamsRequestPayload}
    * @example
    * {
@@ -126,7 +126,7 @@ export namespace Events {
   /**
    * Event fired when the micro frontend requests to show a confirmation modal. <br>
    * Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal). <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload}
    * @type {ConfirmationModalRequestPayload}
    * @example
    * {
@@ -223,7 +223,7 @@ export namespace Events {
 
   /**
    * Event fired when the micro frontend requests the current app route. <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload}
    * @type {CurrentRouteRequestPayload}
    * @example
    * {
@@ -250,7 +250,7 @@ export namespace Events {
 
   /**
    * Event fired when the micro frontend requests to update the modal path parameters. <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload}
    * @type {ModalPathDataRequestPayload}
    * @example
    * {
@@ -272,7 +272,7 @@ export namespace Events {
   /**
    * Event fired when the micro frontend requests to update the modal settings. <br>
    * Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings). <br><br>
-   * Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload}
+   * Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload}
    * @type {ModalSettingsRequestPayload}
    * @example
    * {

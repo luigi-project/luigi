@@ -14,4 +14,4 @@ You can read about the new features in Luigi Container v1.3 in the release notes
 
 With this release we improved the context updating method in compound container.
 
-See our [changelog](https://github.com/SAP/luigi/releases/tag/container%2Fv1.3.0).
+See our [changelog](https://github.com/luigi-project/luigi/releases/tag/container%2Fv1.3.0).

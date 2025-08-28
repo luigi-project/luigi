@@ -1,8 +1,8 @@
-[![Build Status](https://github.com/SAP/luigi/actions/workflows/test.yml/badge.svg)](https://github.com/SAP/luigi/actions/workflows/test.yml)
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP/luigi)](https://api.reuse.software/info/github.com/SAP/luigi)
+[![Build Status](https://github.com/luigi-project/luigi/actions/workflows/test.yml/badge.svg)](https://github.com/luigi-project/luigi/actions/workflows/test.yml)
+[![REUSE status](https://api.reuse.software/badge/github.com/luigi-project/luigi)](https://api.reuse.software/info/github.com/SAP/luigi)
 # Luigi
 <p align="center">
- <img src="https://raw.githubusercontent.com/sap/luigi/main/logo.png" alt="Luigi logo" width="235">
+ <img src="https://raw.githubusercontent.com/luigi-project/luigi/main/logo.png" alt="Luigi logo" width="235">
 </p>
 
 ## Description
@@ -46,7 +46,7 @@ For security reasons, follow these guidelines when developing a micro frontend:
 - Maintain an allowlist with trusted domains and compare it with the origin of the Luigi Core application. The origin will be passed when you call the init listener in your micro frontend. Stop further processing if the origin does not match.
 
 
-> **NOTE**: Luigi follows these [sandbox rules for iframes](https://github.com/SAP/luigi/blob/af1deebb392dcec6490f72576e32eb5853a894bc/core/src/utilities/helpers/iframe-helpers.js#L140).
+> **NOTE**: Luigi follows these [sandbox rules for iframes](https://github.com/luigi-project/luigi/blob/af1deebb392dcec6490f72576e32eb5853a894bc/core/src/utilities/helpers/iframe-helpers.js#L140).
 
 
 ### Code formatting for contributors
@@ -59,10 +59,10 @@ To ensure that existing features still work as expected after your changes, run 
 
 ### E2E tests
 
-To ensure that existing features still work as expected after your changes, you need to run UI tests from the [Angular example application](https://github.com/SAP/luigi/tree/main/test/e2e-test-application). Before running the tests, you need to start our two test applications: 
+To ensure that existing features still work as expected after your changes, you need to run UI tests from the [Angular example application](https://github.com/luigi-project/luigi/tree/main/test/e2e-test-application). Before running the tests, you need to start our two test applications: 
 
-- Start the [Angular example application](https://github.com/SAP/luigi/tree/main/test/e2e-test-application) by using the `npm start` command in the application folder.
-- Start the [js test application](https://github.com/SAP/luigi/tree/main/test/e2e-js-test-application) by using the `npm run dev` command in the application folder.
+- Start the [Angular example application](https://github.com/luigi-project/luigi/tree/main/test/e2e-test-application) by using the `npm start` command in the application folder.
+- Start the [js test application](https://github.com/luigi-project/luigi/tree/main/test/e2e-js-test-application) by using the `npm run dev` command in the application folder.
 
 Once the applications are ready:
 
@@ -81,7 +81,7 @@ Install [jq](https://stedolan.github.io/jq/) using the `brew install jq` command
 
 ## How to obtain support
 
-If you have further questions about Luigi, you can check the [GitHub Discussions page](https://github.com/SAP/luigi/discussions) or contact us on our [Slack channel](https://slack.luigi-project.io/). If you find a specific problem or bug, you can also open a [GitHub issue](https://github.com/SAP/luigi/issues/new/choose) on our repository. Please describe the problem and the steps to reproduce it in your issue.
+If you have further questions about Luigi, you can check the [GitHub Discussions page](https://github.com/luigi-project/luigi/discussions) or contact us on our [Slack channel](https://slack.luigi-project.io/). If you find a specific problem or bug, you can also open a [GitHub issue](https://github.com/luigi-project/luigi/issues/new/choose) on our repository. Please describe the problem and the steps to reproduce it in your issue.
 
 ## Contributing
 

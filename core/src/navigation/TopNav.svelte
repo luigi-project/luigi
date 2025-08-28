@@ -3,6 +3,7 @@
   import BadgeCounter from './BadgeCounter.svelte';
   import Authorization from '../Authorization.svelte';
   import AuthorizationSimpleProfileMenu from '../AuthorizationSimpleProfileMenu.svelte';
+  import AuthorizationVegaProfileMenu from '../AuthorizationVegaProfileMenu.svelte';
   import TopNavDropDown from '../TopNavDropDown.svelte';
   import ContextSwitcher from './ContextSwitcher.svelte';
   import ProductSwitcher from './ProductSwitcher.svelte';
@@ -643,6 +644,47 @@
                 />
               </div>
             </div>
+          {:else if profileTypeSettings === 'vega'}
+            <div class="fd-user-menu">
+              <div class="fd-popover">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+                  <div
+                    class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
+                    aria-controls="profilePopover"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                    title={userInfo.name || undefined}
+                    tabindex="0"
+                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
+                    data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
+                  >
+                    <span
+                      class="fd-avatar fd-avatar--xs fd-avatar--circle fd-shellbar__avatar--circle {userInfo.picture
+                        ? 'fd-avatar--thumbnail'
+                        : ''}"
+                      style={userInfo.picture ? `background-image:url('${userInfo.picture}')` : ''}
+                    >
+                      {!userInfo.picture ? userInfo.initials || '' : ''}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="fd-popover__body fd-popover__body--right"
+                  aria-hidden={!(dropDownStates.profilePopover || false)}
+                  id="profilePopover"
+                  on:click|stopPropagation
+                >
+                  <AuthorizationVegaProfileMenu
+                    on:toggleDropdownState={() => toggleDropdownState('profilePopover')}
+                    on:userInfoUpdated={userInfoUpdate}
+                    {addNavHrefForAnchor}
+                  />
+                </div>
+              </div>
+            </div>
           {:else}
             <div class="fd-user-menu">
               <div class="fd-popover">
@@ -716,7 +758,7 @@
     outline: none;
   }
 
-  .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
+  #app:not(.vega) .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
     padding: 0 0.5rem;
   }
 

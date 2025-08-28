@@ -62,7 +62,7 @@ After importing the package, you can use the Luigi container anywhere in your ap
 
 ### Test Application
 
-1. You can find a Luigi Container example application on [GitHub](https://github.com/SAP/luigi/tree/main/container/examples). First, clone the Luigi repository if you haven't already done so:
+1. You can find a Luigi Container example application on [GitHub](https://github.com/luigi-project/luigi/tree/main/container/examples). First, clone the Luigi repository if you haven't already done so:
 
 ```bash
 git clone git@github.com:SAP/luigi.git
@@ -79,7 +79,7 @@ npm run start-examples
 
 The app should be available at `http://localhost:2222` in your browser. 
 
-3. Check the [examples folder](https://github.com/SAP/luigi/tree/main/container/examples) to see how Luigi Container is used.
+3. Check the [examples folder](https://github.com/luigi-project/luigi/tree/main/container/examples) to see how Luigi Container is used.
 
 ### API Reference
 To make use of all of the container based Luigi functionalities you can take a further look at the API reference:

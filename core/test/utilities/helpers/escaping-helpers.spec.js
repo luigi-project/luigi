@@ -98,12 +98,12 @@ describe('Escaping-helpers', () => {
       const links = {
         issues: {
           text: 'Issues',
-          url: `http://github.com/SAP/luigi/issues`,
+          url: `http://github.com/luigi-project/luigi/issues`,
           dismissKey: 'goToHome'
         },
         pulls: {
           text: 'Pulls',
-          url: `http://github.com/SAP/luigi/pulls`
+          url: `http://github.com/luigi-project/luigi/pulls`
         }
       };
       const uniqueID = 1234567890;
@@ -119,12 +119,12 @@ describe('Escaping-helpers', () => {
           {
             dismissKey: 'goToHome-sanitizeHtml',
             elemId: '_luigi_alert_1234567890_link_issues-sanitizeParam',
-            url: 'http://github.com/SAP/luigi/issues-sanitizeHtml'
+            url: 'http://github.com/luigi-project/luigi/issues-sanitizeHtml'
           },
           {
             dismissKey: undefined,
             elemId: '_luigi_alert_1234567890_link_pulls-sanitizeParam',
-            url: 'http://github.com/SAP/luigi/pulls-sanitizeHtml'
+            url: 'http://github.com/luigi-project/luigi/pulls-sanitizeHtml'
           }
         ]
       };

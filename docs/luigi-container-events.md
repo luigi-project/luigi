@@ -18,7 +18,7 @@ meta -->
 
 This document outlines the events provided by the Luigi Container.<br/>
 Some events contain an additional payload which can be utilized for internal objectives.<br/>
-In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Container. Source list of all events can be found [here](https://github.com/SAP/luigi/blob/main/container/src/constants/communication.ts).
+In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Container. Source list of all events can be found [here](https://github.com/luigi-project/luigi/blob/main/container/src/constants/communication.ts).
 
 ## Event Reference
 
@@ -49,7 +49,7 @@ Payload: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Gl
 ### NAVIGATION_REQUEST
 
 Event fired when a navigation has been requested by the micro frontend. <br><br>
-Payload: [NavigationRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [NavigationRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -70,7 +70,7 @@ Payload: [NavigationRequestPayload](https://github.com/SAP/luigi/blob/main/conta
 
 Event fired when the micro frontend requests to show an alert. <br>
 Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert). <br><br>
-Payload: [AlertRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [AlertRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -101,7 +101,7 @@ Event fired when the micro frontend has been initialized.
 ### ADD_SEARCH_PARAMS_REQUEST
 
 Event fired when the micro frontend requests the addition of search parameters to the URL. <br><br>
-Payload: [ParamsRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -117,7 +117,7 @@ Payload: [ParamsRequestPayload](https://github.com/SAP/luigi/blob/main/container
 ### ADD_NODE_PARAMS_REQUEST
 
 Event fired when the micro frontend requests the addition of node parameters to the URL. <br><br>
-Payload: [ParamsRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -134,7 +134,7 @@ Payload: [ParamsRequestPayload](https://github.com/SAP/luigi/blob/main/container
 
 Event fired when the micro frontend requests to show a confirmation modal. <br>
 Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal). <br><br>
-Payload: [ConfirmationModalRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [ConfirmationModalRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -231,7 +231,7 @@ Event fired when the micro frontend requests to set third-party cookies.
 ### GET_CURRENT_ROUTE_REQUEST
 
 Event fired when the micro frontend requests the current app route. <br><br>
-Payload: [CurrentRouteRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [CurrentRouteRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -258,7 +258,7 @@ Event fired to report that the micro frontend's navigation has completed.
 ### UPDATE_MODAL_PATH_DATA_REQUEST
 
 Event fired when the micro frontend requests to update the modal path parameters. <br><br>
-Payload: [ModalPathDataRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [ModalPathDataRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 
@@ -281,7 +281,7 @@ Payload: [ModalPathDataRequestPayload](https://github.com/SAP/luigi/blob/main/co
 
 Event fired when the micro frontend requests to update the modal settings. <br>
 Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings). <br><br>
-Payload: [ModalSettingsRequestPayload](https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts)
+Payload: [ModalSettingsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts)
 
 #### Examples
 

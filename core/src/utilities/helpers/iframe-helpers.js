@@ -167,7 +167,7 @@ class IframeHelpersClass {
   }
 
   sendMessageToIframe(iframe, message) {
-    if (!(iframe.luigi && iframe.luigi.viewUrl && iframe._ready)) {
+    if (!(iframe && iframe.luigi && iframe.luigi.viewUrl && iframe._ready)) {
       return;
     }
     const trustedIframeDomain = this.getLocation(iframe.luigi.viewUrl);

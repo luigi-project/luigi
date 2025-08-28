@@ -35,7 +35,7 @@ For more information, read the [documentation](https://docs.luigi-project.io/doc
 
 #### Dispatch hashchange event
 
-For viewGroup navigation, a new hashchange event is dispatched if the hash was changed, in order to support UI frameworks whose routers rely on this event. You can see the [PR](https://github.com/SAP/luigi/pull/2011) for more details.
+For viewGroup navigation, a new hashchange event is dispatched if the hash was changed, in order to support UI frameworks whose routers rely on this event. You can see the [PR](https://github.com/luigi-project/luigi/pull/2011) for more details.
 
 #### Introduce i18n variable in viewUrl
 
@@ -56,4 +56,4 @@ We added a new parameter that can be added to Luigi's routing configuration sect
 
 #### Bugfixes
 
-For a full list of bugfixes in this release, see our [changelog](https://github.com/SAP/luigi/blob/main/CHANGELOG.md).
+For a full list of bugfixes in this release, see our [changelog](https://github.com/luigi-project/luigi/blob/main/CHANGELOG.md).

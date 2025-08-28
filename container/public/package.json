@@ -6,7 +6,7 @@
     "types": "index.d.ts",
     "repository": {
         "type": "git",
-        "url": "ssh://github.com/SAP/luigi.git"
+        "url": "ssh://github.com/luigi-project/luigi.git"
     },
     "customElements": "./dist/custom-elements.json",
     "publishConfig": {
@@ -20,5 +20,5 @@
         "micro-frontends",
         "microfrontends"
     ],
-    "version": "1.7.0"
+    "version": "1.7.2"
 }

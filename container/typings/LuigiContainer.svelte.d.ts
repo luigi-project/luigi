@@ -107,7 +107,6 @@ export default class LuigiContainer extends HTMLElement {
   /**
    * If set to true, skips handshake and ready event is fired immediately.
    * @since 1.0.0
-   * TODO: https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML says booleans should not use "true"/"false", find a consistent style for our docs.
    * @example <luigi-container viewurl="/index.html" skipInitCheck></luigi-container>
    * @example myContainer.skipInitCheck = true
    */
@@ -280,7 +279,7 @@ export default class LuigiContainer extends HTMLElement {
    * @param {Object} internal Luigi legacy data (optional)
    * @since 1.5.0
    */
-  updateViewUrl(viewurl: string, internal?: object): void;
+  updateViewUrl(viewurl: string, internal?: Object): void;
 
   /**
    * Manually triggers the micro frontend rendering process when using defer-init attribute.

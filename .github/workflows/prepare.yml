@@ -1,4 +1,4 @@
-on: 
+on:
   workflow_call:
     inputs:
       buildcache_key:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - run: |
           gh extension install actions/gh-actions-cache
-          
+
           REPO=${{ github.repository }}
           BRANCH=${{ github.ref }}
 
@@ -25,7 +25,7 @@ jobs:
           ## cacheKeysForPR=$(gh actions-cache list -R $REPO -B $BRANCH | cut -f 1 )
           cacheKeysForPR=(${{ inputs.buildcache_key }})
 
-          ## Setting this to not fail the workflow while deleting cache keys. 
+          ## Setting this to not fail the workflow while deleting cache keys.
           set +e
           echo "Deleting caches..."
           for cacheKey in $cacheKeysForPR
@@ -52,7 +52,7 @@ jobs:
             ~/cypress-binary-cache
           key: ${{ inputs.buildcache_key }}
       - run: ls test
-      # Bundle all 
+      # Bundle all
       - run: npm run bootstrap
       - run: npm run bundle
       # Check bundlesize not exceeded

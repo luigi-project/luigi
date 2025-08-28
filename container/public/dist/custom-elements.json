@@ -236,14 +236,14 @@
             },
             {
               "name": "navigation-request",
-              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
+              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-alert-request",
-              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
+              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
               "type": {
                 "text": "Event"
               }
@@ -257,21 +257,21 @@
             },
             {
               "name": "add-search-params-request",
-              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-node-params-request",
-              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-confirmation-modal-request",
-              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
+              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
               "type": {
                 "text": "Event"
               }
@@ -327,7 +327,7 @@
             },
             {
               "name": "get-current-route-request",
-              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
@@ -341,14 +341,14 @@
             },
             {
               "name": "update-modal-path-data-request",
-              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-settings-request",
-              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
               "type": {
                 "text": "Event"
               }
@@ -607,14 +607,14 @@
             },
             {
               "name": "navigation-request",
-              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
+              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-alert-request",
-              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
+              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
               "type": {
                 "text": "Event"
               }
@@ -628,21 +628,21 @@
             },
             {
               "name": "add-search-params-request",
-              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-node-params-request",
-              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-confirmation-modal-request",
-              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
+              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
               "type": {
                 "text": "Event"
               }
@@ -698,7 +698,7 @@
             },
             {
               "name": "get-current-route-request",
-              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
@@ -712,14 +712,14 @@
             },
             {
               "name": "update-modal-path-data-request",
-              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-settings-request",
-              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/SAP/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
               "type": {
                 "text": "Event"
               }
