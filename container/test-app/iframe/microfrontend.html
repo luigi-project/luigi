@@ -78,6 +78,7 @@
       <button onclick="openAsDrawer()">test openAsDrawer()</button>
       <button onclick="openAsSplitview()">test openAsSplitview()</button>
       <button onclick="updateModalSettings()">test updateModalSettings</button>
+      <button onclick="getCurrentTheme()">get current theme</button>
       <br /><br />
       <span id="result"></span>
     </div>
@@ -309,6 +310,12 @@
           .then((result) => {
             document.querySelector('#result').innerHTML = `showAlert: ${result}`;
           });
+      }
+
+      function getCurrentTheme(){
+        const currentTheme = LuigiClient.uxManager().getCurrentTheme();
+         document.querySelector('#result').innerHTML =
+          `currentTheme: ${JSON.stringify(currentTheme)}`;
       }
 
       function testShowAlertWithNotifyAlertClosed() {

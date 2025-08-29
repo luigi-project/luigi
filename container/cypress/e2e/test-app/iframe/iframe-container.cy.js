@@ -398,4 +398,28 @@ describe('Iframe Container Test', () => {
         });
       });
   });
+
+    it('getCurrentTheme', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get current theme')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('currentTheme: "sap_horizon_dark"');
+            });
+        });
+      });
+  });
 });

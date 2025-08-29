@@ -138,7 +138,8 @@ export class ContainerService {
                     internal: {
                       thirdPartyCookieCheck: {
                         disabled: targetCnt.skipCookieCheck === 'true'
-                      }
+                      },
+                      currentTheme: targetCnt.theme
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
