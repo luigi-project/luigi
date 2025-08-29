@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 // Array of folder names
 const foldersToBundle = [
   'core',
+  'core-modular',
   'client',
   'client-frameworks-support/testing-utilities',
   'client-frameworks-support/client-support-angular',
