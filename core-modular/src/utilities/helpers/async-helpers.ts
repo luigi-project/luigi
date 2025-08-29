@@ -7,7 +7,7 @@ export const AsyncHelpers = {
   keyExistencyCheckInterval: 50,
 
   wrapAsPromise: (value: any): Promise<any> => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(value);
     });
   },
@@ -35,7 +35,11 @@ export const AsyncHelpers = {
    * If the value is a Function it is called and the result of that call is the value.
    * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
    */
-  getConfigValueFromObjectAsync: (object: Record<string, any>, property: string, ...parameters: any[]): Promise<any> => {
+  getConfigValueFromObjectAsync: (
+    object: Record<string, any>,
+    property: string,
+    ...parameters: any[]
+  ): Promise<any> => {
     const value = GenericHelpers.getConfigValueFromObject(object, property);
 
     if (GenericHelpers.isFunction(value)) {

@@ -46,7 +46,7 @@ describe('Async-helpers', () => {
 
     it('executes an async function and returns its promise', async () => {
       const promiseFunc = (one, two, three) => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           resolve(three);
         });
       };

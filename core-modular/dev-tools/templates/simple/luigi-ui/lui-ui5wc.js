@@ -689,14 +689,13 @@ const connector = {
       if (select) {
         storedUserSettings.time = `${select.value} h`;
 
-        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings)
-          .then(() => {
-            connector.closeUserSettings();
-            globalThis.Luigi.ux().showAlert({
-              text: 'User settings are stored successfully!',
-              type: 'success'
-            });
-          })
+        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings).then(() => {
+          connector.closeUserSettings();
+          globalThis.Luigi.ux().showAlert({
+            text: 'User settings are stored successfully!',
+            type: 'success'
+          });
+        });
       } else {
         connector.closeUserSettings();
         globalThis.Luigi.ux().showAlert({
