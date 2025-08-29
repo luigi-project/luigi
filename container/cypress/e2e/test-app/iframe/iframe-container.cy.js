@@ -399,7 +399,7 @@ describe('Iframe Container Test', () => {
       });
   });
 
-    it('getCurrentTheme', () => {
+  it('getCurrentTheme', () => {
     const getIframeWindow = (iframe) => {
       return cy.get(iframe).its('0.contentWindow').should('exist');
     };
