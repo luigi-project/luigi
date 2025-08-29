@@ -1,5 +1,6 @@
 import type { Luigi } from '../core-api/luigi';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 export interface TopNavData {
   appTitle: string;
@@ -437,5 +438,23 @@ export class NavigationService {
       basePath: basePath.replace(/\/\/+/g, '/')
     };
     return tabNavData;
+  }
+
+  /**
+   * Extracts navigation data from the provided path string.
+   *
+   * This method parses the given path to retrieve structured path data and the last node object
+   * in the navigation hierarchy. It utilizes internal helpers to process the path and extract
+   * relevant navigation information.
+   *
+   * @param path - The navigation path string to extract data from.
+   * @returns A promise that resolves to an object containing:
+   *   - `nodeObject`: The last node object in the navigation path.
+   *   - `pathData`: The structured data representation of the path.
+   */
+  async extractDataFromPath(path: string): Promise<{ nodeObject: Node; pathData: PathData }> {
+    const pathData = this.getPathData(path);
+    const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
+    return { nodeObject, pathData };
   }
 }

@@ -16,7 +16,7 @@ export interface LuigiConnector {
 
   getContainerWrapper(): HTMLElement;
 
-  renderModal(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
+  renderModal(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function, modalHandler?: any): any;
 
   renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
 

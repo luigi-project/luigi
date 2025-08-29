@@ -9,6 +9,7 @@ import { DirtyStatusService } from './services/dirty-status.service';
 import { UXModule } from './modules/ux-module';
 import { serviceRegistry } from './services/service-registry';
 import { NavigationService } from './services/navigation.service';
+import { RoutingService } from './services/routing.service';
 export class LuigiEngine {
   config: any;
 
@@ -30,6 +31,7 @@ export class LuigiEngine {
     const luigi = (window as any).Luigi;
     serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
+    serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);

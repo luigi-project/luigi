@@ -8,6 +8,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
+  preventLoadingModalData: boolean | undefined;
 
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
