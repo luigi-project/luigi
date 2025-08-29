@@ -73,6 +73,24 @@ jobs:
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix container || exit 1
 
+  core_modular_unit_tests:
+    name: Core Modular Unit Tests
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/tmp_build
+            ~/cypress-binary-cache
+          key: buildcache-${{ github.ref }}
+      - run: cp -r ~/tmp_build/* .
+      - run: npm run test --prefix core-modular || exit 1
+
   container_e2e_tests:
     name: Container E2E Tests
     needs: prepare
