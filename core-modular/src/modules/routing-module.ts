@@ -3,38 +3,12 @@ import { NavigationService, type ExternalLink, type Node, type PageErrorHandler 
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { serviceRegistry } from '../services/service-registry';
+import { RoutingService } from '../services/routing.service';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
-    const navService = serviceRegistry.get(NavigationService);
-    const luigiConfig = luigi.getConfig();
-    console.log('Init Routing...', luigiConfig.routing);
-    if (luigiConfig.routing?.useHashRouting) {
-      window.addEventListener('hashchange', (ev) => {
-        console.log('HashChange', location.hash);
-        const { path, query } = RoutingHelpers.getCurrentPath();
-        const urlSearchParams = new URLSearchParams(query);
-        const paramsObj: Record<string, string> = {};
-        urlSearchParams.forEach((value, key) => {
-          paramsObj[key] = value;
-        });
-        const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
-        const redirect = navService.shouldRedirect(path);
-        if (redirect) {
-          luigi.navigation().navigate(redirect);
-          return;
-        }
-        const currentNode = navService.getCurrentNode(path);
-        currentNode.nodeParams = nodeParams || {};
-        currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
-        luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
-        luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
-        luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
-        luigi.getEngine()._ui.updateMainContent(currentNode, luigi);
-      });
-    } else {
-      // TBD
-    }
+    const routingService = serviceRegistry.get(RoutingService);
+    routingService.handleRouteChange();
   },
 
   handlePageErrorHandler: (pageErrorHandler: PageErrorHandler, node: Node, luigi: Luigi) => {
