@@ -1,4 +1,6 @@
+import type { Luigi } from '../../core-api/luigi';
 import { GenericHelpers } from './generic-helpers';
+import { IframeHelpers } from './iframe-helpers';
 
 class UserSettingsHelperClass {
   processUserSettingGroups(userSettings: any, storedSettings: any): any[] {
@@ -24,8 +26,15 @@ class UserSettingsHelperClass {
     return userSettingGroups;
   }
 
-  createIframe(): void {
-    // TODO
+  createIframe(viewUrl: string, userSettingsGroup: string, luigi: Luigi): any {
+    const iframe = IframeHelpers.createIframe(viewUrl, undefined, undefined, 'usersettings', undefined, luigi);
+    const iframeCtn = document.querySelector('.iframeUserSettingsCtn');
+
+    iframe.setAttribute('userSettingsGroup', userSettingsGroup);
+    iframe.userSettingsGroup = userSettingsGroup; // important for caching
+    iframeCtn?.appendChild(iframe);
+
+    return iframe;
   }
 
   getUserSettingsIframesInDom(): HTMLElement[] {

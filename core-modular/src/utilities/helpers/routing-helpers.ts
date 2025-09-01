@@ -1,6 +1,7 @@
 import type { Luigi } from '../../core-api/luigi';
 import type { Node } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
+import { GenericHelpers } from './generic-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
@@ -93,6 +94,43 @@ export const RoutingHelpers = {
       prefix = this.defaultContentViewParamPrefix;
     }
     return prefix;
+  },
+
+  /**
+   * Parses given view URL using additional component data - returns parsed view URL.
+   *
+   * @param viewUrl - A view URL to be parsed.
+   * @param componentData - Additional component data.
+   * @returns A parsed view URL.
+   */
+  substituteViewUrl(viewUrl: string, componentData: any) {
+    const contextVarPrefix = 'context.';
+    const nodeParamsVarPrefix = 'nodeParams.';
+    const searchQuery = 'routing.queryParams';
+
+    viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.pathParams, ':', false);
+    viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.context, contextVarPrefix);
+    viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.nodeParams, nodeParamsVarPrefix);
+    //TODO viewUrl = RoutingHelpers.getI18nViewUrl(viewUrl);
+
+    if (viewUrl && viewUrl.includes(searchQuery)) {
+      const viewUrlSearchParam = viewUrl.split('?')[1];
+
+      if (viewUrlSearchParam) {
+        const key = viewUrlSearchParam.split('=')[0];
+
+        /* TODO
+        if (LuigiRouting.getSearchParams()[key]) {
+          viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, LuigiRouting.getSearchParams()[key]);
+        } else {
+          viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+        }
+        */
+        viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+      }
+    }
+
+    return viewUrl;
   },
 
   /**
