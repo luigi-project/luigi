@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 export const EventListenerHelpers = {
-  listeners: [],
+  listeners: [] as any[],
   hashChangeWithoutSync: false,
 
   addEventListener(type: any, listenerFn: any): void {
