@@ -11,11 +11,11 @@
     "start": "npm run build && next start"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.22.1",
-    "@luigi-project/core": "^2.22.1",
-    "next": "^15.3.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "@luigi-project/client": "^2.23.1",
+    "@luigi-project/core": "^2.23.1",
+    "next": "^15.4.7",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.27.5"
