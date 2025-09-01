@@ -1,6 +1,8 @@
 import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
+import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { StateHelpers } from '../utilities/helpers/state-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
@@ -8,6 +10,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
+  private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
 
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
@@ -36,6 +39,101 @@ export class Luigi {
    */
   getConfigValue(property: string): any {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
+  }
+
+  /**
+   * Gets value of the given property on the Luigi config object.
+   * If the value is a Function it is called (with the given parameters) and the result of that call is the value.
+   * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
+   * @memberof Configuration
+   * @param {string} property the object traversal path
+   * @param {*} parameters optional parameters that are used if the target is a function
+   * @example
+   * Luigi.getConfigValueAsync('navigation.nodes')
+   * Luigi.getConfigValueAsync('navigation.profile.items')
+   * Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
+   */
+  getConfigValueAsync(property: string, ...parameters: any[]): Promise<any> {
+    return AsyncHelpers.getConfigValueFromObjectAsync(this.getConfig(), property, parameters);
+  }
+
+  /**
+   * Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
+   * @param {...string} scope one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
+   * <p>
+   * The supported scope selectors are:
+   * <p>
+   * <ul>
+   *   <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
+   *   <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
+   *   <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
+   *   <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
+   *   <li><code>navigation.profile</code>: profile menu was changed.</li>
+   *   <li><code>settings</code>: settings were changed.</li>
+   *   <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
+   *   <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
+   * </ul>
+   */
+  configChanged(...scope: string[]) {
+    const optimizedScope = StateHelpers.optimizeScope(scope);
+
+    if (optimizedScope.length > 0) {
+      optimizedScope.forEach((scope: string) => {
+        (window as any).Luigi._store.fire(scope, { current: (window as any).Luigi._store });
+      });
+    } else {
+      (window as any).Luigi._store.update((config: any) => config);
+    }
+  }
+
+  /**
+   * Reads the user settings object.
+   * You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
+   * By default, the user settings will be read from the **localStorage**
+   * @returns {Promise} a promise when a custom `readUserSettings` function in the settings.userSettings section of the Luigi configuration is implemented. It resolves a stored user settings object. If the promise is rejected the user settings dialog will also closed if the error object has a `closeDialog` property, e.g `reject({ closeDialog: true, message: 'some error' })`. In addition a custom error message can be logged to the browser console.
+   * @example
+   * Luigi.readUserSettings();
+   * @since 1.7.1
+   */
+  async readUserSettings() {
+    const userSettingsConfig = await this.getConfigValueAsync('userSettings');
+    const userSettings = userSettingsConfig
+      ? userSettingsConfig
+      : await this.getConfigValueAsync('settings.userSettings');
+
+    if (userSettings && GenericHelpers.isFunction(userSettings.readUserSettings)) {
+      return userSettings.readUserSettings();
+    }
+
+    const localStorageValue = localStorage.getItem(this.USER_SETTINGS_KEY);
+
+    return localStorageValue && JSON.parse(localStorageValue);
+  }
+
+  /**
+   * Stores the user settings object.
+   * You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configuration
+   * By default, the user settings will be written from the **localStorage**
+   * @param {Object} userSettingsObj to store in the storage.
+   * @param {Object} previousUserSettingsObj the previous object from storage.
+   * @returns {Promise} a promise when a custom `storeUserSettings` function in the settings.userSettings section of the Luigi configuration is implemented. If it is resolved the user settings dialog will be closed. If the promise is rejected the user settings dialog will also closed if the error object has a `closeDialog` property, e.g `reject({ closeDialog: true, message: 'some error' })`. In addition a custom error message can be logged to the browser console.
+   * @example
+   * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
+   * @since 1.7.1
+   */
+  async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
+    const userSettingsConfig = await this.getConfigValueAsync('userSettings');
+    const userSettings = userSettingsConfig
+      ? userSettingsConfig
+      : await this.getConfigValueAsync('settings.userSettings');
+
+    if (userSettings && GenericHelpers.isFunction(userSettings.storeUserSettings)) {
+      return userSettings.storeUserSettings(userSettingsObj, previousUserSettingsObj);
+    } else {
+      localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
+    }
+
+    this.configChanged();
   }
 
   navigation = (): Navigation => {
