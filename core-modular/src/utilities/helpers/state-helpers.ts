@@ -32,7 +32,7 @@ export const StateHelpers = {
     return [...new Set(result)];
   },
 
-  doOnStoreChange(store: any, fn: Subscriber<{}>, scope = []): void {
+  doOnStoreChange(store: any, fn: Subscriber<{}>, scope: any[] = []): void {
     store.subscribe(fn);
     this.expandScope(scope).forEach((scopeItem) => {
       store.subscribeToScope(fn, scopeItem);

@@ -1,6 +1,9 @@
 import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
+import { i18nService } from '../services/i18n.service';
+import { serviceRegistry } from '../services/service-registry';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { StateHelpers } from '../utilities/helpers/state-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
@@ -8,6 +11,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
+  configReadyCallback = function() {};
 
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
@@ -21,6 +25,7 @@ export class Luigi {
   setConfig = (cfg: any) => {
     this.config = cfg;
     this.engine.init();
+    this.setConfigCallback(this.getConfigReadyCallback());
   };
 
   getConfig = (): any => {
@@ -37,6 +42,39 @@ export class Luigi {
   getConfigValue(property: string): any {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   }
+
+  /**
+   * Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
+   * @param {...string} scope one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
+   * <p>
+   * The supported scope selectors are:
+   * <p>
+   * <ul>
+   *   <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
+   *   <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
+   *   <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
+   *   <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
+   *   <li><code>navigation.profile</code>: profile menu was changed.</li>
+   *   <li><code>settings</code>: settings were changed.</li>
+   *   <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
+   *   <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
+   * </ul>
+   */
+  configChanged(...scope: string[]) {
+    const optimizedScope = StateHelpers.optimizeScope(scope);
+
+    if (optimizedScope.length > 0) {
+      optimizedScope.forEach((scope: string) => {
+        (window as any).Luigi._store.fire(scope, { current: (window as any).Luigi._store });
+      });
+    } else {
+      (window as any).Luigi._store.update((config: any) => config);
+    }
+  }
+
+  i18n = (): i18nService => {
+    return new i18nService(this);
+  };
 
   navigation = (): Navigation => {
     return new Navigation(this);
@@ -91,5 +129,18 @@ export class Luigi {
         unSubscriptions = [];
       }
     };
+  }
+
+  private getConfigReadyCallback(): Promise<void> {
+    const LuigiI18N = serviceRegistry.get(i18nService);
+
+    return new Promise((resolve) => {
+      LuigiI18N._init();
+      resolve();
+    });
+  }
+
+  private setConfigCallback(configReadyCallback: any): void {
+    this.configReadyCallback = configReadyCallback;
   }
 }
