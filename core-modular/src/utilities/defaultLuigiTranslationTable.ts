@@ -16,7 +16,7 @@ const defaultLuigiInternalTranslationTable: Record<string, any> = {
     unsavedChangesAlert: {
       body: 'Unsaved changes will be lost. Do you want to continue?',
       header: 'Unsaved changes detected'
-    },
+    }
   }
 };
 

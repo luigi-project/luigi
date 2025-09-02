@@ -84,7 +84,7 @@ export class i18nService {
     }
   }
 
-    /**
+  /**
    * Gets translated text for the specified key in the current locale or in the specified one.
    * Property values for token replacement in the localization key will be taken from the specified interpolations object.
    *
@@ -128,7 +128,7 @@ export class i18nService {
    * @private
    */
   private _initCustomImplementation(): void {
-    this.translationImpl =  this.luigi.getConfigValue('settings.customTranslationImplementation');
+    this.translationImpl = this.luigi.getConfigValue('settings.customTranslationImplementation');
 
     if (GenericHelpers.isFunction(this.translationImpl)) {
       this.translationImpl = this.translationImpl();

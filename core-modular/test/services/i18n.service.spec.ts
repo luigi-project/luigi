@@ -5,7 +5,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const sinon = require('sinon');
 
-describe('I18N Service', function() {
+describe('I18N Service', function () {
   jest.retryTimes(2);
 
   let config: any;

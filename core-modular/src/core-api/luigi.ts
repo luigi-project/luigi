@@ -11,7 +11,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
-  configReadyCallback = function() {};
+  configReadyCallback = function () {};
 
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
