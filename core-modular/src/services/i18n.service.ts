@@ -50,6 +50,8 @@ export class i18nService {
       sessionStorage.setItem(this.currentLocaleStorageKey, locale);
       this._notifyLocaleChange(locale);
     }
+
+    this.luigi.getEngine()._connector?.setCurrentLocale(locale);
   }
 
   /**
