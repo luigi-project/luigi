@@ -4,7 +4,7 @@ const chai = require('chai');
 const assert = chai.assert;
 const sinon = require('sinon');
 
-describe('Routing Service', ()=> {
+describe('Routing Service', () => {
   let luigi: any = {};
   let routingService: RoutingService;
 
