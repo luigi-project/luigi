@@ -4,7 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
 
-describe('NodeDataManagementService', function() {
+describe('NodeDataManagementService', function () {
   const getNodeMock = () => ({
     pathSegment: 'myNode',
     children: [
@@ -31,7 +31,7 @@ describe('NodeDataManagementService', function() {
     assert.exists(nodeDataManagementService.dataManagement);
   });
 
-  describe('setChildren', function() {
+  describe('setChildren', function () {
     it('fill the cache with an node as key and an object as value using setChildren', () => {
       nodeDataManagementService.setChildren(getNodeMock(), {
         children: getNodeMock().children
@@ -53,7 +53,7 @@ describe('NodeDataManagementService', function() {
     });
   });
 
-  describe('getChildren', function() {
+  describe('getChildren', function () {
     afterEach(() => {
       nodeDataManagementService.deleteCache();
     });
