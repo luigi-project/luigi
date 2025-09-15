@@ -1316,7 +1316,7 @@
                                       >
                                         <div class="fd-navigation-list__content-container">
                                           {#if node.icon}
-                                            <span class="fd-navigation-list__icon icontest">
+                                            <span class="fd-navigation-list__icon">
                                               {#if isOpenUIiconName(node.icon)}
                                                 <i class={getSapIconStr(node.icon)} role="presentation"></i>
                                               {:else}
