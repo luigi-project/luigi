@@ -21,7 +21,7 @@ export class LuigiAutoRoutingService implements OnDestroy {
 
   constructor(private router: Router, private luigiContextService: LuigiContextService) {
     this.subscription.add(
-      this.router.events.pipe(this.doFilter()).subscribe(this.doSubscription.bind(this) as () => void)
+      this.router.events.pipe(this.doFilter() as any).subscribe(this.doSubscription.bind(this) as () => void)
     );
   }
 
