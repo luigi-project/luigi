@@ -112,7 +112,10 @@ describe('getContainerManager messageListener', () => {
       internal: {
         thirdPartyCookieCheck: {
           disabled: false
-        }
+        },
+        currentTheme: undefined,
+        currentLocale: undefined,
+        activeFeatureToggleList: []
       },
       msg: 'luigi.init'
     };
