@@ -8,6 +8,7 @@ const { exec } = require('child_process');
 const folders = [
   './',
   'core',
+  'core-modular',
   'client',
   'client-frameworks-support/client-support-angular',
   'client-frameworks-support/testing-utilities',
