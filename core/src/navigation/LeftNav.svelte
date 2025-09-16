@@ -1180,7 +1180,7 @@
                               >
                                 <div class="fd-navigation-list__content-container">
                                   {#if node.icon}
-                                  <span class="fd-navigation-list__icon">
+                                    <span class="fd-navigation-list__icon">
                                       {#if isOpenUIiconName(node.icon)}
                                         <i class="lui-hideOnHover-show {getSapIconStr(node.icon)}" role="presentation"
                                         ></i>
@@ -1192,7 +1192,7 @@
                                         />
                                       {/if}
                                     </span>
-                                    {/if}
+                                  {/if}
                                   <span
                                     class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                     !isSemiCollapsed &&
