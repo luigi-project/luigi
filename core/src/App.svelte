@@ -821,12 +821,17 @@
   };
 
   const showUnsavedChangesModal = () => {
-    return showModal({
-      header: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.header'),
-      body: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.body'),
-      buttonDismiss: LuigiI18N.getTranslation('luigi.button.dismiss'),
-      buttonConfirm: LuigiI18N.getTranslation('luigi.button.confirm')
-    });
+    const customHandler = LuigiConfig.getConfigValue('settings.unsavedChangesHandler');
+    if (customHandler) {
+      return customHandler();
+    } else {
+      return showModal({
+        header: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.header'),
+        body: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.body'),
+        buttonDismiss: LuigiI18N.getTranslation('luigi.button.dismiss'),
+        buttonConfirm: LuigiI18N.getTranslation('luigi.button.confirm')
+      });
+    }
   };
 
   export const getDirtyStatus = () => {
