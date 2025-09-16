@@ -64,7 +64,7 @@ export const RoutingModule = {
       if (sameWindow) {
         window.location.href = externalLink.url;
       } else {
-        const newWindow = window.open(externalLink.url, '_blank');
+        const newWindow = window.open(externalLink.url, '_blank', 'noopener noreferrer');
         if (newWindow) {
           newWindow.focus();
         }
