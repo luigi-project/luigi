@@ -138,7 +138,10 @@ export class ContainerService {
                     internal: {
                       thirdPartyCookieCheck: {
                         disabled: targetCnt.skipCookieCheck === 'true'
-                      }
+                      },
+                      currentTheme: targetCnt.theme,
+                      currentLocale: targetCnt.locale,
+                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || []
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
@@ -166,24 +169,16 @@ export class ContainerService {
                 this.dispatch(Events.INITIALIZED, targetCnt, event.data?.params || {});
                 break;
               case LuigiInternalMessageID.ADD_SEARCH_PARAMS_REQUEST:
-                this.dispatch(
-                  Events.ADD_SEARCH_PARAMS_REQUEST,
-                  targetCnt,
-                  {
-                    data: event.data.data,
-                    keepBrowserHistory: event.data.keepBrowserHistory
-                  } as ParamsRequestPayload
-                );
+                this.dispatch(Events.ADD_SEARCH_PARAMS_REQUEST, targetCnt, {
+                  data: event.data.data,
+                  keepBrowserHistory: event.data.keepBrowserHistory
+                } as ParamsRequestPayload);
                 break;
               case LuigiInternalMessageID.ADD_NODE_PARAMS_REQUEST:
-                this.dispatch(
-                  Events.ADD_NODE_PARAMS_REQUEST,
-                  targetCnt,
-                  {
-                    data: event.data.data,
-                    keepBrowserHistory: event.data.keepBrowserHistory
-                  } as ParamsRequestPayload
-                );
+                this.dispatch(Events.ADD_NODE_PARAMS_REQUEST, targetCnt, {
+                  data: event.data.data,
+                  keepBrowserHistory: event.data.keepBrowserHistory
+                } as ParamsRequestPayload);
                 break;
               case LuigiInternalMessageID.SHOW_CONFIRMATION_MODAL_REQUEST:
                 this.dispatchWithPayload(
