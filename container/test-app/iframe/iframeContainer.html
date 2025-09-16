@@ -14,6 +14,9 @@
     <span id="container-ctx" style="display: none"></span>
     <button id="update-view-url" type="button">Update viewUrl</button>
     <button id="update-token">Update Access Token</button>
+    <button id="change-theme" type="button">Change Theme</button>
+    <button id="change-locale" type="button">Change Locale</button>
+    <button id="change-feature-toggle-list" type="button">Change Feature Toggle List</button>
 
     <div style="border: solid 1px blue; height: 400px">
       <!-- Luigi Container to test general functionality-->
@@ -23,6 +26,8 @@
         context='{"title": "Projects", "content":" "}'
         auth-data='{ "accessToken": "my-token" }'
         theme="sap_horizon_dark"
+        locale="en"
+        active-feature-toggle-list='["feature1", "feature2"]'
       ></luigi-container>
     </div>
 
@@ -65,7 +70,38 @@
       const updateContextButton = document.getElementById('update-ctx');
       const updateViewUrlButton = document.getElementById('update-view-url');
       const updateAccessTokenButton = document.getElementById('update-token');
+      const changeThemeButton = document.getElementById('change-theme');
+      const changeLocaleButton = document.getElementById('change-locale');
+      const changeFeatureToggleListButton = document.getElementById(
+        'change-feature-toggle-list',
+      );
 
+      changeThemeButton.addEventListener('click', () => {
+        const newTheme =
+          luigiContainer.theme === 'sap_horizon_dark'
+            ? 'sap_horizon_light'
+            : 'sap_horizon_dark';
+        luigiContainer.setAttribute('theme', newTheme);
+        luigiContainer.updateContext({bla: 'blub'});
+      });
+
+      changeLocaleButton.addEventListener('click', () => {
+        const newLocale = luigiContainer.locale === 'en' ? 'de' : 'en';
+        luigiContainer.setAttribute('locale', newLocale);
+        luigiContainer.updateContext({bla: 'blub'});
+      });
+
+      changeFeatureToggleListButton.addEventListener('click', () => {
+        const newFeatureToggleList =
+          luigiContainer.activeFeatureToggleList.length === 2
+            ? ['feature3']
+            : ['feature1', 'feature2'];
+        luigiContainer.setAttribute(
+          'active-feature-toggle-list',
+          JSON.stringify(newFeatureToggleList),
+        );
+        luigiContainer.updateContext({bla: 'blub'});
+      });
       // for testing send Custom message functionality
       sendCustomMessageBtn.addEventListener('click', () => {
         luigiContainer.sendCustomMessage('update', { dataToSend: 'some data' });

@@ -139,7 +139,9 @@ export class ContainerService {
                       thirdPartyCookieCheck: {
                         disabled: targetCnt.skipCookieCheck === 'true'
                       },
-                      currentTheme: targetCnt.theme
+                      currentTheme: targetCnt.theme,
+                      currentLocale: targetCnt.locale,
+                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || []
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
