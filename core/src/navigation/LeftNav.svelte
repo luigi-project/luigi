@@ -1315,15 +1315,6 @@
                                         }}
                                       >
                                         <div class="fd-navigation-list__content-container">
-                                          {#if node.icon}
-                                            <span class="fd-navigation-list__icon">
-                                              {#if isOpenUIiconName(node.icon)}
-                                                <i class={getSapIconStr(node.icon)} role="presentation"></i>
-                                              {:else}
-                                                <img src={node.icon} alt={node.altText ? node.altText : ''} />
-                                              {/if}
-                                            </span>
-                                          {/if}
                                           <span
                                             class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                             !isSemiCollapsed &&
