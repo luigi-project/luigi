@@ -1179,8 +1179,8 @@
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
+                                  {#if node.icon}
                                   <span class="fd-navigation-list__icon">
-                                    {#if node.icon}
                                       {#if isOpenUIiconName(node.icon)}
                                         <i class="lui-hideOnHover-show {getSapIconStr(node.icon)}" role="presentation"
                                         ></i>
@@ -1191,15 +1191,8 @@
                                           class="lui-hideOnHover-show"
                                         />
                                       {/if}
-                                    {:else}
-                                      <i
-                                        class="lui-hideOnHover-show {isSemiCollapsed
-                                          ? 'sap-icon--rhombus-milestone-2'
-                                          : ''}"
-                                        role="presentation"
-                                      />
+                                    </span>
                                     {/if}
-                                  </span>
                                   <span
                                     class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                     !isSemiCollapsed &&
