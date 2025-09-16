@@ -1192,6 +1192,13 @@
                                         />
                                       {/if}
                                     </span>
+                                  {:else if isSemiCollapsed}
+                                    <span class="fd-navigation-list__icon">
+                                      <i
+                                        class="lui-hideOnHover-show test sap-icon--rhombus-milestone-2"
+                                        role="presentation"
+                                      />
+                                    </span>
                                   {/if}
                                   <span
                                     class="fd-navigation-list__text badge-align-{node.statusBadge &&
