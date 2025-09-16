@@ -14,12 +14,12 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@luigi-project/client": "^2.22.1",
-    "@luigi-project/container": "^1.7.0",
-    "@luigi-project/core": "^2.22.1",
+    "@luigi-project/client": "^2.23.1",
+    "@luigi-project/container": "^1.7.2",
+    "@luigi-project/core": "^2.23.1",
     "@sap-theming/theming-base-content": "^11.22.0",
     "cross-spawn": "^7.0.6",
-    "cypress": "^13.17.0",
+    "cypress": "^14.5.4",
     "live-server": "^1.2.2"
   },
   "devDependencies": {
