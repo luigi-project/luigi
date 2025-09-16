@@ -16,7 +16,9 @@
     <button id="update-token">Update Access Token</button>
     <button id="change-theme" type="button">Change Theme</button>
     <button id="change-locale" type="button">Change Locale</button>
-    <button id="change-feature-toggle-list" type="button">Change Feature Toggle List</button>
+    <button id="change-feature-toggle-list" type="button">
+      Change Feature Toggle List
+    </button>
 
     <div style="border: solid 1px blue; height: 400px">
       <!-- Luigi Container to test general functionality-->
@@ -82,13 +84,13 @@
             ? 'sap_horizon_light'
             : 'sap_horizon_dark';
         luigiContainer.setAttribute('theme', newTheme);
-        luigiContainer.updateContext({bla: 'blub'});
+        luigiContainer.updateContext({ bla: 'blub' });
       });
 
       changeLocaleButton.addEventListener('click', () => {
         const newLocale = luigiContainer.locale === 'en' ? 'de' : 'en';
         luigiContainer.setAttribute('locale', newLocale);
-        luigiContainer.updateContext({bla: 'blub'});
+        luigiContainer.updateContext({ bla: 'blub' });
       });
 
       changeFeatureToggleListButton.addEventListener('click', () => {
@@ -100,7 +102,7 @@
           'active-feature-toggle-list',
           JSON.stringify(newFeatureToggleList),
         );
-        luigiContainer.updateContext({bla: 'blub'});
+        luigiContainer.updateContext({ bla: 'blub' });
       });
       // for testing send Custom message functionality
       sendCustomMessageBtn.addEventListener('click', () => {

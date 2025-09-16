@@ -494,7 +494,8 @@ describe('Iframe Container Test', () => {
 
     cy.get(containerSelector)
       .shadow()
-      .get('iframe').then((iframe) => {
+      .get('iframe')
+      .then((iframe) => {
         const $body = iframe.contents().find('body');
 
         getIframeWindow(iframe).then((win) => {
@@ -509,15 +510,16 @@ describe('Iframe Container Test', () => {
         });
       });
     cy.get('button[id="change-feature-toggle-list"]').click();
-    
+
     cy.get(containerSelector)
       .shadow()
-      .get('iframe').then((iframe) => {
+      .get('iframe')
+      .then((iframe) => {
         const $body = iframe.contents().find('body');
-  
+
         getIframeWindow(iframe).then((win) => {
           // cy.spy(win, 'postMessage').as('postMessage');
-  
+
           cy.wrap($body)
             .contains('get active feature toggle list')
             .click()
@@ -526,6 +528,5 @@ describe('Iframe Container Test', () => {
             });
         });
       });
-    });
-
- });
+  });
+});
