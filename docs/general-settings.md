@@ -256,10 +256,10 @@ You can set the following values:
 - **default**: if you don't specify any value for  **semiCollapsibleButtonStyle**, the control is rendered as an **i** tag.
 
 ### sideNav.style
-- **description**: Displays the updated side navigation layout styled according to the Vega design guidelines. Must be set to `vega`. **since** v2.23.0
+- **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. **since** v2.23.0
 
 #### sideNav.subCategoryDelimiter
-- **description**: With the vega theme, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.
+- **description**: With the vega layout, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.
 - **since** v2.23.0
 - **example**:
 ```javascript

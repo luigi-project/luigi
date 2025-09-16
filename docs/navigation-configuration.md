@@ -267,4 +267,4 @@ Luigi.setConfig({
 
 You can define a subcategory by using the syntax `category: { id: 'mfe::subCat', ... }`. The double colon `::` is used to define a subcategory.
 The double colon is the default delimiter and can be changed with the property [settings.sideNav.subCategoryDelimiter](https://docs.luigi-project.io/docs/general-settings?section=sidenavsubcategorydelimiter).
-Additionally, the [settings.sideNav.style](https://docs.luigi-project.io/docs/general-settings?section=sidenavstyle) property must be set to `vega`. The `vega` theme is also available starting from Luigi version 2.23.0.
+Additionally, the [settings.sideNav.style](https://docs.luigi-project.io/docs/general-settings?section=sidenavstyle) property must be set to `vega`. The `vega` layout is also available starting from Luigi version 2.23.0.
