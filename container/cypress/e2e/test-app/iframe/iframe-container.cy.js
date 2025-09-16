@@ -398,4 +398,135 @@ describe('Iframe Container Test', () => {
         });
       });
   });
+
+  it('getCurrentTheme + update currentTheme', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get current theme')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('currentTheme: "sap_horizon_dark"');
+            });
+        });
+      });
+
+    cy.get('button[id="change-theme"]').click();
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          // cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get current theme')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('currentTheme: "sap_horizon_light"');
+            });
+        });
+      });
+  });
+
+  it('getCurrentLocale + update current locale', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get current locale')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('currentLocale: "en"');
+            });
+        });
+      });
+
+    cy.get('button[id="change-locale"]').click();
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          // cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get current locale')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('currentLocale: "de"');
+            });
+        });
+      });
+  });
+
+  it('getActiveFeatureToggleList + change featureToggleList', () => {
+    const getIframeWindow = (iframe) => {
+      return cy.get(iframe).its('0.contentWindow').should('exist');
+    };
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get active feature toggle list')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('activeFeatureToggleList: ["feature1","feature2"]');
+            });
+        });
+      });
+    cy.get('button[id="change-feature-toggle-list"]').click();
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+
+        getIframeWindow(iframe).then((win) => {
+          // cy.spy(win, 'postMessage').as('postMessage');
+
+          cy.wrap($body)
+            .contains('get active feature toggle list')
+            .click()
+            .then(() => {
+              cy.wrap($body).contains('activeFeatureToggleList: ["feature3"]');
+            });
+        });
+      });
+  });
 });
