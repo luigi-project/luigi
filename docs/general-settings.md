@@ -339,6 +339,25 @@ theming: {
 <link rel="stylesheet" href="<PATH/TO/LUIGI/PACKAGE/luigi_horizon.css" />
 ```
 
+### unsavedChangesHandler
+- **type**: function
+- **description**: the `unsavedChangesHandler` can be implemented as an alternative to the standard unsaved changes modal. The function must return a promise."
+- **example**:
+```javascript
+settings:{
+  unsavedChangesHandler: () => {
+    return Luigi.ux().showConfirmationModal({
+      type: 'information',
+      header: "Unsaved Changes",
+      body: "You have unsaved changes. Do you want to <b>leave</b>?",
+      buttonConfirm: "Yes",
+      buttonDismiss: "No"
+    });
+  }
+}
+```
+- **since** NEXT_RELEASE
+
 ### webcomponentCreationInterceptor
 - **type**: function
 - **description**: called on web component creation, it gives you full control over the created web component DOM element. You can modify it according to your needs just before it is added to the DOM tree.
