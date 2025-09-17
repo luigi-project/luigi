@@ -4,6 +4,7 @@ import { NavigationService, type ModalSettings } from '../services/navigation.se
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
+import { RoutingService } from '../services/routing.service';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
@@ -30,16 +31,22 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
 
 export const UIModule = {
   navService: undefined as unknown as NavigationService,
+  routingService: undefined as unknown as RoutingService,
   luigi: undefined as unknown as Luigi,
   init: (luigi: Luigi) => {
     console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
+    UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
-    UIModule.update();
+    // UIModule.update();
   },
-  update: (scope?: string) => {
-    if (scope) {
+  update: (scopes?: string[]) => {
+    const croute = UIModule.routingService.getCurrentRoute();
+    if(!croute) {
+      return;
+    }
+    if (scopes) {
       // TBD
       /*
         navigation
@@ -54,29 +61,10 @@ export const UIModule = {
         settings.header
       */
     } else {
-      const pathRaw = NavigationHelpers.normalizePath(location.hash);
-      const [path, query] = pathRaw.split('?');
-      const urlSearchParams = new URLSearchParams(query);
-      const paramsObj: Record<string, string> = {};
-      urlSearchParams.forEach((value, key) => {
-        paramsObj[key] = value;
-      });
-      const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, UIModule.luigi);
-      const redirect = UIModule.navService.shouldRedirect(path);
-      if (redirect) {
-        UIModule.luigi.navigation().navigate(redirect);
-        return;
-      }
-
-      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(path));
-      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(path));
-      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(path));
-
-      const currentNode = UIModule.navService.getCurrentNode(path);
-      currentNode.nodeParams = nodeParams || {};
-      if (currentNode) {
-        UIModule.updateMainContent(currentNode, UIModule.luigi);
-      }
+      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+      UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
   updateMainContent: (currentNode: any, luigi: Luigi) => {
