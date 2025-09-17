@@ -1,4 +1,3 @@
-import type { Luigi } from '../../core-api/luigi';
 import { GenericHelpers } from './generic-helpers';
 
 class UserSettingsHelperClass {

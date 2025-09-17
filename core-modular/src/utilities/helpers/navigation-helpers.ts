@@ -75,17 +75,6 @@ export const NavigationHelpers = {
     return;
   },
 
-  handleUnresponsiveClient(node: any): void {
-    if (node.errorFn) {
-      node.errorFn();
-    } else {
-      console.warn('Something went wrong with a client! You will be redirected to another page.');
-      /* TODO */
-      // const path = node.redirectPath || '/';
-      // Routing.navigateTo(path);
-    }
-  },
-
   getAllViewGroupSettings: (luigi: Luigi): any => {
     return luigi?.getConfigValue('navigation.viewGroupSettings');
   },

@@ -1,4 +1,3 @@
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';

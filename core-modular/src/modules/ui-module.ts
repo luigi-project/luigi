@@ -58,7 +58,7 @@ export const UIModule = {
       UIModule.updateMainContent(currentNode, luigi);
     }
   },
-  updateMainContent: async (currentNode: any, luigi: Luigi) => {
+  updateMainContent: (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
 
     if (currentNode && containerWrapper) {
