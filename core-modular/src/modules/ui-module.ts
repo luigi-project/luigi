@@ -1,6 +1,5 @@
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { IframeService } from '../services/iframe.service';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
@@ -27,36 +26,6 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
-};
-
-const handleIframeHandshake = async (currentNode: any, containerWrapper: HTMLElement, luigi: Luigi): Promise<void> => {
-  const iframeService = serviceRegistry.get(IframeService);
-  const isolateAllViews = luigi.getConfigValue('navigation.defaults.isolateView');
-  const defaultPageErrorHandler = luigi.getConfigValue('navigation.defaults.pageErrorHandler');
-  const iframeConfig = {
-    builderCompatibilityMode: Boolean((window as any).builderCompatibilityMode),
-    defaultPageErrorHandler,
-    iframe: null,
-    isolateAllViews,
-    navigateOk: null
-  };
-  const componentData = {
-    context: {},
-    currentNode,
-    nodeParams: {},
-    pathParams: {},
-    previousNodeValues: {
-      isolateView: null
-    },
-    viewUrl: '/iframe.html'
-  };
-
-  await iframeService.navigateIframe(iframeConfig, componentData, containerWrapper).then(() => {
-    console.log('luigi.navigate.ok');
-    setTimeout(() => {
-      luigi.ux().hideLoadingIndicator();
-    }, 2000);
-  });
 };
 
 export const UIModule = {
@@ -95,12 +64,8 @@ export const UIModule = {
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
 
-      if (containerWrapper.firstChild?.nodeName === 'IFRAME') {
-        containerWrapper.removeChild(containerWrapper.firstChild);
-      }
-
       if (currentNode?.loadingIndicator?.enabled) {
-        await handleIframeHandshake(currentNode, containerWrapper, luigi);
+        luigi.ux().showLoadingIndicator();
       }
 
       [...containerWrapper.childNodes].forEach((element: any) => {

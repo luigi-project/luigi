@@ -1,4 +1,3 @@
-import { IframeHelpers } from '../../../src/utilities/helpers/iframe-helpers';
 import { UserSettingsHelper } from '../../../src/utilities/helpers/usersetting-dialog-helpers';
 
 const chai = require('chai');
@@ -62,7 +61,6 @@ describe('UserSettings-helpers', () => {
   beforeEach(() => {
     sinon.stub(document, 'querySelector');
     sinon.stub(document, 'querySelectorAll');
-    sinon.stub(IframeHelpers);
   });
 
   afterEach(() => {
@@ -73,7 +71,7 @@ describe('UserSettings-helpers', () => {
   });
 
   it('prepare user settings data from schema', () => {
-    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema);
+    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema, null);
     assert.equal(processedUserSettingGroups.length, 4);
     assert.deepEqual(processedUserSettingGroups[0], {
       userAccount: {
@@ -91,17 +89,8 @@ describe('UserSettings-helpers', () => {
   });
 
   it('return empty array if no schema defined', () => {
-    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups({});
+    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups({}, null);
     assert.equal(processedUserSettingGroups.length, 0);
-  });
-
-  it('create iframe for custom user settings', () => {
-    const customUserSettingsFrame = { setAttribute: sinon.spy() };
-    document.querySelector.returns({ appendChild: sinon.spy() });
-    IframeHelpers.createIframe.returns(customUserSettingsFrame);
-
-    const iframe = UserSettingsHelper.createIframe('https://url.to.mf', 'theming');
-    assert.equal(iframe.userSettingsGroup, 'theming');
   });
 
   it('getUserSettingsIframesInDom', () => {
