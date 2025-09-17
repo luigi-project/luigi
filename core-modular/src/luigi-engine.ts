@@ -6,6 +6,7 @@ import { UIModule } from './modules/ui-module';
 import { UXModule } from './modules/ux-module';
 import { DirtyStatusService } from './services/dirty-status.service';
 import { IframeService } from './services/iframe.service';
+import { RoutingService } from './services/routing.service';
 import { serviceRegistry } from './services/service-registry';
 import { NavigationService } from './services/navigation.service';
 import type { LuigiConnector } from './types/connector';
@@ -32,6 +33,7 @@ export class LuigiEngine {
     serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
     serviceRegistry.register(IframeService, () => new IframeService(luigi));
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
+    serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);
