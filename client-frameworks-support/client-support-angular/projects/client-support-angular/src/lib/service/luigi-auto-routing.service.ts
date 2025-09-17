@@ -19,9 +19,12 @@ import { LuigiContextService } from './luigi-context-service';
 export class LuigiAutoRoutingService implements OnDestroy {
   private subscription: Subscription = new Subscription();
 
-  constructor(private router: Router, private luigiContextService: LuigiContextService) {
+  constructor(
+    private router: Router,
+    private luigiContextService: LuigiContextService
+  ) {
     this.subscription.add(
-      this.router.events.pipe(this.doFilter()).subscribe(this.doSubscription.bind(this) as () => void)
+      this.router.events.pipe(this.doFilter() as any).subscribe(this.doSubscription.bind(this) as () => void)
     );
   }
 
@@ -56,7 +59,7 @@ export class LuigiAutoRoutingService implements OnDestroy {
         // handle multiple children
         let primary: ActivatedRouteSnapshot | null = null;
 
-        current?.children.forEach(childSnapshot => {
+        current?.children.forEach((childSnapshot) => {
           if (childSnapshot.outlet === 'primary') {
             primary = childSnapshot;
           }
@@ -124,8 +127,8 @@ export class LuigiAutoRoutingService implements OnDestroy {
 
     const pmap: ParamMap = convertToParamMap(allParams);
 
-    pmap.keys.forEach(key => {
-      pmap.getAll(key).forEach(param => {
+    pmap.keys.forEach((key) => {
+      pmap.getAll(key).forEach((param) => {
         route = route?.replace(':' + key, param);
       });
     });
