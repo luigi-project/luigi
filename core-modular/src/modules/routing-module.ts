@@ -2,20 +2,12 @@ import { NavigationService, type ExternalLink, type Node, type PageErrorHandler 
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { serviceRegistry } from '../services/service-registry';
-import { UIModule } from './ui-module';
+import { RoutingService } from '../services/routing.service';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
-    const luigiConfig = luigi.getConfig();
-    console.log('Init Routing...', luigiConfig.routing);
-    if (luigiConfig.routing?.useHashRouting) {
-      window.addEventListener('hashchange', (ev) => {
-        console.log('HashChange', location.hash);
-        UIModule.update();
-      });
-    } else {
-      // TBD
-    }
+    const routingService = serviceRegistry.get(RoutingService);
+    routingService.handleRouteChange();
   },
 
   handlePageErrorHandler: (pageErrorHandler: PageErrorHandler, node: Node, luigi: Luigi) => {

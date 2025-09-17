@@ -91,6 +91,8 @@ $height-shellbar-mobile: 95px;
 $side-nav-width-desktop: 320px;
 $side-nav-width-mobile: 260px;
 
+$main-nav-item-height: 36px;
+
 :root {
   --luigi__left-sidenav--width: 320px;
   --sapList_Active_Background: #F0F0F0;
@@ -103,7 +105,6 @@ $side-nav-width-mobile: 260px;
 }
 
 .luigi-documentation {
-
   * {
     font-family: 'Open Sans', sans-serif;
   }
@@ -111,16 +112,17 @@ $side-nav-width-mobile: 260px;
   .fd-shellbar {
     background-color: $secondary-color;
     height: $height-shellbar-mobile;
+    position: relative;
     z-index: 2;
 
     span {
-      font-weight: 600;    
+      font-weight: 600;
       margin-right: .95rem;
     }
 
     .fd-shellbar__action:not(.fd-shellbar__action--mobile) {
       span {
-        margin-left: 1rem; 
+        margin-left: 1rem;
       }
     }
 
@@ -134,13 +136,26 @@ $side-nav-width-mobile: 260px;
       display: none;
     }
 
+    .fd-popover:has(.luigi-search) {
+      margin-top: 4px;
+      max-height: $main-nav-item-height;
+    }
+
+    .fd-shellbar__search-field {
+      margin: 0;
+    }
+
     @media screen and (max-width: 1023px) {
       padding: 20px 30px;
     }
 
     @media screen and (min-width: 1024px) {
       height: $height-shellbar;
-      padding: 0px 26px 0 17px!important;
+      padding: 0 26px 0 17px !important;
+
+      .fd-popover:has(.luigi-search) {
+        margin-top: -2px;
+      }
     }
   }
 
@@ -261,7 +276,7 @@ $side-nav-width-mobile: 260px;
         width: 100%;
         padding-left: 12px;
         padding-right: 30px;
-        height: 36px;
+        height: $main-nav-item-height;
         border-radius: 4px;
         font-size: 14px;
       }
@@ -280,7 +295,7 @@ $side-nav-width-mobile: 260px;
       max-height: none;
       height: 61px;
       padding-bottom: 41px;
-      margin-bottom: -36px;
+      margin-bottom: -#{$main-nav-item-height};
 
       span {
         &:not(.fd-top-nav__icon) {
@@ -325,8 +340,9 @@ $side-nav-width-mobile: 260px;
 
       &:has(.sap-icon--search),
       &:has(.sap-icon--overflow) {
-        height: 36px;
-        margin: 0;
+        height: $main-nav-item-height;
+        margin: 6px 0 0 0;
+        padding-bottom: 0;
 
         > i {
           line-height: 12px;
@@ -352,6 +368,11 @@ $side-nav-width-mobile: 260px;
 
         .fd-top-nav__icon {
           margin-top: -3rem;
+        }
+
+        &:has(.sap-icon--search),
+        &:has(.sap-icon--overflow) {
+          margin: 0;
         }
       }
     }
@@ -532,8 +553,6 @@ $side-nav-width-mobile: 260px;
       padding-left: 5px;
     }
 
-
-
     .fd-nested-list__icon {
       display: none;
     }
@@ -625,7 +644,6 @@ $side-nav-width-mobile: 260px;
     }
 
     &.lui-simpleSlideInNav.lui-leftNavToggle {
-
       .fd-app__sidebar,
       .fd-side-nav {
         width: $side-nav-width-mobile;
@@ -633,7 +651,6 @@ $side-nav-width-mobile: 260px;
     }
 
     &.lui-simpleSlideInNav.lui-leftNavToggle {
-
       .fd-app__sidebar,
       .fd-side-nav,
       .lui-side-nav__footer {
@@ -652,7 +669,6 @@ $side-nav-width-mobile: 260px;
     .algolia-autocomplete .ds-dropdown-menu {
       box-shadow: none !important;
     }
-
   }
 
   @media screen and (max-width: 1023px) {

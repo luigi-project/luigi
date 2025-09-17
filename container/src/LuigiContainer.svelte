@@ -150,7 +150,12 @@
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          ContainerAPI.updateContext(contextObj, internal, iframeHandle, nodeParams, pathParams, searchParams);
+          const internalObj = {...internal || {}, ...{
+            activeFeatureToggleList: thisComponent.activeFeatureToggleList,
+            currentLocale: thisComponent.locale,
+            currentTheme: thisComponent.theme
+          }};
+          ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
 
