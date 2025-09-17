@@ -40,11 +40,12 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          try{
+          try {
             super.attributeChangedCallback(name, oldValue, newValue);
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
           }
+
           if (this.containerInitialized) {
             if (name === 'context') {
               if (oldValue !== newValue) {
@@ -132,6 +133,7 @@
 
   let containerInitialized = $state(false);
   let mainComponent: ContainerElement;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thisComponent: any;
 
   const iframeHandle: IframeHandle = $state({});
@@ -156,11 +158,13 @@
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          const internalObj = {...internal || {}, ...{
-            activeFeatureToggleList: thisComponent.activeFeatureToggleList,
-            currentLocale: thisComponent.locale,
-            currentTheme: thisComponent.theme
-          }};
+          const internalObj = {
+            ...internal || {}, ...{
+              activeFeatureToggleList: thisComponent.activeFeatureToggleList,
+              currentLocale: thisComponent.locale,
+              currentTheme: thisComponent.theme
+            }
+          };
 
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
@@ -225,7 +229,7 @@
         );
       } else {
         if (!thisComponent.getNoShadow()) {
-          // removeing mainComponent
+          // removing mainComponent
           thisComponent.innerHTML = '';
 
           const shadow = thisComponent.attachShadow({ mode: 'open' });
@@ -256,7 +260,6 @@
   };
 
   onMount(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
@@ -269,7 +272,7 @@
   });
 
   $effect(() => {
-    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
+    if (!containerInitialized && viewurl && !deferInit && thisComponent) {
       initialize(thisComponent);
     }
   });
