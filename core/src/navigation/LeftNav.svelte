@@ -578,8 +578,8 @@
 
     setTimeout(() => {
       const popover = parent.querySelector('.fd-popover__body');
-      const rect = popover.getBoundingClientRect();
-      if (rect.top + rect.height > window.innerHeight) {
+      const rect = popover?.getBoundingClientRect();
+      if (rect && rect.top + rect.height > window.innerHeight) {
         parent.style.setProperty('--lui_popover_offset', rect.top + rect.height - window.innerHeight + 'px');
       }
     });
@@ -1179,8 +1179,8 @@
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
-                                  <span class="fd-navigation-list__icon">
-                                    {#if node.icon}
+                                  {#if node.icon}
+                                    <span class="fd-navigation-list__icon">
                                       {#if isOpenUIiconName(node.icon)}
                                         <i class="lui-hideOnHover-show {getSapIconStr(node.icon)}" role="presentation"
                                         ></i>
@@ -1191,15 +1191,15 @@
                                           class="lui-hideOnHover-show"
                                         />
                                       {/if}
-                                    {:else}
+                                    </span>
+                                  {:else if isSemiCollapsed}
+                                    <span class="fd-navigation-list__icon">
                                       <i
-                                        class="lui-hideOnHover-show {isSemiCollapsed
-                                          ? 'sap-icon--rhombus-milestone-2'
-                                          : ''}"
+                                        class="lui-hideOnHover-show test sap-icon--rhombus-milestone-2"
                                         role="presentation"
                                       />
-                                    {/if}
-                                  </span>
+                                    </span>
+                                  {/if}
                                   <span
                                     class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                     !isSemiCollapsed &&
@@ -1315,19 +1315,6 @@
                                         }}
                                       >
                                         <div class="fd-navigation-list__content-container">
-                                          {#if isOpenUIiconName(node.icon)}
-                                            <span class="fd-navigation-list__icon">
-                                              <i class={getSapIconStr(node.icon)} role="presentation"></i>
-                                            </span>
-                                          {:else}
-                                            <span
-                                              class="fd-navigation-list__icon"
-                                              role="presentation"
-                                              aria-hidden="true"
-                                            >
-                                              <img src={node.icon} alt={node.altText ? node.altText : ''} />
-                                            </span>
-                                          {/if}
                                           <span
                                             class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                             !isSemiCollapsed &&

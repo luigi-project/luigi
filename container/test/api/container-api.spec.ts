@@ -12,6 +12,9 @@ describe('Container Service', () => {
       // mock and spy
       const contextObj = {};
       const internal = { empty: false };
+      const nodeParams = {};
+      const pathParams = {};
+      const searchParams = {};
       const iframeHandle = {
         data: 'test'
       } as unknown as IframeHandle;
@@ -19,12 +22,12 @@ describe('Container Service', () => {
       const spy = jest.spyOn(containerService, 'sendCustomMessageToIframe');
 
       // act
-      containerAPI.updateContext(contextObj, internal, iframeHandle);
+      containerAPI.updateContext(contextObj, internal, iframeHandle, nodeParams, pathParams, searchParams);
 
       // assert
       expect(spy).toHaveBeenCalledWith(
         iframeHandle,
-        { context: contextObj, internal: internal, withoutSync: true },
+        { context: contextObj, internal: internal, withoutSync: true, nodeParams, pathParams, searchParams },
         LuigiInternalMessageID.SEND_CONTEXT_OBJECT
       );
     });
@@ -33,6 +36,9 @@ describe('Container Service', () => {
       // mock and spy
       const contextObj = {};
       const internal = undefined;
+      const nodeParams = {};
+      const pathParams = {};
+      const searchParams = {};
       const iframeHandle = {
         data: 'test'
       } as unknown as IframeHandle;
@@ -40,12 +46,12 @@ describe('Container Service', () => {
       const spy = jest.spyOn(containerService, 'sendCustomMessageToIframe');
 
       // act
-      containerAPI.updateContext(contextObj, internal, iframeHandle);
+      containerAPI.updateContext(contextObj, internal, iframeHandle, nodeParams, pathParams, searchParams);
 
       // assert
       expect(spy).toHaveBeenCalledWith(
         iframeHandle,
-        { context: contextObj, internal: {}, withoutSync: true },
+        { context: contextObj, internal: {}, withoutSync: true, nodeParams, pathParams, searchParams },
         LuigiInternalMessageID.SEND_CONTEXT_OBJECT
       );
     });

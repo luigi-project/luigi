@@ -8,8 +8,18 @@ export class ContainerAPIFunctions {
    * @param contextObj The context data
    * @param internal internal luigi legacy data
    * @param iframeHandle a reference to the iframe that is needed to send a message to it internally
+   * @param nodeParams node parameters to be sent to the microfrontend
+   * @param pathParams path parameters to be sent to the microfrontend
+   * @param searchParams search parameters to be sent to the microfrontend
    */
-  updateContext = (contextObj: object, internal?: object, iframeHandle?: IframeHandle) => {
+  updateContext = (
+    contextObj: object,
+    internal?: object,
+    iframeHandle?: IframeHandle,
+    nodeParams?: object,
+    pathParams?: object,
+    searchParams?: object
+  ) => {
     if (iframeHandle) {
       const internalParameter = internal || {};
 
@@ -17,6 +27,9 @@ export class ContainerAPIFunctions {
         iframeHandle,
         {
           context: contextObj,
+          nodeParams: nodeParams || {},
+          pathParams: pathParams || {},
+          searchParams: searchParams || {},
           internal: internalParameter,
           // set withoutSync to true for the container case to avoid browser history changes from luigi client
           withoutSync: true

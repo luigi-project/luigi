@@ -39,6 +39,10 @@ Type: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 myContainer.viewurl = "/index.html"
 ```
 
+**Meta**
+
+*   **since**: 1.0.0
+
 ### compoundConfig
 
 The configuration for the compound microfrontend.

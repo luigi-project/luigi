@@ -1,15 +1,33 @@
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <script type="module">
-      import '../bundle.js';
-    </script>
-  </head>
-  <body>
-    <h3>This page is used to test Luigi-Container dynamic creation</h3>
+  <script type="module">
+    import '../bundle.js';
+  </script>
+</head>
+<body>
+  <h3>This page is used to test Luigi-Container dynamic creation</h3>
 
-    <!-- Used for testing dynamic compound container creation -->
-    <div class="content"></div>
-  </body>
+  <!-- Used for testing dynamic compound container creation -->  
+  <div class="content"></div>
+
+  <!--Keep it for testing it manually-->
+  <!-- <button class="init" onclick="document.querySelector('#lc').init()">deferInit</button> -->
+  <!-- <button class="setViewUrl" onclick="setViewUrl()">setViewUrl</button> -->
+  <!-- viewurl="./wc/helloWorldWC.js" -->
+  <!-- defer-init -->
+   <!-- <div class="content">
+  <luigi-container id="lc" webcomponent="true" data-test-id="luigi-container"></luigi-container>
+   </div>
+  <script>
+
+    function setViewUrl() {
+      console.log('setViewUrl called');
+      const lc = document.querySelector('#lc');
+      lc.viewurl = "./wc/helloWorldWC.js";
+    }
+  </script> -->
+</body>
+
 </html>

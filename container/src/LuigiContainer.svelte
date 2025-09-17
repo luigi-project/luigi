@@ -40,6 +40,11 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
+          try{
+            super.attributeChangedCallback(name, oldValue, newValue);
+          } catch (e) {
+            console.error('Error in super.attributeChangedCallback', e);
+          }
           if (this.containerInitialized) {
             if (name === 'context') {
               if (oldValue !== newValue) {
@@ -127,6 +132,7 @@
 
   let containerInitialized = $state(false);
   let mainComponent: ContainerElement;
+  let thisComponent: any;
 
   const iframeHandle: IframeHandle = $state({});
   const webcomponentService = new WebComponentService();
@@ -150,7 +156,13 @@
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          ContainerAPI.updateContext(contextObj, internal, iframeHandle);
+          const internalObj = {...internal || {}, ...{
+            activeFeatureToggleList: thisComponent.activeFeatureToggleList,
+            currentLocale: thisComponent.locale,
+            currentTheme: thisComponent.theme
+          }};
+
+          ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
 
@@ -245,14 +257,19 @@
 
   onMount(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const thisComponent: any = mainComponent.parentNode;
-
+    thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
       initialize(thisComponent);
     };
 
-    if (!deferInit) {
+    if (!deferInit && viewurl) {
+      initialize(thisComponent);
+    }
+  });
+
+  $effect(() => {
+    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
       initialize(thisComponent);
     }
   });
