@@ -1,7 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
-import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { NavigationService, type Node } from './navigation.service';
-import { serviceRegistry } from './service-registry';
+import { UIModule } from '../modules/ui-module';
 
 export class RoutingService {
   previousNode: Node | undefined;
@@ -22,37 +20,13 @@ export class RoutingService {
    *
    * If hash routing is not enabled, this method provides a placeholder for handling path-based routing.
    */
-  handleRouteChange(): void {
-    const navService = serviceRegistry.get(NavigationService);
+  enableRouting(): void {
     const luigiConfig = this.luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
-        const { path, query } = RoutingHelpers.getCurrentPath();
-        const urlSearchParams = new URLSearchParams(query);
-        const paramsObj: Record<string, string> = {};
-        urlSearchParams.forEach((value, key) => {
-          paramsObj[key] = value;
-        });
-        const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-        const redirect = navService.shouldRedirect(path);
-        if (redirect) {
-          this.luigi.navigation().navigate(redirect);
-          return;
-        }
-
-        const currentNode = navService.getCurrentNode(path);
-        currentNode.nodeParams = nodeParams || {};
-        currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
-
-        navService.onNodeChange(this.previousNode, currentNode);
-        this.previousNode = currentNode;
-
-        this.luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
-        this.luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
-        this.luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
-        this.luigi.getEngine()._ui.updateMainContent(currentNode, this.luigi);
+        UIModule.update();
       });
     } else {
       //tbs: handle path routing
