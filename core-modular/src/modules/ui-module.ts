@@ -43,7 +43,7 @@ export const UIModule = {
   },
   update: (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
-    if(!croute) {
+    if (!croute) {
       return;
     }
     if (scopes) {

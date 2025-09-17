@@ -68,7 +68,7 @@ export class RoutingService {
       raw: pathRaw,
       path,
       nodeParams
-    }
+    };
 
     UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(path));
     UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(path));
