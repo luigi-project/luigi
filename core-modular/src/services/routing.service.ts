@@ -1,8 +1,9 @@
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Node } from './navigation.service';
+import { NavigationService } from './navigation.service';
+import { serviceRegistry } from './service-registry';
 
 export interface Route {
   raw: string;
@@ -12,11 +13,18 @@ export interface Route {
 }
 
 export class RoutingService {
+  navigationService?: NavigationService;
   previousNode: Node | undefined;
   currentRoute?: Route;
 
   constructor(private luigi: Luigi) {}
 
+  private getNavigationService(): NavigationService {
+    if (!this.navigationService) {
+      this.navigationService = serviceRegistry.get(NavigationService);
+    }
+    return this.navigationService;
+  }
   /**
    * Initializes the route change handler for the application.
    *
@@ -37,52 +45,52 @@ export class RoutingService {
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
-        this.handleRouteChange(location.hash);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
       });
-      this.handleRouteChange(location.hash);
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
         console.log('HashChange', location.hash);
-        this.handleRouteChange(location.pathname);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath());
       });
-      this.handleRouteChange(location.pathname);
+      this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
   }
 
-  handleRouteChange(routeInfo: string): void {
-    const pathRaw = NavigationHelpers.normalizePath(routeInfo);
-    const [path, query] = pathRaw.split('?');
+  handleRouteChange(routeInfo: { path: string, query: string}): void {
+    const path = routeInfo.path;
+    const query = routeInfo.query;
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
-    const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, UIModule.luigi);
-    const redirect = UIModule.navService.shouldRedirect(path);
+    const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
+    const redirect = this.getNavigationService().shouldRedirect(path);
     if (redirect) {
-      UIModule.luigi.navigation().navigate(redirect);
+      this.luigi.navigation().navigate(redirect);
       return;
     }
 
     this.currentRoute = {
-      raw: pathRaw,
+      raw: window.location.href,
       path,
       nodeParams
     };
 
-    UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(path));
-    UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(path));
-    UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(path));
+    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path));
+    this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path));
+    this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path));
 
-    const currentNode = UIModule.navService.getCurrentNode(path);
+    const currentNode = this.getNavigationService().getCurrentNode(path);
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
       currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
-      UIModule.navService.onNodeChange(this.previousNode, currentNode);
+      this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, UIModule.luigi);
+      UIModule.updateMainContent(currentNode, this.luigi);
     }
   }
 
