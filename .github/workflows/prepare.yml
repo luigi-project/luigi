@@ -16,7 +16,7 @@ jobs:
     continue-on-error: true
     steps:
       - run: |
-          
+          gh --version
           REPO=${{ github.repository }}
           BRANCH=${{ github.ref }}
 
