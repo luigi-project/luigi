@@ -20,6 +20,7 @@
       "dom"
     ],
     "paths": {
+      "@angular/*": ["node_modules/@angular/*"],
       "client-support-angular": [
         "dist/client-support-angular/client-support-angular",
         "dist/client-support-angular"
