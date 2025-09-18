@@ -6,8 +6,6 @@ on:
         required: true
 
 name: Common
-permissions: 
-  actions: read
 env:
   CYPRESS_CACHE_FOLDER: ~/cypress-binary-cache
 
