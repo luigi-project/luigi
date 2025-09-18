@@ -25,7 +25,7 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
-## container/v1.7.3 (2025-09-17)
+## [v2.24.0] (2025-09-18)
 
 #### :rocket: Added
 * [#4461](https://github.com/luigi-project/luigi/pull/4461) Added unsavedChangesHandler to customize confirmation modal([@JohannesDoberer](https://github.com/JohannesDoberer))
