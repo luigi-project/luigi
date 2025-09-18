@@ -62,17 +62,35 @@ export const UIModule = {
         settings.header
     */
 
-    if (noScopes || scopes.includes('settings.header') || scopes.includes('settings') || scopes.includes('navigation') || scopes.includes('navigation.profile')
-      || scopes.includes('navigation.contextSwitcher') || scopes.includes('navigation.productSwitcher')) {      
+    if (
+      noScopes ||
+      scopes.includes('settings.header') ||
+      scopes.includes('settings') ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.profile') ||
+      scopes.includes('navigation.contextSwitcher') ||
+      scopes.includes('navigation.productSwitcher')
+    ) {
       UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
     }
-    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes') || scopes.includes('navigation.viewgroupdata')
-       || scopes.includes('settings') || scopes.includes('settings.footer')) {            
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings') ||
+      scopes.includes('settings.footer')
+    ) {
       UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
     }
-    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes') || scopes.includes('navigation.viewgroupdata')
-       || scopes.includes('settings.theming')) {            
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings.theming')
+    ) {
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
