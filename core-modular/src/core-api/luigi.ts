@@ -58,42 +58,12 @@ export class Luigi {
   }
 
   /**
-   * Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
-   * @param {...string} scope one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
-   * <p>
-   * The supported scope selectors are:
-   * <p>
-   * <ul>
-   *   <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
-   *   <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
-   *   <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
-   *   <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
-   *   <li><code>navigation.profile</code>: profile menu was changed.</li>
-   *   <li><code>settings</code>: settings were changed.</li>
-   *   <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
-   *   <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
-   * </ul>
-   */
-  configChanged(...scope: string[]) {
-    const optimizedScope = StateHelpers.optimizeScope(scope);
-
-    if (optimizedScope.length > 0) {
-      optimizedScope.forEach((scope: string) => {
-        (window as any).Luigi._store.fire(scope, { current: (window as any).Luigi._store });
-      });
-    } else {
-      (window as any).Luigi._store.update((config: any) => config);
-    }
-  }
-
-  /**
    * Reads the user settings object.
    * You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
    * By default, the user settings will be read from the **localStorage**
    * @returns {Promise} a promise when a custom `readUserSettings` function in the settings.userSettings section of the Luigi configuration is implemented. It resolves a stored user settings object. If the promise is rejected the user settings dialog will also closed if the error object has a `closeDialog` property, e.g `reject({ closeDialog: true, message: 'some error' })`. In addition a custom error message can be logged to the browser console.
    * @example
    * Luigi.readUserSettings();
-   * @since 1.7.1
    */
   async readUserSettings() {
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
@@ -119,7 +89,6 @@ export class Luigi {
    * @returns {Promise} a promise when a custom `storeUserSettings` function in the settings.userSettings section of the Luigi configuration is implemented. If it is resolved the user settings dialog will be closed. If the promise is rejected the user settings dialog will also closed if the error object has a `closeDialog` property, e.g `reject({ closeDialog: true, message: 'some error' })`. In addition a custom error message can be logged to the browser console.
    * @example
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
-   * @since 1.7.1
    */
   async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
@@ -133,7 +102,8 @@ export class Luigi {
       localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
     }
 
-    this.configChanged();
+    // TODO configChanged implemented in #4498
+    // this.configChanged();
   }
 
   navigation = (): Navigation => {
