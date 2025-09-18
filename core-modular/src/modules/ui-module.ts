@@ -39,16 +39,17 @@ export const UIModule = {
     UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
-    // UIModule.update();
   },
   update: (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
     if (!croute) {
       return;
     }
-    if (scopes) {
-      // TBD
-      /*
+    const noScopes = !scopes || scopes.length === 0;
+
+    /*
+      Available scopes:
+
         navigation
         navigation.nodes
         navigation.profile
@@ -59,11 +60,19 @@ export const UIModule = {
         settings.theming
         settings.footer
         settings.header
-      */
-    } else {
+    */
+
+    if (noScopes || scopes.includes('settings.header') || scopes.includes('settings') || scopes.includes('navigation') || scopes.includes('navigation.profile')
+      || scopes.includes('navigation.contextSwitcher') || scopes.includes('navigation.productSwitcher')) {      
       UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+    }
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes') || scopes.includes('navigation.viewgroupdata')
+       || scopes.includes('settings') || scopes.includes('settings.footer')) {            
       UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+    }
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes') || scopes.includes('navigation.viewgroupdata')
+       || scopes.includes('settings.theming')) {            
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
