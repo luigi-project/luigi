@@ -8,6 +8,7 @@ import { DirtyStatusService } from './services/dirty-status.service';
 import { i18nService } from './services/i18n.service';
 import { serviceRegistry } from './services/service-registry';
 import { NavigationService } from './services/navigation.service';
+import { RoutingService } from './services/routing.service';
 import type { LuigiConnector } from './types/connector';
 
 export class LuigiEngine {
@@ -32,6 +33,7 @@ export class LuigiEngine {
     serviceRegistry.register(i18nService, () => new i18nService(luigi));
     serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
+    serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
     RoutingModule.init(luigi);
     UIModule.init(luigi);
     CommunicationModule.init(luigi);
