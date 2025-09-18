@@ -11,6 +11,8 @@ env:
 
 jobs:
   clear_cache:
+    permissions: 
+      actions: write
     name: Clear Caches
     runs-on: ubuntu-latest
     continue-on-error: true
