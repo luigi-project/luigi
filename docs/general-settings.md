@@ -256,10 +256,10 @@ You can set the following values:
 - **default**: if you don't specify any value for  **semiCollapsibleButtonStyle**, the control is rendered as an **i** tag.
 
 ### sideNav.style
-- **description**: Displays the updated side navigation layout styled according to the Vega design guidelines. Must be set to `vega`. **since** v2.23.0
+- **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. **since** v2.23.0
 
 #### sideNav.subCategoryDelimiter
-- **description**: With the vega theme, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.
+- **description**: With the vega layout, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.
 - **since** v2.23.0
 - **example**:
 ```javascript
@@ -338,6 +338,25 @@ theming: {
 ```html
 <link rel="stylesheet" href="<PATH/TO/LUIGI/PACKAGE/luigi_horizon.css" />
 ```
+
+### unsavedChangesHandler
+- **type**: function
+- **description**: the `unsavedChangesHandler` can be implemented as an alternative to the standard unsaved changes modal. The function must return a promise."
+- **example**:
+```javascript
+settings:{
+  unsavedChangesHandler: () => {
+    return Luigi.ux().showConfirmationModal({
+      type: 'information',
+      header: "Unsaved Changes",
+      body: "You have unsaved changes. Do you want to <b>leave</b>?",
+      buttonConfirm: "Yes",
+      buttonDismiss: "No"
+    });
+  }
+}
+```
+- **since** NEXT_RELEASE
 
 ### webcomponentCreationInterceptor
 - **type**: function
