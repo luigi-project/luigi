@@ -6,6 +6,8 @@ on:
         required: true
 
 name: Common
+permissions: 
+  actions: write
 env:
   CYPRESS_CACHE_FOLDER: ~/cypress-binary-cache
 
@@ -14,8 +16,6 @@ jobs:
     name: Clear Caches
     runs-on: ubuntu-latest
     continue-on-error: true
-    permissions:
-      actions: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
