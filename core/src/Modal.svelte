@@ -19,7 +19,6 @@
   export let nodepath;
   export let modalIndex;
   export let disableBackdrop;
-
   const dispatch = createEventDispatcher();
   let nodeObject;
   let btpToolLayout;
@@ -303,7 +302,7 @@
 <div
   class={isModal || (isDrawer && settings.backdrop)
     ? 'fd-dialog fd-dialog--active'
-    : `drawer-dialog ${btpToolLayout ? 'btp-drawer-dialog' : 'drawer-dialog'}`}
+    : `drawer-dialog ${btpToolLayout ? 'btp-drawer-dialog' : ''}`}
   style={isModal ? 'z-index:1001' : ''}
 >
   <div
@@ -372,7 +371,7 @@
 <style lang="scss">
   .drawer-dialog {
     position: absolute;
-    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
+    top: calc(#{$topNavHeight});
     bottom: 0;
     width: 25%;
     z-index: 3;
@@ -384,6 +383,10 @@
   }
 
   .drawer-dialog.btp-drawer-dialog {
+    top: calc(#{$combinedLayoutGap} + #{$topNavHeight});
+  }
+
+  :global(.lui-breadcrumb) .drawer-dialog.btp-drawer-dialog {
     top: calc(#{$combinedLayoutGap} + #{$topNavHeight} + var(--luigi__breadcrumb--height));
   }
 
@@ -395,8 +398,16 @@
     right: 0;
   }
 
+  :global(.lui-breadcrumb) .drawer-dialog {
+    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
+  }
+
   :global(.lui-breadcrumb) .drawer__backdrop {
     top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
+  }
+
+  :global(.lui-breadcrumb) .btp-drawer__backdrop {
+    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height) + $combinedLayoutGap);
   }
 
   .drawer__backdrop {
@@ -405,10 +416,6 @@
 
   .btp-drawer__backdrop {
     top: calc($topNavHeight + $combinedLayoutGap);
-  }
-
-  :global(.lui-breadcrumb) .btp-drawer__backdrop {
-    top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height) + $combinedLayoutGap);
   }
 
   .iframeModalCtn {

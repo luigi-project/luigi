@@ -8,6 +8,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
   /**
    * The URL used for the renderer.
    *
+   * @since 1.0.0
    * @example <luigi-container viewurl="/index.html"></luigi-container>
    * @example myContainer.viewurl = "/index.html"
    */

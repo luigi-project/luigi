@@ -4,6 +4,36 @@
 
 
 
+## [v1.7.3] (2025-09-17)
+
+#### :bug: Fixed
+
+* [#4473](https://github.com/luigi-project/luigi/pull/4473) Fix: Send theme, locale and featureToggleList via internal data to iframes ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.2] (2025-08-14)
+
+#### :bug: Fixed
+
+* [#4438](https://github.com/luigi-project/luigi/pull/4438) Fix: LuigiContainer should not be initialized if no view url ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.1] (2025-08-06)
+
+#### :bug: Fixed
+
+* [#4420](https://github.com/luigi-project/luigi/pull/4420) Fix updateContext in Luigi container ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.0] (2025-04-23)
 
 #### :rocket: Added
@@ -97,3 +127,6 @@
 [v1.5.0]: https://github.com/luigi-project/luigi/compare/container/v1.4.0...container/v1.5.0
 [v1.6.0]: https://github.com/luigi-project/luigi/compare/container/v1.5.0...container/v1.6.0
 [v1.7.0]: https://github.com/luigi-project/luigi/compare/container/v1.6.0...container/v1.7.0
+[v1.7.1]: https://github.com/luigi-project/luigi/compare/container/v1.7.0...container/v1.7.1
+[v1.7.2]: https://github.com/luigi-project/luigi/compare/container/v1.7.1...container/v1.7.2
+[v1.7.3]: https://github.com/luigi-project/luigi/compare/container/v1.7.2...container/v1.7.3

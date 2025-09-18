@@ -25,6 +25,45 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.24.0] (2025-09-18)
+
+#### :rocket: Added
+* [#4461](https://github.com/luigi-project/luigi/pull/4461) Added unsavedChangesHandler to customize confirmation modal([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+* [#4493](https://github.com/luigi-project/luigi/pull/4493) Fix category subitem space in vega layout ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v2.23.1] (2025-07-28)
+
+#### :bug: Fixed
+* [#4395](https://github.com/luigi-project/luigi/pull/4395) Fix: handle undefined iframe in sendMessage method ([@robertIsaac](https://github.com/robertIsaac))
+
+
+
+
+
+
+## [v2.23.0] (2025-07-23)
+
+#### :rocket: Added
+* [#4280](https://github.com/luigi-project/luigi/pull/4280) Vega 
+* [#4362](https://github.com/luigi-project/luigi/pull/4362) Improve Angular setup script ([@walmazacn](https://github.com/walmazacn))
+* [#4387](https://github.com/luigi-project/luigi/pull/4387) Potential open redirect ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4296](https://github.com/luigi-project/luigi/pull/4296) Avoiding prototype pollution ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+* [#4388](https://github.com/luigi-project/luigi/pull/4388) LeftNav: fix multi-popup issue for same category label in collapsed mode ([@hardl](https://github.com/hardl))
+* [#4359](https://github.com/luigi-project/luigi/pull/4359) Fix drawer top position ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4357](https://github.com/luigi-project/luigi/pull/4357) Allow categories with same label in different groups ([@hardl](https://github.com/hardl))
+
+
+
+
+
 ## [v2.22.1] (2025-05-23)
 
 #### :bug: Fixed
@@ -2035,3 +2074,6 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.21.3]: https://github.com/luigi-project/luigi/compare/v2.21.2...v2.21.3
 [v2.22.0]: https://github.com/luigi-project/luigi/compare/v2.21.3...v2.22.0
 [v2.22.1]: https://github.com/luigi-project/luigi/compare/v2.22.0...v2.22.1
+[v2.23.0]: https://github.com/luigi-project/luigi/compare/v2.22.1...v2.23.0
+[v2.23.1]: https://github.com/luigi-project/luigi/compare/v2.23.0...v2.23.1
+[v2.24.0]: https://github.com/luigi-project/luigi/compare/v2.23.1...v2.24.0

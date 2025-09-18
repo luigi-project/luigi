@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="utf-8" />
+    <link
+      href="https://unpkg.com/@luigi-project/core/luigi_horizon.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: var(--sapFontFamily);
+        text-align: center;
+        color: #515559;
+      }
+    </style>
+    <script src="./public_client/luigi-client.js"></script>
+  </head>
+
+  <body>
+    <div>
+      <h1>Luigi Simple Development Template</h1>
+      <p>Some content</p>
+      <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
+      <button onclick="showAlert()">show alert</button>
+      <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="showLoadingIndicator()">show loading indicator</button>
+      <button onclick="hideLoadingIndicator()">hide loading indicator</button>
+      <button onclick="addBackdrop()">add backdrop</button>
+      <button onclick="removeBackdrop()">remove backdrop</button>
+      <button onclick="openUserSettings()">open UserSettings</button>
+      <button onclick="setDocumentTitle()">set document title</button>
+    </div>
+    <script>
+      function showAlert() {
+        const settings = {
+          text: 'Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}',
+          type: 'info',
+          links: {
+            goToHome: { text: 'homepage', url: '/home' },
+            goToOtherProject: { text: 'other project', url: '/home/c2' },
+            relativePath: { text: 'relative hide side nav', url: 'c3' },
+            neverShowItAgain: {
+              text: 'Never show it again',
+              dismissKey: 'neverShowItAgain',
+            },
+          },
+          closeAfter: 30000,
+        };
+        LuigiClient.uxManager()
+          .showAlert(settings)
+          .then((dismissKey) => {
+            console.log('ALERT CLOSED: ', dismissKey);
+          });
+      }
+
+      let div = document.createElement('div');
+      div.innerHTML = location.hash;
+      document.body.appendChild(div);
+      window.addEventListener('hashchange', () => {
+        div.innerHTML = location.hash;
+      });
+
+      function showModal() {
+        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      }
+
+      function showLoadingIndicator() {
+        LuigiClient.uxManager().showLoadingIndicator();
+      }
+
+      function hideLoadingIndicator() {
+        LuigiClient.uxManager().hideLoadingIndicator();
+      }
+
+      function addBackdrop() {
+        LuigiClient.uxManager().addBackdrop();
+      }
+
+      function removeBackdrop() {
+        LuigiClient.uxManager().removeBackdrop();
+      }
+
+      function openUserSettings() {
+        LuigiClient.sendCustomMessage({
+          id: 'usersettingsdialog',
+          usersettings: { dialog: true },
+        });
+      }
+
+      function setDocumentTitle() {
+        LuigiClient.sendCustomMessage({
+          id: 'set-document-title-request',
+          title: 'my-title',
+        });
+      }
+    </script>
+  </body>
+</html>

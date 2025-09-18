@@ -245,7 +245,7 @@
           }
         });
         btpNavTopCnt.querySelector('.fd-navigation__list > .fd-navigation__list-item--overflow').style.display = 'none';
-      } else if (vegaSideNav) {
+      } else if (vegaSideNav && vegaNavCnt) {
         const more = vegaNavCnt.querySelector('.lui-more');
         const moreUL = vegaNavCnt.querySelector('.lui-more .fd-popover__wrapper');
         if (more) {
@@ -530,8 +530,9 @@
 
   export function calculateFlyoutPosition(el) {
     if (vegaSideNav) {
-      const parentPos = el.getBoundingClientRect();
-      const flyout = el.querySelector('.fd-popover__body');
+      const liPopOver = el.closest('.fd-popover__control');
+      const parentPos = liPopOver.getBoundingClientRect();
+      const flyout = liPopOver.querySelector('.fd-popover__body');
       flyout.setAttribute(
         'style',
         `position: fixed; left: ${Math.round(parentPos.right) + 10}px !important; top: ${Math.round(parentPos.top) + 5}px;`
@@ -577,8 +578,8 @@
 
     setTimeout(() => {
       const popover = parent.querySelector('.fd-popover__body');
-      const rect = popover.getBoundingClientRect();
-      if (rect.top + rect.height > window.innerHeight) {
+      const rect = popover?.getBoundingClientRect();
+      if (rect && rect.top + rect.height > window.innerHeight) {
         parent.style.setProperty('--lui_popover_offset', rect.top + rect.height - window.innerHeight + 'px');
       }
     });
@@ -1178,8 +1179,8 @@
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
-                                  <span class="fd-navigation-list__icon">
-                                    {#if node.icon}
+                                  {#if node.icon}
+                                    <span class="fd-navigation-list__icon">
                                       {#if isOpenUIiconName(node.icon)}
                                         <i class="lui-hideOnHover-show {getSapIconStr(node.icon)}" role="presentation"
                                         ></i>
@@ -1190,15 +1191,15 @@
                                           class="lui-hideOnHover-show"
                                         />
                                       {/if}
-                                    {:else}
+                                    </span>
+                                  {:else if isSemiCollapsed}
+                                    <span class="fd-navigation-list__icon">
                                       <i
-                                        class="lui-hideOnHover-show {isSemiCollapsed
-                                          ? 'sap-icon--rhombus-milestone-2'
-                                          : ''}"
+                                        class="lui-hideOnHover-show test sap-icon--rhombus-milestone-2"
                                         role="presentation"
                                       />
-                                    {/if}
-                                  </span>
+                                    </span>
+                                  {/if}
                                   <span
                                     class="fd-navigation-list__text badge-align-{node.statusBadge &&
                                     !isSemiCollapsed &&
@@ -1263,7 +1264,7 @@
                                 ></i>
                               </span>
                             {:else}
-                              <span class="fd-navigation__icon" role="presentation" aria-hidden="true">
+                              <span class="fd-navigation-list__icon" role="presentation" aria-hidden="true">
                                 <img
                                   src={nodes.metaInfo.icon}
                                   alt={nodes.metaInfo.altText ? nodes.metaInfo.altText : ''}
@@ -1812,9 +1813,15 @@
     top: calc(#{$topNavHeight} + var(--luigi__breadcrumb--height));
   }
 
+  :global(.lui-breadcrumb .vega) .fd-app__sidebar {
+    top: $topNavHeight;
+  }
+
   :global(.vega) .fd-app__sidebar {
     .lui-nav-title {
+      background: var(--sapList_Background);
       width: 100%;
+      padding-top: 0.25rem;
     }
   }
 

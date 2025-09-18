@@ -104,7 +104,6 @@
     GenericHelpers.requestExperimentalFeature('btpToolLayout', true);
   let vegaLayout = LuigiConfig.getConfigValue('settings.sideNav.style') === 'vega';
 
-
   export let isSearchFieldVisible;
   export let inputElem;
   export let customSearchItemRendererSlot;
@@ -822,12 +821,17 @@
   };
 
   const showUnsavedChangesModal = () => {
-    return showModal({
-      header: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.header'),
-      body: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.body'),
-      buttonDismiss: LuigiI18N.getTranslation('luigi.button.dismiss'),
-      buttonConfirm: LuigiI18N.getTranslation('luigi.button.confirm')
-    });
+    const customHandler = LuigiConfig.getConfigValue('settings.unsavedChangesHandler');
+    if (customHandler) {
+      return customHandler();
+    } else {
+      return showModal({
+        header: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.header'),
+        body: LuigiI18N.getTranslation('luigi.unsavedChangesAlert.body'),
+        buttonDismiss: LuigiI18N.getTranslation('luigi.button.dismiss'),
+        buttonConfirm: LuigiI18N.getTranslation('luigi.button.confirm')
+      });
+    }
   };
 
   export const getDirtyStatus = () => {
@@ -2620,7 +2624,7 @@
   }
 
   //Make border radius for links inside fd-menu only for the first and last elements
-  :global(.fd-menu) {
+  :global(#app:not(.vega) .fd-menu) {
     :global(.fd-menu__list) {
       &:first-child {
         :global(.fd-menu__item) {
