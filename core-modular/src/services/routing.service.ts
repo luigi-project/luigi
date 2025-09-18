@@ -57,7 +57,7 @@ export class RoutingService {
     }
   }
 
-  handleRouteChange(routeInfo: { path: string, query: string}): void {
+  handleRouteChange(routeInfo: { path: string; query: string }): void {
     const path = routeInfo.path;
     const query = routeInfo.query;
     const urlSearchParams = new URLSearchParams(query);
