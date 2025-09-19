@@ -14,6 +14,8 @@ jobs:
     with:
       buildcache_key: compat_buildcache-${{ github.ref }}
     secrets: inherit
+    permissions: 
+      actions: write
 
   compatibility:
     name: Compatibility Tests
