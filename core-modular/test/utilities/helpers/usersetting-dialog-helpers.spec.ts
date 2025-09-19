@@ -71,7 +71,7 @@ describe('UserSettings-helpers', () => {
   });
 
   it('prepare user settings data from schema', () => {
-    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema);
+    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema, null);
     assert.equal(processedUserSettingGroups.length, 4);
     assert.deepEqual(processedUserSettingGroups[0], {
       userAccount: {
@@ -89,7 +89,7 @@ describe('UserSettings-helpers', () => {
   });
 
   it('return empty array if no schema defined', () => {
-    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups({});
+    let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups({}, null);
     assert.equal(processedUserSettingGroups.length, 0);
   });
 

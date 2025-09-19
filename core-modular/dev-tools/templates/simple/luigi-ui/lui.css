@@ -113,13 +113,21 @@ ui5-shellbar {
     z-index: 11;
 }
 
-.luigi-busy-indicator {
-    height: 100%;
-    width: 100%;
+.luigi-busy-indicator-wrapper {
+    background: rgba(255, 255, 255, 0.8);
     position: absolute;
-    background: var(--sapBackgroundColor);
+    inset: 0;
     z-index: 999;
+    display: none;
 }
+
+.luigi-busy-indicator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-27px, -8px);
+}
+
 .luigi-busy-indicator:not([active]) {
     display: none;
 }
