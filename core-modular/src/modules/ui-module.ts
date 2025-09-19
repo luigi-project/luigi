@@ -4,6 +4,7 @@ import { NavigationService, type ModalSettings } from '../services/navigation.se
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
+import { RoutingService } from '../services/routing.service';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
@@ -29,33 +30,68 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
 };
 
 export const UIModule = {
-  navService: undefined,
+  navService: undefined as unknown as NavigationService,
+  routingService: undefined as unknown as RoutingService,
+  luigi: undefined as unknown as Luigi,
   init: (luigi: Luigi) => {
     console.log('Init UI...');
+    UIModule.navService = serviceRegistry.get(NavigationService);
+    UIModule.routingService = serviceRegistry.get(RoutingService);
+    UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
-    const navService = serviceRegistry.get(NavigationService);
-    const pathRaw = NavigationHelpers.normalizePath(location.hash);
-    const [path, query] = pathRaw.split('?');
-    const urlSearchParams = new URLSearchParams(query);
-    const paramsObj: Record<string, string> = {};
-    urlSearchParams.forEach((value, key) => {
-      paramsObj[key] = value;
-    });
-    const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, luigi);
-    const redirect = navService.shouldRedirect(path);
-    if (redirect) {
-      luigi.navigation().navigate(redirect);
+  },
+  update: (scopes?: string[]) => {
+    const croute = UIModule.routingService.getCurrentRoute();
+    if (!croute) {
       return;
     }
+    const noScopes = !scopes || scopes.length === 0;
 
-    luigi.getEngine()._connector?.renderTopNav(navService.getTopNavData(path));
-    luigi.getEngine()._connector?.renderLeftNav(navService.getLeftNavData(path));
-    luigi.getEngine()._connector?.renderTabNav(navService.getTabNavData(path));
+    /*
+      Available scopes:
 
-    const currentNode = navService.getCurrentNode(path);
-    currentNode.nodeParams = nodeParams || {};
-    if (currentNode) {
-      UIModule.updateMainContent(currentNode, luigi);
+        navigation
+        navigation.nodes
+        navigation.profile
+        navigation.contextSwitcher
+        navigation.viewgroupdata
+        navigation.productSwitcher
+        settings
+        settings.theming
+        settings.footer
+        settings.header
+    */
+
+    if (
+      noScopes ||
+      scopes.includes('settings.header') ||
+      scopes.includes('settings') ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.profile') ||
+      scopes.includes('navigation.contextSwitcher') ||
+      scopes.includes('navigation.productSwitcher')
+    ) {
+      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+    }
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings') ||
+      scopes.includes('settings.footer')
+    ) {
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+    }
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings.theming')
+    ) {
+      UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
   updateMainContent: (currentNode: any, luigi: Luigi) => {

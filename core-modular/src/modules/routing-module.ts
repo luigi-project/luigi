@@ -7,7 +7,7 @@ import { RoutingService } from '../services/routing.service';
 export const RoutingModule = {
   init: (luigi: Luigi) => {
     const routingService = serviceRegistry.get(RoutingService);
-    routingService.handleRouteChange();
+    routingService.enableRouting();
   },
 
   handlePageErrorHandler: (pageErrorHandler: PageErrorHandler, node: Node, luigi: Luigi) => {
