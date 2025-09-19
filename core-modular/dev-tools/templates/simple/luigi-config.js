@@ -80,10 +80,10 @@ window.onload = () => {
               category: 'cat'
             },
             {
-              pathSegment: 'c3',
+              pathSegment: 'c3s',
               label: 'MFE3',
               icon: 'group',
-              viewUrl: '/microfrontend.html#child3',
+              viewUrl: '/microfrontend.html#child3s',
               category: {
                 id: 'cat::sub',
                 label: 'SubCat',

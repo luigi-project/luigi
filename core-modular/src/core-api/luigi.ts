@@ -30,6 +30,10 @@ export class Luigi {
     return this.config;
   };
 
+  configChanged = (...scopes: string[]): void => {
+    this.getEngine()._ui.update(scopes);
+  };
+
   /**
    * Gets value of the given property on Luigi config object. Target can be a value or a synchronous function.
    * @param {string} property the object traversal path
