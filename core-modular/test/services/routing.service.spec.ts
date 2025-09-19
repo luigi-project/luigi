@@ -1,3 +1,4 @@
+import { UIModule } from '../../src/modules/ui-module';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
@@ -11,17 +12,15 @@ describe('Routing Service', () => {
   let mockLuigi: any;
   let mockNavService: any;
   let mockConnector: any;
-  let mockUI: any;
   let addEventListenerSpy: ReturnType<typeof jest.spyOn>;
 
   beforeEach(() => {
     mockConnector = {
       renderTopNav: jest.fn(),
       renderLeftNav: jest.fn(),
-      renderTabNav: jest.fn()
-    };
-    mockUI = {
-      updateMainContent: jest.fn()
+      renderTabNav: jest.fn(),
+      renderMainLayout: jest.fn(),
+      getContainerWrapper: jest.fn()
     };
     mockLuigi = {
       config: {},
@@ -37,7 +36,7 @@ describe('Routing Service', () => {
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn(() => ({
         _connector: mockConnector,
-        _ui: mockUI
+        _ui: UIModule
       }))
     };
     mockNavService = {
@@ -59,6 +58,10 @@ describe('Routing Service', () => {
 
     // Mock window.addEventListener
     addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+
+    jest.spyOn(UIModule, 'updateMainContent');
+
+    UIModule.init(mockLuigi);
   });
 
   afterEach(() => {
@@ -139,7 +142,7 @@ describe('Routing Service', () => {
 
   it('should add hashchange event listener when useHashRouting is true', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
-    routingService.handleRouteChange();
+    routingService.enableRouting();
     expect(addEventListenerSpy).toHaveBeenCalledWith('hashchange', expect.any(Function));
   });
 
@@ -149,7 +152,7 @@ describe('Routing Service', () => {
     const fakeNode = { nodeParams: {}, searchParams: {} };
     mockNavService.getCurrentNode.mockReturnValue(fakeNode);
 
-    routingService.handleRouteChange();
+    routingService.enableRouting();
 
     // Find the hashchange handler
     const handler = addEventListenerSpy.mock.calls.find(([event]: [string]) => event === 'hashchange')?.[1];
@@ -166,7 +169,7 @@ describe('Routing Service', () => {
     expect(mockConnector.renderTopNav).toHaveBeenCalled();
     expect(mockConnector.renderLeftNav).toHaveBeenCalled();
     expect(mockConnector.renderTabNav).toHaveBeenCalled();
-    expect(mockUI.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
+    expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
   });
 
   it('should redirect if shouldRedirect returns a path', () => {
@@ -175,19 +178,19 @@ describe('Routing Service', () => {
     const navigateSpy = jest.fn();
     mockLuigi.navigation = jest.fn(() => ({ navigate: navigateSpy }));
 
-    routingService.handleRouteChange();
+    routingService.enableRouting();
 
     const handler = addEventListenerSpy.mock.calls.find(([event]: [string]) => event === 'hashchange')?.[1];
     handler!({} as HashChangeEvent);
 
     expect(navigateSpy).toHaveBeenCalledWith('/redirect');
     expect(mockNavService.getCurrentNode).not.toHaveBeenCalled();
-    expect(mockUI.updateMainContent).not.toHaveBeenCalled();
+    expect(UIModule.updateMainContent).not.toHaveBeenCalled();
   });
 
   it('should not add hashchange event listener when useHashRouting is false', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
-    routingService.handleRouteChange();
+    routingService.enableRouting();
     expect(addEventListenerSpy).not.toHaveBeenCalledWith('hashchange', expect.any(Function));
   });
 });
