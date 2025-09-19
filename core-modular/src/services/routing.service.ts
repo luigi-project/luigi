@@ -38,6 +38,11 @@ export class RoutingService {
     const navService = serviceRegistry.get(NavigationService);
     const luigiConfig = this.luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
+
+    if (this.shouldSkipRoutingForUrlPatterns()) {
+      return;
+    }
+
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
