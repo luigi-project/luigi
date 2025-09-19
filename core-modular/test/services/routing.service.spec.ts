@@ -3,7 +3,11 @@ import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
-describe('RoutingService', () => {
+const chai = require('chai');
+const assert = chai.assert;
+const sinon = require('sinon');
+
+describe('Routing Service', () => {
   let routingService: RoutingService;
   let mockLuigi: any;
   let mockNavService: any;
@@ -19,6 +23,15 @@ describe('RoutingService', () => {
       getContainerWrapper: jest.fn()
     };
     mockLuigi = {
+      config: {},
+      engine: {},
+      setConfig: () => {},
+      configChanged: () => {},
+      routing: () => ({ getSearchParams: () => ({}) }),
+      uxManager: () => ({}),
+      linkManager: () => ({}),
+      getConfigValue: () => null,
+      getActiveFeatureToggles: () => [],
       getConfig: jest.fn(),
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn(() => ({
@@ -53,6 +66,78 @@ describe('RoutingService', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('shouldSkipRoutingForUrlPatterns', () => {
+    let locationSpy: any;
+
+    beforeEach(() => {
+      locationSpy = jest.spyOn(window, 'location', 'get');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+      sinon.reset();
+      locationSpy.mockRestore();
+    });
+
+    it('should return true if path matches default patterns', () => {
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de?access_token=bar'
+        };
+      });
+
+      const actual = routingService.shouldSkipRoutingForUrlPatterns();
+      const expect = true;
+
+      assert.equal(actual, expect);
+    });
+
+    it('should return true if path matches default patterns', () => {
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de?id_token=foo'
+        };
+      });
+
+      const actual = routingService.shouldSkipRoutingForUrlPatterns();
+      const expect = true;
+
+      assert.equal(actual, expect);
+    });
+
+    it('should return true if path matches config patterns', () => {
+      sinon.restore();
+      sinon
+        .stub(routingService.luigi, 'getConfigValue')
+        .withArgs('routing.skipRoutingForUrlPatterns')
+        .returns(['foo_bar']);
+
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de?foo_bar'
+        };
+      });
+
+      const actual = routingService.shouldSkipRoutingForUrlPatterns();
+      const expect = true;
+
+      assert.equal(actual, expect);
+    });
+
+    it('should return false if path does not matche patterns', () => {
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/settings'
+        };
+      });
+
+      const actual = routingService.shouldSkipRoutingForUrlPatterns();
+      const expect = false;
+
+      assert.equal(actual, expect);
+    });
   });
 
   it('should add hashchange event listener when useHashRouting is true', () => {

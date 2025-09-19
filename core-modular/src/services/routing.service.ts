@@ -25,6 +25,18 @@ export class RoutingService {
     }
     return this.navigationService;
   }
+
+  /**
+   * If the current route matches any of the defined patterns, it will be skipped.
+   * @returns {boolean} true if the current route matches any of the patterns, false otherwise
+   */
+  shouldSkipRoutingForUrlPatterns(): boolean {
+    const defaultPattern: RegExp[] = [/access_token=/, /id_token=/];
+    const patterns: any[] = this.luigi.getConfigValue('routing.skipRoutingForUrlPatterns') || defaultPattern;
+
+    return patterns.filter((pattern) => location.href.match(pattern)).length !== 0;
+  }
+
   /**
    * Initializes the route change handler for the application.
    *
@@ -42,6 +54,11 @@ export class RoutingService {
   enableRouting(): void {
     const luigiConfig = this.luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
+
+    if (this.shouldSkipRoutingForUrlPatterns()) {
+      return;
+    }
+
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
