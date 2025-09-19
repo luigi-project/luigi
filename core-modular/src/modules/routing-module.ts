@@ -40,6 +40,7 @@ export const RoutingModule = {
       } else {
         const newWindow = window.open(externalLink.url, '_blank', 'noopener noreferrer');
         if (newWindow) {
+          newWindow.opener = null;
           newWindow.focus();
         }
       }
