@@ -16,6 +16,8 @@ jobs:
   prepare: 
     uses: ./.github/workflows/prepare.yml
     secrets: inherit
+    permissions: 
+      actions: write
     with:
       buildcache_key: buildcache-nightly-${{ github.ref }}
 
