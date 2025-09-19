@@ -254,20 +254,23 @@ describe('Navigation', () => {
       cy.getIframeBody().then($iframeBody => {
         cy.wrap($iframeBody)
           .should('contain', 'Developers content')
-          .find('[title="visitors: 1"]');
+          .find('.fd-layout-panel').should('have.attr', 'title').and('match', /^visitors/);
         cy.get('.fd-app__sidebar')
           .contains('Project Settings')
           .click();
+        cy.wrap($iframeBody).find('.fd-layout-panel').should('not.have.attr', 'title');
         cy.get('.fd-app__sidebar')
           .contains('Developers')
           .click();
-        cy.wrap($iframeBody).find('[title="visitors: 2"]');
+        cy.wrap($iframeBody).find('.fd-layout-panel').should('have.attr', 'title').and('match', /^visitors/);
       });
       cy.get('.fd-app__sidebar')
         .contains('Developers')
         .click();
       cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody).find('[title="visitors: 1"]');
+        cy.wrap($iframeBody)
+          .should('contain', 'Developers content')
+          .find('.fd-layout-panel').should('have.attr', 'title').and('match', /^visitors/);
       });
     });
 

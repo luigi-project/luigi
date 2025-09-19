@@ -17,13 +17,14 @@ meta -->
 # Communication
 
 <!-- add-attribute:class:success -->
->**TIP:** For learning and testing purposes, use the [Luigi Fiddle](https://fiddle.luigi-project.io) page where you can configure a sample Luigi application.
+
+> **TIP:** For learning and testing purposes, use the [Luigi Fiddle](https://fiddle.luigi-project.io) page where you can configure a sample Luigi application.
 
 ## Overview
 
-The Luigi configuration file can include a section called `communication:`. In it, you can define custom messages to be exchanged between Luigi Core and Luigi Client, as well as configure additional communication options.  
+The Luigi configuration file can include a section called `communication:`. In it, you can define custom messages to be exchanged between Luigi Core and Luigi Client, as well as configure additional communication options.
 
-## Custom messages 
+## Custom messages
 
 Luigi Core and Luigi Client can exchange custom messages in both directions.
 
@@ -46,7 +47,9 @@ For Luigi Core to process custom messages, define a configuration similar to the
   ...
 }
 ```
+
 where the `my-custom-message.update-top-nav` key is the message ID, and the value is the listener function for the custom message. The listener receives the following input parameters:
+
 - **customMessage** the [message](luigi-client-api.md#sendCustomMessage) sent by Luigi Client.
 - **microfrontend** a micro frontend object as specified [here](luigi-core-api.md#getMicrofrontends).
 - **navigation node** a [navigation node object](navigation-parameters-reference.md#Node-parameters).
@@ -59,17 +62,19 @@ For Luigi Client to process the message, add and remove message listeners as des
 
 ## Ignore events from inactive iframes
 
-In the `communication:` section of the Luigi config, you can add the `skipEventsWhenInactive` parameter in order to ignore events normally sent from Luigi Client to Luigi Core when an iframe/micro frontend is not currently selected or active. 
+In the `communication:` section of the Luigi config, you can add the `skipEventsWhenInactive` parameter in order to ignore events normally sent from Luigi Client to Luigi Core when an iframe/micro frontend is not currently selected or active.
 
 For example, you can ignore any of these events (or others, as needed):
-- [luigi.navigation.open](https://github.com/luigi-project/luigi/blob/main/client/src/linkManager.js#L82) - skipping this event will prevent the inactive iframe from opening
-- [luigi.navigate.ok](https://github.com/luigi-project/luigi/blob/main/client/src/lifecycleManager.js#L124) - skipping this event will prevent navigation 
-- [luigi.ux.confirmationModal.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.js#L102) -  skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal) 
-- [luigi.ux.alert.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.js#L172) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert) 
+
+- [luigi.navigation.open](https://github.com/luigi-project/luigi/blob/main/client/src/linkManager.ts#L115) - skipping this event will prevent the inactive iframe from opening
+- [luigi.navigate.ok](https://github.com/luigi-project/luigi/blob/main/client/src/lifecycleManager.ts#L155) - skipping this event will prevent navigation
+- [luigi.ux.confirmationModal.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.ts#L114) - skipping this event will prevent the showing of a [confirmation modal](luigi-client-api.md#showconfirmationmodal)
+- [luigi.ux.alert.show](https://github.com/luigi-project/luigi/blob/main/client/src/uxManager.ts#L198) - skipping this event will prevent the showing of an [alert](luigi-client-api.md#showalert)
 
 ### skipEventsWhenInactive
+
 - **type**: array of strings
-- **description**: a list of strings specifying the names of events which you want to ignore. When specified, the events will be ignored when an iframe is inactive. 
+- **description**: a list of strings specifying the names of events which you want to ignore. When specified, the events will be ignored when an iframe is inactive.
 - **default**: undefined
 - **example**:
 
