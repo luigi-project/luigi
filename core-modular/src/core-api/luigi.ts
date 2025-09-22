@@ -4,11 +4,15 @@ import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
+import { Theming } from './theming';
 
 export class Luigi {
   config: any;
   _store: any;
-
+  _theming?: Theming;
+  _routing?: Routing;
+  __cssVars?: any;
+  
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
   }
@@ -42,6 +46,17 @@ export class Luigi {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   }
 
+  getConfigValueAsync = (property: string) =>{
+    return new Promise((resolve) => {
+      const value = this.getConfigValue(property);
+      if (typeof value === 'function') {
+        resolve(value());
+      } else {
+        resolve(value);
+      }
+    });
+  }
+
   navigation = (): Navigation => {
     return new Navigation(this);
   };
@@ -51,9 +66,18 @@ export class Luigi {
   };
 
   routing = (): Routing => {
-    return new Routing(this);
+    if(!this._routing){
+      this._routing = new Routing(this);
+    }
+    return this._routing as Routing;
   };
-  // ...
+
+  theming = (): Theming => {
+    if (!this._theming) {
+      this._theming = new Theming(this);
+    }
+    return this._theming as Theming;
+  };
 
   private createConfigStore(): any {
     const { subscribe, update } = writable({});
