@@ -14,6 +14,7 @@ import type { Luigi } from './luigi';
 export class UX {
   luigi: Luigi;
   dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+  private loadingIndicatorSelector = '[luigi-app-loading-indicator]';
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -84,6 +85,20 @@ export class UX {
   getDocumentTitle = (): string => {
     return get(this.luigi.getEngine()._ux?.documentTitle) || window.document.title || '';
   };
+
+  hideAppLoadingIndicator = () => {
+    const appLoadingIndicator = document.querySelector(this.loadingIndicatorSelector);
+
+    if (!appLoadingIndicator) {
+      return;
+    }
+
+    appLoadingIndicator.classList.add('hidden');
+
+    setTimeout(() => {
+      appLoadingIndicator.parentNode?.removeChild(appLoadingIndicator);
+    }, 500);
+  }
 
   showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();
 

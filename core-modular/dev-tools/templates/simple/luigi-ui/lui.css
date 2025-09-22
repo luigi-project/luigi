@@ -121,6 +121,12 @@ ui5-shellbar {
     display: none;
 }
 
+.luigi-busy-indicator-wrapper.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0 0.3s, opacity 0.3s linear;
+}
+
 .luigi-busy-indicator {
     position: absolute;
     left: 50%;

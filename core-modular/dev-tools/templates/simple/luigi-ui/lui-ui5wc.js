@@ -302,7 +302,7 @@ const connector = {
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content">
-            <div class="luigi-busy-indicator-wrapper">
+            <div class="luigi-busy-indicator-wrapper" luigi-app-loading-indicator>
               <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
             </div>
           </div>

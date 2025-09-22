@@ -65,7 +65,7 @@ export class Luigi {
     if (shouldHideAppLoadingIndicator) {
       // Timeout needed, otherwise loading indicator might not be present yet and when displayed will not be hidden
       setTimeout(() => {
-        this.ux().hideLoadingIndicator();
+        this.ux().hideAppLoadingIndicator();
       }, 0);
     }
   }
