@@ -23,6 +23,7 @@ export class RoutingService {
     if (!this.navigationService) {
       this.navigationService = serviceRegistry.get(NavigationService);
     }
+
     return this.navigationService;
   }
 
@@ -55,10 +56,6 @@ export class RoutingService {
     const luigiConfig = this.luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
 
-    if (this.shouldSkipRoutingForUrlPatterns()) {
-      return;
-    }
-
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
@@ -79,11 +76,18 @@ export class RoutingService {
     const query = routeInfo.query;
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
+
+    if (this.shouldSkipRoutingForUrlPatterns()) {
+      return;
+    }
+
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
+
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
     const redirect = this.getNavigationService().shouldRedirect(path);
+
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
       return;
@@ -100,6 +104,7 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path));
 
     const currentNode = this.getNavigationService().getCurrentNode(path);
+
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
