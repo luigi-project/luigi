@@ -106,8 +106,7 @@ export class Luigi {
       localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
     }
 
-    // TODO configChanged implemented in #4498
-    // this.configChanged();
+    this.configChanged();
   }
 
   navigation = (): Navigation => {
