@@ -147,10 +147,14 @@ export const RoutingHelpers = {
    * - The query string is extracted from the portion after the '?' in the hash.
    * - If there is no query string, `query` will be `undefined`.
    */
-  getCurrentPath(): { path: string; query: string } {
+  getCurrentPath(hashRouting?: boolean): { path: string; query: string } {
     //TODO intentNavigation implementation
-    const pathRaw = NavigationHelpers.normalizePath(location.hash);
-    const [path, query] = pathRaw.split('?');
-    return { path, query };
+    if (hashRouting) {
+      const pathRaw = NavigationHelpers.normalizePath(location.hash);
+      const [path, query] = pathRaw.split('?');
+      return { path, query };
+    } else {
+      return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
+    }
   }
 };

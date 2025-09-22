@@ -104,7 +104,7 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path?param1=value1&param2=value2';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath();
+    const currentPath = RoutingHelpers.getCurrentPath(true);
     assert.equal(currentPath.path, 'some/path');
     assert.equal(currentPath.query, 'param1=value1&param2=value2');
   });
@@ -112,7 +112,7 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath();
+    const currentPath = RoutingHelpers.getCurrentPath(true);
     assert.equal(currentPath.path, 'some/path');
     assert.equal(currentPath.query, undefined);
   });
