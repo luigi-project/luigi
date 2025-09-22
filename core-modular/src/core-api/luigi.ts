@@ -12,7 +12,7 @@ export class Luigi {
   _theming?: Theming;
   _routing?: Routing;
   __cssVars?: any;
-  
+
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
   }
@@ -46,7 +46,7 @@ export class Luigi {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   }
 
-  getConfigValueAsync = (property: string) =>{
+  getConfigValueAsync = (property: string) => {
     return new Promise((resolve) => {
       const value = this.getConfigValue(property);
       if (typeof value === 'function') {
@@ -55,7 +55,7 @@ export class Luigi {
         resolve(value);
       }
     });
-  }
+  };
 
   navigation = (): Navigation => {
     return new Navigation(this);
@@ -66,7 +66,7 @@ export class Luigi {
   };
 
   routing = (): Routing => {
-    if(!this._routing){
+    if (!this._routing) {
       this._routing = new Routing(this);
     }
     return this._routing as Routing;
