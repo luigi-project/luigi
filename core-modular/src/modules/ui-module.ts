@@ -14,6 +14,7 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
+    lcc.searchParams = node.searchParams;
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
@@ -23,6 +24,7 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
     lc.nodeParams = node.nodeParams;
+    lc.searchParams = node.searchParams;
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -115,6 +117,7 @@ export const UIModule = {
         viewGroupContainer.style.display = 'block';
         viewGroupContainer.updateViewUrl(currentNode.viewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {
         containerWrapper?.appendChild(createContainer(currentNode, luigi));
