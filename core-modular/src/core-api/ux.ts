@@ -98,7 +98,7 @@ export class UX {
     setTimeout(() => {
       appLoadingIndicator.parentNode?.removeChild(appLoadingIndicator);
     }, 500);
-  }
+  };
 
   showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();
 
