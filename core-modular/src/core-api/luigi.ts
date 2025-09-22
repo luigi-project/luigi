@@ -47,35 +47,6 @@ export class Luigi {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   }
 
-  /**
-   * Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
-   * @param {...string} scope one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
-   * <p>
-   * The supported scope selectors are:
-   * <p>
-   * <ul>
-   *   <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
-   *   <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
-   *   <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
-   *   <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
-   *   <li><code>navigation.profile</code>: profile menu was changed.</li>
-   *   <li><code>settings</code>: settings were changed.</li>
-   *   <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
-   *   <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
-   * </ul>
-   */
-  configChanged(...scope: string[]) {
-    const optimizedScope = StateHelpers.optimizeScope(scope);
-
-    if (optimizedScope.length > 0) {
-      optimizedScope.forEach((scope: string) => {
-        (window as any).Luigi._store.fire(scope, { current: (window as any).Luigi._store });
-      });
-    } else {
-      (window as any).Luigi._store.update((config: any) => config);
-    }
-  }
-
   i18n = (): i18nService => {
     return new i18nService(this);
   };
