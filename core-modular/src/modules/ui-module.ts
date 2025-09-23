@@ -2,29 +2,30 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
-import type { Luigi } from '../core-api/luigi';
+import { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
 import { RoutingService } from '../services/routing.service';
+import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
-    lcc.viewurl = node.viewUrl;
+    lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
-    lcc.theme = node.theme;
+    lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
-    lc.viewurl = node.viewUrl;
+    lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
     lc.nodeParams = node.nodeParams;
-    lc.theme = node.theme;
+    lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -115,9 +116,11 @@ export const UIModule = {
       });
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.updateViewUrl(currentNode.viewUrl);
+        viewGroupContainer.updateViewUrl(
+          serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl)
+        );
         viewGroupContainer.nodeParams = currentNode.nodeParams;
-        viewGroupContainer.theme = luigi.theming().currentTheme;
+        viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {
         containerWrapper?.appendChild(createContainer(currentNode, luigi));

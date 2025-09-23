@@ -1,3 +1,5 @@
+import { serviceRegistry } from '../services/service-registry';
+import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { Luigi } from './luigi';
 
@@ -42,7 +44,7 @@ export class Theming {
   setCurrentTheme(id: string) {
     this.currentTheme = id;
     // clear cache
-    //this.luigi.__cssVars = undefined;
+    this.luigi.__cssVars = undefined;
   }
 
   /**
@@ -144,38 +146,32 @@ export class Theming {
    * @memberof Theming
    * @private
    */
-  // _init() /* istanbul ignore next */ {
-  //     const setupViewUrlDecorator = () => {
-  //         /**
-  //          * Registers the viewUrl decorator
-  //          * @memberof Theming
-  //          * @private
-  //          */
-  //         const theming = LuigiConfig.getConfigValue('settings.theming');
-  //         if (theming && theming.nodeViewURLDecorator && theming.nodeViewURLDecorator.queryStringParameter) {
-  //             ViewUrlDecorator.add({
-  //                 type: 'queryString',
-  //                 uid: 'theming',
-  //                 key: theming.nodeViewURLDecorator.queryStringParameter.keyName,
-  //                 valueFn: () => {
-  //                     const value = this.getCurrentTheme();
-  //                     const configValueFn = theming.nodeViewURLDecorator.queryStringParameter.value;
-  //                     return configValueFn ? configValueFn(value) : value;
-  //                 }
-  //             });
-  //         }
+  _init() /* istanbul ignore next */ {
+    const viewUrlDecoratorService = serviceRegistry.get(ViewUrlDecoratorSvc);
+    const setupViewUrlDecorator = () => {
+      /**
+       * Registers the viewUrl decorator
+       * @memberof Theming
+       * @private
+       */
+      const theming = this.luigi.getConfigValue('settings.theming');
+      if (theming && theming.nodeViewURLDecorator && theming.nodeViewURLDecorator.queryStringParameter) {
+        viewUrlDecoratorService.add({
+          type: 'queryString',
+          uid: 'theming',
+          key: theming.nodeViewURLDecorator.queryStringParameter.keyName,
+          valueFn: () => {
+            const value = this.getCurrentTheme();
+            const configValueFn = theming.nodeViewURLDecorator.queryStringParameter.value;
+            return configValueFn ? configValueFn(value) : value;
+          }
+        });
+      }
 
-  //         if (theming && theming.useFioriScrollbars === true) {
-  //             document.body.classList.add('fioriScrollbars');
-  //         }
-  //     };
-
-  //     StateHelpers.doOnStoreChange(
-  //         window.Luigi._store,
-  //         () => {
-  //             setupViewUrlDecorator();
-  //         },
-  //         ['settings.theming']
-  //     );
-  // }
+      if (theming && theming.useFioriScrollbars === true) {
+        document.body.classList.add('fioriScrollbars');
+      }
+    };
+    setupViewUrlDecorator();
+  }
 }
