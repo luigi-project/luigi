@@ -95,7 +95,7 @@ export class Luigi {
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
   async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
-    const userSettingsData: Record<string, any> = {...previousUserSettingsObj};
+    const userSettingsData: Record<string, any> = { ...previousUserSettingsObj };
     const userSettingsGroup = StorageHelpers.readUserSettingsGroup();
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
