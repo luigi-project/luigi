@@ -1,6 +1,6 @@
+import type { Luigi } from './luigi';
 import { NavigationService } from '../services/navigation.service';
 import type { ModalSettings } from '../services/navigation.service';
-import type { Luigi } from './luigi';
 import { serviceRegistry } from '../services/service-registry';
 
 export class Navigation {
@@ -16,6 +16,7 @@ export class Navigation {
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
+
     if (this.hashRouting) {
       if (modalSettings) {
         this.openAsModal(path, modalSettings);
