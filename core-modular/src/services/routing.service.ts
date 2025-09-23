@@ -23,8 +23,21 @@ export class RoutingService {
     if (!this.navigationService) {
       this.navigationService = serviceRegistry.get(NavigationService);
     }
+
     return this.navigationService;
   }
+
+  /**
+   * If the current route matches any of the defined patterns, it will be skipped.
+   * @returns {boolean} true if the current route matches any of the patterns, false otherwise
+   */
+  shouldSkipRoutingForUrlPatterns(): boolean {
+    const defaultPattern: RegExp[] = [/access_token=/, /id_token=/];
+    const patterns: any[] = this.luigi.getConfigValue('routing.skipRoutingForUrlPatterns') || defaultPattern;
+
+    return patterns.filter((pattern) => location.href.match(pattern)).length !== 0;
+  }
+
   /**
    * Initializes the route change handler for the application.
    *
@@ -42,6 +55,7 @@ export class RoutingService {
   enableRouting(): void {
     const luigiConfig = this.luigi.getConfig();
     console.log('Init Routing...', luigiConfig.routing);
+
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
         console.log('HashChange', location.hash);
@@ -62,11 +76,18 @@ export class RoutingService {
     const query = routeInfo.query;
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
+
+    if (this.shouldSkipRoutingForUrlPatterns()) {
+      return;
+    }
+
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
+
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
     const redirect = this.getNavigationService().shouldRedirect(path);
+
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
       return;
@@ -83,6 +104,7 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path));
 
     const currentNode = this.getNavigationService().getCurrentNode(path);
+
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
