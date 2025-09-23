@@ -5,9 +5,9 @@ import { RoutingModule } from './modules/routing-module';
 import { UIModule } from './modules/ui-module';
 import { UXModule } from './modules/ux-module';
 import { DirtyStatusService } from './services/dirty-status.service';
+import { NavigationService } from './services/navigation.service';
 import { RoutingService } from './services/routing.service';
 import { serviceRegistry } from './services/service-registry';
-import { NavigationService } from './services/navigation.service';
 import type { LuigiConnector } from './types/connector';
 
 export class LuigiEngine {
