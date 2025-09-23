@@ -22,6 +22,7 @@ export class ContainerAPIFunctions {
   ) => {
     if (iframeHandle) {
       const internalParameter = internal || {};
+
       containerService.sendCustomMessageToIframe(
         iframeHandle,
         {
@@ -50,6 +51,7 @@ export class ContainerAPIFunctions {
   updateViewUrl = (viewUrl: string, context: object, internal?: object, iframeHandle?: IframeHandle) => {
     if (iframeHandle) {
       const internalParameter = internal || {};
+
       containerService.sendCustomMessageToIframe(
         iframeHandle,
         {
@@ -94,13 +96,16 @@ export class ContainerAPIFunctions {
     data?: object
   ) => {
     if (isWebcomponent && mainComponent._luigi_mfe_webcomponent) {
-      containerService.dispatch(id, mainComponent._luigi_mfe_webcomponent, data);
+      containerService.dispatch(id, mainComponent._luigi_mfe_webcomponent, data || {});
     } else {
-      const msg = { ...data };
-      if (msg['id']) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const msg: Record<string, any> = { ...data };
+
+      if (msg.id) {
         console.warn('Property "id" is reserved and can not be used in custom message data');
       }
-      msg['id'] = id;
+
+      msg.id = id;
       containerService.sendCustomMessageToIframe(iframeHandle, msg);
     }
   };
