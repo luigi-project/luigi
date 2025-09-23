@@ -2,6 +2,7 @@ class StorageHelpersClass {
   init: boolean;
   storage: Storage;
   browseSupported: boolean | undefined;
+  private USER_SETTINGS_GROUP = 'luigi.preferences.userSettingsGroup';
 
   constructor() {
     this.init = false;
@@ -169,6 +170,14 @@ class StorageHelpersClass {
     };
 
     return message;
+  }
+
+  readUserSettingsGroup(): string | null {
+    return localStorage.getItem(this.USER_SETTINGS_GROUP);
+  }
+
+  storeUserSettingsGroup(group: string) {
+    localStorage.setItem(this.USER_SETTINGS_GROUP, group || '');
   }
 }
 

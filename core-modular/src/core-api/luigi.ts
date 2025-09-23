@@ -2,7 +2,7 @@ import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { StateHelpers } from '../utilities/helpers/state-helpers';
+import { StorageHelpers } from '../utilities/helpers/storage-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
@@ -95,15 +95,21 @@ export class Luigi {
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
   async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
+    const userSettingsData: Record<string, any> = {...previousUserSettingsObj};
+    const userSettingsGroup = StorageHelpers.readUserSettingsGroup();
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
       ? userSettingsConfig
       : await this.getConfigValueAsync('settings.userSettings');
 
+    if (userSettingsGroup) {
+      userSettingsData[userSettingsGroup] = userSettingsObj;
+    }
+
     if (userSettings && GenericHelpers.isFunction(userSettings.storeUserSettings)) {
-      return userSettings.storeUserSettings(userSettingsObj, previousUserSettingsObj);
+      return userSettings.storeUserSettings(userSettingsData, previousUserSettingsObj);
     } else {
-      localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
+      localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsData));
     }
 
     this.configChanged();

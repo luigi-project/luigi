@@ -659,6 +659,7 @@ const connector = {
     const storedUserSettings = {};
     const previousUserSettings = await globalThis.Luigi.readUserSettings();
     const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
+    const userSettingsGroup = localStorage.getItem('luigi.preferences.userSettingsGroup');
     const dialog = document.createElement('ui5-dialog');
     const lc = document.createElement('div');
     const bar = document.createElement('ui5-bar');
@@ -709,17 +710,19 @@ const connector = {
     toolbar.appendChild(saveBtn);
 
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
-      const timeFormat = previousUserSettings?.time
-        ? previousUserSettings.time
-        : userSettingData[0].privacy.settings.time.options[0];
+      const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
+      const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
+      const timeFormat = previousUserSettings[userSettingsGroup]
+        ? previousUserSettings[userSettingsGroup].time
+        : userSettingsObj?.settings?.time?.options[0];
 
       storedUserSettings.privacy = null;
       storedUserSettings.time = timeFormat;
 
       lc.innerHTML = `
-        <ui5-title level="H3">${userSettingData[0].privacy.label}</ui5-title>
-        <p>${userSettingData[0].privacy.settings.policy.label}</p>
-        <p>${userSettingData[0].privacy.settings.time.label} - ${timeFormat}</p>
+        <ui5-title level="H3">${userSettingsObj?.label || 'No settings in config'}</ui5-title>
+        <p>${userSettingsObj?.settings?.policy?.label || ''}</p>
+        <p>${userSettingsObj?.settings?.time?.label || ''} - ${timeFormat || ''}</p>
         <form>
           <label for="timeFormatSelector">Switch time format:</label><br>
           <select id="timeFormatSelector" name="timeFormatSelector">
