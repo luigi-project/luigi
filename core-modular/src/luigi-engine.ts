@@ -34,8 +34,8 @@ export class LuigiEngine {
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
     serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());
     serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
-    RoutingModule.init(luigi);
     UIModule.init(luigi);
+    RoutingModule.init(luigi);
     CommunicationModule.init(luigi);
     UXModule.init(luigi);
   }
