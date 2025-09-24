@@ -95,8 +95,24 @@ export class Luigi {
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
   async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
+    const containerWrapper = this.getEngine()._connector?.getContainerWrapper();
+    let userSettingsGroup: any;
+
+    if (containerWrapper) {
+      let viewGroupContainer: any;
+
+      [...containerWrapper.childNodes].forEach((element: any) => {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
+          viewGroupContainer = element;
+        }
+      });
+
+      if (viewGroupContainer) {
+        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+      }
+    }
+
     const userSettingsData: Record<string, any> = { ...previousUserSettingsObj };
-    const userSettingsGroup = StorageHelpers.readUserSettingsGroup();
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
       ? userSettingsConfig
@@ -153,7 +169,7 @@ export class Luigi {
         subscribers.add(fn);
       },
       fire: (scope: any, data: any) => {
-        let subscribers = scopeSubscribers[scope];
+        const subscribers = scopeSubscribers[scope];
 
         if (subscribers) {
           [...subscribers].forEach((fn) => {

@@ -659,13 +659,28 @@ const connector = {
     const storedUserSettings = {};
     const previousUserSettings = await globalThis.Luigi.readUserSettings();
     const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
-    const userSettingsGroup = localStorage.getItem('luigi.preferences.userSettingsGroup');
     const dialog = document.createElement('ui5-dialog');
     const lc = document.createElement('div');
     const bar = document.createElement('ui5-bar');
     const toolbar = document.createElement('ui5-toolbar');
     const cancelBtn = document.createElement('ui5-toolbar-button');
     const saveBtn = document.createElement('ui5-toolbar-button');
+    const containerWrapper = globalThis.Luigi.getEngine()._connector?.getContainerWrapper();
+    let userSettingsGroup;
+
+    if (containerWrapper) {
+      let viewGroupContainer;
+
+      [...containerWrapper.childNodes].forEach((element) => {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
+          viewGroupContainer = element;
+        }
+      });
+
+      if (viewGroupContainer) {
+        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+      }
+    }
 
     dialog.classList.add('lui-dialog');
     dialog.setAttribute('header-text', settings?.title);
@@ -712,7 +727,7 @@ const connector = {
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
       const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
       const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
-      const timeFormat = previousUserSettings[userSettingsGroup]
+      const timeFormat = previousUserSettings && previousUserSettings[userSettingsGroup]
         ? previousUserSettings[userSettingsGroup].time
         : userSettingsObj?.settings?.time?.options[0];
 
