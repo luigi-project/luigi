@@ -7,7 +7,7 @@ import { serviceRegistry } from '../services/service-registry';
 import { RoutingService } from '../services/routing.service';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 
-const createContainer = (node: any, luigi: Luigi): HTMLElement => {
+const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -26,6 +26,7 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     lc.context = node.context;
     lc.nodeParams = node.nodeParams;
     lc.theme = luigi.theming().getCurrentTheme();
+    (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -97,7 +98,7 @@ export const UIModule = {
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
-  updateMainContent: (currentNode: any, luigi: Luigi) => {
+  updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -123,16 +124,16 @@ export const UIModule = {
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {
-        containerWrapper?.appendChild(createContainer(currentNode, luigi));
+        containerWrapper?.appendChild(await createContainer(currentNode, luigi));
       }
     }
   },
-  openModal: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    const lc = createContainer(node, luigi);
+  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
   },
-  openDrawer: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    const lc = createContainer(node, luigi);
+  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
   }
 };
