@@ -727,9 +727,10 @@ const connector = {
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
       const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
       const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
-      const timeFormat = previousUserSettings && previousUserSettings[userSettingsGroup]
-        ? previousUserSettings[userSettingsGroup].time
-        : userSettingsObj?.settings?.time?.options[0];
+      const timeFormat =
+        previousUserSettings && previousUserSettings[userSettingsGroup]
+          ? previousUserSettings[userSettingsGroup].time
+          : userSettingsObj?.settings?.time?.options[0];
 
       storedUserSettings.privacy = null;
       storedUserSettings.time = timeFormat;
