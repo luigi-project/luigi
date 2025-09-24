@@ -1,10 +1,8 @@
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
-import { serviceRegistry } from '../services/service-registry';
+import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
+import { serviceRegistry } from '../services/service-registry';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {
@@ -14,6 +12,7 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
+    (lcc as any).userSettingsGroup = node.userSettingsGroup;
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
@@ -23,6 +22,7 @@ const createContainer = (node: any, luigi: Luigi): HTMLElement => {
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
     lc.nodeParams = node.nodeParams;
+    (lc as any).userSettingsGroup = node.userSettingsGroup;
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -96,8 +96,10 @@ export const UIModule = {
   },
   updateMainContent: (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
@@ -111,11 +113,13 @@ export const UIModule = {
           }
         }
       });
+
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
         viewGroupContainer.updateViewUrl(currentNode.viewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.updateContext(currentNode.context || {});
+        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
       } else {
         containerWrapper?.appendChild(createContainer(currentNode, luigi));
       }
