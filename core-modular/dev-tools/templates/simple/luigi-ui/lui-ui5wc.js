@@ -782,8 +782,11 @@ window.addEventListener(
       globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
     }
 
-    if (event?.data?.data?.currentlocale) {
-      connector.getCurrentLocale();
+    if (event?.data?.data?.customTranslation) {
+      globalThis.Luigi.ux().showAlert({
+        text: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.header'),
+        type: 'info'
+      });
     }
   },
   false

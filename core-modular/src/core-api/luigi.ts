@@ -1,9 +1,7 @@
 import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { i18nService } from '../services/i18n.service';
-import { serviceRegistry } from '../services/service-registry';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { StateHelpers } from '../utilities/helpers/state-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
@@ -11,6 +9,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
+  _i18n!: i18nService;
   configReadyCallback = function () {};
 
   constructor(private engine: LuigiEngine) {
@@ -48,7 +47,11 @@ export class Luigi {
   }
 
   i18n = (): i18nService => {
-    return new i18nService(this);
+    if (!this._i18n) {
+      this._i18n = new i18nService(this);
+    }
+
+    return this._i18n;
   };
 
   navigation = (): Navigation => {
@@ -107,10 +110,8 @@ export class Luigi {
   }
 
   private getConfigReadyCallback(): Promise<void> {
-    const LuigiI18N = serviceRegistry.get(i18nService);
-
     return new Promise((resolve) => {
-      LuigiI18N._init();
+      this.i18n()._init();
       resolve();
     });
   }

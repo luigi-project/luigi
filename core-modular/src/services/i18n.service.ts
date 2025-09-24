@@ -2,7 +2,6 @@ import type { Luigi } from '../core-api/luigi';
 import { defaultLuigiTranslationTable } from '../utilities/defaultLuigiTranslationTable';
 import { EscapingHelpers } from './../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { StateHelpers } from '../utilities/helpers/state-helpers';
 
 /**
  * Localization-related functions
@@ -10,7 +9,7 @@ import { StateHelpers } from '../utilities/helpers/state-helpers';
 export class i18nService {
   currentLocaleStorageKey: string;
   defaultLocale: string;
-  listeners: Record<number, (locale: string) => {}>;
+  listeners: Record<number, (locale: string) => void>;
   translationImpl: any;
   translationTable: Record<string, any>;
 
@@ -21,20 +20,13 @@ export class i18nService {
     this.translationTable = defaultLuigiTranslationTable;
   }
 
-  _init(): void {
-    StateHelpers.doOnStoreChange(
-      (window as any).Luigi._store,
-      () => {
-        this._initCustomImplementation();
-      },
-      ['settings']
-    );
+  _init() {
+    this._initCustomImplementation();
   }
 
   /**
    * Gets the current locale.
    * @returns {string} current locale
-   * @since 0.5.3
    */
   getCurrentLocale(): string {
     return sessionStorage.getItem(this.currentLocaleStorageKey) || this.defaultLocale;
@@ -43,7 +35,6 @@ export class i18nService {
   /**
    * Sets current locale to the specified one.
    * @param {string} locale locale to be set as the current locale
-   * @since 0.5.3
    */
   setCurrentLocale(locale: string): void {
     if (locale) {
@@ -58,9 +49,8 @@ export class i18nService {
    * Registers a listener for locale changes.
    * @param {Function} listener function called on every locale change with the new locale as argument
    * @returns {number | null} listener ID associated with the given listener; use it when removing the listener
-   * @since 0.5.3
    */
-  addCurrentLocaleChangeListener(listener: (locale: string) => {}): number | null {
+  addCurrentLocaleChangeListener(listener: (locale: string) => void): number | null {
     let listenerId = null;
 
     if (GenericHelpers.isFunction(listener)) {
@@ -76,7 +66,6 @@ export class i18nService {
   /**
    * Unregisters a listener for locale changes.
    * @param {number} listenerId listener ID associated with the listener to be removed, returned by addCurrentLocaleChangeListener
-   * @since 0.5.3
    */
   removeCurrentLocaleChangeListener(listenerId: number): void {
     if (listenerId && this.listeners[listenerId]) {
@@ -95,9 +84,8 @@ export class i18nService {
    *
    * @param {string} key key to be translated
    * @param {Object} interpolations object with properties that will be used for token replacements in the localization key
-   * @param {locale} locale optional locale to get the translation for; default is the current locale
+   * @param {string} locale optional locale to get the translation for; default is the current locale
    * @returns {string} translated text for the specified key
-   * @since 0.5.3
    */
   getTranslation(key: string, interpolations = undefined, locale = undefined): string {
     if (!key) return '';
