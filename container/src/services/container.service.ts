@@ -141,7 +141,14 @@ export class ContainerService {
                       },
                       currentTheme: targetCnt.theme,
                       currentLocale: targetCnt.locale,
-                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || []
+                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || [],
+                      cssVariables: targetCnt.cssVariables || {},
+                      anchor: targetCnt.anchor || '',
+                      userSettings: targetCnt.userSettings || null,
+                      drawer: targetCnt.drawer || false,
+                      modal: targetCnt.modal || false,
+                      viewStackSize: targetCnt.viewStackSize || 0,
+                      isNavigateBack: targetCnt.isNavigateBack || false
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
