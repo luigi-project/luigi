@@ -1,5 +1,6 @@
 import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
+import { i18nService } from '../services/i18n.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
@@ -8,6 +9,8 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
+  _i18n!: i18nService;
+  configReadyCallback = function () {};
 
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
@@ -21,6 +24,7 @@ export class Luigi {
   setConfig = (cfg: any) => {
     this.config = cfg;
     this.engine.init();
+    this.setConfigCallback(this.getConfigReadyCallback());
   };
 
   getConfig = (): any => {
@@ -41,6 +45,14 @@ export class Luigi {
   getConfigValue(property: string): any {
     return GenericHelpers.getConfigValueFromObject(this.getConfig(), property);
   }
+
+  i18n = (): i18nService => {
+    if (!this._i18n) {
+      this._i18n = new i18nService(this);
+    }
+
+    return this._i18n;
+  };
 
   navigation = (): Navigation => {
     return new Navigation(this);
@@ -95,5 +107,16 @@ export class Luigi {
         unSubscriptions = [];
       }
     };
+  }
+
+  private getConfigReadyCallback(): Promise<void> {
+    return new Promise((resolve) => {
+      this.i18n()._init();
+      resolve();
+    });
+  }
+
+  private setConfigCallback(configReadyCallback: any): void {
+    this.configReadyCallback = configReadyCallback;
   }
 }

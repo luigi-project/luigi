@@ -1,10 +1,8 @@
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
-import { serviceRegistry } from '../services/service-registry';
+import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
+import { serviceRegistry } from '../services/service-registry';
 
 const createContainer = (node: any, luigi: Luigi): HTMLElement => {
   if (node.compound) {

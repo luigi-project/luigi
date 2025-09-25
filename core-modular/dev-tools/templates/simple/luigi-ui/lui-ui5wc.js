@@ -743,6 +743,20 @@ const connector = {
         type: 'error'
       });
     }
+  },
+
+  setCurrentLocale: (locale) => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale has been set to: ' + locale,
+      type: 'success'
+    });
+  },
+
+  getCurrentLocale: () => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
+      type: 'info'
+    });
   }
 };
 
@@ -766,6 +780,13 @@ window.addEventListener(
 
     if (event?.data?.data?.title) {
       globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+    }
+
+    if (event?.data?.data?.customTranslation) {
+      globalThis.Luigi.ux().showAlert({
+        text: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.header'),
+        type: 'info'
+      });
     }
   },
   false
