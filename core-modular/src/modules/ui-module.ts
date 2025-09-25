@@ -98,8 +98,14 @@ export const UIModule = {
   },
   updateMainContent: (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+
+      if (currentNode?.loadingIndicator?.enabled) {
+        luigi.ux().showLoadingIndicator();
+      }
+
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
@@ -113,8 +119,10 @@ export const UIModule = {
           }
         }
       });
+
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
+        viewGroupContainer.viewurl = currentNode.viewUrl;
         viewGroupContainer.updateViewUrl(currentNode.viewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);

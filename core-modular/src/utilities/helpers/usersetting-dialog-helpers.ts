@@ -24,10 +24,6 @@ class UserSettingsHelperClass {
     return userSettingGroups;
   }
 
-  createIframe(): void {
-    // TODO
-  }
-
   getUserSettingsIframesInDom(): HTMLElement[] {
     const iframeCtn = document.querySelector('.iframeUserSettingsCtn');
 
