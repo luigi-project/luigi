@@ -60,10 +60,10 @@ export class Theming {
    *    // Logic
    *  }))
    */
-  // async getThemeObject(id: string) {
-  //   const themes = await this.getAvailableThemes();
-  //   return themes && themes.find(t => t.id === id);
-  // }
+  async getThemeObject(id: string): Promise<any>{
+    const themes = await this.getAvailableThemes() as any[];
+    return themes?.find(t => t.id === id);
+  }
 
   /**
    * Retrieves the current active theme. Falls back to **defaultTheme** if none explicitly specified before.
