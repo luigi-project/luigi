@@ -15,6 +15,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
+    lcc.searchParams = node.searchParams;
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
@@ -24,9 +25,10 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
-    lc.nodeParams = node.nodeParams;
-    lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
+    lc.nodeParams = node.nodeParams;
+    lc.searchParams = node.searchParams;
+    lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -121,6 +123,7 @@ export const UIModule = {
           serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl)
         );
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {

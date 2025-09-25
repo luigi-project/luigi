@@ -32,7 +32,7 @@ export class Routing {
     }
 
     this.handleBrowserHistory(keepBrowserHistory, url);
-    // TODO: LuigiConfig.configChanged();
+    this.luigi.configChanged();
   }
 
   /**
