@@ -11,11 +11,11 @@ declare global {
 }
 
 export class Theming {
-  luigi: Luigi;
-  currentTheme: string = '';
+  #luigi: Luigi;
+  #currentTheme: string = '';
 
   constructor(luigi: Luigi) {
-    this.luigi = luigi;
+    this.#luigi = luigi;
   }
 
   /**
@@ -31,7 +31,7 @@ export class Theming {
    *  });
    */
   async getAvailableThemes() {
-    return await this.luigi.getConfigValueAsync('settings.theming.themes');
+    return await this.#luigi.getConfigValueAsync('settings.theming.themes');
   }
 
   /**
@@ -42,9 +42,9 @@ export class Theming {
    * Luigi.theming().setCurrentTheme('light')
    */
   setCurrentTheme(id: string) {
-    this.currentTheme = id;
+    this.#currentTheme = id;
     // clear cache
-    this.luigi.__cssVars = undefined;
+    this.#luigi.__cssVars = undefined;
   }
 
   /**
@@ -76,10 +76,10 @@ export class Theming {
     if (!this.isThemingAvailable()) {
       return false;
     }
-    if (this.currentTheme) {
-      return this.currentTheme;
+    if (this.#currentTheme) {
+      return this.#currentTheme;
     }
-    const theming = this.luigi.getConfigValue('settings.theming');
+    const theming = this.#luigi.getConfigValue('settings.theming');
     if (!theming.defaultTheme) {
       console.error(
         '[Theming] getCurrentTheme() error. No theme set and no defaultTheme found in configuration',
@@ -96,7 +96,7 @@ export class Theming {
    * Luigi.theming().isThemingAvailable()
    */
   isThemingAvailable() /* istanbul ignore next */ {
-    return !!this.luigi.getConfigValue('settings.theming');
+    return !!this.#luigi.getConfigValue('settings.theming');
   }
 
   /**
@@ -111,7 +111,7 @@ export class Theming {
    */
   async getCSSVariables() {
     if (!window.Luigi.__cssVars) {
-      const varFile = this.luigi.getConfigValue('settings.theming.variables.file');
+      const varFile = this.#luigi.getConfigValue('settings.theming.variables.file');
       if (varFile) {
         try {
           const resp = await fetch(varFile);
@@ -123,13 +123,13 @@ export class Theming {
             }
           });
         } catch (error) {
-          if (GenericHelpers.isFunction(this.luigi.getConfigValue('settings.theming.variables.errorHandling'))) {
-            this.luigi.getConfigValue('settings.theming.variables.errorHandling')(error);
+          if (GenericHelpers.isFunction(this.#luigi.getConfigValue('settings.theming.variables.errorHandling'))) {
+            this.#luigi.getConfigValue('settings.theming.variables.errorHandling')(error);
           } else {
             console.error('CSS variables file error: ', error);
           }
         }
-      } else if (this.luigi.getConfigValue('settings.theming.variables') === 'fiori' && window.__luigiThemeVars) {
+      } else if (this.#luigi.getConfigValue('settings.theming.variables') === 'fiori' && window.__luigiThemeVars) {
         window.Luigi.__cssVars = {};
         window.__luigiThemeVars.forEach((key) => {
           window.Luigi.__cssVars[key] = getComputedStyle(document.documentElement).getPropertyValue('--' + key);
@@ -154,7 +154,7 @@ export class Theming {
        * @memberof Theming
        * @private
        */
-      const theming = this.luigi.getConfigValue('settings.theming');
+      const theming = this.#luigi.getConfigValue('settings.theming');
       if (theming && theming.nodeViewURLDecorator && theming.nodeViewURLDecorator.queryStringParameter) {
         viewUrlDecoratorService.add({
           type: 'queryString',
