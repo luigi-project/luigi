@@ -60,9 +60,9 @@ export class Theming {
    *    // Logic
    *  }))
    */
-  async getThemeObject(id: string): Promise<any>{
-    const themes = await this.getAvailableThemes() as any[];
-    return themes?.find(t => t.id === id);
+  async getThemeObject(id: string): Promise<any> {
+    const themes = (await this.getAvailableThemes()) as any[];
+    return themes?.find((t) => t.id === id);
   }
 
   /**
