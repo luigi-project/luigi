@@ -1,8 +1,7 @@
-import { WebComponentService } from '../../src/services/web-components';
+import { LuigiElement } from '../../../client/public/luigi-element';
 import { LuigiConfig, LuigiI18N } from '../../src/core-api';
-
+import { WebComponentService } from '../../src/services/web-components';
 import { DefaultCompoundRenderer } from '../../src/utilities/helpers/web-component-helpers';
-import { LuigiElement } from '../../../client/src/luigi-element';
 
 const chai = require('chai');
 const sinon = require('sinon');
