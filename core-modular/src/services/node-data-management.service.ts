@@ -1,3 +1,5 @@
+import type { Node } from "./navigation.service";
+
 export class NodeDataManagementService {
   dataManagement: Map<any, any>;
   navPath!: string;
@@ -11,7 +13,7 @@ export class NodeDataManagementService {
    * @param {any} node
    * @param {any} value
    */
-  setChildren(node: any, value: any): void {
+  setChildren(node: Node, value: any): void {
     this.dataManagement.set(node, value);
     this.navPath = '';
   }
@@ -21,7 +23,7 @@ export class NodeDataManagementService {
    * @param {any} node
    * @returns {any} map entry
    */
-  getChildren(node: any): any {
+  getChildren(node: Node): any {
     return node ? this.dataManagement.get(node) : {};
   }
 
@@ -30,7 +32,7 @@ export class NodeDataManagementService {
    * @param {any} node
    * @returns {boolean} true or false
    */
-  hasChildren(node: any): boolean {
+  hasChildren(node: Node): boolean {
     const data = this.getChildren(node);
 
     return !!(data && Object.prototype.hasOwnProperty.call(data, 'children'));
@@ -40,7 +42,7 @@ export class NodeDataManagementService {
    * Stores root node as object with key '_luigiRootNode'
    * @param {any} node
    */
-  setRootNode(node: any): void {
+  setRootNode(node: Node): void {
     this.dataManagement.set('_luigiRootNode', { node });
   }
 
@@ -48,7 +50,7 @@ export class NodeDataManagementService {
    * Returns the root node
    * @returns {any} root node
    */
-  getRootNode(): any {
+  getRootNode(): Node {
     return this.dataManagement.get('_luigiRootNode');
   }
 
@@ -71,7 +73,7 @@ export class NodeDataManagementService {
    * Deletes node from cache and its children recursively
    * @param {any} node
    */
-  deleteNodesRecursively(node: any): void {
+  deleteNodesRecursively(node: Node): void {
     if (this.hasChildren(node)) {
       const children = this.getChildren(node).children;
 
