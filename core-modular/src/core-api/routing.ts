@@ -32,7 +32,7 @@ export class Routing {
     }
 
     this.handleBrowserHistory(keepBrowserHistory, url);
-    // TODO: LuigiConfig.configChanged();
+    this.luigi.configChanged();
   }
 
   /**
@@ -117,7 +117,7 @@ export class Routing {
     if (this.luigi.getConfigValue('routing.useHashRouting')) {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     } else {
-      //TODO LuigiConfig.configChanged(); or similar with pathrouting
+      this.luigi.configChanged();
     }
   }
 }
