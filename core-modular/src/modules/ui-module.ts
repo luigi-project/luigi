@@ -123,6 +123,7 @@ export const UIModule = {
 
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
+        viewGroupContainer.viewurl = currentNode.viewUrl;
         viewGroupContainer.updateViewUrl(
           serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl)
         );
