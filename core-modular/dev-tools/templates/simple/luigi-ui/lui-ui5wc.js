@@ -651,18 +651,38 @@ const connector = {
     dialog.open = true;
   },
 
-  openUserSettings: (settings) => {
+  openUserSettings: async (settings) => {
     if (!settings) {
       settings = {
         title: 'User Settings'
       };
     }
 
+    const storedUserSettings = {};
+    const previousUserSettings = await globalThis.Luigi.readUserSettings();
     const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
     const dialog = document.createElement('ui5-dialog');
     const lc = document.createElement('div');
     const bar = document.createElement('ui5-bar');
-    const btn = document.createElement('ui5-button');
+    const toolbar = document.createElement('ui5-toolbar');
+    const cancelBtn = document.createElement('ui5-toolbar-button');
+    const saveBtn = document.createElement('ui5-toolbar-button');
+    const containerWrapper = globalThis.Luigi.getEngine()._connector?.getContainerWrapper();
+    let userSettingsGroup;
+
+    if (containerWrapper) {
+      let viewGroupContainer;
+
+      [...containerWrapper.childNodes].forEach((element) => {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
+          viewGroupContainer = element;
+        }
+      });
+
+      if (viewGroupContainer) {
+        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+      }
+    }
 
     dialog.classList.add('lui-dialog');
     dialog.setAttribute('header-text', settings?.title);
@@ -672,18 +692,62 @@ const connector = {
     bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.title}</ui5-title>`;
     dialog.appendChild(bar);
 
-    btn.innerHTML = 'X';
-    btn.onclick = () => {
-      dialog.open = false;
+    toolbar.setAttribute('slot', 'footer');
+    dialog.appendChild(toolbar);
+
+    cancelBtn.onclick = () => {
+      connector.closeUserSettings();
     };
-    btn.setAttribute('slot', 'endContent');
-    bar.appendChild(btn);
+    cancelBtn.setAttribute('text', 'Cancel');
+    toolbar.appendChild(cancelBtn);
+
+    saveBtn.onclick = async () => {
+      const select = document.querySelector('#timeFormatSelector');
+
+      if (select) {
+        storedUserSettings.time = `${select.value} h`;
+
+        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings).then(() => {
+          connector.closeUserSettings();
+          globalThis.Luigi.ux().showAlert({
+            text: 'User settings are stored successfully!',
+            type: 'success'
+          });
+        });
+      } else {
+        connector.closeUserSettings();
+        globalThis.Luigi.ux().showAlert({
+          text: 'There are no user settings to store :(',
+          type: 'info'
+        });
+      }
+    };
+    saveBtn.setAttribute('design', 'Positive');
+    saveBtn.setAttribute('text', 'Save');
+    toolbar.appendChild(saveBtn);
 
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
+      const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
+      const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
+      const timeFormat =
+        previousUserSettings && previousUserSettings[userSettingsGroup]
+          ? previousUserSettings[userSettingsGroup].time
+          : userSettingsObj?.settings?.time?.options[0];
+
+      storedUserSettings.privacy = null;
+      storedUserSettings.time = timeFormat;
+
       lc.innerHTML = `
-        <ui5-title level="H3">${userSettingData[0].privacy.label}</ui5-title>
-        <p>${userSettingData[0].privacy.settings.policy.label}</p>
-        <p>${userSettingData[0].privacy.settings.time.label} - ${userSettingData[0].privacy.settings.time.options[0]}</p>
+        <ui5-title level="H3">${userSettingsObj?.label || 'No settings in config'}</ui5-title>
+        <p>${userSettingsObj?.settings?.policy?.label || ''}</p>
+        <p>${userSettingsObj?.settings?.time?.label || ''} - ${timeFormat || ''}</p>
+        <form>
+          <label for="timeFormatSelector">Switch time format:</label><br>
+          <select id="timeFormatSelector" name="timeFormatSelector">
+            <option value="12" ${timeFormat === '12 h' ? 'selected' : ''}>12 h</option>
+            <option value="24" ${timeFormat === '24 h' ? 'selected' : ''}>24 h</option>
+          </select>
+        </form>
       `;
     } else {
       lc.innerHTML = `

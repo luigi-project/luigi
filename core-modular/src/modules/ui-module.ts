@@ -1,11 +1,10 @@
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
-import { Luigi } from '../core-api/luigi';
-import { serviceRegistry } from '../services/service-registry';
+import type { Luigi } from '../core-api/luigi';
+import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
+import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   if (node.compound) {
@@ -15,6 +14,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
+    (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.searchParams = node.searchParams;
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
@@ -27,6 +27,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.context = node.context;
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
+    (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.searchParams = node.searchParams;
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
@@ -106,10 +107,6 @@ export const UIModule = {
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
 
-      if (currentNode?.loadingIndicator?.enabled) {
-        luigi.ux().showLoadingIndicator();
-      }
-
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
@@ -134,6 +131,7 @@ export const UIModule = {
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.updateContext(currentNode.context || {});
+        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
       } else {
         containerWrapper?.appendChild(await createContainer(currentNode, luigi));
       }
