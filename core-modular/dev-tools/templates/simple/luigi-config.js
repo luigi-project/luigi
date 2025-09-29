@@ -52,6 +52,7 @@ window.onload = () => {
               label: 'MFE1',
               icon: 'group',
               viewUrl: '/microfrontend.html#child1',
+              userSettingsGroup: 'mfeOne',
               viewGroup: 'vg1'
             },
             {
@@ -59,6 +60,7 @@ window.onload = () => {
               label: 'MFE2',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child2',
+              userSettingsGroup: 'mfeTwo',
               viewGroup: 'vg1'
             },
             {
@@ -261,15 +263,34 @@ window.onload = () => {
         dismissBtn: 'Cancel'
       },
       userSettingGroups: {
-        privacy: {
-          label: 'Privacy',
+        mfeOne: {
+          label: 'Privacy One',
           title: 'Privacy',
           icon: 'private',
           iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
           settings: {
             policy: {
               type: 'string',
-              label: 'Privacy policy has not been defined.',
+              label: 'Privacy One policy has not been defined.',
+              placeholder: '...'
+            },
+            time: {
+              type: 'enum',
+              style: 'button',
+              label: 'Time Format',
+              options: ['12 h', '24 h']
+            }
+          }
+        },
+        mfeTwo: {
+          label: 'Privacy Two',
+          title: 'Privacy',
+          icon: 'private',
+          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+          settings: {
+            policy: {
+              type: 'string',
+              label: 'Privacy Two policy has not been defined.',
               placeholder: '...'
             },
             time: {
