@@ -94,40 +94,16 @@ export class Luigi {
    * @example
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
-  async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>) {
-    const containerWrapper = this.getEngine()._connector?.getContainerWrapper();
-    let userSettingsGroup: any;
-
-    if (containerWrapper) {
-      let viewGroupContainer: any;
-
-      [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          viewGroupContainer = element;
-        }
-      });
-
-      if (viewGroupContainer) {
-        userSettingsGroup = viewGroupContainer.userSettingsGroup;
-      }
-    }
-
-    const userSettingsData: Record<string, any> = { ...previousUserSettingsObj };
+  async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>): Promise<any> {
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
       ? userSettingsConfig
       : await this.getConfigValueAsync('settings.userSettings');
-
-    if (userSettingsGroup) {
-      userSettingsData[userSettingsGroup] = userSettingsObj;
-    }
-
     if (userSettings && GenericHelpers.isFunction(userSettings.storeUserSettings)) {
-      return userSettings.storeUserSettings(userSettingsData, previousUserSettingsObj);
+      return userSettings.storeUserSettings(userSettingsObj, previousUserSettingsObj);
     } else {
-      localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsData));
+      localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
     }
-
     this.configChanged();
   }
 

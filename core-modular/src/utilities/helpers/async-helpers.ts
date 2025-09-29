@@ -2,10 +2,7 @@
 import { GenericHelpers } from './generic-helpers';
 
 export const AsyncHelpers = {
-  handles: {},
-  keyExistencyTimeout: 20000,
-  keyExistencyCheckInterval: 50,
-
+  
   wrapAsPromise: (value: any): Promise<any> => {
     return new Promise((resolve) => {
       resolve(value);
