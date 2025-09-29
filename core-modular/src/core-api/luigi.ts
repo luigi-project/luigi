@@ -2,16 +2,20 @@ import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { StorageHelpers } from '../utilities/helpers/storage-helpers';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { UX } from './ux';
+import { Theming } from './theming';
 
 export class Luigi {
   config: any;
   _store: any;
+  _theming?: Theming;
+  _routing?: Routing;
+  __cssVars?: any;
+  
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
-
+  
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
   }
@@ -116,9 +120,18 @@ export class Luigi {
   };
 
   routing = (): Routing => {
-    return new Routing(this);
+    if (!this._routing) {
+      this._routing = new Routing(this);
+    }
+    return this._routing as Routing;
   };
-  // ...
+
+  theming = (): Theming => {
+    if (!this._theming) {
+      this._theming = new Theming(this);
+    }
+    return this._theming as Theming;
+  };
 
   private createConfigStore(): any {
     const { subscribe, update } = writable({});
