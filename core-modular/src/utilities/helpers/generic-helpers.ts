@@ -113,26 +113,5 @@ export const GenericHelpers = {
     }
 
     return false;
-  },
-
-  /**
-   * Gets boolean or string value based on given URL.
-   * @param {string} url given URL to be parsed
-   * @returns {boolean | string} boolean or string value
-   */
-  getUrlWithoutHash: (url: string): boolean | string => {
-    if (!url) {
-      return false;
-    }
-
-    const urlWithoutHash = url.split('#')[0];
-
-    // We assume that any URL not starting with
-    // http is on the current page's domain
-    if (!urlWithoutHash.startsWith('http')) {
-      return window.location.origin + (urlWithoutHash.startsWith('/') ? '' : '/') + urlWithoutHash;
-    }
-
-    return urlWithoutHash;
   }
 };

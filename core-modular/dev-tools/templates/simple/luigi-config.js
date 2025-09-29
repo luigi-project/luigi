@@ -59,7 +59,7 @@ window.onload = () => {
               pathSegment: 'c2',
               label: 'MFE2',
               icon: 'calendar',
-              viewUrl: '/microfrontend2.html#child2',
+              viewUrl: '/microfrontend.html#child2',
               userSettingsGroup: 'mfeTwo',
               viewGroup: 'vg1'
             },

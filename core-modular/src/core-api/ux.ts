@@ -14,7 +14,7 @@ import type { Luigi } from './luigi';
 export class UX {
   luigi: Luigi;
   dirtyStatusService = serviceRegistry.get(DirtyStatusService);
-  private loadingIndicatorSelector = '[luigi-app-loading-indicator]';
+  private appLoadingIndicatorSelector = '[luigi-app-loading-indicator]';
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -87,7 +87,7 @@ export class UX {
   };
 
   hideAppLoadingIndicator = () => {
-    const appLoadingIndicator = document.querySelector(this.loadingIndicatorSelector);
+    const appLoadingIndicator = document.querySelector(this.appLoadingIndicatorSelector);
 
     if (!appLoadingIndicator) {
       return;

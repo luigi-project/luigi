@@ -10,9 +10,6 @@ export const CommunicationModule = {
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
-    containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
-      UXModule.handleInitializeEvent(event.detail);
-    });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal);
     });
