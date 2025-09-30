@@ -135,6 +135,12 @@ export const UIModule = {
       } else {
         containerWrapper?.appendChild(await createContainer(currentNode, luigi));
       }
+      
+      if(currentNode.loadingIndicator && currentNode.loadingIndicator.enabled === false){
+        luigi.getEngine()._connector?.hideLoadingIndicator();
+      }else{
+        luigi.getEngine()._connector?.showLoadingIndicator();
+      }
     }
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {

@@ -117,5 +117,14 @@ export const UXModule = {
       throw new Error('Luigi is not initialized.');
     }
     dirtyStatusService.updateDirtyStatus(isDirty, source);
+  },
+
+  handleInitializeEvent(){
+    if (!UXModule.luigi) {
+      throw new Error('Luigi is not initialized.');
+    }
+    setTimeout(() => {
+      UXModule.luigi?.ux().hideLoadingIndicator();
+    }, 1000);
   }
 };
