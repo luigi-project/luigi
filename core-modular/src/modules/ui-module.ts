@@ -119,6 +119,7 @@ export const UIModule = {
           if (element.viewGroup) {
             if (currentNode.viewGroup === element.viewGroup) {
               viewGroupContainer = element;
+              luigi.getEngine()._connector?.hideLoadingIndicator();
             } else {
               element.style.display = 'none';
             }
