@@ -7,6 +7,13 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
+  const connector = luigi.getEngine()._connector;
+  if (node.loadingIndicator?.enabled !== false) {
+    connector?.showLoadingIndicator()
+  }
+  else if(node.loadingIndicator && node.loadingIndicator.enabled === false){
+    connector?.hideLoadingIndicator();
+  }
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -134,12 +141,6 @@ export const UIModule = {
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
       } else {
         containerWrapper?.appendChild(await createContainer(currentNode, luigi));
-      }
-      
-      if(currentNode.loadingIndicator && currentNode.loadingIndicator.enabled === false){
-        luigi.getEngine()._connector?.hideLoadingIndicator();
-      }else{
-        luigi.getEngine()._connector?.showLoadingIndicator();
       }
     }
   },

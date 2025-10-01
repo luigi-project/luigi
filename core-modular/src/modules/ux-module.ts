@@ -125,6 +125,6 @@ export const UXModule = {
     }
     setTimeout(() => {
       UXModule.luigi?.ux().hideLoadingIndicator();
-    }, 1000);
+    }, 250);
   }
 };
