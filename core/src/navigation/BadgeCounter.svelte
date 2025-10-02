@@ -17,7 +17,7 @@
 
 <style lang="scss">
   :global(.fd-shellbar__button) {
-    &>.fd-shellbar__counter--notification {
+    & > .fd-shellbar__counter--notification {
       position: absolute;
       transform: translate(50%, -50%);
     }
