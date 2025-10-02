@@ -33,6 +33,7 @@ describe('Routing Service', () => {
       getConfigValue: () => null,
       getActiveFeatureToggles: () => [],
       getConfig: jest.fn(),
+      readUserSettings: () => Promise.resolve({}),
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn(() => ({
         _connector: mockConnector,
@@ -169,6 +170,7 @@ describe('Routing Service', () => {
     expect(mockConnector.renderTopNav).toHaveBeenCalled();
     expect(mockConnector.renderLeftNav).toHaveBeenCalled();
     expect(mockConnector.renderTabNav).toHaveBeenCalled();
+
     expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
   });
 
