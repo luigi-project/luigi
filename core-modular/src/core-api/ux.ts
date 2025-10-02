@@ -100,9 +100,9 @@ export class UX {
     }, 500);
   };
 
-  showLoadingIndicator = () => this.luigi.getEngine()._connector?.showLoadingIndicator();
+  showLoadingIndicator = (containerWrapper: HTMLElement) => this.luigi.getEngine()._connector?.showLoadingIndicator(containerWrapper);
 
-  hideLoadingIndicator = () => this.luigi.getEngine()._connector?.hideLoadingIndicator();
+  hideLoadingIndicator = (containerWrapper: HTMLElement) => this.luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
 

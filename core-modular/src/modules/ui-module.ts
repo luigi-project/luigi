@@ -103,6 +103,7 @@ export const UIModule = {
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+    luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -133,16 +134,29 @@ export const UIModule = {
         viewGroupContainer.updateContext(currentNode.context || {});
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
       } else {
-        containerWrapper?.appendChild(await createContainer(currentNode, luigi));
+        const container = await createContainer(currentNode, luigi);
+        containerWrapper?.appendChild(container);
+        const connector = luigi.getEngine()._connector;
+        if (currentNode.loadingIndicator?.enabled !== false) {
+          connector?.showLoadingIndicator(containerWrapper);
+        }
       }
     }
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   }
 };
