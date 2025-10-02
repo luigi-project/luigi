@@ -7,13 +7,6 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
-  const connector = luigi.getEngine()._connector;
-  if (node.loadingIndicator?.enabled !== false) {
-    connector?.showLoadingIndicator()
-  }
-  else if(node.loadingIndicator && node.loadingIndicator.enabled === false){
-    connector?.hideLoadingIndicator();
-  }
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -110,6 +103,7 @@ export const UIModule = {
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+    luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -119,7 +113,6 @@ export const UIModule = {
           if (element.viewGroup) {
             if (currentNode.viewGroup === element.viewGroup) {
               viewGroupContainer = element;
-              luigi.getEngine()._connector?.hideLoadingIndicator();
             } else {
               element.style.display = 'none';
             }
@@ -141,16 +134,29 @@ export const UIModule = {
         viewGroupContainer.updateContext(currentNode.context || {});
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
       } else {
-        containerWrapper?.appendChild(await createContainer(currentNode, luigi));
+        const container = await createContainer(currentNode, luigi);
+        containerWrapper?.appendChild(container);
+        const connector = luigi.getEngine()._connector;
+        if (currentNode.loadingIndicator?.enabled !== false) {
+          connector?.showLoadingIndicator(containerWrapper);
+        }
       }
     }
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   }
 };

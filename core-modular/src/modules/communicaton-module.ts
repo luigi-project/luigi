@@ -11,7 +11,7 @@ export const CommunicationModule = {
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
     containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
-      UXModule.handleInitializeEvent();
+      UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal);
@@ -26,10 +26,10 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(event.detail.title);
     });
     containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator();
+      CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator();
+      CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.addBackdrop();
