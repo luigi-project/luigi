@@ -20,7 +20,9 @@ describe('Routing Service', () => {
       renderLeftNav: jest.fn(),
       renderTabNav: jest.fn(),
       renderMainLayout: jest.fn(),
-      getContainerWrapper: jest.fn()
+      getContainerWrapper: jest.fn(),
+      hideLoadingIndicator: jest.fn(),
+      showLoadingIndicator: jest.fn()
     };
     mockLuigi = {
       config: {},
@@ -33,6 +35,7 @@ describe('Routing Service', () => {
       getConfigValue: () => null,
       getActiveFeatureToggles: () => [],
       getConfig: jest.fn(),
+      readUserSettings: () => Promise.resolve({}),
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn(() => ({
         _connector: mockConnector,
@@ -169,6 +172,7 @@ describe('Routing Service', () => {
     expect(mockConnector.renderTopNav).toHaveBeenCalled();
     expect(mockConnector.renderLeftNav).toHaveBeenCalled();
     expect(mockConnector.renderTabNav).toHaveBeenCalled();
+
     expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
   });
 
