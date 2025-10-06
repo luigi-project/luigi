@@ -7,6 +7,9 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
+  const userSettingGroups = await luigi.readUserSettings();
+  const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+  const userSettings =  hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -15,6 +18,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
+    lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
@@ -28,6 +32,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
+    lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
@@ -102,6 +107,9 @@ export const UIModule = {
     }
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
+    const userSettingGroups = await luigi.readUserSettings();
+    const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+    const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
@@ -124,15 +132,15 @@ export const UIModule = {
 
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = currentNode.viewUrl;
-        viewGroupContainer.updateViewUrl(
-          serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl)
-        );
+        viewGroupContainer.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
-        viewGroupContainer.updateContext(currentNode.context || {});
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
+        viewGroupContainer.userSettings = userSettings;
+
+        //IMPORTANT!!! This needs to be at the end
+        viewGroupContainer.updateContext(currentNode.context || {});
       } else {
         const container = await createContainer(currentNode, luigi);
         containerWrapper?.appendChild(container);
