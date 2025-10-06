@@ -1,8 +1,6 @@
 describe('Nested Compound Container Tests', () => {
   const testPage = 'http://localhost:8080/compound/nested.html';
   const containerSelector = '#nested-wc-compound-container';
-  let consoleInfo;
-  let stub;
 
   beforeEach(() => {
     cy.visit(testPage, {
@@ -12,45 +10,46 @@ describe('Nested Compound Container Tests', () => {
           win.console.clear();
         }
 
-        // Set up a spy on console.info
-        cy.stub(win.console, 'info', (value) => {
-          consoleInfo = value;
-        });
+        // Stub console.info and alias it for assertions later (no closure vars)
+        cy.stub(win.console, 'info').as('consoleInfo');
       }
     });
-    stub = cy.stub();
   });
 
   describe('Luigi Client API - showAlert', () => {
     it('should emit notifyAlertClosed in direct WC', () => {
-      let notifySpy;
+      // create a stub for window.alert and attach it as the handler BEFORE the action
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
 
-      cy.on('window:alert', stub);
+      // set the spy on the DOM element method BEFORE the action and alias it
       cy.get(containerSelector).then((container) => {
-        notifySpy = cy.spy(container[0], 'notifyAlertClosed');
+        cy.spy(container[0], 'notifyAlertClosed').as('notifySpy');
       });
 
-      cy.get(containerSelector)
-        .shadow()
-        .contains('showAlert')
-        .click()
-        .then(() => {
-          expect(stub.getCall(0)).to.be.calledWith('Direct WC - alert message');
+      // perform the action that should trigger alert and notifyAlertClosed
+      cy.get(containerSelector).shadow().contains('showAlert').click();
 
-          if (notifySpy) {
-            expect(notifySpy).to.be.calledWith(0);
-          }
-        });
+      // assert the alert was called with the correct message
+      cy.then(() => {
+        expect(alertStub).to.have.been.calledWith('Direct WC - alert message');
+      });
+
+      // assert notifyAlertClosed was called with 0
+      cy.get('@notifySpy').should('have.been.calledWith', 0);
     });
 
     it('should emit notifyAlertClosed in nested WC', () => {
-      let notifySpy;
+      // create and register alert stub BEFORE the action
+      const alertStub = cy.stub();
+      cy.on('window:alert', alertStub);
 
-      cy.on('window:alert', stub);
+      // spy the outer container's notifyAlertClosed BEFORE the action
       cy.get(containerSelector).then((container) => {
-        notifySpy = cy.spy(container[0], 'notifyAlertClosed');
+        cy.spy(container[0], 'notifyAlertClosed').as('notifySpy');
       });
 
+      // find the nested webcomponent and click its showAlert
       cy.get(containerSelector)
         .shadow()
         .find(
@@ -58,50 +57,55 @@ describe('Nested Compound Container Tests', () => {
         )
         .shadow()
         .contains('showAlert')
-        .click()
-        .then(() => {
-          expect(stub.getCall(0)).to.be.calledWith('Nested WC - alert message');
+        .click();
 
-          if (notifySpy) {
-            expect(notifySpy).to.be.calledWith(0);
-          }
-        });
+      // assertions
+      cy.then(() => {
+        expect(alertStub).to.have.been.calledWith('Nested WC - alert message');
+      });
+
+      cy.get('@notifySpy').should('have.been.calledWith', 0);
     });
   });
 
   describe('Luigi Client API - showConfirmationModal', () => {
     it('should emit notifyConfirmationModalClosed in direct WC', () => {
-      let notifySpy;
+      // register confirm handler BEFORE click; assert incoming text and return true to accept
+      const confirmStub = cy.stub().callsFake((str) => {
+        expect(str).to.equal('Are you sure you want to do this?');
+        return true;
+      });
+      cy.on('window:confirm', confirmStub);
 
-      cy.on('window:alert', stub);
+      // spy the method BEFORE the action
       cy.get(containerSelector).then((container) => {
-        notifySpy = cy.spy(container[0], 'notifyConfirmationModalClosed');
+        cy.spy(container[0], 'notifyConfirmationModalClosed').as('notifySpy');
       });
 
-      cy.get(containerSelector)
-        .shadow()
-        .contains('showConfirmationModal')
-        .click()
-        .then(() => {
-          cy.on('window:confirm', (str) => {
-            expect(str).to.equal('Are you sure you want to do this?');
-          });
-          expect(consoleInfo).to.equal('Direct WC - modal confirmed');
+      // click the button that opens the confirmation modal
+      cy.get(containerSelector).shadow().contains('showConfirmationModal').click();
 
-          if (notifySpy) {
-            expect(notifySpy).to.be.calledWith(true);
-          }
-        });
+      // console.info was aliased in beforeEach; assert it was called with expected text
+      cy.get('@consoleInfo').should('have.been.calledWith', 'Direct WC - modal confirmed');
+
+      // ensure the spy was called with true
+      cy.get('@notifySpy').should('have.been.calledWith', true);
     });
 
     it('should emit notifyConfirmationModalClosed in nested WC', () => {
-      let notifySpy;
+      // register confirm handler BEFORE click for nested modal
+      const confirmStub = cy.stub().callsFake((str) => {
+        expect(str).to.equal('Are you sure you want to do this?');
+        return true;
+      });
+      cy.on('window:confirm', confirmStub);
 
-      cy.on('window:alert', stub);
+      // spy the outer container's notifyConfirmationModalClosed BEFORE the action
       cy.get(containerSelector).then((container) => {
-        notifySpy = cy.spy(container[0], 'notifyConfirmationModalClosed');
+        cy.spy(container[0], 'notifyConfirmationModalClosed').as('notifySpy');
       });
 
+      // find nested wc and click
       cy.get(containerSelector)
         .shadow()
         .find(
@@ -109,17 +113,13 @@ describe('Nested Compound Container Tests', () => {
         )
         .shadow()
         .contains('showConfirmationModal')
-        .click()
-        .then(() => {
-          cy.on('window:confirm', (str) => {
-            expect(str).to.equal('Are you sure you want to do this?');
-          });
-          expect(consoleInfo).to.equal('Nested WC - modal confirmed');
+        .click();
 
-          if (notifySpy) {
-            expect(notifySpy).to.be.calledWith(true);
-          }
-        });
+      // assert console info called with nested message
+      cy.get('@consoleInfo').should('have.been.calledWith', 'Nested WC - modal confirmed');
+
+      // ensure the spy was called with true
+      cy.get('@notifySpy').should('have.been.calledWith', true);
     });
   });
 });
