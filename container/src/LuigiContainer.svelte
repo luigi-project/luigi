@@ -151,9 +151,16 @@
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
           const internalObj = {...internal || {}, ...{
-            activeFeatureToggleList: thisComponent.activeFeatureToggleList,
+            activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
             currentLocale: thisComponent.locale,
-            currentTheme: thisComponent.theme
+            currentTheme: thisComponent.theme,
+            userSettings: thisComponent.userSettings || null,
+            cssVariables: thisComponent.cssVariables || {},
+            anchor: thisComponent.anchor || "",
+            drawer: thisComponent.drawer || false,
+            modal: thisComponent.modal || false,
+            viewStackSize: thisComponent.viewStackSize || 0,
+            isNavigateBack: thisComponent.isNavigateBack || false
           }};
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }

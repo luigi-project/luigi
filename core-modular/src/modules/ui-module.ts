@@ -3,24 +3,38 @@ import type { Luigi } from '../core-api/luigi';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 
-const createContainer = (node: any, luigi: Luigi): HTMLElement => {
+const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
+  const userSettingGroups = await luigi.readUserSettings();
+  const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+  const userSettings =  hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
-    lcc.viewurl = node.viewUrl;
+    lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.nodeParams = node.nodeParams;
+    (lcc as any).userSettingsGroup = node.userSettingsGroup;
+    lcc.userSettings = userSettings;
+    lcc.searchParams = node.searchParams;
+    lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
-    lc.viewurl = node.viewUrl;
+    lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
+    (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
+    (lc as any).userSettingsGroup = node.userSettingsGroup;
+    lc.userSettings = userSettings;
+    lc.searchParams = node.searchParams;
+    lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
@@ -92,10 +106,16 @@ export const UIModule = {
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
-  updateMainContent: (currentNode: any, luigi: Luigi) => {
+  updateMainContent: async (currentNode: any, luigi: Luigi) => {
+    const userSettingGroups = await luigi.readUserSettings();
+    const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+    const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+    luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
@@ -109,22 +129,42 @@ export const UIModule = {
           }
         }
       });
+
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.updateViewUrl(currentNode.viewUrl);
+        viewGroupContainer.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+        viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
+        viewGroupContainer.userSettings = userSettings;
+
+        //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {
-        containerWrapper?.appendChild(createContainer(currentNode, luigi));
+        const container = await createContainer(currentNode, luigi);
+        containerWrapper?.appendChild(container);
+        const connector = luigi.getEngine()._connector;
+        if (currentNode.loadingIndicator?.enabled !== false) {
+          connector?.showLoadingIndicator(containerWrapper);
+        }
       }
     }
   },
-  openModal: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    const lc = createContainer(node, luigi);
+  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   },
-  openDrawer: (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
-    const lc = createContainer(node, luigi);
+  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   }
 };
