@@ -20,7 +20,9 @@ describe('Routing Service', () => {
       renderLeftNav: jest.fn(),
       renderTabNav: jest.fn(),
       renderMainLayout: jest.fn(),
-      getContainerWrapper: jest.fn()
+      getContainerWrapper: jest.fn(),
+      hideLoadingIndicator: jest.fn(),
+      showLoadingIndicator: jest.fn()
     };
     mockLuigi = {
       config: {},

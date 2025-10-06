@@ -111,6 +111,7 @@ export const UIModule = {
     const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
     const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+    luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -141,16 +142,29 @@ export const UIModule = {
         //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});
       } else {
-        containerWrapper?.appendChild(await createContainer(currentNode, luigi));
+        const container = await createContainer(currentNode, luigi);
+        containerWrapper?.appendChild(container);
+        const connector = luigi.getEngine()._connector;
+        if (currentNode.loadingIndicator?.enabled !== false) {
+          connector?.showLoadingIndicator(containerWrapper);
+        }
       }
     }
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    const connector = luigi.getEngine()._connector;
+    if (node.loadingIndicator?.enabled !== false) {
+      connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
+    }
   }
 };
