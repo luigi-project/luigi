@@ -1,3 +1,4 @@
+import type { LuigiContainer, LuigiCompoundContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { defaultLuigiTranslationTable } from '../utilities/defaultLuigiTranslationTable';
 import { EscapingHelpers } from './../utilities/helpers/escaping-helpers';
@@ -22,6 +23,9 @@ export class i18nService {
 
   _init() {
     this._initCustomImplementation();
+    this.addCurrentLocaleChangeListener((locale: string) => {
+      this.broadcastLocaleToAllContainers(locale);
+    });
   }
 
   /**
@@ -36,8 +40,12 @@ export class i18nService {
    * Sets current locale to the specified one.
    * @param {string} locale locale to be set as the current locale
    */
-  setCurrentLocale(locale: string): void {
+  setCurrentLocale(locale: string, containerElement?: LuigiContainer | LuigiCompoundContainer): void {
     if (locale) {
+      if (containerElement) {
+        containerElement.locale = locale;
+      }
+
       sessionStorage.setItem(this.currentLocaleStorageKey, locale);
       this._notifyLocaleChange(locale);
     }
@@ -122,6 +130,22 @@ export class i18nService {
 
     if (GenericHelpers.isFunction(this.translationImpl)) {
       this.translationImpl = this.translationImpl();
+    }
+  }
+
+  /**
+   * @private
+   * Sets locale to all Luigi containers
+   */
+  private broadcastLocaleToAllContainers(locale: string): void {
+    const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+
+    if (containerWrapper && locale) {
+      [...containerWrapper.childNodes].forEach((element: any) => {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
+          element.locale = locale;
+        }
+      });
     }
   }
 
