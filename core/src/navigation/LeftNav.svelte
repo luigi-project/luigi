@@ -1363,15 +1363,16 @@
         {/if}
         <!-- Vega footer -->
         {#if showFooterInCollapsedMode && footerText}
-        <div class="fd-side-nav__utility">
+          <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
-              <span class="lui-side-nav__footer--text-visible fd-has-type-minus-1" data-testid="lui-side-nav__footer--text-visible"
-                >{footerText ? footerText : ''}</span
+              <span
+                class="lui-side-nav__footer--text-visible fd-has-type-minus-1"
+                data-testid="lui-side-nav__footer--text-visible">{footerText ? footerText : ''}</span
               >
             </span>
           </div>
         {:else if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
-        <!-- {#if ((footerText || semiCollapsibleButton) && !isSemiCollapsed) || (showFooterInCollapsedMode && isSemiCollapsed)} -->
+          <!-- {#if ((footerText || semiCollapsibleButton) && !isSemiCollapsed) || (showFooterInCollapsedMode && isSemiCollapsed)} -->
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
               <!-- {#if showFooterInCollapsedMode && isSemiCollapsed}
