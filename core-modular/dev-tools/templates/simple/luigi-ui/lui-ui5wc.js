@@ -559,7 +559,10 @@ const connector = {
         item.category.nodes?.forEach((subItem) => {
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
-          subTab.setAttribute('text', globalThis.Luigi.i18n().getTranslation(subItem.node?.label || subItem.node?.pathSegment || ''));
+          subTab.setAttribute(
+            'text',
+            globalThis.Luigi.i18n().getTranslation(subItem.node?.label || subItem.node?.pathSegment || '')
+          );
           subItem.selected ? subItem.selected && subTab.setAttribute('selected', '') : '';
           subTab.setAttribute('luigi-route', tabNavData.basePath + '/' + subItem.node?.pathSegment);
           tab.appendChild(subTab);
@@ -636,13 +639,15 @@ const connector = {
     const ui5Toolbar = document.createElement('ui5-toolbar');
     ui5Toolbar.setAttribute('slot', 'footer');
     const ui5ToolBarBtnConfirm = document.createElement('ui5-toolbar-button');
-    settings.buttonConfirm && ui5ToolBarBtnConfirm.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonConfirm));
+    settings.buttonConfirm &&
+      ui5ToolBarBtnConfirm.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonConfirm));
     ui5ToolBarBtnConfirm.addEventListener('click', () => {
       handler.confirm();
       document.body.removeChild(dialog);
     });
     const ui5ToolBarBtnDismiss = document.createElement('ui5-toolbar-button');
-    settings.buttonDismiss && ui5ToolBarBtnDismiss.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonDismiss));
+    settings.buttonDismiss &&
+      ui5ToolBarBtnDismiss.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonDismiss));
     ui5ToolBarBtnDismiss.addEventListener('click', () => {
       handler.dismiss();
       document.body.removeChild(dialog);
