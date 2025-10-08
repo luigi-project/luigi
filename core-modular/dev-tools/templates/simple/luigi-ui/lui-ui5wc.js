@@ -41,7 +41,7 @@ function addShellbarItem(shellbar, item) {
       });
     }
     itemEl.setAttribute('icon', item.node.icon);
-    itemEl.setAttribute('text', item.node.label);
+    itemEl.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.node.label));
     itemEl.setAttribute('luigi-route', item.node.pathSegment);
     itemEl.addEventListener('click', () => {
       globalThis.Luigi.navigation().navigate(itemEl.getAttribute('luigi-route'));
@@ -51,7 +51,7 @@ function addShellbarItem(shellbar, item) {
   if (item.category) {
     const itemEl = document.createElement('ui5-shellbar-item');
     itemEl.setAttribute('icon', item.category.icon);
-    itemEl.setAttribute('text', item.category.label);
+    itemEl.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.category.label));
     itemEl.setAttribute('category-uid', item.category.id);
     shellbar.appendChild(itemEl);
     renderCategoryPopover(item.category);
@@ -103,8 +103,8 @@ function renderAppSwitcherItems(shellbar, appSwitcherData, lastSelectedItem = nu
       if (item.link === lastSelectedItem) return;
       const ui5Li = document.createElement('ui5-li');
       ui5Li.setAttribute('slot', 'menuItems');
-      ui5Li.setAttribute('text', item.title);
-      ui5Li.innerText = item.title;
+      ui5Li.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.title));
+      ui5Li.innerText = globalThis.Luigi.i18n().getTranslation(item.title);
       ui5Li.setAttribute('description', item.subTitle);
       ui5Li.setAttribute('luigi-route', item.link);
       index === 0 && ui5Li.setAttribute('testtest', '');
@@ -161,8 +161,8 @@ function renderCategoryPopover(catObj) {
     const catLi = document.createElement('ui5-li');
     catLi.setAttribute('icon', item.node.icon);
     catLi.setAttribute('luigi-route', item.node.pathSegment);
-    catLi.setAttribute('text', item.node.label);
-    catLi.innerText = item.node.label;
+    catLi.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.node.label));
+    catLi.innerText = globalThis.Luigi.i18n().getTranslation(item.node.label);
     catLi.addEventListener('click', () => {
       globalThis.Luigi.navigation().navigate(catLi.getAttribute('luigi-route'));
     });
@@ -196,8 +196,8 @@ function renderProfilePopover(profileObj) {
   profileObj.items?.forEach((item) => {
     const profileLi = document.createElement('ui5-li');
 
-    profileLi.setAttribute('text', item.label);
-    profileLi.innerText = item.label;
+    profileLi.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.label));
+    profileLi.innerText = globalThis.Luigi.i18n().getTranslation(item.label);
 
     profileLi.addEventListener('click', () => {
       window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
@@ -209,13 +209,13 @@ function renderProfilePopover(profileObj) {
   if (userSettingData) {
     const profileLi = document.createElement('ui5-li');
 
-    profileLi.setAttribute('text', 'User Settings');
-    profileLi.innerText = 'User Settings';
+    profileLi.setAttribute('text', globalThis.Luigi.i18n().getTranslation('User Settings'));
+    profileLi.innerText = globalThis.Luigi.i18n().getTranslation('User Settings');
 
     profileLi.addEventListener('click', () => {
       connector.openUserSettings({
         size: 'm',
-        title: 'User Settings'
+        title: globalThis.Luigi.i18n().getTranslation('User Settings')
       });
     });
 
@@ -261,7 +261,7 @@ function renderNodeOrCategory(item, leftNavData) {
   let html = '';
   if (item.node) {
     html += `<ui5-side-navigation-item
-                            text="${item.node.label}"
+                            text="${globalThis.Luigi.i18n().getTranslation(item.node.label)}"
                             icon="${item.node.icon}"
                             luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
                             ${item.selected ? 'selected' : ''}
@@ -269,14 +269,14 @@ function renderNodeOrCategory(item, leftNavData) {
   } else if (item.category) {
     if (item.category?.nodes?.length > 0) {
       html += `<ui5-side-navigation-item
-                                text="${item.category.label}"
+                                text="${globalThis.Luigi.i18n().getTranslation(item.category.label)}"
                                 icon="${item.category.icon}"
                                 category-uid="${leftNavData.basePath + ':' + item.category.id}"
                                 ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
 
       item.category.nodes.forEach((item) => {
         html += `<ui5-side-navigation-sub-item
-                                text="${item.node.label}"
+                                text="${globalThis.Luigi.i18n().getTranslation(item.node.label)}"
                                 icon="${item.node.icon}"
                                 luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
                                 ${item.selected ? 'selected' : ''}
@@ -439,8 +439,12 @@ const connector = {
           if (item.node || (item.category && !item.category.isGroup)) {
             html += renderNodeOrCategory(item, leftNavData);
           } else if (item.category && item.category.isGroup) {
-            html += `<ui5-side-navigation-group text="${item.category.label}" category-uid="${leftNavData.basePath + ':' + item.category.id}"
-            ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+            html += `
+              <ui5-side-navigation-group
+                text="${globalThis.Luigi.i18n().getTranslation(item.category.label)}"
+                category-uid="${leftNavData.basePath + ':' + item.category.id}"
+                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>
+            `;
             item.category.nodes.forEach((subitem) => {
               html += renderNodeOrCategory(subitem, leftNavData);
             });
@@ -547,15 +551,15 @@ const connector = {
     tabNavData.items.forEach((item) => {
       const tab = document.createElement('ui5-tab');
       if (item.node) {
-        tab.setAttribute('text', `${item.node.label}`);
+        tab.setAttribute('text', `${globalThis.Luigi.i18n().getTranslation(item.node.label)}`);
         tab.setAttribute('luigi-route', tabNavData.basePath + '/' + item.node.pathSegment);
         item.selected ? item.selected && tab.setAttribute('selected', '') : '';
       } else if (item.category) {
-        tab.setAttribute('text', item.category.label || item.category.id);
+        tab.setAttribute('text', globalThis.Luigi.i18n().getTranslation(item.category.label || item.category.id));
         item.category.nodes?.forEach((subItem) => {
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
-          subTab.setAttribute('text', subItem.node?.label || subItem.node?.pathSegment || '');
+          subTab.setAttribute('text', globalThis.Luigi.i18n().getTranslation(subItem.node?.label || subItem.node?.pathSegment || ''));
           subItem.selected ? subItem.selected && subTab.setAttribute('selected', '') : '';
           subTab.setAttribute('luigi-route', tabNavData.basePath + '/' + subItem.node?.pathSegment);
           tab.appendChild(subTab);
@@ -608,17 +612,18 @@ const connector = {
       error: 'Critical',
       success: 'Positive'
     };
-    'None' | 'Positive' | 'Critical' | 'Negative' | 'Information';
 
-    if (!settings || settings == {})
+    if (!settings || settings == {}) {
       settings = {
         icon: 'question-mark',
-        header: 'Confirmation',
-        body: 'Are you sure you want to do this?',
-        buttonDismiss: 'No',
-        buttonConfirm: 'Yes',
+        header: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.header'),
+        body: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.body'),
+        buttonDismiss: globalThis.Luigi.i18n().getTranslation('luigi.button.dismiss'),
+        buttonConfirm: globalThis.Luigi.i18n().getTranslation('luigi.button.confirm'),
         type: 'confirmation'
       };
+    }
+
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-confirmation-modal');
     dialog.setAttribute('header-text', settings?.header);
@@ -631,13 +636,13 @@ const connector = {
     const ui5Toolbar = document.createElement('ui5-toolbar');
     ui5Toolbar.setAttribute('slot', 'footer');
     const ui5ToolBarBtnConfirm = document.createElement('ui5-toolbar-button');
-    settings.buttonConfirm && ui5ToolBarBtnConfirm.setAttribute('text', settings.buttonConfirm);
+    settings.buttonConfirm && ui5ToolBarBtnConfirm.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonConfirm));
     ui5ToolBarBtnConfirm.addEventListener('click', () => {
       handler.confirm();
       document.body.removeChild(dialog);
     });
     const ui5ToolBarBtnDismiss = document.createElement('ui5-toolbar-button');
-    settings.buttonDismiss && ui5ToolBarBtnDismiss.setAttribute('text', settings.buttonDismiss);
+    settings.buttonDismiss && ui5ToolBarBtnDismiss.setAttribute('text', globalThis.Luigi.i18n().getTranslation(settings.buttonDismiss));
     ui5ToolBarBtnDismiss.addEventListener('click', () => {
       handler.dismiss();
       document.body.removeChild(dialog);
@@ -652,7 +657,7 @@ const connector = {
   openUserSettings: async (settings) => {
     if (!settings) {
       settings = {
-        title: 'User Settings'
+        title: globalThis.Luigi.i18n().getTranslation('luigi.userSettings')
       };
     }
 
@@ -696,7 +701,7 @@ const connector = {
     cancelBtn.onclick = () => {
       connector.closeUserSettings();
     };
-    cancelBtn.setAttribute('text', 'Cancel');
+    cancelBtn.setAttribute('text', globalThis.Luigi.i18n().getTranslation('Cancel'));
     toolbar.appendChild(cancelBtn);
 
     saveBtn.onclick = async () => {
@@ -721,7 +726,7 @@ const connector = {
       }
     };
     saveBtn.setAttribute('design', 'Positive');
-    saveBtn.setAttribute('text', 'Save');
+    saveBtn.setAttribute('text', globalThis.Luigi.i18n().getTranslation('Save'));
     toolbar.appendChild(saveBtn);
 
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
@@ -838,7 +843,7 @@ window.addEventListener(
     if (event?.data?.data?.usersettings?.dialog) {
       connector.openUserSettings({
         size: 'm',
-        title: 'User Settings'
+        title: globalThis.Luigi.i18n().getTranslation('User Settings')
       });
     }
 
