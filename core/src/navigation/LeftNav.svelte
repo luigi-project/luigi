@@ -139,6 +139,7 @@
   export let semiCollapsible;
   export let semiCollapsibleButton;
   export let semiCollapsibleButtonStyle;
+  export let showFooterInCollapsedMode;
   export let pathData;
   export let pathParams;
   export let virtualGroupPrefix = NavigationHelpers.virtualGroupPrefix;
@@ -175,6 +176,7 @@
   };
 
   const setLeftNavData = async () => {
+    console.log('setLeftNavData');
     if (window.Luigi.__btpNavTopCntRszObs) {
       window.Luigi.__btpNavTopCntRszObs.disconnect();
       delete window.Luigi.__btpNavTopCntRszObs;
@@ -199,6 +201,7 @@
     hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
+    showFooterInCollapsedMode = LuigiConfig.getConfigBooleanValue('settings.showFooterInCollapsedMode');
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
@@ -859,6 +862,7 @@
                     data-testid={getTestIdForCat(nodes.metaInfo, key)}
                   >
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-interactive-supports-focus -->
                     <div
                       class="fd-navigation__item {isSemiCollapsed ? 'fd-popover__control' : ''}"
                       role="treeitem"
@@ -1357,12 +1361,28 @@
             </ul>
           </div>
         {/if}
-        {#if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
+        <!-- Vega footer -->
+        {#if showFooterInCollapsedMode && footerText}
+        <div class="fd-side-nav__utility">
+            <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
+              <span class="lui-side-nav__footer--text-visible fd-has-type-minus-1" data-testid="lui-side-nav__footer--text-visible"
+                >{footerText ? footerText : ''}</span
+              >
+            </span>
+          </div>
+        {:else if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
+        <!-- {#if ((footerText || semiCollapsibleButton) && !isSemiCollapsed) || (showFooterInCollapsedMode && isSemiCollapsed)} -->
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
+              <!-- {#if showFooterInCollapsedMode && isSemiCollapsed}
+              <span class="lui-side-nav__footer--text-visible fd-has-type-minus-1" data-testid="lui-side-nav__footer--text-visible"
+                >{footerText ? footerText : ''}</span
+              >
+              {:else} -->
               <span class="lui-side-nav__footer--text fd-has-type-minus-1" data-testid="lui-side-nav__footer--text"
                 >{footerText ? footerText : ''}</span
               >
+              <!-- {/if} -->
               {#if semiCollapsibleButton}
                 {#if semiCollapsibleButtonStyle == 'button'}
                   <button
@@ -1987,7 +2007,8 @@
     align-items: center;
     border-top: var(--sapList_BorderWidth, 0.0625rem) solid var(--sapList_BorderColor, #e4e4e4);
 
-    &--text {
+    &--text,
+    &--text-visible {
       color: #32363a;
       color: var(--sapTextColor, #32363a);
       white-space: nowrap;
@@ -2024,7 +2045,8 @@
     }
 
     .lui-side-nav__footer {
-      &--text {
+      &--text,
+      &--text-visible {
         max-width: calc(100% - 50px);
       }
     }
