@@ -139,7 +139,7 @@
   export let semiCollapsible;
   export let semiCollapsibleButton;
   export let semiCollapsibleButtonStyle;
-  export let showFooterInCollapsedMode;
+  export let displayFooterWhenCollapsed;
   export let pathData;
   export let pathParams;
   export let virtualGroupPrefix = NavigationHelpers.virtualGroupPrefix;
@@ -201,7 +201,7 @@
     hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
-    showFooterInCollapsedMode = LuigiConfig.getConfigBooleanValue('settings.showFooterInCollapsedMode');
+    displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.displayFooterWhenCollapsed');
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
@@ -1362,7 +1362,7 @@
           </div>
         {/if}
         <!-- Vega footer -->
-        {#if showFooterInCollapsedMode && footerText}
+        {#if displayFooterWhenCollapsed && footerText}
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
               <span
@@ -1372,18 +1372,11 @@
             </span>
           </div>
         {:else if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
-          <!-- {#if ((footerText || semiCollapsibleButton) && !isSemiCollapsed) || (showFooterInCollapsedMode && isSemiCollapsed)} -->
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
-              <!-- {#if showFooterInCollapsedMode && isSemiCollapsed}
-              <span class="lui-side-nav__footer--text-visible fd-has-type-minus-1" data-testid="lui-side-nav__footer--text-visible"
-                >{footerText ? footerText : ''}</span
-              >
-              {:else} -->
               <span class="lui-side-nav__footer--text fd-has-type-minus-1" data-testid="lui-side-nav__footer--text"
                 >{footerText ? footerText : ''}</span
               >
-              <!-- {/if} -->
               {#if semiCollapsibleButton}
                 {#if semiCollapsibleButtonStyle == 'button'}
                   <button
@@ -2046,8 +2039,7 @@
     }
 
     .lui-side-nav__footer {
-      &--text,
-      &--text-visible {
+      &--text {
         max-width: calc(100% - 50px);
       }
     }

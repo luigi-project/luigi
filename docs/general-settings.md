@@ -139,6 +139,11 @@ Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 <!-- add-attribute:class:warning -->
 > **NOTE:** You can translate Luigi internal messages by providing translation for [these keys](../core/src/utilities/defaultLuigiTranslationTable.js).
 
+
+### displayFooterWhenCollapsed
+- **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
+* **since** NEXT_RELEASE
+
 ### expandCategoryByNavigation
 - **type**: boolean
 - **description** if you have a [category](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=category) set to `collapsible`, you can set this parameter to `true` in order to expand the category when navigating to one of its children.
