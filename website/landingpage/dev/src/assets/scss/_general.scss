@@ -3,7 +3,7 @@ body {
 
   &.has-dark-bg {
     background: $secondary-color;
-    color: white;
+    color: #dfdfd6;;
   }
 
   @include breakpoint(large) {
@@ -65,6 +65,11 @@ ul {
 
   @include breakpoint(xxlarge) {
     font-size: 52px;
+  }
+
+  &.green {
+    color: #2deb8a;
+    font-size: 70px;
   }
 }
 
@@ -200,7 +205,7 @@ p {
     padding: 50px 0;
   
     @include breakpoint(large) {
-      padding: 100px 0;
+      padding: 50px 0;
 
       &.has-big-padding {
         padding: 150px 0;
