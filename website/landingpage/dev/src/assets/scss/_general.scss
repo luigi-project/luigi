@@ -201,6 +201,110 @@ p {
 }
 
 .main-content {
+  >  .s-stage {
+    padding-top: 30px;
+    padding-bottom: 50px;
+    color: $white;
+
+    > .row {
+      align-items: center;
+    }
+
+    .content {
+      @include breakpoint(medium down) {
+        margin-bottom: 50px;
+      }
+
+      @include breakpoint(large) {
+        height: 350px;
+        padding-top: 30px;
+
+        a {
+          margin-right: 10px;
+        }
+      }
+
+      @include breakpoint(xxlarge) {
+        height: 650px;
+        padding-top: 110px;
+      }
+    }
+
+    .sub-title {
+      font-family: $extra-font-family;
+      font-weight: 500;
+
+      @include breakpoint(xxlarge) {
+        font-size: 20px;
+      }
+    }
+
+    .image {
+      background-image: url('../img/running_app_2x.png');
+      background-position: 50% 0;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      .play-button {
+        display: block;
+        width: 88px;
+        height: 88px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background: rgba($powder-blue,0.51) url('../img/play_icon.svg') 60% 50% no-repeat;
+        background-size: 22px 28px;
+        border-radius: 50%;
+        border: 8px solid rgba($ice-blue,0.46);
+        background-clip: padding-box;
+      }
+
+      @include breakpoint(medium down) {
+        padding-top: 52%;
+        position: relative;
+      }
+
+      @include breakpoint(large) {
+        background: none;
+      }
+    }
+
+    @include breakpoint(large) {
+      position: relative;
+      overflow: hidden;
+
+      padding-top: 55px;
+      padding-bottom: 60px;
+
+      > .row {
+        position: relative;
+
+        &:before {
+          position: absolute;
+          display: block;
+          height: 100%;
+          width: 100%;
+          top: 0;
+          left: 45%;
+          content: '';
+          background-image: url('../img/running_app_2x.png');
+          background-position: 0 0;
+          background-repeat: no-repeat;
+          background-size: auto 100%;
+        }
+      }
+    }
+
+    @include breakpoint(xxlarge) {
+      > .row {
+        &:before {
+          left: 36%;
+        }
+      }
+    }
+  }
+
   > section {
     padding: 50px 0;
   
