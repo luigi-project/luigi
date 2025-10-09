@@ -1,10 +1,12 @@
 import type { Luigi } from '../../core-api/luigi';
-import type { Node } from '../../services/navigation.service';
+import type { Node, PathData } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
   defaultContentViewParamPrefix: '~',
+  defaultQueryParamSeparator: '?',
+  defaultModalViewParamName: 'modal',
 
   /**
    * Adds or updates query parameters to a hash-based routing string.
@@ -156,5 +158,199 @@ export const RoutingHelpers = {
     } else {
       return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
     }
+  },
+
+  /**
+   * Retrieves the modal path from the current URL's query parameters based on the provided Luigi instance.
+   *
+   * @param luigi - The Luigi instance used to determine the query parameter name and value.
+   * @returns The modal path as a string if present in the query parameters; otherwise, `undefined`.
+   */
+  getModalPathFromPath(luigi: Luigi): string | undefined {
+    const path = this.getQueryParam(this.getModalViewParamName(luigi), luigi);
+    return path;
+  },
+
+  /**
+   * Retrieves the value of a specific query parameter from the current URL.
+   *
+   * @param paramName - The name of the query parameter to retrieve.
+   * @param luigi - The Luigi instance used to access routing information.
+   * @returns The value of the specified query parameter if present; otherwise, `undefined`.
+   */
+  getQueryParam(paramName: string, luigi: Luigi): string | undefined {
+    return this.getQueryParams(luigi)[paramName];
+  },
+
+  /**
+   * Retrieves the current query parameters from the URL as a key-value record.
+   *
+   * Depending on the Luigi configuration, this method will extract query parameters
+   * either from the URL hash (if hash routing is enabled) or from the standard search
+   * portion of the URL.
+   *
+   * @param luigi - The Luigi instance used to access configuration values.
+   * @returns A record containing query parameter names and their corresponding values.
+   */
+  getQueryParams(luigi: Luigi): Record<string, string> {
+    const hashRoutingActive = luigi.getConfigValue('routing.useHashRouting');
+    return hashRoutingActive ? this.getLocationHashQueryParams() : this.getLocationSearchQueryParams();
+  },
+
+  /**
+   * Retrieves the query parameters from the current location's search string as a key-value map.
+   *
+   * @returns {Record<string, string>} An object containing the query parameters as key-value pairs.
+   * If there are no query parameters, returns an empty object.
+   */
+  getLocationSearchQueryParams(): Record<string, string> {
+    return RoutingHelpers.getLocation().search
+      ? RoutingHelpers.parseParams(RoutingHelpers.getLocation().search.slice(1))
+      : {};
+  },
+
+  /**
+   * Returns the current browser location object.
+   *
+   * @returns {Location} The current location object representing the URL of the document.
+   */
+  getLocation(): Location {
+    return location;
+  },
+
+  /**
+   * Extracts and parses query parameters from the current location's hash fragment.
+   *
+   * @returns {Record<string, string>} An object containing key-value pairs of query parameters
+   * extracted from the hash, or an empty object if no query parameters are present.
+   */
+  getLocationHashQueryParams(): Record<string, string> {
+    const queryParamIndex = RoutingHelpers.getLocation().hash.indexOf(this.defaultQueryParamSeparator);
+    return queryParamIndex !== -1
+      ? RoutingHelpers.parseParams(RoutingHelpers.getLocation().hash.slice(queryParamIndex + 1))
+      : {};
+  },
+
+  /**
+   * Retrieves the name of the URL parameter used for modal views in routing.
+   *
+   * This method attempts to obtain the parameter name from the Luigi configuration
+   * using the key `'routing.modalPathParam'`. If the configuration value is not set,
+   * it falls back to a default parameter name defined by `this.defaultModalViewParamName`.
+   *
+   * @param luigi - The Luigi instance used to access configuration values.
+   * @returns The name of the modal view parameter to be used in routing.
+   */
+  getModalViewParamName(luigi: Luigi): string {
+    let paramName = luigi.getConfigValue('routing.modalPathParam');
+    if (!paramName) {
+      paramName = this.defaultModalViewParamName;
+    }
+    return paramName;
+  },
+
+  /**
+   * Parses a URL query parameter string into an object mapping parameter names to values.
+   *
+   * Replaces '+' with spaces, splits the string by '&' to get key-value pairs,
+   * and decodes each component using `decodeURIComponent`.
+   *
+   * @param paramsString - The URL query parameter string to parse (e.g., "foo=bar&baz=qux").
+   * @returns An object where each key is a parameter name and each value is the corresponding decoded value.
+   */
+  parseParams(paramsString: string): Record<string, string> {
+    if (!paramsString) return {};
+    const result: Record<string, string> = {};
+    const viewParamString = paramsString.replace(/\+/g, ' ');
+    const pairs = viewParamString ? viewParamString.split('&') : null;
+    if (pairs) {
+      pairs.forEach((pairString) => {
+        const keyValue = pairString.split('=');
+        if (keyValue && keyValue.length > 0) {
+          result[decodeURIComponent(keyValue[0])] = decodeURIComponent(keyValue[1]);
+        }
+      });
+    }
+    return result;
+  },
+
+  getModalParamsFromPath(luigi: Luigi): any {
+    const modalParamsStr = this.getQueryParam(`${this.getModalViewParamName(luigi)}Params`, luigi);
+    return modalParamsStr && JSON.parse(modalParamsStr);
+  },
+
+  /**
+   * Get the query param separator which is used with hashRouting
+   * Default: :
+   * @example /home?modal=(urlencoded)/some-modal?modalParams=(urlencoded){...}&otherParam=hmhm
+   * @returns the first query param separator (like ? for path routing)
+   */
+  getHashQueryParamSeparator() {
+    return this.defaultQueryParamSeparator;
+  },
+
+  /**
+   * Get an url without modal data. It's necessary on page refresh or loading Luigi with modal data in a new tab
+   * @param {String} searchParamsString url search parameter as string
+   * @param {String} modalParamName  modalPathParam value defined in Luigi routing settings
+   * @returns {String} url search parameter as string without modal data
+   */
+  getURLWithoutModalData(searchParamsString: string, modalParamName: string): string {
+    let searchParams = new URLSearchParams(searchParamsString);
+    searchParams.delete(modalParamName);
+    searchParams.delete(`${modalParamName}Params`);
+    return searchParams.toString();
+  },
+
+  /**
+   * Extending history state object for calculation how much history entries the browser have to go back when modal will be closed.
+   * @param {Object} historyState history.state object.
+   * @param {Number} historyState.modalHistoryLength will be increased when modals will be openend successively like e.g. stepping through a wizard.
+   * @param {Number} historyState.historygap is the history.length at the time when the modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
+   * @param {String} historyState.pathBeforeHistory path before modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
+   * @param {boolean} hashRoutingActive true if hash routing is active, false if path routing is active
+   * @param {URL} url url object to read hash value or pathname
+   * @returns {Object} history state object
+   */
+  handleHistoryState(historyState: any, path: string) {
+    if (historyState && historyState.modalHistoryLength) {
+      historyState.modalHistoryLength += 1;
+    } else {
+      historyState = {
+        modalHistoryLength: 1,
+        historygap: history.length,
+        pathBeforeHistory: path
+      };
+    }
+    return historyState;
+  },
+
+  /**
+   * Encodes an object of key-value pairs into a URL query string.
+   *
+   * Each key and value in the input object is URI-encoded and joined with '='.
+   * The resulting pairs are concatenated with '&' to form a valid query string.
+   *
+   * @param dataObj - An object containing key-value pairs to encode.
+   * @returns A URL-encoded query string representing the input object.
+   */
+  encodeParams(dataObj: Record<string, any>): string {
+    const queryArr = [];
+    for (const key in dataObj) {
+      queryArr.push(encodeURIComponent(key) + '=' + encodeURIComponent(dataObj[key]));
+    }
+    return queryArr.join('&');
+  },
+
+  /**
+   * Retrieves the last node object from the provided `PathData`'s `nodesInPath` array.
+   * If `nodesInPath` is empty or undefined, returns an empty object.
+   *
+   * @param pathData - The `PathData` object containing the `nodesInPath` array.
+   * @returns The last node object in the `nodesInPath` array, or an empty object if none exists.
+   */
+  getLastNodeObject(pathData: PathData): {} {
+    const lastElement = pathData.nodesInPath ? [...pathData.nodesInPath].pop() : undefined;
+    return lastElement || {};
   }
 };
