@@ -1,40 +1,46 @@
+.header-sep {
+  background: black;
+  width: 100%;
+  height: 1px;
+}
+
+.header-sep-overlay {
+  background: rgb(27, 27, 31);
+  width: 100%;
+  height: 1px;
+  z-index: 1;
+}
+
 .p-header {
   position: relative;
   background-color: $secondary-color;
+  position: sticky;
+  top: 0;
+  background: rgb(27, 27, 31);
+  z-index: 2;
 
-  > .has-border {
-    padding-top: 25px;
-    padding-bottom: 25px;
 
-    @include breakpoint(xxlarge) {
-      max-width: calc(1290px - 50px);
-    }
+  > .row {
+    height: 64px;
+    width: 100%;
+    margin: 0;
+    padding: 0 68px 0 48px;
+    max-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
+
+  
 
   &--home {
     padding-bottom: 0;
-    background-color: $ice-blue;
-    background-image: url('../img/header_bg.svg');
+    background-color: rgb(27, 27, 31);
+    // background-image: url('../img/header_bg.svg');
     background-repeat: no-repeat;
     background-position: left 50% bottom 100px;
     background-size: cover;
     z-index: 3;
-
-    @include breakpoint(large) {
-      background-position: left 50% bottom 0;
-    }
-
-
-
-    @include breakpoint(xlarge) {
-      > .has-border {
-        border-bottom: 1px solid $border-color;
-      }
-    }
-
-    @include breakpoint(xxlarge) {
-      background-position: left 70% bottom 0;
-    }
   }
 
   &--error-page {
@@ -48,8 +54,7 @@
       height: 47px;
 
       @include breakpoint(xlarge) {
-        width: 148px;
-        height: 60px;
+        height: 40px;
       }
     }
   }
@@ -252,18 +257,18 @@
     justify-content: flex-end;
 
     .social-links {
-      margin-left: 50px;
+      margin-left: 34px;
     }
 
     .menu {
       display: flex;
 
       .item {
-        margin-left: 50px;
+        margin-left: 24px;
 
         a {
           display: block;
-          font-size: 18px;
+          font-size: 14px;
           font-weight: 600;
           color: white;
           padding-bottom: 39px;
@@ -275,8 +280,7 @@
           &:focus,
           &:active,
           &.is-active {
-            color: white;
-            border-bottom-color: $primary-color;
+            color:  $primary-color;
           }
         }
       }

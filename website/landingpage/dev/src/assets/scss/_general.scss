@@ -110,65 +110,6 @@ section,
   }
 }
 
-.s-gradient {
-  position: relative;
-  z-index: 1;
-  padding: 50px 0;
-
-  &:before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    transform: skewY(3deg);
-    background-color: $ice-blue;
-    z-index: -1;
-  }
-
-  &--right-left {
-    &:before {
-      transform: skewY(-3deg);
-    }
-  }
-
-  .main-content & {
-    &:last-child {
-      margin-bottom: -100px;
-      padding-bottom: calc(100px + 50px);
-
-      @include breakpoint(large) {
-        margin-bottom: -150px;
-        padding-bottom: calc(150px + 50px);
-      }
-
-      @include breakpoint(xxlarge) {
-        margin-bottom: -200px;
-        padding-bottom: calc(200px + 100px);
-      }
-
-      &.has-big-bottom-margin {
-        margin-bottom: -300px;
-        padding-bottom: 350px;
-
-        @include breakpoint(xxlarge) {
-          margin-bottom: -500px;
-          padding-bottom: calc(500px + 100px);
-        }
-      }
-    }
-  }
-
-  @include breakpoint(large) {
-    padding: 60px 0;
-  }
-
-  @include breakpoint(xxlarge) {
-    padding: 150px 0;
-  }
-}
 
 .btn-primary,
 .btn-secondary {
