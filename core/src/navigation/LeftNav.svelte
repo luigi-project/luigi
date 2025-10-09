@@ -176,7 +176,6 @@
   };
 
   const setLeftNavData = async () => {
-    console.log('setLeftNavData');
     if (window.Luigi.__btpNavTopCntRszObs) {
       window.Luigi.__btpNavTopCntRszObs.disconnect();
       delete window.Luigi.__btpNavTopCntRszObs;
