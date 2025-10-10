@@ -50,6 +50,18 @@ export class UX {
   };
 
   showConfirmationModal = (settings: ConfirmationModalSettings) => {
+    if (settings) {
+      settings = {
+        ...settings,
+        ...{
+          header: this.luigi.i18n().getTranslation(settings.header || 'luigi.confirmationModal.header'),
+          body: this.luigi.i18n().getTranslation(settings.body || 'luigi.confirmationModal.body'),
+          buttonDismiss: this.luigi.i18n().getTranslation(settings.buttonDismiss || 'luigi.button.dismiss'),
+          buttonConfirm: this.luigi.i18n().getTranslation(settings.buttonConfirm || 'luigi.button.confirm'),
+        }
+      };
+    }
+
     return new Promise((resolve, reject) => {
       this.luigi.getEngine()._connector?.renderConfirmationModal(settings, {
         confirm() {
