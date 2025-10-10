@@ -74,11 +74,22 @@ ul {
   }
 
   &.green {
-    color: $luigi-green;
     font-size: 70px;
+
+    background: linear-gradient( -45deg, $luigi-green 30%, $body-font-color);
+    background-clip: text;
+    line-height: 94px;
+    display: inline;
+    color: transparent;
+
+    // color: var(--fg-color);
+    // text-shadow: 0 0 10px $luigi-green;
+
+    // color: $luigi-green;
     // text-shadow: 0px 0px 20px var(--fg-color);
 
     img {
+      display: none;
       width: 124px;
       margin-right: 19px;
       margin-bottom: 19px;

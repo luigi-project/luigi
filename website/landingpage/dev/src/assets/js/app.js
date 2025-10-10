@@ -204,4 +204,4 @@ if (localStorage.getItem('dark-theme') === 'true') {
 document.getElementById('theme-switcher-btn').addEventListener('click', () => {
   document.body.classList.toggle('has-dark-bg');
   localStorage.setItem('dark-theme', document.body.classList.contains('has-dark-bg'));
-})
+});
