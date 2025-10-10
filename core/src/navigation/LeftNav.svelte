@@ -139,6 +139,7 @@
   export let semiCollapsible;
   export let semiCollapsibleButton;
   export let semiCollapsibleButtonStyle;
+  export let displayFooterWhenCollapsed;
   export let pathData;
   export let pathParams;
   export let virtualGroupPrefix = NavigationHelpers.virtualGroupPrefix;
@@ -199,6 +200,7 @@
     hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
+    displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.sideNav.displayFooterWhenCollapsed');
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
@@ -859,6 +861,7 @@
                     data-testid={getTestIdForCat(nodes.metaInfo, key)}
                   >
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-interactive-supports-focus -->
                     <div
                       class="fd-navigation__item {isSemiCollapsed ? 'fd-popover__control' : ''}"
                       role="treeitem"
@@ -1357,7 +1360,17 @@
             </ul>
           </div>
         {/if}
-        {#if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
+        <!-- Vega footer -->
+        {#if displayFooterWhenCollapsed && footerText}
+          <div class="fd-side-nav__utility">
+            <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
+              <span
+                class="lui-side-nav__footer--text-visible fd-has-type-minus-1"
+                data-testid="lui-side-nav__footer--text-visible">{footerText ? footerText : ''}</span
+              >
+            </span>
+          </div>
+        {:else if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
               <span class="lui-side-nav__footer--text fd-has-type-minus-1" data-testid="lui-side-nav__footer--text"
@@ -1987,7 +2000,8 @@
     align-items: center;
     border-top: var(--sapList_BorderWidth, 0.0625rem) solid var(--sapList_BorderColor, #e4e4e4);
 
-    &--text {
+    &--text,
+    &--text-visible {
       color: #32363a;
       color: var(--sapTextColor, #32363a);
       white-space: nowrap;
