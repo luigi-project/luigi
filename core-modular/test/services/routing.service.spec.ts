@@ -113,10 +113,7 @@ describe('Routing Service', () => {
 
     it('should return true if path matches config patterns', () => {
       sinon.restore();
-      sinon
-        .stub(mockLuigi, 'getConfigValue')
-        .withArgs('routing.skipRoutingForUrlPatterns')
-        .returns(['foo_bar']);
+      sinon.stub(mockLuigi, 'getConfigValue').withArgs('routing.skipRoutingForUrlPatterns').returns(['foo_bar']);
 
       locationSpy.mockImplementation(() => {
         return {
@@ -323,7 +320,6 @@ describe('Routing Service', () => {
       });
       expect(historyPushSpy).toHaveBeenCalled();
     });
-
   });
   describe('removeModalDataFromUrl', () => {
     let locationSpy: any;
@@ -462,9 +458,8 @@ describe('Routing Service', () => {
 
       expect(historyPushSpy).toHaveBeenCalled();
     });
-
   });
-  
+
   describe('handleBookmarkableModalPath', () => {
     let getModalPathFromPathSpy: jest.SpyInstance;
     let getModalParamsFromPathSpy: jest.SpyInstance;
@@ -525,5 +520,4 @@ describe('Routing Service', () => {
       expect(openAsModalSpy).toHaveBeenCalledWith('/modal/path', undefined);
     });
   });
-  
 });

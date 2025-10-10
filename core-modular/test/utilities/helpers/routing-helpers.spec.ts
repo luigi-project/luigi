@@ -4,7 +4,6 @@ const sinon = require('sinon');
 import type { SinonStub } from 'sinon';
 const assert = chai.assert;
 
-
 describe('Routing-helpers', () => {
   let luigi: any = {};
   beforeEach(() => {
@@ -187,12 +186,8 @@ describe('Routing-helpers', () => {
     let getModalViewParamNameStub: any;
     let getLocationStub: any;
     beforeEach(() => {
-      getModalViewParamNameStub = sinon
-        .stub(RoutingHelpers, 'getModalViewParamName')
-        .returns(modalViewParamName);
-      getLocationStub = sinon
-        .stub(RoutingHelpers, 'getLocation')
-        .returns(mockLocation);
+      getModalViewParamNameStub = sinon.stub(RoutingHelpers, 'getModalViewParamName').returns(modalViewParamName);
+      getLocationStub = sinon.stub(RoutingHelpers, 'getLocation').returns(mockLocation);
     });
     afterEach(() => {
       sinon.restore();
