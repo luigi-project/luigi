@@ -800,6 +800,32 @@ describe('createClientAPI', () => {
       expect(dispatchEventSpy).toHaveBeenCalledWith(Events.REMOVE_BACKDROP_REQUEST, {});
     });
 
+    it('test uxManager showLoadingIndicator', () => {
+      // mock and spy on functions
+      service.containerService.dispatch = jest.fn();
+      const dispatchEventSpy = jest.spyOn(service, 'dispatchLuigiEvent');
+
+      // act
+      const clientAPI = service.createClientAPI(undefined, 'nodeId', 'wc_id', 'component');
+      clientAPI.uxManager().showLoadingIndicator();
+
+      // assert
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.SHOW_LOADING_INDICATOR_REQUEST, {});
+    });
+
+    it('test uxManager hideLoadingIndicator', () => {
+      // mock and spy on functions
+      service.containerService.dispatch = jest.fn();
+      const dispatchEventSpy = jest.spyOn(service, 'dispatchLuigiEvent');
+
+      // act
+      const clientAPI = service.createClientAPI(undefined, 'nodeId', 'wc_id', 'component');
+      clientAPI.uxManager().hideLoadingIndicator();
+
+      // assert
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
+    });
+
     it('test uxManager hideAppLoadingIndicator', () => {
       // mock and spy on functions
       service.containerService.dispatch = jest.fn();
