@@ -311,7 +311,7 @@ p {
           height: 50%;
           width: 50%;
           top: 80px;
-          left: 54%!important;
+          left: 60%!important;
           content: '';
           background-image: linear-gradient(-45deg, $luigi-green 50%, $luigi-green 0);
           background-position: 0 0;
@@ -326,12 +326,20 @@ p {
           height: 78%;
           width: 100%;
           top: 36px;
-          left: 45%;
+          left: 50%;
           content: '';
           background-image: url('../img/running_app_2x.png');
           background-position: 0 0;
           background-repeat: no-repeat;
           background-size: auto 100%;
+        }
+      }
+    }
+
+    @include breakpoint(large down) {
+      > .row {
+        &::before {
+          background-size: 30vw 100%;
         }
       }
     }
