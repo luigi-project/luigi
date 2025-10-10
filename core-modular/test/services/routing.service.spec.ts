@@ -147,7 +147,7 @@ describe('Routing Service', () => {
     expect(addEventListenerSpy).toHaveBeenCalledWith('hashchange', expect.any(Function));
   });
 
-  it('should handle hashchange event and call navigation methods', () => {
+  it('should handle hashchange event and call navigation methods', async () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
     mockNavService.shouldRedirect.mockReturnValue(undefined);
     const fakeNode = { nodeParams: {}, searchParams: {} };
@@ -162,6 +162,9 @@ describe('Routing Service', () => {
     // Simulate hashchange event
     handler!({} as HashChangeEvent);
 
+    //needed to wait for async operations to complete shouldShowModalPathInUrl
+    await Promise.resolve();
+
     expect(RoutingHelpers.getCurrentPath).toHaveBeenCalled();
     expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
     expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc');
@@ -174,7 +177,7 @@ describe('Routing Service', () => {
     expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
   });
 
-  it('should redirect if shouldRedirect returns a path', () => {
+  it('should redirect if shouldRedirect returns a path', async () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
     mockNavService.shouldRedirect.mockReturnValue('/redirect');
     const navigateSpy = jest.fn();
@@ -184,6 +187,9 @@ describe('Routing Service', () => {
 
     const handler = addEventListenerSpy.mock.calls.find(([event]: [string]) => event === 'hashchange')?.[1];
     handler!({} as HashChangeEvent);
+
+    //needed to wait for async operations to complete shouldShowModalPathInUrl
+    await Promise.resolve();
 
     expect(navigateSpy).toHaveBeenCalledWith('/redirect');
     expect(mockNavService.getCurrentNode).not.toHaveBeenCalled();
