@@ -74,6 +74,13 @@
     }
   }
 
+  .left-al {
+    padding-left: 0;
+  }
+  .right-al {
+    padding-right: 0;
+  }
+
   .nav-wr {
     justify-content: flex-end;
     display: flex;
@@ -123,7 +130,7 @@
     height: 100vh;
     transition: all 0.2s ease-in-out 0s;
     padding: 50px 30px;
-    background: $secondary-color;
+    background: $body-background;
     z-index: 10;
 
     &.is-active {
