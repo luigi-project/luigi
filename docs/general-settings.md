@@ -140,10 +140,6 @@ Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 > **NOTE:** You can translate Luigi internal messages by providing translation for [these keys](../core/src/utilities/defaultLuigiTranslationTable.js).
 
 
-### displayFooterWhenCollapsed
-- **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
-* **since** NEXT_RELEASE
-
 ### expandCategoryByNavigation
 - **type**: boolean
 - **description** if you have a [category](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=category) set to `collapsible`, you can set this parameter to `true` in order to expand the category when navigating to one of its children.
@@ -260,8 +256,13 @@ You can set the following values:
   * `button` renders a **button** tag.
 - **default**: if you don't specify any value for  **semiCollapsibleButtonStyle**, the control is rendered as an **i** tag.
 
+### sideNav.displayFooterWhenCollapsed
+- **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
+- **since** NEXT_RELEASE
+
 ### sideNav.style
-- **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. **since** v2.23.0
+- **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. 
+- **since** v2.23.0
 
 #### sideNav.subCategoryDelimiter
 - **description**: With the vega layout, you can define subcategories in the side navigation. A custom delimiter can be set to separate subcategories; by default, this is `::`.

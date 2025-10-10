@@ -200,7 +200,7 @@
     hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
-    displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.displayFooterWhenCollapsed');
+    displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.sideNav.displayFooterWhenCollapsed');
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
