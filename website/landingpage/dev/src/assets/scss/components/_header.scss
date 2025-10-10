@@ -23,6 +23,8 @@
   top: 0;
   background: $body-background;
   z-index: 2;
+  display: flex;
+  justify-content: center;
 
 
   > .row {
@@ -30,7 +32,7 @@
     width: 100%;
     margin: 0;
     padding: 0 68px 0 68px;
-    max-width: none;
+    max-width: 1440px;
     position: sticky;
     top: 0;
     z-index: 2;
