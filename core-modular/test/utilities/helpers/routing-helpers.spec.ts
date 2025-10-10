@@ -1,9 +1,9 @@
-import { get } from 'lodash';
 import { RoutingHelpers } from '../../../src/utilities/helpers/routing-helpers';
-import { Routing } from '../../../src/core-api/routing';
 const chai = require('chai');
 const sinon = require('sinon');
+import type { SinonStub } from 'sinon';
 const assert = chai.assert;
+
 
 describe('Routing-helpers', () => {
   let luigi: any = {};
@@ -143,5 +143,147 @@ describe('Routing-helpers', () => {
     };
     const filteredParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
     assert.deepEqual(filteredParams, {});
+  });
+
+  it('getHashQueryParamSeparator', () => {
+    assert.equal(RoutingHelpers.getHashQueryParamSeparator(), '?');
+  });
+
+  describe('getURLWithoutModalData', () => {
+    const modalParamName = 'mymodal';
+    it('getURLWithoutModalData with additional search params', () => {
+      let searchParamsString =
+        '~test=tets&foo=bar&mymodal=%2Fsettings%2FhistoryMf&mymodalParams=%7B%22size%22%3A%22m%22%2C%22title%22%3A%22furz%22%7D';
+      let urlWithoutModalData = RoutingHelpers.getURLWithoutModalData(searchParamsString, modalParamName);
+      assert.equal(urlWithoutModalData, '%7Etest=tets&foo=bar');
+    });
+    it('getURLWithoutModalData with additional search params', () => {
+      let searchParamsString =
+        'mymodal=%2Fsettings%2FhistoryMf&mymodalParams=%7B%22size%22%3A%22m%22%2C%22title%22%3A%22furz%22%7D';
+      let urlWithoutModalData = RoutingHelpers.getURLWithoutModalData(searchParamsString, modalParamName);
+      assert.equal(urlWithoutModalData, '');
+    });
+  });
+
+  describe('getModalViewParamName', () => {
+    beforeEach(() => {
+      sinon.stub(luigi, 'getConfigValue');
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('without config value', () => {
+      assert.equal(RoutingHelpers.getModalViewParamName(luigi), 'modal');
+    });
+    it('without config value', () => {
+      luigi.getConfigValue.returns('custom');
+      assert.equal(RoutingHelpers.getModalViewParamName(luigi), 'custom');
+    });
+  });
+
+  describe('getModalPathFromPath & getModalParamsFromPath', () => {
+    let mockLocation: any = { href: 'http://localhost', search: '' };
+    let modalViewParamName = 'modal';
+    let getModalViewParamNameStub: any;
+    let getLocationStub: any;
+    beforeEach(() => {
+      getModalViewParamNameStub = sinon
+        .stub(RoutingHelpers, 'getModalViewParamName')
+        .returns(modalViewParamName);
+      getLocationStub = sinon
+        .stub(RoutingHelpers, 'getLocation')
+        .returns(mockLocation);
+    });
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('without modal param', () => {
+      assert.equal(RoutingHelpers.getModalPathFromPath(luigi), null);
+    });
+    it('with modal', () => {
+      mockLocation.search = '?modal=%2Fhome%2Fchild-2';
+      assert.equal(RoutingHelpers.getModalPathFromPath(luigi), '/home/child-2');
+    });
+    it('with modal params', () => {
+      mockLocation.search = '?modal=%2Fhome%2Fchild-2&modalParams=%7B%22title%22%3A%22Real%20Child%22%7D';
+      assert.equal(RoutingHelpers.getModalPathFromPath(luigi), '/home/child-2');
+      assert.deepEqual(RoutingHelpers.getModalParamsFromPath(luigi), { title: 'Real Child' });
+    });
+    it('with custom modal param name', () => {
+      getModalViewParamNameStub.returns('custom');
+      mockLocation.search = '?custom=%2Fhome%2Fchild-2&customParams=%7B%22title%22%3A%22Real%20Child%22%7D';
+      assert.equal(RoutingHelpers.getModalPathFromPath(luigi), '/home/child-2');
+      assert.deepEqual(RoutingHelpers.getModalParamsFromPath(luigi), { title: 'Real Child' });
+    });
+  });
+
+  describe('parseParams', () => {
+    let mockParams;
+
+    it('return pairs of params', () => {
+      mockParams = 'test=true&foo=bar';
+      assert.deepEqual(RoutingHelpers.parseParams(mockParams), {
+        test: 'true',
+        foo: 'bar'
+      });
+    });
+
+    it('should not fail on empty params', () => {
+      mockParams = '';
+      assert.deepEqual(RoutingHelpers.parseParams(mockParams), {});
+    });
+
+    it('return pairs of params with a space and a plus', () => {
+      mockParams = 'test=true+abc&foo=bar%2Babc';
+      assert.deepEqual(RoutingHelpers.parseParams(mockParams), {
+        test: 'true abc',
+        foo: 'bar+abc'
+      });
+    });
+  });
+
+  describe('getLocationSearchQueryParams', () => {
+    let getLocationStub: SinonStub | undefined;
+    afterEach(() => {
+      if (getLocationStub) {
+        getLocationStub.restore();
+        getLocationStub = undefined;
+      }
+    });
+
+    function stubLocationSearch(searchValue: string): void {
+      if (getLocationStub) getLocationStub.restore();
+      getLocationStub = sinon.stub(RoutingHelpers, 'getLocation').returns({ search: searchValue } as any);
+    }
+
+    it('returns empty object when no search part', () => {
+      stubLocationSearch('');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), {});
+    });
+
+    it('returns empty object when only "?" present', () => {
+      stubLocationSearch('?');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), {});
+    });
+
+    it('parses single parameter', () => {
+      stubLocationSearch('?foo=bar');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), { foo: 'bar' });
+    });
+
+    it('parses multiple parameters', () => {
+      stubLocationSearch('?foo=bar&baz=qux');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), { foo: 'bar', baz: 'qux' });
+    });
+
+    it('decodes encoded characters', () => {
+      stubLocationSearch('?a=1%202&b=sp%2Bce');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), { a: '1 2', b: 'sp+ce' });
+    });
+
+    it('converts plus sign to space', () => {
+      stubLocationSearch('?q=hello+world+test');
+      assert.deepEqual(RoutingHelpers.getLocationSearchQueryParams(), { q: 'hello world test' });
+    });
   });
 });

@@ -131,6 +131,15 @@ export class RoutingService {
     }
   }
 
+  /**
+   * Handles opening a modal based on the current bookmarkable path.
+   * 
+   * This method checks if there is an additional modal path present in the current Luigi path.
+   * If a modal path exists, it retrieves the corresponding modal parameters and node data,
+   * then opens the modal using the navigation service.
+   *
+   * @returns {Promise<void>} A promise that resolves when the modal handling is complete.
+   */
   async handleBookmarkableModalPath(): Promise<void> {
     const additionalModalPath = RoutingHelpers.getModalPathFromPath(this.luigi);
     const navService = serviceRegistry.get(NavigationService);
