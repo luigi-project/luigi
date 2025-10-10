@@ -439,8 +439,12 @@ const connector = {
           if (item.node || (item.category && !item.category.isGroup)) {
             html += renderNodeOrCategory(item, leftNavData);
           } else if (item.category && item.category.isGroup) {
-            html += `<ui5-side-navigation-group text="${item.category.label}" category-uid="${leftNavData.basePath + ':' + item.category.id}"
-            ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+            html += `
+              <ui5-side-navigation-group
+                text="${item.category.label}"
+                category-uid="${leftNavData.basePath + ':' + item.category.id}"
+                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>
+            `;
             item.category.nodes.forEach((subitem) => {
               html += renderNodeOrCategory(subitem, leftNavData);
             });
@@ -608,9 +612,8 @@ const connector = {
       error: 'Critical',
       success: 'Positive'
     };
-    'None' | 'Positive' | 'Critical' | 'Negative' | 'Information';
 
-    if (!settings || settings == {})
+    if (!settings || settings == {}) {
       settings = {
         icon: 'question-mark',
         header: 'Confirmation',
@@ -619,6 +622,8 @@ const connector = {
         buttonConfirm: 'Yes',
         type: 'confirmation'
       };
+    }
+
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-confirmation-modal');
     dialog.setAttribute('header-text', settings?.header);
@@ -807,6 +812,20 @@ const connector = {
         type: 'error'
       });
     }
+  },
+
+  setCurrentLocale: (locale) => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale has been set to: ' + locale,
+      type: 'success'
+    });
+  },
+
+  getCurrentLocale: () => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
+      type: 'info'
+    });
   }
 };
 
@@ -830,6 +849,13 @@ window.addEventListener(
 
     if (event?.data?.data?.title) {
       globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+    }
+
+    if (event?.data?.data?.customTranslation) {
+      globalThis.Luigi.ux().showAlert({
+        text: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.header'),
+        type: 'info'
+      });
     }
   },
   false
