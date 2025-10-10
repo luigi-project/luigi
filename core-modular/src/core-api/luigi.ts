@@ -13,9 +13,10 @@ export class Luigi {
   _theming?: Theming;
   _routing?: Routing;
   __cssVars?: any;
-  
+  preventLoadingModalData: boolean | undefined;
+
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
-  
+
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
   }
@@ -99,7 +100,10 @@ export class Luigi {
    * @example
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
-  async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>): Promise<any> {
+  async storeUserSettings(
+    userSettingsObj: Record<string, any>,
+    previousUserSettingsObj: Record<string, any>
+  ): Promise<any> {
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
       ? userSettingsConfig

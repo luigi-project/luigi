@@ -9,7 +9,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-  const userSettings =  hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -108,8 +108,9 @@ export const UIModule = {
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const userSettingGroups = await luigi.readUserSettings();
-    const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-    const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
+    const hasUserSettings =
+      currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+    const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
@@ -132,7 +133,9 @@ export const UIModule = {
 
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+        viewGroupContainer.viewurl = serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
@@ -153,7 +156,15 @@ export const UIModule = {
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const routingService = serviceRegistry.get(RoutingService);
+    const modalHandler: any = {
+      close: () => {
+        if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+          routingService.removeModalDataFromUrl(false);
+        }
+      }
+    };
+    luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback, modalHandler);
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
