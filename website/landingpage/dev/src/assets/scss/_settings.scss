@@ -80,8 +80,12 @@ $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $black: #0a0a0a;
 $white: #ffffff;
-$body-background: rgb(27, 27, 31);
-$body-font-color: #dfdfd6;
+
+$body-background: var(--bg-color);
+$body-font-color: var(--fg-color);
+$header-border-color: var(--header-border-color);
+$luigi-green: #2deb8a;
+
 $body-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 $extra-font-family: 'Quicksand', sans-serif;
 $body-antialiased: true;

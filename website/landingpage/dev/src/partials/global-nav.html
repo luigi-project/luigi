@@ -2,6 +2,7 @@
   <div class="column small-6 large-3">
     <a class="logo" href="/">
       <img src="/assets/img/logo.svg" alt="Luigi" />
+      <span>Luigi</span>
     </a>
   </div>
   <div class="column small-6 large-9 nav-wr">
@@ -17,6 +18,20 @@
         </li>
         <li class="item">
           <a href="/blog/overview" class="{{#ifpagewildcard 'overview' '20*'}}is-active{{/ifpagewildcard}}">Blog</a>
+        </li>
+      </ul>
+      <ul class="menu theme-menu">
+        <li class="item">
+          <button class="theme-switch" type="button" role="switch" title="Switch to light theme" aria-checked="false" id="theme-switcher-btn">
+            <span class="check">
+              <span class="icon">
+                <span class="vpi-sun sun">
+                </span>
+                <span class="vpi-moon moon">
+                </span>
+              </span>
+            </span>
+          </button>
         </li>
       </ul>
       <ul class="social-links">

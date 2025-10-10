@@ -195,3 +195,13 @@ if (backToBlog.length && document.referrer.indexOf('/blog/overview') !== -1 && w
     history.back();
   });
 }
+
+// THEMING
+if (localStorage.getItem('dark-theme') === 'true') {
+  document.body.classList.add('has-dark-bg');
+}
+
+document.getElementById('theme-switcher-btn').addEventListener('click', () => {
+  document.body.classList.toggle('has-dark-bg');
+  localStorage.setItem('dark-theme', document.body.classList.contains('has-dark-bg'));
+})
