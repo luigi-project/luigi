@@ -107,10 +107,16 @@ export const UXModule = {
       confirmationModalSettings = {
         ...confirmationModalSettings,
         ...{
-          header: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
+          header: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
           body: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.body || 'luigi.confirmationModal.body'),
-          buttonDismiss: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
-          buttonConfirm: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm'),
+          buttonDismiss: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
+          buttonConfirm: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
         }
       };
     }
