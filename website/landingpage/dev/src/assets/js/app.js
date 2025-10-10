@@ -197,7 +197,7 @@ if (backToBlog.length && document.referrer.indexOf('/blog/overview') !== -1 && w
 }
 
 // THEMING
-if (localStorage.getItem('dark-theme') === 'true') {
+if (localStorage.getItem('dark-theme') !== 'false') {
   document.body.classList.add('has-dark-bg');
 }
 

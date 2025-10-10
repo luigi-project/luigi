@@ -2,6 +2,7 @@ body {
   --bg-color: #f4f4f4;
   --fg-color: #3c3c43;
   --header-border-color: lightgray;
+  --color-secondary: #3c4553;
   counter-reset: subTitle;
 
   &.has-dark-bg {
@@ -10,6 +11,7 @@ body {
     --bg-color: rgb(27, 27, 31);
     --fg-color: #dfdfd6;
     --header-border-color: black;
+    --color-secondary: rgb(172, 191, 175);
   }
 
   @include breakpoint(large) {

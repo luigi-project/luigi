@@ -70,7 +70,7 @@ $global-width: rem-calc(1290);
 $global-lineheight: 1.5;
 $foundation-palette: (
   primary: #2deb8a,
-  secondary: #3c4553,
+  secondary: var(--color-secondary),
   success: #3adb76,
   warning: #ffae00,
   alert: #cc4b37
