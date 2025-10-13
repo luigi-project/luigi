@@ -184,7 +184,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
     @media screen and (min-width: 1024px) {
       height: $height-shellbar;
-      padding: 0 82px 0 56px !important;
+      padding: 0px 87px 0 60px !important;
 
       .fd-popover:has(.luigi-search) {
         margin-top: -2px;
