@@ -133,9 +133,12 @@
           console.log(event.detail);
           window.location.hash = event.detail.link;
         });
-        luigiContainer.addEventListener(MFEventID.UPDATE_MODAL_SETTINGS_REQUEST, (event) => {
-          console.log(JSON.stringify(event.detail));
-        });
+        luigiContainer.addEventListener(
+          MFEventID.UPDATE_MODAL_SETTINGS_REQUEST,
+          (event) => {
+            console.log(JSON.stringify(event.detail));
+          },
+        );
         luigiContainer.addEventListener(MFEventID.ALERT_REQUEST, (event) => {
           console.log(event.detail);
           console.log('payload', event.payload);
