@@ -38,7 +38,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
   --sapList_TextColor: var(--fg-color);
 
   --sapContent_IconColor: #2deb8a;
-  --sapList_Hover_Background: black;
+  --sapList_Hover_Background: color-mix(in srgb, var(--sapBackgroundColor), black 30%);
   --sapList_Active_Background: gray;
   --sapList_BorderColor: black;
   --sapGroup_ContentBorderColor: black;
@@ -49,6 +49,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
   --sapShell_InteractiveBorderColor: $fg-color;
   --fdShellbar_SearchField_Background_Color_Active: $searchfield-bg-active;
   --fdShellbar_SearchField_Background_Color_Hover: $searchfield-bg-active;
+  --fdShellbar_Branding_Hover_Background: transparent;
   
   color-scheme: dark;
 }
@@ -184,7 +185,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
     @media screen and (min-width: 1024px) {
       height: $height-shellbar;
-      padding: 0 82px 0 56px !important;
+      padding: 0px 87px 0 60px !important;
 
       .fd-popover:has(.luigi-search) {
         margin-top: -2px;
