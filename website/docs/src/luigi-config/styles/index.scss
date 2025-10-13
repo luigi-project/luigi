@@ -24,6 +24,8 @@ $fg-color: var(--fg-color);
 $bg-color: var(--sapBackgroundColor);
 $global-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 $luigi-green: #2deb8a;
+$searchfield-bg: color-mix(in srgb, $bg-color, white 5%);
+$searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
 
 :root {
@@ -40,6 +42,13 @@ $luigi-green: #2deb8a;
   --sapList_Active_Background: gray;
   --sapList_BorderColor: black;
   --sapGroup_ContentBorderColor: black;
+  --fdShellbar_SearchField_Input_Border_Radius: 3px;
+  --fdInputGroup_Input_Background: $searchfield-bg;
+  --fdShellbar_SearchField_Input_Background_Regular: $searchfield-bg;
+  --fdShellbar_SearchField_Background_Color: $searchfield-bg;
+  --sapShell_InteractiveBorderColor: $fg-color;
+  --fdShellbar_SearchField_Background_Color_Active: $searchfield-bg-active;
+  --fdShellbar_SearchField_Background_Color_Hover: $searchfield-bg-active;
   
   color-scheme: dark;
 }
@@ -306,18 +315,12 @@ $luigi-green: #2deb8a;
       }
     }
 
-    button.fd-button.fd-shellbar__button {
-      &:not(.lui-burger):focus::after {
-        inset: -2px 0 auto 0;
-      }
-    }
 
     .fd-button.fd-shellbar__button {
       border: none;
       border-radius: 0;
       background: none;
       max-height: none;
-      height: 61px;
       min-width: 30px;
       color: $fg-color;
       // padding-bottom: 41px;
@@ -362,10 +365,6 @@ $luigi-green: #2deb8a;
         }
       }
 
-      &:not(.lui-burger):focus::after {
-        height: 34px;
-        inset: -2px -6px auto 10px;
-      }
 
       &:has(.sap-icon--search),
       &:has(.sap-icon--overflow) {
@@ -388,15 +387,13 @@ $luigi-green: #2deb8a;
 
     @media screen and (min-width: 1024px) {
       .fd-button.fd-shellbar__button {
-        height: 69px;
-        margin-bottom: -40px;
 
         span:not(.fd-top-nav__icon) {
-          padding-bottom: 42px;
+          padding-bottom: 3px;
         }
 
         .fd-top-nav__icon {
-          margin-top: -3rem;
+          margin-top: -6px;
         }
 
         &:has(.sap-icon--search),
@@ -720,4 +717,34 @@ $luigi-green: #2deb8a;
       height: auto;
     }
   }
+
+  
+  .fd-shellbar .fd-shellbar__search-field .fd-shellbar__search-field-input.luigi-search__input {
+    background-color: $searchfield-bg;
+
+    border: 1px solid $fg-color;
+
+    &:hover {
+      background-color: $searchfield-bg-active;
+    }
+
+    &:active {
+      background-color: $searchfield-bg-active;
+    }
+  }
+
+  .algolia-autocomplete {
+    .ds-dropdown-menu {
+      [class^=ds-dataset-], &:before {
+        background: $bg-color;
+      }
+    }
+    .algolia-docsearch-suggestion {
+      background: $bg-color;
+      & * {
+        color: $fg-color;
+      }
+    }
+  }
 }
+
