@@ -175,7 +175,7 @@ $luigi-green: #2deb8a;
 
     @media screen and (min-width: 1024px) {
       height: $height-shellbar;
-      padding: 0 79px 0 17px !important;
+      padding: 0 82px 0 56px !important;
 
       .fd-popover:has(.luigi-search) {
         margin-top: -2px;
@@ -217,7 +217,7 @@ $luigi-green: #2deb8a;
         border: none;
         border-radius: 0;
         transform: none;
-        background-color: $secondary-color;
+        background-color: $bg-color;
         margin-top: -10px;
         padding: 10px 30px;
 
@@ -423,7 +423,7 @@ $luigi-green: #2deb8a;
 
   .fd-app__sidebar {
     box-shadow: none;
-    // background-color: #fafbfc;
+    background: var(--sapBackgroundColor);
   }
 
   .fd-shellbar__logo {
@@ -439,7 +439,7 @@ $luigi-green: #2deb8a;
       height: 32px !important;
       display: inline-block;
       vertical-align: middle;
-      margin: 0 5px 0 35px;
+      margin: 0 5px 0 0;
     }
 
     &::after {
@@ -645,7 +645,7 @@ $luigi-green: #2deb8a;
       height: 50px;
       text-align: center;
       position: fixed;
-      bottom: 20px;
+      bottom: 0px;
       left: 20px;
       color: black;
       z-index: 20;
