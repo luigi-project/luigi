@@ -420,25 +420,24 @@ describe('Compound Container Tests', () => {
   describe('LuigiClient API - LuigiElement (compound child)', () => {
     const buttonSelector = '[id="luigi-client-init-button"]';
     const containerSelector = '[id="luigi-client-init-test"]';
-    let consoleLog;
     let stub;
 
     beforeEach(() => {
       cy.visit('http://localhost:8080/compound/compoundClientAPI.html', {
         onBeforeLoad(win) {
-          // Clear logs in window console
+          // Clear logs in window console if available
           if (Object.prototype.toString.call(win.console.clear) === '[object Function]') {
             win.console.clear();
           }
 
-          // Set up a spy on console.log
-          cy.stub(win.console, 'log', (value) => {
-            consoleLog = value;
-          });
+          // create a stub for console.log and alias it for later assertions
+          // use .as so wir können später mit cy.get('@consoleLog') darauf zugreifen
+          cy.stub(win.console, 'log').as('consoleLog');
         }
       });
+
+      // open UI / initialize app
       cy.get(buttonSelector).click();
-      stub = cy.stub();
     });
 
     it('LuigiClient API - addNodeParams', () => {
@@ -447,7 +446,13 @@ describe('Compound Container Tests', () => {
         .contains('addNodeParams')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('addNodeParams has been called with no effect');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            // take first argument in third call
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('addNodeParams has been called with no effect');
+          });
         });
     });
 
@@ -457,7 +462,12 @@ describe('Compound Container Tests', () => {
         .contains('getNodeParams')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('getNodeParams: {}');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('getNodeParams: {}');
+          });
         });
     });
 
@@ -467,7 +477,12 @@ describe('Compound Container Tests', () => {
         .contains('getCurrentTheme')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('getCurrentTheme: sap_fiori_3');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('getCurrentTheme: sap_fiori_3');
+          });
         });
     });
 
@@ -477,7 +492,12 @@ describe('Compound Container Tests', () => {
         .contains('getDirtyStatus')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('getDirtyStatus: false');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('getDirtyStatus: false');
+          });
         });
     });
 
@@ -487,7 +507,12 @@ describe('Compound Container Tests', () => {
         .contains('removeBackdrop')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('removeBackdrop has been called');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('removeBackdrop has been called');
+          });
         });
     });
 
@@ -497,7 +522,12 @@ describe('Compound Container Tests', () => {
         .contains('getAnchor')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('getAnchor: testAnchorCompound');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('getAnchor: testAnchorCompound');
+          });
         });
     });
 
@@ -507,7 +537,12 @@ describe('Compound Container Tests', () => {
         .contains('getUserSettings')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('getUserSettings: {"language":"it","date":""}');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('getUserSettings: {"language":"it","date":""}');
+          });
         });
     });
 
@@ -517,7 +552,12 @@ describe('Compound Container Tests', () => {
         .contains('setViewGroupData')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('setViewGroupData has been called with {"vg":"some data"}');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('setViewGroupData has been called with {"vg":"some data"}');
+          });
         });
     });
 
@@ -527,7 +567,12 @@ describe('Compound Container Tests', () => {
         .contains('navigateToIntent')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('navigateToIntent has been called with "sales-setting"');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('navigateToIntent has been called with "sales-setting"');
+          });
         });
     });
 
@@ -537,7 +582,12 @@ describe('Compound Container Tests', () => {
         .contains('fromParent')
         .click()
         .then(() => {
-          expect(consoleLog).to.equal('fromParent has been called');
+          cy.get('@consoleLog').then((logStub) => {
+            expect(logStub.called, 'console.log was called').to.be.true;
+
+            const firstArg = logStub.getCall(2).args[0];
+            expect(firstArg).to.equal('fromParent has been called');
+          });
         });
     });
   });
