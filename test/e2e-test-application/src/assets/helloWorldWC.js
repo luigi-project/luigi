@@ -27,6 +27,9 @@ export default class extends HTMLElement {
     const getClientPermissionsBtn = document.createElement('template');
     getClientPermissionsBtn.innerHTML = '<button id="getClientPermissions">getClientPermissions</button>';
 
+    const showLoadingIndicatorBtn = document.createElement('template');
+    showLoadingIndicatorBtn.innerHTML = '<button id="showLoadingIndicator">showLoadingIndicator</button>';
+
     this._shadowRoot = this.attachShadow({
       mode: 'open',
       delegatesFocus: false
@@ -39,6 +42,7 @@ export default class extends HTMLElement {
     this._shadowRoot.appendChild(getCoreSearchParamsBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(getPathParamsBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(getClientPermissionsBtn.content.cloneNode(true));
+    this._shadowRoot.appendChild(showLoadingIndicatorBtn.content.cloneNode(true));
 
     for (let index = 0; index < 20; index++) {
       this._shadowRoot.appendChild(empty.content.cloneNode(true));
@@ -99,6 +103,16 @@ export default class extends HTMLElement {
     this.$getClientPermissionsBtn.addEventListener('click', () => {
       if (this.LuigiClient) {
         alert(JSON.stringify(this.LuigiClient.getClientPermissions()));
+      }
+    });
+
+    this.$showLoadingIndicatorBtn = this._shadowRoot.querySelector('#showLoadingIndicator');
+    this.$showLoadingIndicatorBtn.addEventListener('click', () => {
+      if (this.LuigiClient) {
+        this.LuigiClient.uxManager().showLoadingIndicator();
+        setTimeout(() => {
+          this.LuigiClient.uxManager().hideLoadingIndicator();
+        }, 2000);
       }
     });
   }

@@ -83,7 +83,7 @@ class WebComponentSvcClass {
           }
         });
       },
-      uxManager: window.Luigi.ux,
+      uxManager: () => this.createUxManager(),
       getCurrentLocale: () => window.Luigi.i18n().getCurrentLocale(),
       publishEvent: (ev) => {
         if (eventBusElement.eventBus) {
@@ -602,6 +602,23 @@ class WebComponentSvcClass {
         reject(null);
       }
     });
+  }
+
+  /**
+   * Creates extended version of Luigi Core UX features
+   */
+  createUxManager() {
+    const uxManager = window.Luigi.ux() || {};
+
+    return {
+      ...uxManager,
+      showLoadingIndicator: () => {
+        window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
+      },
+      hideLoadingIndicator: () => {
+        window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
+      }
+    };
   }
 }
 

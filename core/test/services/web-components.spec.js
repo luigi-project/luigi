@@ -55,7 +55,7 @@ describe('WebComponentService', function () {
             }
           });
         },
-        ux: 'mock2',
+        ux: () => {},
         i18n: () => LuigiI18N
       };
 
@@ -85,7 +85,8 @@ describe('WebComponentService', function () {
       expect(expectedCmp.LuigiClient.linkManager().getCurrentRoute()).to.be.a('promise');
       const route = await expectedCmp.LuigiClient.linkManager().getCurrentRoute();
       expect(route).to.equal('mockRoute');
-      expect(expectedCmp.LuigiClient.uxManager).to.equal(window.Luigi.ux);
+      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('showLoadingIndicator');
+      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('hideLoadingIndicator');
       expect(expectedCmp.LuigiClient.getCurrentLocale()).to.equal(window.Luigi.i18n().getCurrentLocale());
       expect(expectedCmp.LuigiClient.getCurrentLocale).to.be.a('function');
       expect(expectedCmp.LuigiClient.publishEvent).to.be.a('function');
