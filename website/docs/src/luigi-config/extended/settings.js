@@ -14,9 +14,9 @@ class Settings {
   // backdropDisabled = true
   theming = {
     // useFioriScrollbars: true,
-    themes:[
+    themes: [
       { id: 'dark', name: 'Dark' },
-      { id: 'light', name: 'Light' },
+      { id: 'light', name: 'Light' }
     ],
     defaultTheme: 'dark',
     nodeViewURLDecorator: {
@@ -24,7 +24,7 @@ class Settings {
         keyName: 'theme'
       }
     }
-  }
+  };
 }
 
 export const settings = new Settings();

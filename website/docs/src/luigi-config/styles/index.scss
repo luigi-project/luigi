@@ -8,7 +8,7 @@ $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 
 $powder-blue: #d0d8e2;
-$ice-blue: #edf2f7;
+$ice-blue: color-mix(in srgb, var(--sapBackgroundColor), var(--fg-color) 10%);
 $border-color: #b6bac1;
 
 $height-shellbar: 64px;
