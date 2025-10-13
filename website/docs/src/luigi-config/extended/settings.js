@@ -12,6 +12,19 @@ class Settings {
   customSandboxRules = ['allow-presentation'];
   // hideNavigation = true
   // backdropDisabled = true
+  theming = {
+    // useFioriScrollbars: true,
+    themes:[
+      { id: 'dark', name: 'Dark' },
+      { id: 'light', name: 'Light' },
+    ],
+    defaultTheme: 'dark',
+    nodeViewURLDecorator: {
+      queryStringParameter: {
+        keyName: 'theme'
+      }
+    }
+  }
 }
 
 export const settings = new Settings();

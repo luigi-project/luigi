@@ -1,8 +1,52 @@
 @use './search' as *;
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Quicksand:500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+
+$primary-color: #2deb8a;
+$secondary-color: #3c4553;
+$light-gray: #e6e6e6;
+$medium-gray: #cacaca;
+
+$powder-blue: #d0d8e2;
+$ice-blue: #edf2f7;
+$border-color: #b6bac1;
+
+$height-shellbar: 64px;
+$height-shellbar-mobile: 64px;
+
+$side-nav-width-desktop: 320px;
+$side-nav-width-mobile: 260px;
+
+$main-nav-item-height: 36px;
+
+
+$fg-color: var(--fg-color);
+$bg-color: var(--sapBackgroundColor);
+$global-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$luigi-green: #2deb8a;
+
+
+:root {
+  --luigi__left-sidenav--width: 320px;
+  // --sapList_Active_Background: #F0F0F0;
+  --sapBackgroundColor: rgb(27, 27, 31);
+  --fg-color: #dfdfd6;
+  --sapTextColor: var(--fg-color);
+  --fdButtonColor: var(--fg-color);
+  --sapList_TextColor: var(--fg-color);
+
+  --sapContent_IconColor: #2deb8a;
+  --sapList_Hover_Background: black;
+  --sapList_Active_Background: gray;
+  --sapList_BorderColor: black;
+  --sapGroup_ContentBorderColor: black;
+  
+  color-scheme: dark;
+}
 
 // Icon font
 // @charset "UTF-8";
+
 
 @mixin custom-icon {
   &:before {
@@ -76,27 +120,6 @@
   content: "\65";
 }
 
-$primary-color: #2deb8a;
-$secondary-color: #3c4553;
-$light-gray: #e6e6e6;
-$medium-gray: #cacaca;
-
-$powder-blue: #d0d8e2;
-$ice-blue: #edf2f7;
-$border-color: #b6bac1;
-
-$height-shellbar: 110px;
-$height-shellbar-mobile: 95px;
-
-$side-nav-width-desktop: 320px;
-$side-nav-width-mobile: 260px;
-
-$main-nav-item-height: 36px;
-
-:root {
-  --luigi__left-sidenav--width: 320px;
-  --sapList_Active_Background: #F0F0F0;
-}
 
 .fd-menu {
   @media screen and (max-width: 599px) {
@@ -106,23 +129,24 @@ $main-nav-item-height: 36px;
 
 .luigi-documentation {
   * {
-    font-family: 'Open Sans', sans-serif;
+    font-family: $global-font-family;
   }
 
   .fd-shellbar {
-    background-color: $secondary-color;
+    background-color: $bg-color;
     height: $height-shellbar-mobile;
     position: relative;
     z-index: 2;
+    box-shadow: 0 .125rem .125rem 0 rgba(0,0,0,.05), inset 0 -.0625rem 0 0 #000;
 
     span {
       font-weight: 600;
-      margin-right: .95rem;
+      // margin-right: .95rem;
     }
 
     .fd-shellbar__action:not(.fd-shellbar__action--mobile) {
       span {
-        margin-left: 1rem;
+        // margin-left: 1rem;
       }
     }
 
@@ -151,7 +175,7 @@ $main-nav-item-height: 36px;
 
     @media screen and (min-width: 1024px) {
       height: $height-shellbar;
-      padding: 0 26px 0 17px !important;
+      padding: 0 79px 0 17px !important;
 
       .fd-popover:has(.luigi-search) {
         margin-top: -2px;
@@ -294,16 +318,21 @@ $main-nav-item-height: 36px;
       background: none;
       max-height: none;
       height: 61px;
-      padding-bottom: 41px;
-      margin-bottom: -#{$main-nav-item-height};
+      min-width: 30px;
+      color: $fg-color;
+      // padding-bottom: 41px;
+      // margin-bottom: -#{$main-nav-item-height};
 
       span {
         &:not(.fd-top-nav__icon) {
-          color: white;
-          font-size: 18px;
-          color: #fff;
-          padding-bottom: 29px;
-          border-bottom: 4px solid transparent;
+          // color: white;
+          // font-size: 18px;
+          // color: #fff;
+          // padding-bottom: 29px;
+          
+          font-size: 14px;
+          font-weight: 600;
+          // border-bottom: 4px solid transparent;
           transition: all .2s ease;
         }
       }
@@ -328,7 +357,7 @@ $main-nav-item-height: 36px;
       &.is-selected {
         span {
           &:not(.fd-top-nav__icon) {
-            border-bottom-color: $primary-color;
+            color: $luigi-green!important;
           }
         }
       }
@@ -394,7 +423,7 @@ $main-nav-item-height: 36px;
 
   .fd-app__sidebar {
     box-shadow: none;
-    background-color: #fafbfc;
+    // background-color: #fafbfc;
   }
 
   .fd-shellbar__logo {
@@ -407,24 +436,31 @@ $main-nav-item-height: 36px;
 
   .lui-customlogo {
     img {
-      width: 118px;
-      height: 47px !important;
+      height: 32px !important;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 5px 0 35px;
+    }
 
-      @media screen and (min-width: 1024px) {
-        width: 147px;
-        height: 60px !important;
-      }
+    &::after {
+      content: "Luigi";
+      display: inline;
+      color: $fg-color;
+      vertical-align: middle;
+      font-size: 18px;
+      font-weight: 600;
+      margin-left: 5px;
     }
   }
 
   .fd-page {
-    background-color: white;
+    background-color: $bg-color;
     overflow: hidden;
     line-height: initial;
   }
 
   .lui-side-nav__footer {
-    background-color: $secondary-color;
+    background-color: $bg-color;
     color: white;
     min-height: 58px;
 
@@ -459,10 +495,10 @@ $main-nav-item-height: 36px;
   }
 
   .fd-top-nav__icon {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 1;
     transition: color .3s ease;
-    color: white!important;
+    color: $fg-color!important;
 
     &:not(.sap-icon--search):before {
       font-family: 'icon-font' !important;
@@ -475,11 +511,11 @@ $main-nav-item-height: 36px;
       line-height: 1;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      font-size: 24px;
+      font-size: 20px;
     }
 
     &:hover {
-      color: $primary-color;
+      color: $primary-color!important;
     }
   }
 
@@ -497,6 +533,12 @@ $main-nav-item-height: 36px;
 
   .fd-nested-list {
     border-bottom: none;
+
+    &.level-2 {
+      .fd-nested-list__item {
+        padding-left: 5px;
+      }
+    }
   }
 
   .fd-nested-list__item {
@@ -588,7 +630,7 @@ $main-nav-item-height: 36px;
       padding: 30px;
 
       @media screen and (min-width: 1024px) {
-        padding: 40px 40px 20px;
+        padding: 20px 30px 20px;
       }
     }
   }
