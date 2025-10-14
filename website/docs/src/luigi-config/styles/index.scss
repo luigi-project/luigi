@@ -178,18 +178,13 @@ body.lightTheme {
     height: $height-shellbar-mobile;
     position: relative;
     z-index: 2;
-    box-shadow: 0 .125rem .125rem 0 rgba(0,0,0,.05), inset 0 -.0625rem 0 0 var(--header-border-color);
+    border-bottom: 1px solid var(--header-border-color);
+    box-shadow: none;
 
     span {
       font-weight: 600;
-      // margin-right: .95rem;
     }
 
-    .fd-shellbar__action:not(.fd-shellbar__action--mobile) {
-      span {
-        // margin-left: 1rem;
-      }
-    }
 
     .fd-shellbar__title {
       display: none;
@@ -394,7 +389,7 @@ body.lightTheme {
         > i {
           line-height: 12px;
           margin: 0;
-          color: white;
+          color: var(--fg-color);
         }
 
         &:focus::after,
