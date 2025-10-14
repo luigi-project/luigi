@@ -13,9 +13,9 @@ export class Luigi {
   _theming?: Theming;
   _routing?: Routing;
   __cssVars?: any;
-  
+
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
-  
+
   constructor(private engine: LuigiEngine) {
     this._store = this.createConfigStore();
   }

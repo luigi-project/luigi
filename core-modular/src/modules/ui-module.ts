@@ -36,9 +36,24 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.searchParams = node.searchParams;
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
+};
+
+const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
+  const allowRules: string[] = luigi.getConfigValue('settings.allowRules');
+
+  if (!allowRules?.length) {
+    return;
+  }
+
+  allowRules.forEach((rule: string, index: number) => {
+    allowRules[index] = rule + (rule.indexOf(';') != -1 ? '' : ';');
+  });
+
+  container.allowRules = allowRules;
 };
 
 export const UIModule = {
@@ -138,6 +153,8 @@ export const UIModule = {
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
+
+        setAllowRules(viewGroupContainer, luigi);
 
         //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});
