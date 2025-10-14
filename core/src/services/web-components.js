@@ -63,6 +63,7 @@ class WebComponentSvcClass {
     if (wc.extendedContext.currentNode) {
       wc.extendedContext.clientPermissions = wc.extendedContext.currentNode.clientPermissions;
     }
+
     const clientAPI = {
       linkManager: () => {
         const lm = window.Luigi.navigation();
@@ -83,7 +84,7 @@ class WebComponentSvcClass {
           }
         });
       },
-      uxManager: () => this.createUxManager(),
+      uxManager: window.Luigi.ux,
       getCurrentLocale: () => window.Luigi.i18n().getCurrentLocale(),
       publishEvent: (ev) => {
         if (eventBusElement.eventBus) {
@@ -146,6 +147,15 @@ class WebComponentSvcClass {
       wc.context = ctx;
       wc.nodeParams = extendedContext.nodeParams;
       wc.LuigiClient = clientAPI;
+
+      if (typeof wc.LuigiClient.uxManager === 'function') {
+        wc.LuigiClient.uxManager().showLoadingIndicator = () => {
+          window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
+        };
+        wc.LuigiClient.uxManager().hideLoadingIndicator = () => {
+          window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
+        };
+      }
     }
 
     const wcCreationInterceptor = LuigiConfig.getConfigValue('settings.webcomponentCreationInterceptor');
@@ -602,23 +612,6 @@ class WebComponentSvcClass {
         reject(null);
       }
     });
-  }
-
-  /**
-   * Creates extended version of Luigi Core UX features
-   */
-  createUxManager() {
-    const uxManager = window.Luigi.ux() || {};
-
-    return {
-      ...uxManager,
-      showLoadingIndicator: () => {
-        window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
-      },
-      hideLoadingIndicator: () => {
-        window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
-      }
-    };
   }
 }
 

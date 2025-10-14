@@ -1,5 +1,5 @@
 import { WebComponentService } from '../../src/services/web-components';
-import { LuigiConfig, LuigiI18N } from '../../src/core-api';
+import { LuigiConfig, LuigiI18N, LuigiUX } from '../../src/core-api';
 
 import { DefaultCompoundRenderer } from '../../src/utilities/helpers/web-component-helpers';
 import { LuigiElement } from '../../../client/src/luigi-element';
@@ -55,7 +55,7 @@ describe('WebComponentService', function () {
             }
           });
         },
-        ux: () => {},
+        ux: () => LuigiUX,
         i18n: () => LuigiI18N
       };
 
