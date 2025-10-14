@@ -29,29 +29,60 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
 
 :root {
+  
+  color-scheme: dark;
   --luigi__left-sidenav--width: 320px;
-  // --sapList_Active_Background: #F0F0F0;
-  --sapBackgroundColor: rgb(27, 27, 31);
+  --sapContent_IconColor: #2deb8a;
+  --fdShellbar_SearchField_Input_Border_Radius: 3px;  
+  --fdShellbar_Branding_Hover_Background: transparent;
+  --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41'/%3E%3C/svg%3E");
+  --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3E%3C/svg%3E"); 
+  
+  // theme specific
+  --bg-color: rgb(27, 27, 31);
   --fg-color: #dfdfd6;
+  --header-border-color: black;
+  
+  --sapBackgroundColor: var(--bg-color);
   --sapTextColor: var(--fg-color);
   --fdButtonColor: var(--fg-color);
   --sapList_TextColor: var(--fg-color);
 
-  --sapContent_IconColor: #2deb8a;
   --sapList_Hover_Background: color-mix(in srgb, var(--sapBackgroundColor), black 30%);
   --sapList_Active_Background: gray;
-  --sapList_BorderColor: black;
-  --sapGroup_ContentBorderColor: black;
-  --fdShellbar_SearchField_Input_Border_Radius: 3px;
-  --fdInputGroup_Input_Background: $searchfield-bg;
-  --fdShellbar_SearchField_Input_Background_Regular: $searchfield-bg;
-  --fdShellbar_SearchField_Background_Color: $searchfield-bg;
-  --sapShell_InteractiveBorderColor: $fg-color;
-  --fdShellbar_SearchField_Background_Color_Active: $searchfield-bg-active;
-  --fdShellbar_SearchField_Background_Color_Hover: $searchfield-bg-active;
-  --fdShellbar_Branding_Hover_Background: transparent;
+  --sapList_BorderColor: var(--header-border-color);
+  --sapGroup_ContentBorderColor: var(--header-border-color);
+
+  // --fdInputGroup_Input_Background: $searchfield-bg;
+  // --fdShellbar_SearchField_Input_Background_Regular: $searchfield-bg;
+  // --fdShellbar_SearchField_Background_Color: $searchfield-bg;
+  // --sapShell_InteractiveBorderColor: $fg-color;
+  // --fdShellbar_SearchField_Background_Color_Active: $searchfield-bg-active;
+  // --fdShellbar_SearchField_Background_Color_Hover: $searchfield-bg-active;
   
-  color-scheme: dark;
+  --icon: var(--icon-moon);
+  --theme-toggle-left: 4px;
+}
+
+body.lightTheme {  
+  color-scheme: light;
+  --bg-color: #f4f4f4;
+  --fg-color: #3c3c43;
+  --header-border-color: lightgray;
+  --icon: var(--icon-sun);
+  --theme-toggle-left: -13px;
+
+  --sapBackgroundColor: var(--bg-color);
+  --sapBackgroundColor: var(--bg-color);
+  --sapTextColor: var(--fg-color);
+  --fdButtonColor: var(--fg-color);
+  --sapList_TextColor: var(--fg-color);
+
+  --sapList_Hover_Background: color-mix(in srgb, var(--sapBackgroundColor), black 30%);
+  --sapList_Active_Background: gray;
+  --sapList_BorderColor: var(--header-border-color);
+  --sapGroup_ContentBorderColor: var(--header-border-color);
+  --fdShellbar_Button_Outline_Color: var(--fg-color);
 }
 
 // Icon font
@@ -147,7 +178,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
     height: $height-shellbar-mobile;
     position: relative;
     z-index: 2;
-    box-shadow: 0 .125rem .125rem 0 rgba(0,0,0,.05), inset 0 -.0625rem 0 0 #000;
+    box-shadow: 0 .125rem .125rem 0 rgba(0,0,0,.05), inset 0 -.0625rem 0 0 var(--header-border-color);
 
     span {
       font-weight: 600;
@@ -157,12 +188,6 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
     .fd-shellbar__action:not(.fd-shellbar__action--mobile) {
       span {
         // margin-left: 1rem;
-      }
-    }
-
-    [title=Blog] {
-      span {
-        margin-right: 1.3rem;
       }
     }
 
@@ -324,20 +349,13 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
       max-height: none;
       min-width: 30px;
       color: $fg-color;
-      // padding-bottom: 41px;
-      // margin-bottom: -#{$main-nav-item-height};
 
       span {
         &:not(.fd-top-nav__icon) {
-          // color: white;
-          // font-size: 18px;
-          // color: #fff;
-          // padding-bottom: 29px;
-          
           font-size: 14px;
           font-weight: 600;
-          // border-bottom: 4px solid transparent;
           transition: all .2s ease;
+          margin-left: 5px;
         }
       }
 
@@ -459,11 +477,11 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
   .lui-side-nav__footer {
     background-color: $bg-color;
-    color: white;
+    color: var(--fg-color);
     min-height: 58px;
 
     a {
-      color: white;
+      color: var(--fg-color);
       display: inline-block;
       margin-right: 20px;
       text-decoration: none;
@@ -480,15 +498,10 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
 
     .lui-side-nav__footer--text {
       width: 100%;
-      color: white;
+      color: var(--fg-color);
       font-size: 14px;
       font-weight: 600;
       padding: 20px 40px;
-
-      // &:before {
-      //   content: '\00a9';
-      //   margin-right: 5px;
-      // }
     }
   }
 
@@ -496,7 +509,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
     font-size: 20px;
     line-height: 1;
     transition: color .3s ease;
-    color: $fg-color!important;
+    color: color-mix(in srgb, var(--fg-color), #fff 30%)!important;
 
     &:not(.sap-icon--search):before {
       font-family: 'icon-font' !important;
@@ -744,6 +757,88 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
       background: $bg-color;
       & * {
         color: $fg-color;
+      }
+    }
+  }
+  
+  .fd-shellbar__action:has(a[data-testid=none_themeswitch]) {
+    position: relative;
+    
+    margin-left: 20px;
+    margin-right: 22px;
+
+    &::before {
+      width: 1px;
+      height: 24px;
+      background-color: var(--header-border-color);
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -14px;
+    }
+    &::after {
+      width: 1px;
+      height: 24px;
+      background-color: var(--header-border-color);
+      content: "";
+      position: absolute;
+      display: block;
+      top: 0;
+      right: -11px;
+    }
+  }
+
+  .fd-shellbar .fd-button.fd-shellbar__button[data-testid=none_themeswitch] {
+    width: 50px;
+    margin-right: 5px;
+
+    border-radius: 11px;
+    width: 40px;
+    height: 22px;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    border: 1px solid var(--fg-color);
+    background-color: var(--bg-color);
+    -webkit-transition: border-color .25s !important;
+    transition: border-color .25s !important;
+    pointer-events: auto;
+    cursor: pointer;
+
+    &::before {
+      margin-left: 8px;
+      width: 1px;
+      height: 24px;
+      background-color: var(--header-border-color);
+      content: "";
+      position: static !important;
+    }
+
+    &::after {
+      inset: -7px;
+    }
+
+    .sap-icon {
+      background: color-mix(in srgb, var(--fg-color), #fff 30%);
+      position: relative;
+      display: block;
+      top: 3px;
+      left: var(--theme-toggle-left);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        mask: var(--icon) no-repeat;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 12px;
+        height: 12px;
+        color: var(--fg-color);
+        background-color: var(--bg-color);
       }
     }
   }

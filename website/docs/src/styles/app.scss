@@ -19,9 +19,15 @@ $luigi-green: #2deb8a;
 
 
 :root {
-  --sapBackgroundColor: rgb(27, 27, 31);
-  --fg-color: #dfdfd6;
-  color-scheme: dark;
+    --sapBackgroundColor: rgb(27, 27, 31);
+    --fg-color: #dfdfd6;
+    color-scheme: dark;
+}
+
+html.lightTheme {
+    --sapBackgroundColor: #f4f4f4;
+    --fg-color: #3c3c43;
+    color-scheme: light;
 }
 
 body * {

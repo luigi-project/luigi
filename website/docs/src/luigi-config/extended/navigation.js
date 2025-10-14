@@ -52,6 +52,16 @@ class Navigation {
         }
       },
       {
+        label: 'Theme Switch',
+        pathSegment: 'none',
+        icon: 'theme',
+        viewUrl: 'about:blank',
+        onNodeActivation: () => {
+          window.toggleTheme();
+          return false;
+        }
+      },
+      {
         label: 'Twitter',
         externalLink: {
           url: 'https://twitter.com/luigiprojectio'

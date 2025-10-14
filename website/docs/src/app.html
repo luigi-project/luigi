@@ -15,6 +15,8 @@
     <div style="display: contents">%sveltekit.body%</div>
 
     <script type="text/javascript">
+      document.documentElement.classList.toggle('lightTheme', location.search.includes('theme=light'));
+
       const sanitizeString = function (input) {
         return input ? input.replace(/[^a-z0-9-/]/gim, '').toLowerCase() : '';
       };
@@ -30,6 +32,13 @@
 
       // Modify WC API docu labels manually for added clarity through title attribute
       document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+          LuigiClient.addContextUpdateListener((ctx) => {
+            console.log('context updated', ctx, LuigiClient.uxManager().getCurrentTheme());
+            document.documentElement.classList.toggle('lightTheme', LuigiClient.uxManager().getCurrentTheme() === 'light');
+          });
+        }, 1000);
+
         var allLabels = document.querySelectorAll('.label-success');
 
         allLabels.forEach((label) => {
