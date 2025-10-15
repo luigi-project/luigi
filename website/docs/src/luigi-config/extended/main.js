@@ -46,6 +46,19 @@ if (readTheme() === 'light') {
   settings.theming.defaultTheme = 'light';
 }
 
+if (cookieStore) {
+  cookieStore.addEventListener('change', (ev) => {
+    ev.changed.forEach((change) => {
+      if (change.name === 'dark-mode') {
+        const cTheme = Luigi.theming().getCurrentTheme();
+        if ((change.value === 'true' && cTheme === 'light') || (change.value === 'false' && cTheme === 'dark')) {
+          window.toggleTheme();
+        }
+      }
+    });
+  });
+}
+
 Luigi.setConfig({
   // auth,
   navigation,
