@@ -54,13 +54,6 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
   --sapList_Active_Background: gray;
   --sapList_BorderColor: var(--header-border-color);
   --sapGroup_ContentBorderColor: var(--header-border-color);
-
-  // --fdInputGroup_Input_Background: $searchfield-bg;
-  // --fdShellbar_SearchField_Input_Background_Regular: $searchfield-bg;
-  // --fdShellbar_SearchField_Background_Color: $searchfield-bg;
-  // --sapShell_InteractiveBorderColor: $fg-color;
-  // --fdShellbar_SearchField_Background_Color_Active: $searchfield-bg-active;
-  // --fdShellbar_SearchField_Background_Color_Hover: $searchfield-bg-active;
   
   --icon: var(--icon-moon);
   --theme-toggle-left: 4px;
@@ -709,10 +702,6 @@ body.lightTheme {
         display: flex;
       }
     }
-
-    /*&.lui-simpleSlideInNav .fd-app__sidebar {
-      left: -$side-nav-width-mobile;
-    }*/
 
     .lui-side-nav__footer {
       display: none;
