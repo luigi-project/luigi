@@ -37,11 +37,6 @@
       document.addEventListener('DOMContentLoaded', function () {
         setTimeout(() => {
           LuigiClient.addContextUpdateListener((ctx) => {
-            console.log(
-              'context updated',
-              ctx,
-              LuigiClient.uxManager().getCurrentTheme(),
-            );
             document.documentElement.classList.toggle(
               'lightTheme',
               LuigiClient.uxManager().getCurrentTheme() === 'light',
