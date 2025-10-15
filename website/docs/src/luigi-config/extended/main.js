@@ -34,8 +34,7 @@ function readTheme() {
           return 'dark';
         }
       }
-    }
-    else if (biscuit === 'dark-mode=false') {
+    } else if (biscuit === 'dark-mode=false') {
       return 'light';
     }
   }
