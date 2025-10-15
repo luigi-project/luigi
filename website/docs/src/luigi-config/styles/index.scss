@@ -47,6 +47,8 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
   --sapTextColor: var(--fg-color);
   --fdButtonColor: var(--fg-color);
   --sapList_TextColor: var(--fg-color);
+  --sapShell_TextColor:: var(--fg-color);
+  --sapField_TextColor:: var(--fg-color);
 
   --sapList_Hover_Background: color-mix(in srgb, var(--sapBackgroundColor), black 30%);
   --sapList_Active_Background: gray;
@@ -77,6 +79,8 @@ body.lightTheme {
   --sapTextColor: var(--fg-color);
   --fdButtonColor: var(--fg-color);
   --sapList_TextColor: var(--fg-color);
+  --sapShell_TextColor:: var(--fg-color);
+  --sapField_TextColor:: var(--fg-color);
 
   --sapList_Hover_Background: color-mix(in srgb, var(--sapBackgroundColor), black 30%);
   --sapList_Active_Background: gray;
