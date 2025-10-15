@@ -233,7 +233,7 @@ if (cookieStore) {
   cookieStore.addEventListener('change', (ev) => {
     ev.changed.forEach((change) => {
       if (change.name === 'dark-mode') {
-          document.body.classList.toggle('has-dark-bg', change.value !== 'false');
+        document.body.classList.toggle('has-dark-bg', change.value !== 'false');
       }
     });
   });
