@@ -229,6 +229,16 @@ if (readTheme() !== 'light') {
   document.body.classList.add('has-dark-bg');
 }
 
+if (cookieStore) {
+  cookieStore.addEventListener('change', (ev) => {
+    ev.changed.forEach((change) => {
+      if (change.name === 'dark-mode') {
+          document.body.classList.toggle('has-dark-bg', change.value !== 'false');
+      }
+    });
+  });
+}
+
 document.getElementById('theme-switcher-btn').addEventListener('click', () => {
   document.body.classList.toggle('has-dark-bg');
   storeTheme(document.body.classList.contains('has-dark-bg') ? 'dark' : 'light');

@@ -5,12 +5,14 @@ import { settings } from './settings';
 import { globalSearch } from './globalSearch';
 import { communication } from './communication';
 
-window.toggleTheme = () => {
+window.toggleTheme = (noStorage) => {
   document.body.classList.toggle('lightTheme');
   const currentTheme = document.body.classList.contains('lightTheme') ? 'light' : 'dark';
   Luigi.theming().setCurrentTheme(currentTheme);
   Luigi.configChanged('navigation');
-  storeTheme(currentTheme);
+  if (!noStorage) {
+    storeTheme(currentTheme);
+  }
 };
 
 function storeTheme(theme) {
@@ -52,7 +54,7 @@ if (cookieStore) {
       if (change.name === 'dark-mode') {
         const cTheme = Luigi.theming().getCurrentTheme();
         if ((change.value === 'true' && cTheme === 'light') || (change.value === 'false' && cTheme === 'dark')) {
-          window.toggleTheme();
+          window.toggleTheme(true);
         }
       }
     });
