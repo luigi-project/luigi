@@ -56,7 +56,7 @@ $searchfield-bg-active: color-mix(in srgb, $bg-color, white 10%);
   --sapGroup_ContentBorderColor: var(--header-border-color);
   
   --icon: var(--icon-moon);
-  --theme-toggle-left: 4px;
+  --theme-toggle-left: 9px;
 }
 
 body.lightTheme {  
@@ -65,7 +65,7 @@ body.lightTheme {
   --fg-color: #3c3c43;
   --header-border-color: lightgray;
   --icon: var(--icon-sun);
-  --theme-toggle-left: -13px;
+  --theme-toggle-left: -9px;
 
   --sapBackgroundColor: var(--bg-color);
   --sapBackgroundColor: var(--bg-color);
@@ -247,6 +247,7 @@ body.lightTheme {
         background-color: $bg-color;
         margin-top: -10px;
         padding: 10px 30px;
+        overflow: auto;
 
         &[aria-hidden='false'] {
           left: 0;
@@ -288,7 +289,7 @@ body.lightTheme {
             }
 
             .fd-menu__title {
-              color: #fff;
+              color: $fg-color;
               font-weight: 600;
             }
           }
@@ -358,7 +359,7 @@ body.lightTheme {
 
       .fd-top-nav__icon {
         line-height: 0;
-        margin-top: -2.25rem;
+        margin-top: -6px;
         margin-right: 0;
 
         &:before {
@@ -792,15 +793,6 @@ body.lightTheme {
     transition: border-color .25s !important;
     pointer-events: auto;
     cursor: pointer;
-
-    &::before {
-      margin-left: 8px;
-      width: 1px;
-      height: 24px;
-      background-color: var(--header-border-color);
-      content: "";
-      position: static !important;
-    }
 
     &::after {
       inset: -7px;
