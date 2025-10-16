@@ -258,7 +258,7 @@ You can set the following values:
 
 ### sideNav.displayFooterWhenCollapsed
 - **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
-- **since** NEXT_RELEASE
+- **since** 2.25.0
 
 ### sideNav.style
 - **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. 
