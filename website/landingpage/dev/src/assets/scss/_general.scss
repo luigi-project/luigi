@@ -6,8 +6,6 @@ body {
   counter-reset: subTitle;
 
   &.has-dark-bg {
-    // background: $secondary-color;
-    // color: #dfdfd6;
     --bg-color: rgb(27, 27, 31);
     --fg-color: #dfdfd6;
     --header-border-color: black;
@@ -83,12 +81,6 @@ ul {
     line-height: 94px;
     display: inline;
     color: transparent;
-
-    // color: var(--fg-color);
-    // text-shadow: 0 0 10px $luigi-green;
-
-    // color: $luigi-green;
-    // text-shadow: 0px 0px 20px var(--fg-color);
 
     img {
       display: none;
@@ -421,7 +413,6 @@ p {
     border-radius: 50%;
     background-color:color-mix(in srgb, $body-font-color, #ffffff 30%);
     box-shadow: var(--vp-shadow-1);
-    // transition: transform .25s!important
     border: 1px solid var(--fg-color);
 }
 
