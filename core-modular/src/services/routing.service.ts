@@ -58,12 +58,14 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
+        this.closeModal();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
+        this.closeModal();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath());
       });
@@ -432,5 +434,22 @@ export class RoutingService {
         history.go(-modalHistoryLength);
       }
     }
+  }
+
+  /**
+   * Closes all currently open Luigi micro-frontend modals.
+   *
+   * Finds every HTMLElement in the document matching the selector `.lui-modal-mf`
+   * and removes it from the DOM, effectively dismissing all active Luigi modals.
+   *
+   * Side effects:
+   * - Mutates the DOM by removing modal container elements.
+   *
+   * @returns void
+   */
+  closeModal(): void {
+    document.querySelectorAll<HTMLElement>('.lui-modal-mf').forEach((el) => {
+      el.remove();
+    });
   }
 }
