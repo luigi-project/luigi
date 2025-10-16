@@ -287,66 +287,83 @@ describe('Routing-helpers', () => {
 
     it('hash routing: only modal param removed leaves plain path', () => {
       const url = new URL('https://example.com/#/home?modal=%2Fsettings%2Fdetail');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, true, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        true,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '#/home');
       assert.equal(urlWithoutModalData, '');
     });
 
     it('hash routing: modal + other params keeps others', () => {
       const url = new URL('https://example.com/#/home?foo=bar&modal=%2Fx%2Fy');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, true, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        true,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '#/home?foo=bar');
       assert.equal(urlWithoutModalData, 'foo=bar');
     });
 
     it('hash routing: order of remaining params preserved', () => {
       const url = new URL('https://example.com/#/home?b=2&modal=%2Fz&a=1');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, true, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        true,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '#/home?b=2&a=1');
       assert.equal(urlWithoutModalData, 'b=2&a=1');
     });
 
     it('hash routing: modalParams also removed', () => {
-      const url = new URL(
-        'https://example.com/#/home?modal=%2Fz&modalParams=%7B%22title%22%3A%22Test%22%7D&keep=1'
+      const url = new URL('https://example.com/#/home?modal=%2Fz&modalParams=%7B%22title%22%3A%22Test%22%7D&keep=1');
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        true,
+        modalParam
       );
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, true, modalParam);
       assert.equal(pathWithoutModalData, '#/home?keep=1');
       assert.equal(urlWithoutModalData, 'keep=1');
     });
 
     it('hash routing: only modalParams (no modal) removed', () => {
       const url = new URL('https://example.com/#/home?modalParams=%7B%7D');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, true, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        true,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '#/home');
       assert.equal(urlWithoutModalData, '');
     });
 
     it('path routing: only modal removed', () => {
       const url = new URL('https://example.com/app/page?modal=%2Fchild');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, false, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        false,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '/app/page');
       assert.equal(urlWithoutModalData, '');
     });
 
     it('path routing: modal + others keeps others', () => {
       const url = new URL('https://example.com/app/page?foo=bar&modal=%2Fchild&bar=baz');
-      const { pathWithoutModalData, urlWithoutModalData } =
-        RoutingHelpers.computePathAndUrlWithoutModalData(url, false, modalParam);
+      const { pathWithoutModalData, urlWithoutModalData } = RoutingHelpers.computePathAndUrlWithoutModalData(
+        url,
+        false,
+        modalParam
+      );
       assert.equal(pathWithoutModalData, '/app/page?foo=bar&bar=baz');
       assert.equal(urlWithoutModalData, 'foo=bar&bar=baz');
     });
 
     it('path routing: modal + modalParams + other', () => {
-      const url = new URL(
-        'https://example.com/app/page?modal=%2Fchild&modalParams=%7B%22t%22%3A1%7D&x=y'
-      );
+      const url = new URL('https://example.com/app/page?modal=%2Fchild&modalParams=%7B%22t%22%3A1%7D&x=y');
       const res = RoutingHelpers.computePathAndUrlWithoutModalData(url, false, modalParam);
       assert.equal(res.pathWithoutModalData, '/app/page?x=y');
       assert.equal(res.urlWithoutModalData, 'x=y');
@@ -415,7 +432,7 @@ describe('Routing-helpers', () => {
       // Aktuelles Verhalten: führt zu "#/home&x=1"
       assert.equal(url.hash, '#/home&x=1');
     });
- });
+  });
 
   describe('removeModalDataFromSearch', () => {
     const modalParam = 'modal';
