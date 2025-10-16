@@ -25,6 +25,15 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.25.0] (2025-10-16)
+
+#### :rocket: Added
+* [#4520](https://github.com/luigi-project/luigi/pull/4520) Show footer in collapsed mode ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4514](https://github.com/luigi-project/luigi/pull/4514) Badge counter adjustment ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.24.0] (2025-09-18)
 
 #### :rocket: Added
@@ -2077,3 +2086,4 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.23.0]: https://github.com/luigi-project/luigi/compare/v2.22.1...v2.23.0
 [v2.23.1]: https://github.com/luigi-project/luigi/compare/v2.23.0...v2.23.1
 [v2.24.0]: https://github.com/luigi-project/luigi/compare/v2.23.1...v2.24.0
+[v2.25.0]: https://github.com/luigi-project/luigi/compare/v2.24.0...v2.25.0
