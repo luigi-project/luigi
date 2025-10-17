@@ -109,9 +109,9 @@ export default class extends HTMLElement {
     this.$showLoadingIndicatorBtn = this._shadowRoot.querySelector('#showLoadingIndicator');
     this.$showLoadingIndicatorBtn.addEventListener('click', () => {
       if (this.LuigiClient) {
-        this.LuigiClient.uxManager().showLoadingIndicator();
+        this.LuigiClient.uxManager().showLoadingIndicator(this);
         setTimeout(() => {
-          this.LuigiClient.uxManager().hideLoadingIndicator();
+          this.LuigiClient.uxManager().hideLoadingIndicator(this);
         }, 2000);
       }
     });

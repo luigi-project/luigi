@@ -20,11 +20,17 @@ export class LuigiElement extends HTMLElement {
   __postProcess(ctx, luigiClient, module_location_path) {
     this.LuigiClient = luigiClient;
     if (typeof this.LuigiClient.uxManager === 'function') {
-      this.LuigiClient.uxManager().showLoadingIndicator = () => {
-        window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
+      this.LuigiClient.uxManager().showLoadingIndicator = (wc) => {
+        window.postMessage({
+          msg: 'luigi.show-loading-indicator',
+          nestedScope: wc?.parentNode?.classList?.contains('iframeModalCtn')
+        }, '*');
       };
-      this.LuigiClient.uxManager().hideLoadingIndicator = () => {
-        window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
+      this.LuigiClient.uxManager().hideLoadingIndicator = (wc) => {
+        window.postMessage({
+          msg: 'luigi.hide-loading-indicator',
+          nestedScope: wc?.parentNode?.classList?.contains('iframeModalCtn')
+        }, '*');
       };
     }
     this.context = ctx;

@@ -1351,11 +1351,11 @@
         ViewGroupPreloading.viewGroupLoaded(iframe);
       }
 
-      if ('luigi.show-loading-indicator' === e.data.msg && !mfModalList.length && !mfDrawer.displayed) {
+      if ('luigi.show-loading-indicator' === e.data.msg && !e.data.nestedScope) {
         showLoadingIndicator = true;
       }
 
-      if ('luigi.hide-loading-indicator' === e.data.msg && !mfModalList.length && !mfDrawer.displayed) {
+      if ('luigi.hide-loading-indicator' === e.data.msg && !e.data.nestedScope) {
         clearTimeout(loadingIndicatorTimeout);
         showLoadingIndicator = false;
       }

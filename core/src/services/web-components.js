@@ -149,11 +149,17 @@ class WebComponentSvcClass {
       wc.LuigiClient = clientAPI;
 
       if (typeof wc.LuigiClient.uxManager === 'function') {
-        wc.LuigiClient.uxManager().showLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
+        wc.LuigiClient.uxManager().showLoadingIndicator = (wc) => {
+          window.postMessage({
+            msg: 'luigi.show-loading-indicator',
+            nestedScope: wc?.parentNode?.classList?.contains('iframeModalCtn')
+          }, '*');
         };
-        wc.LuigiClient.uxManager().hideLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
+        wc.LuigiClient.uxManager().hideLoadingIndicator = (wc) => {
+          window.postMessage({
+            msg: 'luigi.hide-loading-indicator',
+            nestedScope: wc?.parentNode?.classList?.contains('iframeModalCtn')
+          }, '*');
         };
       }
     }

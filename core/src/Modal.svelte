@@ -206,11 +206,11 @@
   });
 
   const onMessage = async (e) => {
-    if ('luigi.show-loading-indicator' === e.data.msg) {
+    if ('luigi.show-loading-indicator' === e.data.msg && e.data.nestedScope) {
       showLoadingIndicator = true;
     }
 
-    if ('luigi.hide-loading-indicator' === e.data.msg) {
+    if ('luigi.hide-loading-indicator' === e.data.msg && e.data.nestedScope) {
       showLoadingIndicator = false;
     }
 
