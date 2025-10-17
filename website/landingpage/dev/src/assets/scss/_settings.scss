@@ -70,7 +70,7 @@ $global-width: rem-calc(1290);
 $global-lineheight: 1.5;
 $foundation-palette: (
   primary: #2deb8a,
-  secondary: #3c4553,
+  secondary: var(--color-secondary),
   success: #3adb76,
   warning: #ffae00,
   alert: #cc4b37
@@ -80,9 +80,13 @@ $medium-gray: #cacaca;
 $dark-gray: #8a8a8a;
 $black: #0a0a0a;
 $white: #ffffff;
-$body-background: $white;
-$body-font-color: map-get($foundation-palette, secondary);
-$body-font-family: 'Open Sans', sans-serif;
+
+$body-background: var(--bg-color);
+$body-font-color: var(--fg-color);
+$header-border-color: var(--header-border-color);
+$luigi-green: #2deb8a;
+
+$body-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 $extra-font-family: 'Quicksand', sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;

@@ -1,53 +1,24 @@
 .p-footer {
-  color: $white;
   position: relative;
-  background: $ice-blue url('../img/default_footer_bg.svg') no-repeat 30% 100%;
-  background-size: auto 100%;
+  
+  background: $body-background;
   padding-top: 70px;
   z-index: 2;
 
   @include breakpoint(large) {
     background-position: 60% 100%;
     background-size: auto 100%;
-    padding-top: 12vw;
   }
 
   @include breakpoint(xxlarge) {
     background-size: 130% 100%;
   }
 
-  @include breakpoint(huge) {
-    background-image: url('../img/default_footer_bg_huge.svg');
-    background-position: 0 0;
-    background-size: 100% auto;
-    padding-top: 9vw;
-  }
 
   @include breakpoint(xhuge) {
     background-size: 140% auto;
   }
 
-  &--home {
-    
-    background: url('../img/footer_bg.svg') no-repeat 41% 50%;
-    background-size: auto 100%;
-
-    @include breakpoint(large) {
-      background-position: 56% 0;
-      background-size: auto 100%;
-      padding-top: 12vw;
-    }
-
-    @include breakpoint(xxlarge) {
-      background-size: 170% 100%;
-      padding-top: 9vw;
-    }
-
-    @include breakpoint(huge) {
-      background-size: 170% auto;
-      padding-top: 6vw;
-    }
-  }
 
   .s-stage {
     margin-bottom: 60px;
@@ -61,20 +32,30 @@
     display: inline-block;
 
     img {
-      width: 106px;
       height: 42px;
     }
+
+    span {
+      color: var(--fg-color);
+      font-weight: 700;
+      font-size: 20px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+  }
+
+  .footer-wrapper {
+    border-top: 1px solid $border-color;
   }
 
   .wr {
     font-size: 12px;
     padding-top: 30px;
-    border-top: 1px solid $border-color;
   }
 
   a {
     &:not(.btn-primary) {
-      color: $white;
+      color: $body-font-color;
 
       &:hover,
       &:active {

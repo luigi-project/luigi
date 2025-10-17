@@ -1,40 +1,52 @@
+.header-sep {
+  background: $header-border-color;
+  width: 100%;
+  height: 1px;
+  position: sticky;
+  top: 64px;
+  z-index: 1;
+}
+
+.header-sep-overlay {
+  background: $body-background;
+  width: 100%;
+  height: 1px;
+  z-index: 1;
+  transform: translate(0, -1px);
+  position: relative;
+}
+
 .p-header {
   position: relative;
   background-color: $secondary-color;
+  position: sticky;
+  top: 0;
+  background: $body-background;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
 
-  > .has-border {
-    padding-top: 25px;
-    padding-bottom: 25px;
 
-    @include breakpoint(xxlarge) {
-      max-width: calc(1290px - 50px);
-    }
+  > .row {
+    height: 64px;
+    width: 100%;
+    margin: 0;
+    padding: 0 32px;
+    max-width: 1440px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
+
+  
 
   &--home {
     padding-bottom: 0;
-    background-color: $ice-blue;
-    background-image: url('../img/header_bg.svg');
+    background-color: $body-background;
     background-repeat: no-repeat;
     background-position: left 50% bottom 100px;
     background-size: cover;
     z-index: 3;
-
-    @include breakpoint(large) {
-      background-position: left 50% bottom 0;
-    }
-
-
-
-    @include breakpoint(xlarge) {
-      > .has-border {
-        border-bottom: 1px solid $border-color;
-      }
-    }
-
-    @include breakpoint(xxlarge) {
-      background-position: left 70% bottom 0;
-    }
   }
 
   &--error-page {
@@ -43,124 +55,28 @@
 
   .logo {
     img {
-      display: block;
-      width: 118px;
-      height: 47px;
-
-      @include breakpoint(xlarge) {
-        width: 148px;
-        height: 60px;
-      }
+      height: 32px;
     }
+
+    span {
+      color: $body-font-color;
+      font-weight: 600;
+      font-size: 18px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+  }
+
+  .left-al {
+    padding-left: 0;
+  }
+  .right-al {
+    padding-right: 0;
   }
 
   .nav-wr {
     justify-content: flex-end;
     display: flex;
-  }
-
-  .s-stage {
-    padding-top: 30px;
-    padding-bottom: 50px;
-    color: $white;
-
-    > .row {
-      align-items: center;
-    }
-
-    .content {
-      @include breakpoint(medium down) {
-        margin-bottom: 50px;
-      }
-
-      @include breakpoint(large) {
-        height: 350px;
-        padding-top: 30px;
-
-        a {
-          margin-right: 10px;
-        }
-      }
-
-      @include breakpoint(xxlarge) {
-        height: 650px;
-        padding-top: 110px;
-      }
-    }
-
-    .sub-title {
-      font-family: $extra-font-family;
-      font-weight: 500;
-
-      @include breakpoint(xxlarge) {
-        font-size: 20px;
-      }
-    }
-
-    .image {
-      background-image: url('../img/running_app_2x.png');
-      background-position: 50% 0;
-      background-repeat: no-repeat;
-      background-size: cover;
-
-      .play-button {
-        display: block;
-        width: 88px;
-        height: 88px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-        background: rgba($powder-blue,0.51) url('../img/play_icon.svg') 60% 50% no-repeat;
-        background-size: 22px 28px;
-        border-radius: 50%;
-        border: 8px solid rgba($ice-blue,0.46);
-        background-clip: padding-box;
-      }
-
-      @include breakpoint(medium down) {
-        padding-top: 52%;
-        position: relative;
-      }
-
-      @include breakpoint(large) {
-        background: none;
-      }
-    }
-
-    @include breakpoint(large) {
-      position: relative;
-      overflow: hidden;
-
-      padding-top: 55px;
-      padding-bottom: 60px;
-
-      > .row {
-        position: relative;
-
-        &:before {
-          position: absolute;
-          display: block;
-          height: 100%;
-          width: 100%;
-          top: 0;
-          left: 45%;
-          content: '';
-          background-image: url('../img/running_app_2x.png');
-          background-position: 0 0;
-          background-repeat: no-repeat;
-          background-size: auto 100%;
-        }
-      }
-    }
-
-    @include breakpoint(xxlarge) {
-      > .row {
-        &:before {
-          left: 36%;
-        }
-      }
-    }
   }
 
   .menu-btn {
@@ -169,6 +85,7 @@
     background: url('../img/burger_menu.svg') 0 0 no-repeat;
     background-size: contain;
     cursor: pointer;
+    filter: invert(0.5);
   }
 }
 
@@ -179,17 +96,17 @@
 
     .item {
       min-width: 26px;
-      margin-left: 25px;
+      margin-left: 12px;
 
       &:first-child {
         margin-left: 0;
       }
 
       a {
-        font-size: 24px;
+        font-size: 20px;
         line-height: 1;
         display: block;
-        color: white;
+        color: color-mix(in srgb, $body-font-color, #ffffff 30%);
         transition: color 0.3s ease;
 
         &:hover {
@@ -207,7 +124,7 @@
     height: 100vh;
     transition: all 0.2s ease-in-out 0s;
     padding: 50px 30px;
-    background: $secondary-color;
+    background: $body-background;
     z-index: 10;
 
     &.is-active {
@@ -223,6 +140,7 @@
       top: 30px;
       right: 25px;
       cursor: pointer;
+      filter: invert(0.5);
     }
 
     .menu {
@@ -233,7 +151,7 @@
         border-bottom: 1px solid $border-color;
 
         a {
-          color: white;
+          color: $body-font-color;
           font-weight: 600;
 
           &:hover,
@@ -252,22 +170,20 @@
     justify-content: flex-end;
 
     .social-links {
-      margin-left: 50px;
+      margin-left: 34px;
     }
 
     .menu {
       display: flex;
 
       .item {
-        margin-left: 50px;
+        margin-left: 24px;
 
         a {
           display: block;
-          font-size: 18px;
+          font-size: 14px;
           font-weight: 600;
-          color: white;
-          padding-bottom: 39px;
-          margin-bottom: -39px;
+          color: $body-font-color;
           border-bottom: 4px solid transparent;
           transition: all 0.2s ease;
 
@@ -275,8 +191,7 @@
           &:focus,
           &:active,
           &.is-active {
-            color: white;
-            border-bottom-color: $primary-color;
+            color:  $primary-color;
           }
         }
       }
