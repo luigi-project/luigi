@@ -1,10 +1,11 @@
 <div class="row has-border xxlarge-collapse align-middle">
-  <div class="column small-6 large-3">
+  <div class="column small-6 large-3 left-al">
     <a class="logo" href="/">
       <img src="/assets/img/logo.svg" alt="Luigi" />
+      <span>Luigi</span>
     </a>
   </div>
-  <div class="column small-6 large-9 nav-wr">
+  <div class="column small-6 large-9 nav-wr right-al">
     <button id="menuBtn" class="menu-btn hide-for-xlarge"></button>
     <nav id="mainNavigation" class="main-nav">
       <button id="closeMainNavigation" class="close-btn hide-for-xlarge"></button>
@@ -16,20 +17,56 @@
           <a href="https://docs.luigi-project.io">Documentation</a>
         </li>
         <li class="item">
-          <a href="/blog/overview" class="{{#ifpagewildcard 'overview' '20*'}}is-active{{/ifpagewildcard}}">Blog</a>
+          <a
+            href="/blog/overview"
+            class="{{#ifpagewildcard 'overview' '20*'}}is-active{{/ifpagewildcard}}"
+            >Blog</a
+          >
+        </li>
+      </ul>
+      <ul class="menu theme-menu">
+        <li class="item">
+          <button
+            class="theme-switch"
+            type="button"
+            role="switch"
+            title="Switch to light theme"
+            aria-checked="false"
+            id="theme-switcher-btn"
+          >
+            <span class="check">
+              <span class="icon">
+                <span class="vpi-sun sun"> </span>
+                <span class="vpi-moon moon"> </span>
+              </span>
+            </span>
+          </button>
         </li>
       </ul>
       <ul class="social-links">
         <li class="item">
-          <a href="https://twitter.com/luigiprojectio" target="_blank" rel="noopener noreferrer"
-            class="icon-twitter-icon"></a>
+          <a
+            href="https://twitter.com/luigiprojectio"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="icon-twitter-icon"
+          ></a>
         </li>
         <li class="item">
-          <a href="https://slack.luigi-project.io" target="_blank" rel="noopener noreferrer"
-            class="icon-slack-icon"></a>
+          <a
+            href="https://slack.luigi-project.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="icon-slack-icon"
+          ></a>
         </li>
         <li class="item">
-          <a href="https://github.com/luigi-project/luigi" target="_blank" rel="noopener noreferrer" class="icon-github-icon"></a>
+          <a
+            href="https://github.com/luigi-project/luigi"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="icon-github-icon"
+          ></a>
         </li>
       </ul>
     </nav>
