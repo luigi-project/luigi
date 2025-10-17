@@ -30,8 +30,8 @@ export class Luigi {
   // NOTE: using arrow style functions to have "code completion" in browser dev tools
   setConfig = (cfg: any) => {
     this.config = cfg;
-    this.engine.init();
     this.setConfigCallback(this.getConfigReadyCallback());
+    this.engine.init();
     this.luigiAfterInit();
   };
 

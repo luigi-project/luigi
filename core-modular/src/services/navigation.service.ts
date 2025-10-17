@@ -169,7 +169,7 @@ export class NavigationService {
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
-    const rootNodes = cfg.navigation?.nodes || [];
+    const rootNodes = JSON.parse(JSON.stringify(cfg.navigation?.nodes)) || [];
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
       nodesInPath: [{ children: rootNodes }],
