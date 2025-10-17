@@ -386,8 +386,6 @@ export class RoutingService {
     }
   }
 
-  
-  
   /**
    * Closes all currently open modals in the Luigi application.
    *
