@@ -58,14 +58,14 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        this.closeModal();
+        this.closeModals();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        this.closeModal();
+        this.closeModals();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath());
       });
@@ -196,11 +196,6 @@ export class RoutingService {
    * @param modalPath The route fragment or identifier of the modal to open.
    * @param modalParams Optional plain object of parameters to pass to the modal.
    *                    Ignored if null/undefined or has no own enumerable keys.
-   *
-   * @remarks
-   * - The function mutates the input params object in place.
-   * - Modal parameters are stored as a JSON string to preserve object structure in a flat param map.
-   * - Callers should ensure modalParams is serializable; circular references will cause JSON.stringify to throw.
    */
   private updateParamsWithModal(
     params: Record<string, any>,
@@ -231,14 +226,6 @@ export class RoutingService {
    *                            parameter section of) the hash fragment instead of the search part.
    * @param queryParamSeparator - Token used to delimit the routing portion of the hash from
    *                              the parameter string (commonly '?', but may be a custom separator).
-   *
-   * @remarks
-   * - The function uses window.location.hash to locate the existing parameter separator, then
-   *   slices url.hash accordingly. This can lead to subtle differences if url is not derived
-   *   from the current window.location.
-   * - Existing query/search parameters are not merged; they are fully replaced.
-   * - The function performs no validation on params; caller should ensure serializability.
-   * - No value is returned; callers should use the mutated url object after invocation.
    */
   private applyParamsToUrl(
     url: URL,
@@ -275,19 +262,6 @@ export class RoutingService {
    *    (including modal data), so that a subsequent back navigation will close
    *    the modal while staying on the same base path.
    *
-   * Rationale:
-   * Ensures a smooth UX where opening a modal does not lose the underlying page
-   * context, and closing the modal via browser back navigation restores the
-   * non-modal state instead of navigating away.
-   *
-   * Side effects:
-   * - Mutates browser history via `replaceState` and `pushState`.
-   * - Does not trigger a full page reload.
-   *
-   * Edge cases:
-   * - If `urlWithoutModalData` is an empty string, no query (`?`) is appended.
-   * - Assumes `url` already contains the modal-specific parameters to be preserved
-   *   in the pushed history entry.
    *
    * @param url The full current URL (including modal-related parameters) to be preserved in the new history entry.
    * @param urlWithoutModalData A sanitized query/hash parameter string with modal data removed; used to form the base URL.
@@ -370,30 +344,6 @@ export class RoutingService {
    * - modalHistoryLength: number; how many history entries were created while the modal was active.
    * - historygap: number; a calculated gap used to determine a precise rewind scenario.
    *
-   * Side effects:
-   * - Manipulates the global history stack (replaceState, pushState, go, back).
-   * - Attaches (once) a popstate listener.
-   * - May set this.luigi.preventLoadingModalData = true to suppress modal re-initialization.
-   *
-   * Edge cases handled:
-   * - Modal added more entries than the available history length (overflow / deep link reload).
-   * - Precise alignment when a precomputed historygap matches the expected relation.
-   *
-   * Assumptions / Requirements:
-   * - Consumers must ensure history.state contains the required properties before calling.
-   * - Should be invoked only during the modal closing lifecycle.
-   *
-   * Risks / Caveats:
-   * - Direct manipulation of the History API can be fragile across browser implementations.
-   * - Incorrect or missing history.state fields can lead to unexpected navigation behavior.
-   * - Relies on synchronous availability of history.state when invoked.
-   *
-   * Performance:
-   * - Minimal; only a single event listener (removed automatically after first popstate).
-   *
-   * Debugging tips:
-   * - Inspect window.history.state before and after invocation.
-   * - Log history.length and modalHistoryLength to verify branch selection.
    *
    * Returns:
    * - void (controls navigation via side effects).
@@ -436,20 +386,22 @@ export class RoutingService {
     }
   }
 
+  
+  
   /**
-   * Closes all currently open Luigi micro-frontend modals.
+   * Closes all currently open modals in the Luigi application.
    *
-   * Finds every HTMLElement in the document matching the selector `.lui-modal-mf`
-   * and removes it from the DOM, effectively dismissing all active Luigi modals.
-   *
-   * Side effects:
-   * - Mutates the DOM by removing modal container elements.
-   *
+   * If the configuration flag `routing.showModalPathInUrl` is enabled, this method
+   * first strips any modal-related data (such as modal path segments or parameters)
+   * from the current URL without triggering a navigation update (silent removal),
+   * ensuring the URL reflects that no modals are active.
+   * @public
    * @returns void
    */
-  closeModal(): void {
-    document.querySelectorAll<HTMLElement>('.lui-modal-mf').forEach((el) => {
-      el.remove();
-    });
+  closeModals(): void {
+    if (this.luigi.getConfigValue('routing.showModalPathInUrl')) {
+      this.removeModalDataFromUrl(false);
+    }
+    this.luigi.getEngine()._connector?.closeModals();
   }
 }
