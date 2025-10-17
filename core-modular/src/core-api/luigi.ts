@@ -103,7 +103,10 @@ export class Luigi {
    * @example
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    */
-  async storeUserSettings(userSettingsObj: Record<string, any>, previousUserSettingsObj: Record<string, any>): Promise<any> {
+  async storeUserSettings(
+    userSettingsObj: Record<string, any>,
+    previousUserSettingsObj: Record<string, any>
+  ): Promise<any> {
     const userSettingsConfig = await this.getConfigValueAsync('userSettings');
     const userSettings = userSettingsConfig
       ? userSettingsConfig
