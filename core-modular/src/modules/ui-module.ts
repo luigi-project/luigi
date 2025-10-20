@@ -204,7 +204,13 @@ export const UIModule = {
   },
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderModal(lc, modalSettings, onCloseCallback);
+    const routingService = serviceRegistry.get(RoutingService);
+    luigi.getEngine()._connector?.renderModal(lc, modalSettings, () => {
+      onCloseCallback?.();
+      if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+        routingService.removeModalDataFromUrl(true);
+      }
+    });
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
