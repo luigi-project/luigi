@@ -9,7 +9,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-  const userSettings =  hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -36,9 +36,54 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.searchParams = node.searchParams;
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    setSandboxRules(lc, luigi);
+    setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
+};
+
+const setSandboxRules = (container: LuigiContainer, luigi: Luigi): void => {
+  const customSandboxRules: string[] = luigi.getConfigValue('settings.customSandboxRules');
+
+  if (!customSandboxRules?.length) {
+    return;
+  }
+
+  const luigiDefaultSandboxRules: string[] = [
+    'allow-forms', // Allows the resource to submit forms. If this keyword is not used, form submission is blocked.
+    'allow-modals', // Lets the resource open modal windows.
+    // 'allow-orientation-lock', // Lets the resource lock the screen orientation.
+    // 'allow-pointer-lock', // Lets the resource use the Pointer Lock API.
+    'allow-popups', // Allows popups (such as window.open(), _blank as target attribute, or showModalDialog()). If this keyword is not used, the popup will silently fail to open.
+    'allow-popups-to-escape-sandbox', // Lets the sandboxed document open new windows without those windows inheriting the sandboxing. For example, this can safely sandbox an advertisement without forcing the same restrictions upon the page the ad links to.
+    // 'allow-presentation', // Lets the resource start a presentation session.
+    'allow-same-origin', // If this token is not used, the resource is treated as being from a special origin that always fails the same-origin policy.
+    'allow-scripts' // Lets the resource run scripts (but not create popup windows).
+    // 'allow-storage-access-by-user-activation', // Lets the resource request access to the parent's storage capabilities with the Storage Access API.
+    // 'allow-top-navigation', // Lets the resource navigate the top-level browsing context (the one named _top).
+    // 'allow-top-navigation-by-user-activation', // Lets the resource navigate the top-level browsing context, but only if initiated by a user gesture.
+    // 'allow-downloads-without-user-activation' // Allows for downloads to occur without a gesture from the user.
+  ];
+  const activeSandboxRules: string[] = customSandboxRules
+    ? [...new Set([...luigiDefaultSandboxRules, ...customSandboxRules])]
+    : luigiDefaultSandboxRules;
+
+  container.sandboxRules = activeSandboxRules;
+};
+
+const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
+  const allowRules: string[] = luigi.getConfigValue('settings.allowRules');
+
+  if (!allowRules?.length) {
+    return;
+  }
+
+  allowRules.forEach((rule: string, index: number) => {
+    allowRules[index] = rule + (rule.indexOf(';') != -1 ? '' : ';');
+  });
+
+  container.allowRules = allowRules;
 };
 
 export const UIModule = {
@@ -108,8 +153,9 @@ export const UIModule = {
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const userSettingGroups = await luigi.readUserSettings();
-    const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-    const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
+    const hasUserSettings =
+      currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+    const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
@@ -132,12 +178,17 @@ export const UIModule = {
 
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+        viewGroupContainer.viewurl = serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
+
+        setSandboxRules(viewGroupContainer, luigi);
+        setAllowRules(viewGroupContainer, luigi);
 
         //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});
