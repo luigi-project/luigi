@@ -37,6 +37,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     setSandboxRules(lc, luigi);
+    setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
@@ -69,6 +70,20 @@ const setSandboxRules = (container: LuigiContainer, luigi: Luigi): void => {
     : luigiDefaultSandboxRules;
 
   container.sandboxRules = activeSandboxRules;
+};
+
+const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
+  const allowRules: string[] = luigi.getConfigValue('settings.allowRules');
+
+  if (!allowRules?.length) {
+    return;
+  }
+
+  allowRules.forEach((rule: string, index: number) => {
+    allowRules[index] = rule + (rule.indexOf(';') != -1 ? '' : ';');
+  });
+
+  container.allowRules = allowRules;
 };
 
 export const UIModule = {
@@ -173,6 +188,7 @@ export const UIModule = {
         viewGroupContainer.userSettings = userSettings;
 
         setSandboxRules(viewGroupContainer, luigi);
+        setAllowRules(viewGroupContainer, luigi);
 
         //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});

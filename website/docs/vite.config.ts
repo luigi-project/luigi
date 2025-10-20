@@ -15,5 +15,10 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 900000
+  },
+  server: {
+    watch: {
+      usePolling: true
+    }
   }
 });
