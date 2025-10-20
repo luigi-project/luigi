@@ -9,7 +9,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-  const userSettings =  hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
@@ -36,9 +36,24 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.searchParams = node.searchParams;
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
+};
+
+const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
+  const allowRules: string[] = luigi.getConfigValue('settings.allowRules');
+
+  if (!allowRules?.length) {
+    return;
+  }
+
+  allowRules.forEach((rule: string, index: number) => {
+    allowRules[index] = rule + (rule.indexOf(';') != -1 ? '' : ';');
+  });
+
+  container.allowRules = allowRules;
 };
 
 export const UIModule = {
@@ -108,8 +123,9 @@ export const UIModule = {
   },
   updateMainContent: async (currentNode: any, luigi: Luigi) => {
     const userSettingGroups = await luigi.readUserSettings();
-    const hasUserSettings = currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-    const userSettings =  hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
+    const hasUserSettings =
+      currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
+    const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
@@ -132,12 +148,16 @@ export const UIModule = {
 
       if (viewGroupContainer) {
         viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+        viewGroupContainer.viewurl = serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
+
+        setAllowRules(viewGroupContainer, luigi);
 
         //IMPORTANT!!! This needs to be at the end
         viewGroupContainer.updateContext(currentNode.context || {});
