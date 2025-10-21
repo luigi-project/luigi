@@ -80,12 +80,11 @@ async function getReleases() {
       'User-Agent': 'Luigi Release CLI'
     }
   });
-    if (!response.ok) {
+  if (!response.ok) {
     throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
   }
   const data = await response.json();
-  return data.map((r) => r.tag_name)
-    .filter((t, i) => i <= 8);
+  return data.map((r) => r.tag_name).filter((_, i) => i <= 8);
 }
 
 function getVersion(pkg) {
