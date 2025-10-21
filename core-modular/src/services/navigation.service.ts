@@ -381,8 +381,9 @@ export class NavigationService {
     const cfg = this.luigi.getConfig();
     const pathData = this.getPathData(path);
     const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
-    const profileItems =
-      cfg.navigation?.profile?.items?.length ? JSON.parse(JSON.stringify(cfg.navigation.profile.items)) : [];
+    const profileItems = cfg.navigation?.profile?.items?.length
+      ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
+      : [];
     const appSwitcher =
       cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
