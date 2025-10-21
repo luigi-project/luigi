@@ -15,6 +15,7 @@ export class Luigi {
   _theming?: Theming;
   _routing?: Routing;
   __cssVars?: any;
+  preventLoadingModalData?: boolean;
   configReadyCallback = function () {};
 
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';

@@ -170,7 +170,7 @@ export class NavigationService {
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
-    const rootNodes = JSON.parse(JSON.stringify(cfg.navigation?.nodes)) || [];
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
       nodesInPath: [{ children: rootNodes }],
@@ -380,12 +380,15 @@ export class NavigationService {
   getTopNavData(path: string): TopNavData {
     const cfg = this.luigi.getConfig();
     const pathData = this.getPathData(path);
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
+    const profileItems =
+      cfg.navigation?.profile?.items?.length ? JSON.parse(JSON.stringify(cfg.navigation.profile.items)) : [];
     const appSwitcher =
       cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
 
-    if (cfg.navigation?.profile?.items?.length) {
-      cfg.navigation.profile.items.map((item: ProfileItem) => ({
+    if (profileItems?.length) {
+      profileItems.map((item: ProfileItem) => ({
         ...item,
         label: this.luigi.i18n().getTranslation(item.label || '')
       }));
@@ -394,7 +397,7 @@ export class NavigationService {
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(cfg.navigation?.nodes) as [any],
+      topNodes: this.buildNavItems(rootNodes) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: cfg.navigation?.profile,
       appSwitcher:
@@ -501,5 +504,25 @@ export class NavigationService {
     const pathData = this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
+  }
+
+  private prepareRootNodes(navNodes: any[]): any[] {
+    const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
+
+    if (!rootNodes.length) {
+      return rootNodes;
+    }
+
+    navNodes.forEach((node: any) => {
+      if (node?.badgeCounter?.count) {
+        const badgeIitem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
+
+        if (badgeIitem) {
+          badgeIitem.badgeCounter.count = node.badgeCounter.count;
+        }
+      }
+    });
+
+    return rootNodes;
   }
 }
