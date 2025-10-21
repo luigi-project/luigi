@@ -1145,10 +1145,10 @@
         aria-roledescription="Main Navigation"
         bind:this={vegaNavCnt}
       >
-      <div class="fd-side-nav__container fd-side-nav__container--top">
-        <ul class="fd-navigation-list level-1" role="tree" aria-roledescription="Navigation List Tree">
-          {#if children && pathData.length > 1}
-          {#each sortedVerticalNavGroups as group}
+        <div class="fd-side-nav__container fd-side-nav__container--top">
+          <ul class="fd-navigation-list level-1" role="tree" aria-roledescription="Navigation List Tree">
+            {#if children && pathData.length > 1}
+              {#each sortedVerticalNavGroups as group}
                 <LeftNavGroup
                   navGroup={group}
                   vega={vegaSideNav}
@@ -1355,11 +1355,11 @@
                   {/each}
                 </LeftNavGroup>
               {/each}
-              {/if}
+            {/if}
 
-              <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
-            </ul>
-          </div>
+            <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
+          </ul>
+        </div>
         <!-- Vega footer -->
         {#if displayFooterWhenCollapsed && footerText}
           <div class="fd-side-nav__utility">
