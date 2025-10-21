@@ -150,10 +150,10 @@ class WebComponentSvcClass {
 
       if (typeof wc.LuigiClient.uxManager === 'function') {
         wc.LuigiClient.uxManager().showLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.show-loading-indicator' }, '*');
+          window.postMessage({ msg: 'luigi.show-loading-indicator' });
         };
         wc.LuigiClient.uxManager().hideLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.hide-loading-indicator' }, '*');
+          window.postMessage({ msg: 'luigi.hide-loading-indicator' });
         };
       }
     }
