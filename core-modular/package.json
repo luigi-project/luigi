@@ -12,6 +12,7 @@
     "@types/chai": "^5.2.2",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.17",
+    "@types/sinon": "^17.0.4",
     "babel-jest": "^29.7.0",
     "chai": "^4.3.6",
     "css-tree": "^2.3.1",
