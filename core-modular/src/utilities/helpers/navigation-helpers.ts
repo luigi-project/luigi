@@ -1,4 +1,3 @@
-import { featureToggles } from '../../core-api/featuretoggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
 import { AuthHelpers } from './auth-helpers';
@@ -48,9 +47,9 @@ export const NavigationHelpers = {
     return match;
   },
 
-  checkVisibleForFeatureToggles: (nodeToCheckPermission: any): boolean => {
+  checkVisibleForFeatureToggles: (nodeToCheckPermission: any, luigi: Luigi): boolean => {
     if (nodeToCheckPermission?.visibleForFeatureToggles) {
-      const activeFeatureToggles: string[] = featureToggles.getActiveFeatureToggleList();
+      const activeFeatureToggles: string[] = luigi.ft().getActiveFeatureToggleList();
 
       for (const ft of nodeToCheckPermission.visibleForFeatureToggles) {
         if (ft.startsWith('!')) {
@@ -83,7 +82,7 @@ export const NavigationHelpers = {
       }
     }
 
-    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor)) return false;
+    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, luigi)) return false;
 
     const permissionCheckerFn = luigi.getConfigValue('navigation.nodeAccessibilityResolver');
 
