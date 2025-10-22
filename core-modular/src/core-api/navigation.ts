@@ -35,7 +35,7 @@ export class Navigation {
     }
   };
 
-  getChildren = async (node: any, context: any[] | undefined): any[] => {
+  getChildren = async (node: any, context: any[] | undefined): Promise<any[]> => {
     if (!node) {
       return [];
     }
@@ -70,7 +70,7 @@ export class Navigation {
     return filteredChildren;
   };
 
-  getFilteredChildren = async (node: any): any[] => {
+  getFilteredChildren = async (node: any): Promise<any[]> => {
     return this.nodeDataManagementService.hasChildren(node)
       ? this.getChildrenFromCache(node)
       : await this.getChildren(node, undefined);
