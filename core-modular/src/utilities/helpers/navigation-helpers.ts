@@ -1,5 +1,7 @@
-import { get } from 'lodash';
+import { featureToggles } from '../../core-api/featuretoggles';
+import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
+import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
@@ -46,7 +48,48 @@ export const NavigationHelpers = {
     return match;
   },
 
-  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): String | undefined => {
+  checkVisibleForFeatureToggles: (nodeToCheckPermission: any): boolean => {
+    if (nodeToCheckPermission?.visibleForFeatureToggles) {
+      const activeFeatureToggles: string[] = featureToggles.getActiveFeatureToggleList();
+
+      for (const ft of nodeToCheckPermission.visibleForFeatureToggles) {
+        if (ft.startsWith('!')) {
+          if (activeFeatureToggles.includes(ft.slice(1))) {
+            return false;
+          }
+        } else {
+          if (!activeFeatureToggles.includes(ft)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  },
+
+  isNodeAccessPermitted: (nodeToCheckPermissionFor: any, parentNode: any, currentContext: any, luigi: Luigi): boolean => {
+    if (luigi.auth().isAuthorizationEnabled()) {
+      const loggedIn = AuthHelpers.isLoggedIn();
+      const anon = nodeToCheckPermissionFor.anonymousAccess;
+
+      if ((loggedIn && anon === 'exclusive') || (!loggedIn && anon !== 'exclusive' && anon !== true)) {
+        return false;
+      }
+    }
+
+    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor)) return false;
+
+    const permissionCheckerFn = luigi.getConfigValue('navigation.nodeAccessibilityResolver');
+
+    if (typeof permissionCheckerFn !== 'function') {
+      return true;
+    }
+
+    return permissionCheckerFn(nodeToCheckPermissionFor, parentNode, currentContext);
+  },
+
+  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): string | undefined => {
     const appSwitcherItems = appSwitcherData?.items;
     if (appSwitcherItems && pathData) {
       let title = '';
@@ -60,7 +103,7 @@ export const NavigationHelpers = {
             match = NavigationHelpers.checkMatch(item.selectionConditions.route, pathData.nodesInPath ?? []);
             if (match) {
               (item.selectionConditions.contextCriteria || []).forEach((ccrit: any) => {
-                match = match && get((pathData.selectedNode as any)?.context, ccrit.key) === ccrit.value;
+                match = match && (pathData?.selectedNode as any)?.context[ccrit.key] === ccrit.value;
               });
             }
           }
