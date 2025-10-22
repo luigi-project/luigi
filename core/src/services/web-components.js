@@ -147,15 +147,6 @@ class WebComponentSvcClass {
       wc.context = ctx;
       wc.nodeParams = extendedContext.nodeParams;
       wc.LuigiClient = clientAPI;
-
-      if (typeof wc.LuigiClient.uxManager === 'function') {
-        wc.LuigiClient.uxManager().showLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.show-loading-indicator' });
-        };
-        wc.LuigiClient.uxManager().hideLoadingIndicator = () => {
-          window.postMessage({ msg: 'luigi.hide-loading-indicator' });
-        };
-      }
     }
 
     const wcCreationInterceptor = LuigiConfig.getConfigValue('settings.webcomponentCreationInterceptor');
