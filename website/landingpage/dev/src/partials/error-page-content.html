@@ -9,26 +9,20 @@
     </div>
     <div class="middle">
       <div class="wr">
-        {{#ifpage '403'}}
-          Forbidden<br />
-          403 
-        {{/ifpage}}
-        {{#ifpage '404'}}
-          Game Over<br />
-          404
-        {{/ifpage}}
+        {{#ifpage '403'}} Forbidden<br />
+        403 {{/ifpage}} {{#ifpage '404'}} Game Over<br />
+        404 {{/ifpage}}
       </div>
     </div>
     <div class="bottom">
       <ul id="social-list" class="links-list">
         <li class="item">
-          <a class="is-active" href="https://twitter.com/luigiprojectio" target="blank">Continue to Twitter</a>
-        </li>
-        <li class="item">
           <a href="https://slack.luigi-project.io" target="blank">Continue to Slack</a>
         </li>
         <li class="item">
-          <a href="https://github.com/luigi-project/luigi" target="blank">Continue to GitHub</a>
+          <a href="https://github.com/luigi-project/luigi" target="blank"
+            >Continue to GitHub</a
+          >
         </li>
       </ul>
     </div>
