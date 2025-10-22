@@ -80,7 +80,7 @@ async function getReleases() {
       'User-Agent': 'Luigi Release CLI'
     }
   });
-  if (!response.ok) {
+  if (!response?.ok) {
     throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
   }
   const data = await response.json();
