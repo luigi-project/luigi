@@ -51,9 +51,10 @@ export class Navigation {
           children = [];
         }
 
-        children = children
-          .map((child: any) => this.navService.getExpandStructuralPathSegment(child))
-          .map((child: any) => this.navService.bindChildToParent(child, node)) || [];
+        children =
+          children
+            .map((child: any) => this.navService.getExpandStructuralPathSegment(child))
+            .map((child: any) => this.navService.bindChildToParent(child, node)) || [];
       } catch (err) {
         console.error('Could not lazy-load children for node', err);
       }

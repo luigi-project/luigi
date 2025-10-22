@@ -14,4 +14,4 @@ export const AuthHelpers = {
 
     return storedAuthData && isAuthValid();
   }
-}
+};

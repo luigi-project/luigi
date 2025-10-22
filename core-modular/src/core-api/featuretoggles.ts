@@ -48,7 +48,7 @@ class LuigiFeatureToggles {
    * @example Luigi.featureToggles().getActiveFeatureToggleList();
    */
   getActiveFeatureToggleList(): string[] {
-    return [...get(this.featureToggleList)].filter(ft => !ft.startsWith('!'));
+    return [...get(this.featureToggleList)].filter((ft) => !ft.startsWith('!'));
   }
 
   /**

@@ -68,7 +68,12 @@ export const NavigationHelpers = {
     return true;
   },
 
-  isNodeAccessPermitted: (nodeToCheckPermissionFor: any, parentNode: any, currentContext: any, luigi: Luigi): boolean => {
+  isNodeAccessPermitted: (
+    nodeToCheckPermissionFor: any,
+    parentNode: any,
+    currentContext: any,
+    luigi: Luigi
+  ): boolean => {
     if (luigi.auth().isAuthorizationEnabled()) {
       const loggedIn = AuthHelpers.isLoggedIn();
       const anon = nodeToCheckPermissionFor.anonymousAccess;
