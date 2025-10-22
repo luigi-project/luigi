@@ -36,7 +36,6 @@
     "@babel/core": "^7.24.9",
     "@babel/node": "^7.24.8",
     "@babel/preset-env": "^7.24.8",
-    "async-request": "^1.2.0",
     "cli-color": "^2.0.0",
     "diff": "^4.0.2",
     "documentation": "13.2.5",
