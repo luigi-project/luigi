@@ -11,7 +11,6 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 import prompts from 'prompts';
-import asyncRequest from 'async-request';
 import color from 'cli-color';
 
 /**
@@ -76,14 +75,16 @@ if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
  * FNS
  */
 async function getReleases() {
-  const input = await asyncRequest('https://api.github.com/repos/luigi-project/luigi/releases', {
+  const response = await fetch('https://api.github.com/repos/luigi-project/luigi/releases', {
     headers: {
       'User-Agent': 'Luigi Release CLI'
     }
   });
-  return JSON.parse(input.body)
-    .map((r) => r.tag_name)
-    .filter((t, i) => i <= 8);
+  if (!response?.ok) {
+    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data.map((r) => r.tag_name).filter((_, i) => i <= 8);
 }
 
 function getVersion(pkg) {
