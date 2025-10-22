@@ -1,6 +1,5 @@
 <svelte:options
   customElement={{
-    tag: null,
     shadow: 'none',
     props: {
       activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
@@ -8,7 +7,7 @@
       anchor: { type: 'String', reflect: false, attribute: 'anchor' },
       authData: { type: 'Object', reflect: false, attribute: 'auth-data' },
       clientPermissions: { type: 'Object', reflect: false, attribute: 'client-permissions' },
-      context: { type: 'String', reflect: false, attribute: 'context' },
+      context: { type: 'String', reflect: true, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
       dirtyStatus: { type: 'Boolean', reflect: false, attribute: 'dirty-status' },
       documentTitle: { type: 'String', reflect: false, attribute: 'document-title' },
@@ -41,15 +40,19 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          try{
+          try {
             super.attributeChangedCallback(name, oldValue, newValue);
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
           }
+
           if (this.containerInitialized) {
             if (name === 'context') {
-              this.updateContext(JSON.parse(newValue));
+              if (oldValue !== newValue) {
+                this.updateContext(JSON.parse(newValue));
+              }
             }
+
             if (name === 'auth-data') {
               ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
             }
@@ -75,62 +78,66 @@
   import { GenericHelperFunctions } from './utilities/helpers';
 
   /* eslint-disable */
-  export let activeFeatureToggleList: string[];
-  export let allowRules: string[];
-  export let anchor: string;
-  export let authData: any;
-  export let clientPermissions: any;
-  export let context: string;
-  export let deferInit: boolean;
-  export let dirtyStatus: boolean;
-  export let documentTitle: string;
-  export let hasBack: boolean;
-  export let label: string;
-  export let locale: string;
-  export let noShadow: boolean;
-  export let nodeParams: any;
-  export let pathParams: any;
-  export let sandboxRules: string[];
-  export let searchParams: any;
-  export let skipCookieCheck: 'false' | 'true';
-  export let skipInitCheck: boolean;
-  export let theme: string;
-  export let userSettings: any;
-  export let viewurl: string;
-  export let webcomponent: any;
+  interface Props {
+    activeFeatureToggleList: string[];
+    allowRules: string[];
+    anchor: string;
+    authData: any;
+    clientPermissions: any;
+    context: string;
+    deferInit: boolean;
+    dirtyStatus: boolean;
+    documentTitle: string;
+    hasBack: boolean;
+    label: string;
+    locale: string;
+    noShadow: boolean;
+    nodeParams: any;
+    pathParams: any;
+    sandboxRules: string[];
+    searchParams: any;
+    skipCookieCheck: 'false' | 'true';
+    skipInitCheck: boolean;
+    theme: string;
+    userSettings: any;
+    viewurl: string;
+    webcomponent: any;
+  }
   /* eslint-enable */
 
-  const iframeHandle: IframeHandle = {};
+  let {
+    activeFeatureToggleList,
+    allowRules,
+    anchor,
+    authData,
+    clientPermissions,
+    context = $bindable(),
+    deferInit,
+    dirtyStatus,
+    documentTitle,
+    hasBack,
+    label,
+    locale,
+    noShadow,
+    nodeParams,
+    pathParams,
+    sandboxRules,
+    searchParams,
+    skipCookieCheck,
+    skipInitCheck,
+    theme,
+    userSettings,
+    viewurl,
+    webcomponent
+  }: Props = $props();
+
+  let containerInitialized = $state(false);
   let mainComponent: ContainerElement;
-  let containerInitialized = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thisComponent: any;
 
+  const iframeHandle: IframeHandle = $state({});
   const webcomponentService = new WebComponentService();
-
-
-  // Only needed for get rid of "unused export property" svelte compiler warnings
-  export const unwarn = () => {
-    return (
-      activeFeatureToggleList &&
-      allowRules &&
-      anchor &&
-      authData &&
-      clientPermissions &&
-      dirtyStatus &&
-      documentTitle &&
-      hasBack &&
-      locale &&
-      noShadow &&
-      nodeParams &&
-      pathParams &&
-      sandboxRules &&
-      searchParams &&
-      skipCookieCheck &&
-      skipInitCheck &&
-      theme &&
-      userSettings
-    );
-  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialize = (thisComponent: any) => {
@@ -144,24 +151,29 @@
           data
         );
       };
-      
+
       thisComponent.updateContext = (contextObj: object, internal?: object) => {
-        context = contextObj;
+        context = JSON.stringify(contextObj);
+
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          const internalObj = {...internal || {}, ...{
-            activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
-            currentLocale: thisComponent.locale,
-            currentTheme: thisComponent.theme,
-            userSettings: thisComponent.userSettings || null,
-            cssVariables: thisComponent.cssVariables || {},
-            anchor: thisComponent.anchor || "",
-            drawer: thisComponent.drawer || false,
-            modal: thisComponent.modal || false,
-            viewStackSize: thisComponent.viewStackSize || 0,
-            isNavigateBack: thisComponent.isNavigateBack || false
-          }};
+          const internalObj = {
+            ...(internal || {}),
+            ...{
+              activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
+              currentLocale: thisComponent.locale,
+              currentTheme: thisComponent.theme,
+              userSettings: thisComponent.userSettings || null,
+              cssVariables: thisComponent.cssVariables || {},
+              anchor: thisComponent.anchor || "",
+              drawer: thisComponent.drawer || false,
+              modal: thisComponent.modal || false,
+              viewStackSize: thisComponent.viewStackSize || 0,
+              isNavigateBack: thisComponent.isNavigateBack || false
+            }
+          };
+
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
@@ -179,7 +191,7 @@
             ContainerAPI.notifyAlertClosed(id, dismissKey, iframeHandle);
           }
         }
-      }
+      };
 
       thisComponent.notifyConfirmationModalClosed = (result) => {
         // check if thisComponent is in dom
@@ -190,7 +202,7 @@
             ContainerAPI.notifyConfirmationModalClosed(!!result, iframeHandle);
           }
         }
-      }
+      };
 
       containerService.registerContainer(thisComponent);
       webcomponentService.thisComponent = thisComponent;
@@ -206,13 +218,17 @@
       if (webcomponent && webcomponent != 'false') {
         if (!thisComponent.getNoShadow()) {
           mainComponent.innerHTML = '';
+
           const shadow = thisComponent.attachShadow({ mode: 'open' });
+
           shadow.append(mainComponent);
         } else {
           // removing mainComponent
           thisComponent.innerHTML = '';
         }
+
         const webComponentValue = GenericHelperFunctions.checkWebcomponentValue(webcomponent);
+
         webcomponentService.renderWebComponent(
           viewurl,
           thisComponent.getNoShadow() ? thisComponent : mainComponent,
@@ -221,12 +237,15 @@
         );
       } else {
         if (!thisComponent.getNoShadow()) {
-          // removeing mainComponent
+          // removing mainComponent
           thisComponent.innerHTML = '';
+
           const shadow = thisComponent.attachShadow({ mode: 'open' });
+
           shadow.append(mainComponent);
         }
       }
+
       if (skipInitCheck) {
         thisComponent.initialized = true;
         setTimeout(() => {
@@ -235,35 +254,38 @@
       } else if (webcomponent) {
         (thisComponent.getNoShadow() ? thisComponent : mainComponent).addEventListener('wc_ready', () => {
           if (
-            !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent?.deferLuigiClientWCInit
+            !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent
+              ?.deferLuigiClientWCInit
           ) {
             thisComponent.initialized = true;
             webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
           }
         });
       }
+
       containerInitialized = true;
       thisComponent.containerInitialized = true;
     }
   };
 
   onMount(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
       initialize(thisComponent);
     };
+
     if (!deferInit && viewurl) {
       initialize(thisComponent);
     }
   });
 
-  $: {
-    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
+  $effect(() => {
+    if (!containerInitialized && viewurl && !deferInit && thisComponent) {
       initialize(thisComponent);
     }
-  }
+  });
+
   onDestroy(async () => {});
 </script>
 
@@ -288,7 +310,7 @@
         title={label}
         allow={getAllowRules(allowRules)}
         sandbox={sandboxRules ? sandboxRules.join(' ') : undefined}
-      />
+      ></iframe>
     {/if}
   {/if}
 </main>

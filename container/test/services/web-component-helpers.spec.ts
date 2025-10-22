@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { LayoutConfig, RendererObject, RendererUseProps } from '../../src/constants/container.model';
 import {
   CustomCompoundRenderer,
