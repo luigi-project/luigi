@@ -54,11 +54,7 @@ export const CommunicationModule = {
       RoutingModule.addSearchParamsFromClient(event.detail.data, event.detail.keepBrowserHistory, luigi);
     });
     containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: any) => {
-      UIModule.updateModalSettings(
-        event.payload.updatedModalSettings,
-        event.payload.addHistoryEntry,
-        luigi
-      );
+      UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
   }
 };

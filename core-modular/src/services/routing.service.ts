@@ -404,30 +404,30 @@ export class RoutingService {
   }
 
   updateModalDataInUrl(modalPath: string, modalParams: Record<string, any>, addHistoryEntry: boolean): void {
-      let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
-      const params = RoutingHelpers.getQueryParams(this.luigi);
-      const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
-  
-      params[modalParamName] = modalPath;
-      if (modalParams && Object.keys(modalParams).length) {
-        params[`${modalParamName}Params`] = JSON.stringify(modalParams);
-      }
-      const url = new URL(location.href);
-      const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
-      if (hashRoutingActive) {
-        const queryParamIndex = location.hash.indexOf(queryParamSeparator);
-        if (queryParamIndex !== -1) {
-          url.hash = url.hash.slice(0, queryParamIndex);
-        }
-        url.hash = `${url.hash}${queryParamSeparator}${RoutingHelpers.encodeParams(params)}`;
-      } else {
-        url.search = `?${RoutingHelpers.encodeParams(params)}`;
-      }
-  
-      if (!addHistoryEntry) {
-        history.replaceState((window as any).state, '', url.href);
-      } else {
-        history.pushState((window as any).state, '', url.href);
-      }
+    let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
+    const params = RoutingHelpers.getQueryParams(this.luigi);
+    const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
+
+    params[modalParamName] = modalPath;
+    if (modalParams && Object.keys(modalParams).length) {
+      params[`${modalParamName}Params`] = JSON.stringify(modalParams);
     }
+    const url = new URL(location.href);
+    const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
+    if (hashRoutingActive) {
+      const queryParamIndex = location.hash.indexOf(queryParamSeparator);
+      if (queryParamIndex !== -1) {
+        url.hash = url.hash.slice(0, queryParamIndex);
+      }
+      url.hash = `${url.hash}${queryParamSeparator}${RoutingHelpers.encodeParams(params)}`;
+    } else {
+      url.search = `?${RoutingHelpers.encodeParams(params)}`;
+    }
+
+    if (!addHistoryEntry) {
+      history.replaceState((window as any).state, '', url.href);
+    } else {
+      history.pushState((window as any).state, '', url.href);
+    }
+  }
 }

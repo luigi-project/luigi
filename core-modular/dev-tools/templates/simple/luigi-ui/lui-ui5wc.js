@@ -64,7 +64,7 @@ function setDialogSize(dialog, settings) {
   if (settings.width && settings.width.match(regex) && settings.height && settings.height.match(regex)) {
     dialog.style.cssText += `width:${settings.width};height:${settings.height};`;
   } else {
-    dialog.classList.forEach(classListEntry => {
+    dialog.classList.forEach((classListEntry) => {
       if (classListEntry.startsWith('lui-dialog--')) {
         dialog.classList.remove(classListEntry);
       }
@@ -534,7 +534,7 @@ const connector = {
     dialog.open = true;
   },
 
-  closeModals(){
+  closeModals() {
     document.querySelectorAll('ui5-dialog.lui-modal').forEach((dialog) => {
       dialog.open = false;
     });
