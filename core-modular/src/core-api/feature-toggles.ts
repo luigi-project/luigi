@@ -1,9 +1,6 @@
 import { get, writable, type Writable } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 
-/**
- * Functions to use feature toggles in Luigi
- */
 export class FeatureToggles {
   featureToggleList!: Writable<string[]>;
 

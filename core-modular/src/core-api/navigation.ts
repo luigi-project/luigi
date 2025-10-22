@@ -1,11 +1,10 @@
-import type { Luigi } from './luigi';
-import { NavigationService } from '../services/navigation.service';
 import type { ModalSettings } from '../services/navigation.service';
+import { NavigationService } from '../services/navigation.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import { serviceRegistry } from '../services/service-registry';
 import { RoutingService } from '../services/routing.service';
+import { serviceRegistry } from '../services/service-registry';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
+import type { Luigi } from './luigi';
 
 export class Navigation {
   luigi: Luigi;

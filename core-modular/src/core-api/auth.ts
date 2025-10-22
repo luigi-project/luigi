@@ -1,8 +1,5 @@
 import type { Luigi } from './luigi';
 
-/**
- * Authorization helpers
- */
 export class Auth {
   luigi: Luigi;
 
@@ -11,10 +8,8 @@ export class Auth {
   }
 
   /**
-   * Detects if authorization is enabled via configuration.
-   * Read more about [custom authorization providers](authorization-configuration.md).
-   * @returns {boolean} - `true` if authorization is enabled. Otherwise returns `false`.
-   * @example Luigi.auth().isAuthorizationEnabled();
+   * Detects if authorization is enabled via configuration
+   * @returns {boolean} `true` if authorization is enabled - otherwise returns `false`
    */
   isAuthorizationEnabled(): boolean {
     return !!this.luigi.getConfigValue('auth.use');

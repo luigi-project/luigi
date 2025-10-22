@@ -6,8 +6,8 @@ import { Auth } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
-import { UX } from './ux';
 import { Theming } from './theming';
+import { UX } from './ux';
 
 export class Luigi {
   config: any;
