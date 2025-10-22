@@ -25,6 +25,37 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.25.1] (2025-10-22)
+
+#### :bug: Fixed
+* [#4536](https://github.com/luigi-project/luigi/pull/4536) Fix runtime error in vega layout ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+
+## [v2.25.0] (2025-10-16)
+
+#### :rocket: Added
+* [#4520](https://github.com/luigi-project/luigi/pull/4520) Show footer in collapsed mode ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4514](https://github.com/luigi-project/luigi/pull/4514) Badge counter adjustment ([@hardl](https://github.com/hardl))
+
+
+
+
+## [v2.24.0] (2025-09-18)
+
+#### :rocket: Added
+* [#4461](https://github.com/luigi-project/luigi/pull/4461) Added unsavedChangesHandler to customize confirmation modal([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+* [#4493](https://github.com/luigi-project/luigi/pull/4493) Fix category subitem space in vega layout ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v2.23.1] (2025-07-28)
 
 #### :bug: Fixed
@@ -2064,3 +2095,6 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.22.1]: https://github.com/luigi-project/luigi/compare/v2.22.0...v2.22.1
 [v2.23.0]: https://github.com/luigi-project/luigi/compare/v2.22.1...v2.23.0
 [v2.23.1]: https://github.com/luigi-project/luigi/compare/v2.23.0...v2.23.1
+[v2.24.0]: https://github.com/luigi-project/luigi/compare/v2.23.1...v2.24.0
+[v2.25.0]: https://github.com/luigi-project/luigi/compare/v2.24.0...v2.25.0
+[v2.25.1]: https://github.com/luigi-project/luigi/compare/v2.25.0...v2.25.1

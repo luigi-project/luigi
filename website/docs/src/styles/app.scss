@@ -1,27 +1,48 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Quicksand:500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 $primary-color: #2deb8a;
 $secondary-color: #3c4553;
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $powder-blue: #d0d8e2;
-$ice-blue: #edf2f7;
+$ice-blue: color-mix(in srgb, var(--sapBackgroundColor), var(--fg-color) 10%);
 
 $side-nav-width: 320px;
+
+$global-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+
+
+$fg-color: var(--fg-color);
+$bg-color: var(--sapBackgroundColor);
+$luigi-green: #2deb8a;
+
+
+:root {
+    --sapBackgroundColor: rgb(27, 27, 31);
+    --fg-color: #dfdfd6;
+    color-scheme: dark;
+}
+
+html.lightTheme {
+    --sapBackgroundColor: #f4f4f4;
+    --fg-color: #3c3c43;
+    color-scheme: light;
+}
 
 body * {
     box-sizing: border-box;
 }
 
 body {
-    background-color: white;
+    background-color: $bg-color;
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: $global-font-family;
     font-weight: 400;
     font-size: 16px;
     line-height: 28px;
-    color: $secondary-color;
+    color: $fg-color;
     box-sizing: border-box;
 
     .docu-content {
@@ -230,7 +251,7 @@ body {
     }
 
     a {
-        color: $secondary-color;
+        color: $fg-color;
 
         &:hover,
         &:active {
@@ -272,7 +293,7 @@ body {
             position: absolute;
             right: 0;
             bottom: -37px;
-            font-family: 'Open Sans', sans-serif;
+            font-family: $global-font-family;
             display: none;
             font-size: 11px;
             line-height: 13px;
@@ -386,7 +407,7 @@ body {
             .popoverCopy {
                 position: absolute;
                 bottom: -36px;
-                font-family: 'Open Sans', sans-serif;
+                font-family: $global-font-family;
                 display: none;
                 font-size: 11px;
                 line-height: 13px;

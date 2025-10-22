@@ -1,6 +1,6 @@
 import { get } from 'lodash';
-import { GenericHelpers } from './generic-helpers';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
+import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
   normalizePath: (raw: string) => {

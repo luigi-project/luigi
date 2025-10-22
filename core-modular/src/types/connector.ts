@@ -33,9 +33,9 @@ export interface LuigiConnector {
 
   getDocumentTitle(): string;
 
-  showLoadingIndicator(): void;
+  showLoadingIndicator(container?: HTMLElement): void;
 
-  hideLoadingIndicator(): void;
+  hideLoadingIndicator(container?: HTMLElement): void;
 
   addBackdrop(): void;
 
@@ -44,6 +44,8 @@ export interface LuigiConnector {
   openUserSettings(settings: UserSettings): void;
 
   closeUserSettings(): void;
+
+  closeModals(): void;
 }
 
 export type { Node };

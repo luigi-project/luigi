@@ -58,7 +58,7 @@
     "chokidar-cli": "^3.0.0",
     "cli-color": "^2.0.4",
     "concurrently": "^7.6.0",
-    "cypress": "^13.17.0",
+    "cypress": "^15.3.0",
     "eslint": "^9.22.0",
     "eslint-plugin-svelte": "^2.46.1",
     "file-system": "^2.2.2",

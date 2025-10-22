@@ -116,7 +116,14 @@ describe('getContainerManager messageListener', () => {
         },
         currentTheme: undefined,
         currentLocale: undefined,
-        activeFeatureToggleList: []
+        activeFeatureToggleList: [],
+        userSettings: null,
+        cssVariables: {},
+        anchor: '',
+        drawer: false,
+        modal: false,
+        viewStackSize: 0,
+        isNavigateBack: false
       },
       msg: 'luigi.init'
     };

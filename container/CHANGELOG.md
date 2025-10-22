@@ -4,6 +4,26 @@
 
 
 
+## [v1.7.4] (2025-09-24)
+
+#### :bug: Fixed
+
+* [#4508](https://github.com/luigi-project/luigi/pull/4508) Add missing internal data for iframe based microfrontends ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.3] (2025-09-17)
+
+#### :bug: Fixed
+
+* [#4473](https://github.com/luigi-project/luigi/pull/4473) Fix: Send theme, locale and featureToggleList via internal data to iframes ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.2] (2025-08-14)
 
 #### :bug: Fixed
@@ -119,3 +139,5 @@
 [v1.7.0]: https://github.com/luigi-project/luigi/compare/container/v1.6.0...container/v1.7.0
 [v1.7.1]: https://github.com/luigi-project/luigi/compare/container/v1.7.0...container/v1.7.1
 [v1.7.2]: https://github.com/luigi-project/luigi/compare/container/v1.7.1...container/v1.7.2
+[v1.7.3]: https://github.com/luigi-project/luigi/compare/container/v1.7.2...container/v1.7.3
+[v1.7.4]: https://github.com/luigi-project/luigi/compare/container/v1.7.3...container/v1.7.4
