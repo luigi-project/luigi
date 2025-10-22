@@ -64,6 +64,11 @@ function setDialogSize(dialog, settings) {
   if (settings.width && settings.width.match(regex) && settings.height && settings.height.match(regex)) {
     dialog.style.cssText += `width:${settings.width};height:${settings.height};`;
   } else {
+    dialog.classList.forEach(classListEntry => {
+      if (classListEntry.startsWith('lui-dialog--')) {
+        dialog.classList.remove(classListEntry);
+      }
+    });
     switch (settings.size) {
       case 'fullscreen':
         dialog.classList.add('lui-dialog--fullscreen');
@@ -505,7 +510,7 @@ const connector = {
 
     const bar = document.createElement('ui5-bar');
     bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
+    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
     dialog.appendChild(bar);
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
@@ -527,6 +532,20 @@ const connector = {
       //document.body.removeChild(dialog);
     });
     dialog.open = true;
+  },
+
+  closeModals(){
+    document.querySelectorAll('ui5-dialog.lui-modal').forEach((dialog) => {
+      dialog.open = false;
+    });
+  },
+
+  updateModalSettings: (modalSettings) => {
+    const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
+    if (modalSettings.title) {
+      document.querySelector('.lui-modal-title').innerText = modalSettings.title;
+    }
+    setDialogSize(dialog, modalSettings);
   },
 
   renderTabNav: (tabNavData) => {
