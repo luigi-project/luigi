@@ -17,7 +17,7 @@ meta -->
 # Luigi Container API
 
 This document outlines the parameters provided by the Luigi Container.<br/>
-In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Container. The list of events and their meaning can be found [here](https://docs.luigi-project.io/docs/luigi-event-payloads).
+In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Container. The list of events and their meaning can be found [here](https://docs.luigi-project.io/docs/luigi-container-events).
 
 ## API Reference
 

@@ -25,6 +25,16 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.25.1] (2025-10-22)
+
+#### :bug: Fixed
+* [#4536](https://github.com/luigi-project/luigi/pull/4536) Fix runtime error in vega layout ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+
 ## [v2.25.0] (2025-10-16)
 
 #### :rocket: Added
@@ -2087,3 +2097,4 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.23.1]: https://github.com/luigi-project/luigi/compare/v2.23.0...v2.23.1
 [v2.24.0]: https://github.com/luigi-project/luigi/compare/v2.23.1...v2.24.0
 [v2.25.0]: https://github.com/luigi-project/luigi/compare/v2.24.0...v2.25.0
+[v2.25.1]: https://github.com/luigi-project/luigi/compare/v2.25.0...v2.25.1
