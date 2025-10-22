@@ -191,6 +191,7 @@ class LuigiUX {
 
   /**
    * Sends message to show loading indicator
+   * @memberof UX
    * @ignore
    */
   showLoadingIndicator() {
@@ -199,6 +200,7 @@ class LuigiUX {
 
   /**
    * Sends message to hide loading indicator
+   * @memberof UX
    * @ignore
    */
   hideLoadingIndicator() {
