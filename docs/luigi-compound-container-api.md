@@ -17,7 +17,7 @@ meta -->
 # Luigi Compound Container API
 
 This document outlines the parameters provided by the Luigi Compound Container. Luigi Compound Container provides the possibility to insert multiple webcomponent-based microfrontends in one container.<br/>
-In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Compound Container. The list of events and their meaning can be found [here](https://docs.luigi-project.io/docs/luigi-event-payloads).
+In addition you can use standard `addEventListener` function to react on events emmitted by the Luigi Compound Container. The list of events and their meaning can be found [here](https://docs.luigi-project.io/docs/luigi-container-events).
 
 ## API Reference
 
