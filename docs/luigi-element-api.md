@@ -58,7 +58,7 @@ Base class for Luigi web component micro frontends.
 
 #### Parameters
 
-*   `options`  
+*   `options` **Options** 
 
 #### afterInit
 
@@ -69,6 +69,8 @@ after internal rendering and all context data set.
 
 *   `ctx` **any** The context object passed by luigi core
 
+Returns **void** 
+
 #### render
 
 Override to return the html template string defining the web component view.
@@ -77,9 +79,13 @@ Override to return the html template string defining the web component view.
 
 *   `ctx` **any** The context object passed by luigi core
 
+Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
 #### update
 
 Override to execute logic after an attribute of this web component has changed.
+
+Returns **void** 
 
 #### onContextUpdate
 
@@ -89,6 +95,8 @@ Override to execute logic when a new context object is set.
 
 *   `ctx` **any** The new context object passed by luigi core
 
+Returns **void** 
+
 #### querySelector
 
 *   **See**: ParentNode.querySelector
@@ -97,7 +105,9 @@ Query selector operating on shadow root.
 
 ##### Parameters
 
-*   `selector`  
+*   `selector` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+
+Returns **([HTMLElement](https://developer.mozilla.org/docs/Web/HTML/Element) | null)** 
 
 ### html
 
@@ -107,6 +117,6 @@ Also useful in combination with LitElement VS Code plugins.
 #### Parameters
 
 *   `literal` **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The literal to process.
-*   `keys` **...any** 
+*   `keys` **...[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)\<any>** 
 
 Returns **[String](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Returns the processed literal.

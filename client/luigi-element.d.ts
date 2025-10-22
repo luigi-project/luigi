@@ -1,60 +1,55 @@
 // Type definitions for Luigi Client web components
 
 export declare interface ConfirmationModalSettings {
-  type?: string;
-  header?: string;
   body?: string;
   buttonConfirm?: string | boolean;
   buttonDismiss?: string;
+  header?: string;
+  type?: string;
 }
 
 export declare interface ModalSettings {
-  title?: string;
-  size?: 'fullscreen' | 'l' | 'm' | 's';
-  width?: string;
+  closebtn_data_testid?: string;
   height?: string;
   keepPrevious?: boolean;
-  closebtn_data_testid?: string;
+  size?: 'fullscreen' | 'l' | 'm' | 's';
+  title?: string;
+  width?: string;
 }
 
 export declare interface SplitViewSettings {
-  title?: string;
-  size?: number;
   collapsed?: boolean;
+  size?: number;
+  title?: string;
 }
 
-export declare enum SplitViewEvents {
-  'expand',
-  'collapse',
-  'resize',
-  'close'
-}
+export type SplitViewEvents = 'close' | 'collapse' | 'expand' | 'resize';
 
 export declare interface SplitViewInstance {
   collapse: () => void;
-  expand: () => void;
-  setSize: (value: number) => void;
-  on: (key: SplitViewEvents, callback: () => void) => string;
   exists: () => boolean;
+  expand: () => void;
   getSize: () => number;
   isCollapsed: () => boolean;
   isExpanded: () => boolean;
+  on: (key: SplitViewEvents, callback: () => void) => string;
+  setSize: (value: number) => void;
 }
 
 export declare interface DrawerSettings {
-  header?: any;
-  size?: 'l' | 'm' | 's' | 'xs';
   backdrop?: boolean;
+  header?: any;
   overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
 }
 
 export declare interface AlertSettings {
-  text?: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  closeAfter?: number;
   links?: {
     [key: string]: { text: string; url?: string; dismissKey?: string };
   };
-  closeAfter?: number;
+  text?: string;
+  type: 'info' | 'success' | 'warning' | 'error';
 }
 
 export declare interface NodeParams {
@@ -425,51 +420,6 @@ export declare interface LinkManager {
   getCurrentRoute: () => Promise<string>;
 }
 
-export declare class LuigiElement extends HTMLElement {
-  constructor(options?: Options);
-  /**
-   * Override to return the html template string defining the web component view.
-   *
-   * @param {*} ctx The context object passed by luigi core
-   */
-  render(ctx?: Object): string;
-  /**
-   * Override to execute logic after an attribute of this web component has changed.
-   */
-  update(): void;
-  /**
-   * Override to execute logic when a new context object is set.
-   *
-   * @param {*} ctx The new context object passed by luigi core
-   */
-  onContextUpdate(ctx: Object): void;
-  /**
-   * Override to execute logic after initialization of the web component, i.e.
-   * after internal rendering and all context data set.
-   *
-   * @param {*} ctx The context object passed by luigi core
-   */
-  afterInit(ctx: Object): void;
-
-  /**
-   * Query selector operating on shadow root.
-   *
-   * @see ParentNode.querySelector
-   */
-  querySelector(selector: string): any;
-
-  /**
-   * LuigiClient instance
-   */
-  LuigiClient: LuigiClient;
-
-  /**
-   * Context object
-   * @returns {Object} context object
-   */
-  get context(): Object;
-}
-
 export declare interface Options {
   /**
    *
@@ -552,4 +502,70 @@ export interface LuigiClient {
    * @memberof LuigiClient
    */
   getClientPermissions(): () => Object;
+}
+
+export declare class LuigiElement extends HTMLElement {
+  private deferLuigiClientWCInit;
+  private LuigiClient;
+  private luigiConfig;
+  private _shadowRoot;
+  private __initialized;
+  private __lui_ctx;
+
+  constructor(options?: Options);
+
+  /**
+   * Invoked by luigi core if present, internal, don't override.
+   * @private
+   */
+  __postProcess(ctx: Record<string, any>, luigiClient: any, module_location_path: string): void;
+
+  /**
+   * Override to execute logic after initialization of the web component, i.e.
+   * after internal rendering and all context data set.
+   *
+   * @param {*} ctx The context object passed by luigi core
+   */
+  afterInit(ctx: Record<string, any>): void;
+
+  /**
+   * Override to return the html template string defining the web component view.
+   *
+   * @param {*} ctx The context object passed by luigi core
+   */
+  render(ctx: Record<string, any>): string;
+
+  /**
+   * Override to execute logic after an attribute of this web component has changed.
+   */
+  update(): void;
+
+  /**
+   * Override to execute logic when a new context object is set.
+   *
+   * @param {*} ctx The new context object passed by luigi core
+   */
+  onContextUpdate(ctx: Record<string, any>): void;
+
+  /**
+   * Query selector operating on shadow root.
+   *
+   * @see ParentNode.querySelector
+   */
+  querySelector(selector: string): HTMLElement | null;
+
+  /**
+   * Handles changes on the context property.
+   *
+   * @private
+   */
+  set context(ctx: Record<string, any>);
+  get context(): Record<string, any>;
+
+  /**
+   * Handles changes on attributes.
+   *
+   * @private
+   */
+  attributeChangedCallback(name?: string, oldVal?: any, newVal?: any): void;
 }
