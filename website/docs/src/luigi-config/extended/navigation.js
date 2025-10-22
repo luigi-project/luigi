@@ -62,13 +62,6 @@ class Navigation {
         }
       },
       {
-        label: 'Twitter',
-        externalLink: {
-          url: 'https://twitter.com/luigiprojectio'
-        },
-        icon: 'twitter'
-      },
-      {
         label: 'Slack',
         externalLink: {
           url: 'https://slack.luigi-project.io'
