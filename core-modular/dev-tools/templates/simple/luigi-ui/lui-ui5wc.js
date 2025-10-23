@@ -543,7 +543,7 @@ const connector = {
   updateModalSettings: (modalSettings) => {
     const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
     if (modalSettings.title) {
-      document.querySelector('.lui-modal-title').innerText = modalSettings.title;
+      document.querySelector('ui5-dialog.lui-modal[open] ui5-bar').headerText = modalSettings.title;
     }
     setDialogSize(dialog, modalSettings);
   },

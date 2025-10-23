@@ -58,16 +58,16 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        this.closeModals();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+        this.closeModals();
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        this.closeModals();
         console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath());
+        this.closeModals();
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
@@ -403,6 +403,30 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.closeModals();
   }
 
+  /**
+   * Updates the current browser URL with modal-related routing information.
+   *
+   * Depending on the routing configuration (hash vs. standard), this method
+   * injects or updates two query parameters:
+   * - <modalParamName>: the modal's path identifier (modalPath)
+   * - <modalParamName>Params: a JSON-stringified object of additional modal parameters (modalParams)
+   *
+   * Behavior:
+   * - Determines the parameter base name via RoutingHelpers.getModalViewParamName.
+   * - Merges existing query parameters obtained through RoutingHelpers.getQueryParams, overwriting any previous modal values.
+   * - If hash routing is enabled (routing.useHashRouting = true):
+   *   - Strips any existing query segment after the hash before appending the new encoded parameters.
+   *   - Rebuilds the hash in the form: #<hashBase><separator><encodedParams>.
+   * - If hash routing is disabled:
+   *   - Replaces the entire search string (?...) with the newly encoded parameters.
+   * - Serializes modalParams only when it is a non-empty object; otherwise omits the "*Params" companion parameter.
+   * - Uses history.pushState when addHistoryEntry is true, otherwise history.replaceState to avoid adding a new history entry.
+   *
+   * @param modalPath A string identifying the modal view or route segment to encode into the URL.
+   * @param modalParams A record of additional parameters for the modal; only included if non-empty. Serialized via JSON.stringify.
+   * @param addHistoryEntry If true, a new history entry is pushed (allowing back navigation); if false, the current entry is replaced.
+
+   */
   updateModalDataInUrl(modalPath: string, modalParams: Record<string, any>, addHistoryEntry: boolean): void {
     let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
     const params = RoutingHelpers.getQueryParams(this.luigi);
