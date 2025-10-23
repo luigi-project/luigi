@@ -4,7 +4,6 @@ import { CommunicationModule } from './modules/communicaton-module';
 import { RoutingModule } from './modules/routing-module';
 import { UIModule } from './modules/ui-module';
 import { UXModule } from './modules/ux-module';
-import { AuthStoreService } from './services/auth-store.service';
 import { DirtyStatusService } from './services/dirty-status.service';
 import { NavigationService } from './services/navigation.service';
 import { NodeDataManagementService } from './services/node-data-management.service';
@@ -32,7 +31,6 @@ export class LuigiEngine {
 
   init(): void {
     const luigi = (window as any).Luigi;
-    serviceRegistry.register(AuthStoreService, () => new AuthStoreService(luigi));
     serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
     serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());

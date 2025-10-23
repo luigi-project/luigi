@@ -2,7 +2,6 @@ import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { Auth } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
@@ -12,7 +11,6 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
-  _auth?: Auth;
   _ft?: FeatureToggles;
   _theming?: Theming;
   _routing?: Routing;
@@ -126,13 +124,6 @@ export class Luigi {
 
   ux = (): UX => {
     return new UX(this);
-  };
-
-  auth = (): Auth => {
-    if (!this._auth) {
-      this._auth = new Auth(this);
-    }
-    return this._auth as Auth;
   };
 
   ft = (): FeatureToggles => {

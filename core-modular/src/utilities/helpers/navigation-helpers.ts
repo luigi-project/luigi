@@ -1,6 +1,5 @@
 import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
-import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
@@ -73,16 +72,11 @@ export const NavigationHelpers = {
     currentContext: any,
     luigi: Luigi
   ): boolean => {
-    if (luigi.auth().isAuthorizationEnabled()) {
-      const loggedIn = AuthHelpers.isLoggedIn();
-      const anon = nodeToCheckPermissionFor.anonymousAccess;
+    // TODO add `isAuthorizationEnabled` logic
 
-      if ((loggedIn && anon === 'exclusive') || (!loggedIn && anon !== 'exclusive' && anon !== true)) {
-        return false;
-      }
+    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, luigi)) {
+      return false;
     }
-
-    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, luigi)) return false;
 
     const permissionCheckerFn = luigi.getConfigValue('navigation.nodeAccessibilityResolver');
 
@@ -107,7 +101,7 @@ export const NavigationHelpers = {
             match = NavigationHelpers.checkMatch(item.selectionConditions.route, pathData.nodesInPath ?? []);
             if (match) {
               (item.selectionConditions.contextCriteria || []).forEach((ccrit: any) => {
-                match = match && (pathData?.selectedNode as any)?.context[ccrit.key] === ccrit.value;
+                match = match && (pathData?.selectedNode as any)?.context?.[ccrit.key] === ccrit.value;
               });
             }
           }

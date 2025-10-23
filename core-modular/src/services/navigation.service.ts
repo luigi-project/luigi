@@ -482,48 +482,4 @@ export class NavigationService {
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
   }
-
-  getAccessibleNodes(node: any, children: any, context: any[] | undefined): any[] {
-    return children
-      ? children.filter((child: any) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
-      : [];
-  }
-
-  bindChildToParent(child: any, node: any): any {
-    // Checking for pathSegment to exclude virtual root node
-    // node.pathSegment check is also required for virtual nodes like categories
-    if (node && node.pathSegment) {
-      child.parent = node;
-    }
-
-    return child;
-  }
-
-  getExpandStructuralPathSegment(node: any): any {
-    // Checking for pathSegment to exclude virtual root node
-    if (node && node.pathSegment && node.pathSegment.indexOf('/') !== -1) {
-      const segs: any[] = node.pathSegment.split('/');
-      const clonedNode: Record<any, any> = { ...node };
-      const buildStructuralNode = (segs: any, node: any) => {
-        const seg = segs.shift();
-        let child: Record<string, any> = {};
-
-        if (segs.length) {
-          child.pathSegment = seg;
-          if (node.hideFromNav) child.hideFromNav = node.hideFromNav;
-          child.children = [buildStructuralNode(segs, node)];
-        } else {
-          // set original data to last child
-          child = clonedNode;
-          child.pathSegment = seg;
-        }
-
-        return child;
-      };
-
-      return buildStructuralNode(segs, node);
-    }
-
-    return node;
-  }
 }
