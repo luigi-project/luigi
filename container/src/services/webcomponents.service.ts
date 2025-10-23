@@ -344,6 +344,12 @@ export class WebComponentService {
           addBackdrop: () => {
             this.dispatchLuigiEvent(Events.ADD_BACKDROP_REQUEST, {});
           },
+          showLoadingIndicator: () => {
+            this.dispatchLuigiEvent(Events.SHOW_LOADING_INDICATOR_REQUEST, {});
+          },
+          hideLoadingIndicator: () => {
+            this.dispatchLuigiEvent(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
+          },
           hideAppLoadingIndicator: () => {
             this.dispatchLuigiEvent(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
           }
