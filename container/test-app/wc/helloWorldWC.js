@@ -112,13 +112,19 @@ export default class extends HTMLElement {
     navigateBtn.innerHTML = '<button id="navigateBtn">navigate</button>';
 
     const alertBtn = document.createElement('template');
-    alertBtn.innerHTML = '<button id="alertBtn">uxManager.showAlert()</button';
+    alertBtn.innerHTML = '<button id="alertBtn">uxManager.showAlert()</button>';
 
     const navigateToIntentBtn = document.createElement('template');
     navigateToIntentBtn.innerHTML = '<button id="navigateToIntent">navigateToIntent</button>';
 
     const confirmationModalBtn = document.createElement('template');
     confirmationModalBtn.innerHTML = '<button id="confirmationModal">showConfirmationModal</button>';
+
+    const showLoadingBtn = document.createElement('template');
+    showLoadingBtn.innerHTML = '<button id="showLoadingBtn">uxManager.showLoadingIndicator()</button>';
+
+    const hideLoadingBtn = document.createElement('template');
+    hideLoadingBtn.innerHTML = '<button id="hideLoadingBtn">uxManager.hideLoadingIndicator()</button>';
 
     const customMessageDiv = document.createElement('template');
     customMessageDiv.innerHTML = '<div id="customMessageDiv">Received Custom Message: </div>';
@@ -163,6 +169,8 @@ export default class extends HTMLElement {
     this._shadowRoot.appendChild(getCurrentRouteBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(navigateToIntentBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(confirmationModalBtn.content.cloneNode(true));
+    this._shadowRoot.appendChild(showLoadingBtn.content.cloneNode(true));
+    this._shadowRoot.appendChild(hideLoadingBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(customMessageDiv.content.cloneNode(true));
     this._shadowRoot.appendChild(empty.content.cloneNode(true));
     this._shadowRoot.appendChild(closeAlertResponse.content.cloneNode(true));
@@ -411,6 +419,16 @@ export default class extends HTMLElement {
         size: 'm'
       };
       this.LuigiClient.linkManager().navigate(path, 0, true, modalSettings);
+    });
+
+    this.$showLoadingBtn = this._shadowRoot.querySelector('#showLoadingBtn');
+    this.$showLoadingBtn.addEventListener('click', () => {
+      this.LuigiClient.uxManager().showLoadingIndicator();
+    });
+
+    this.$hideLoadingBtn = this._shadowRoot.querySelector('#hideLoadingBtn');
+    this.$hideLoadingBtn.addEventListener('click', () => {
+      this.LuigiClient.uxManager().hideLoadingIndicator();
     });
 
     this.$linkManagerUpdateTopPathExistsBack = this._shadowRoot.querySelector('#linkManagerUpdateTopPathExistsBack');
