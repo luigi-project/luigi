@@ -188,6 +188,24 @@ class LuigiUX {
   getCurrentTheme() {
     return Luigi.theming().getCurrentTheme();
   }
+
+  /**
+   * Sends message to show loading indicator
+   * @memberof UX
+   * @ignore
+   */
+  showLoadingIndicator() {
+    window.postMessage({ msg: 'luigi.show-loading-indicator' });
+  }
+
+  /**
+   * Sends message to hide loading indicator
+   * @memberof UX
+   * @ignore
+   */
+  hideLoadingIndicator() {
+    window.postMessage({ msg: 'luigi.hide-loading-indicator' });
+  }
 }
 
 export const ux = new LuigiUX();
