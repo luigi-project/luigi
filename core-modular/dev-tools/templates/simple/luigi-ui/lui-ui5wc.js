@@ -613,17 +613,6 @@ const connector = {
       success: 'Positive'
     };
 
-    if (!settings || settings == {}) {
-      settings = {
-        icon: 'question-mark',
-        header: 'Confirmation',
-        body: 'Are you sure you want to do this?',
-        buttonDismiss: 'No',
-        buttonConfirm: 'Yes',
-        type: 'confirmation'
-      };
-    }
-
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-confirmation-modal');
     dialog.setAttribute('header-text', settings?.header);

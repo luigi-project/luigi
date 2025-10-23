@@ -138,13 +138,12 @@ export class i18nService {
    * Sets locale to all Luigi containers
    */
   private broadcastLocaleToAllContainers(locale: string): void {
-    const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+    const containers = document.querySelectorAll('luigi-container');
 
-    if (containerWrapper && locale) {
-      [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          element.locale = locale;
-        }
+    if (containers?.length && locale) {
+      containers.forEach((element: any) => {
+        element.locale = locale;
+        element.updateContext({ locale });
       });
     }
   }

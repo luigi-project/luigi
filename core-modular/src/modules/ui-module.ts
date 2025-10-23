@@ -20,6 +20,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
+    lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
@@ -34,6 +35,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
+    lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     setSandboxRules(lc, luigi);
@@ -183,6 +185,7 @@ export const UIModule = {
           .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
