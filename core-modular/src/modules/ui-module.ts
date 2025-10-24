@@ -216,6 +216,15 @@ export const UIModule = {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
   },
+  updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
+    const routingService = serviceRegistry.get(RoutingService);
+    const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+    if (!modalPath) {
+      return;
+    }
+    luigi.getEngine()._connector?.updateModalSettings(modalSettings);
+    routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
+  },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);

@@ -46,6 +46,8 @@ export interface LuigiConnector {
   closeUserSettings(): void;
 
   closeModals(): void;
+
+  updateModalSettings(modalSettings: ModalSettings): void;
 }
 
 export type { Node };
