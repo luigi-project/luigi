@@ -206,12 +206,18 @@
   });
 
   const onMessage = async (e) => {
+    const iframe = IframeHelpers.getValidMessageSource(e);
+
     if ('luigi.show-loading-indicator' === e.data.msg) {
-      showLoadingIndicator = true;
+      if (iframe?.parentNode?.classList?.contains('iframeModalCtn') || e.data.wcNested) {
+        showLoadingIndicator = true;
+      }
     }
 
     if ('luigi.hide-loading-indicator' === e.data.msg) {
-      showLoadingIndicator = false;
+      if (iframe?.parentNode?.classList?.contains('iframeModalCtn') || e.data.wcNested) {
+        showLoadingIndicator = false;
+      }
     }
 
     if ('luigi.get-context' === e.data.msg) {

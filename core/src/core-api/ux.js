@@ -192,19 +192,21 @@ class LuigiUX {
   /**
    * Sends message to show loading indicator
    * @memberof UX
+   * @param {boolean} wcNested (optional) WC position in DOM tree
    * @ignore
    */
-  showLoadingIndicator() {
-    window.postMessage({ msg: 'luigi.show-loading-indicator' });
+  showLoadingIndicator(wcNested) {
+    window.postMessage({ msg: 'luigi.show-loading-indicator', wcNested });
   }
 
   /**
    * Sends message to hide loading indicator
    * @memberof UX
+   * @param {boolean} wcNested (optional) WC position in DOM tree
    * @ignore
    */
-  hideLoadingIndicator() {
-    window.postMessage({ msg: 'luigi.hide-loading-indicator' });
+  hideLoadingIndicator(wcNested) {
+    window.postMessage({ msg: 'luigi.hide-loading-indicator', wcNested });
   }
 }
 
