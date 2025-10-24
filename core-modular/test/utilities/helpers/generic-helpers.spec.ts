@@ -10,7 +10,7 @@ describe('Generic-helpers', () => {
     windowLocationImplementation = window.location;
     delete window.location;
     window.location = {
-      search: function() {
+      search: function () {
         return '';
       }
     } as any;
