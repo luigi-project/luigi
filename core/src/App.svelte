@@ -1351,13 +1351,21 @@
         ViewGroupPreloading.viewGroupLoaded(iframe);
       }
 
-      if ('luigi.show-loading-indicator' === e.data.msg) {
-        showLoadingIndicator = true;
+      if ('luigi.show-loading-indicator' === e.data.msg && !e.data.wcNested) {
+        const iframeWrapper = iframe?.parentNode?.classList?.contains('iframeContainer');
+
+        if (iframeWrapper || (iframe?._ready && iframeWrapper === undefined)) {
+          showLoadingIndicator = true;
+        }
       }
 
-      if ('luigi.hide-loading-indicator' === e.data.msg) {
-        clearTimeout(loadingIndicatorTimeout);
-        showLoadingIndicator = false;
+      if ('luigi.hide-loading-indicator' === e.data.msg && !e.data.wcNested) {
+        const iframeWrapper = iframe?.parentNode?.classList?.contains('iframeContainer');
+
+        if (iframeWrapper || (iframe?._ready && iframeWrapper === undefined)) {
+          clearTimeout(loadingIndicatorTimeout);
+          showLoadingIndicator = false;
+        }
       }
 
       if ('luigi.navigation.open' === e.data.msg) {
