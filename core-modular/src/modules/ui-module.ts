@@ -12,6 +12,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
+
+    lcc.setAttribute('lui_container', 'true');
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
@@ -27,6 +29,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
+
+    lc.setAttribute('lui_container', 'true');
     lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
