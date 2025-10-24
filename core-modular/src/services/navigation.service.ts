@@ -170,7 +170,7 @@ export class NavigationService {
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
-    const rootNodes = cfg.navigation?.nodes || [];
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
       nodesInPath: [{ children: rootNodes }],
@@ -192,15 +192,21 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
     const items: NavItem[] = [];
     const catMap: Record<string, NavItem> = {};
+
     nodes?.forEach((node) => {
+      if (node.label) {
+        node.label = this.luigi.i18n().getTranslation(node.label);
+      }
+
       if (node.category) {
-        let catId = node.category.id || node.category.label || node.category;
+        const catId = node.category.id || node.category.label || node.category;
         let catNode: NavItem = catMap[catId];
+
         if (!catNode) {
           catNode = {
             category: {
               id: catId,
-              label: node.category.label || node.category.id || node.category,
+              label: this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category),
               icon: node.category.icon,
               nodes: []
             }
@@ -213,6 +219,7 @@ export class NavigationService {
         items.push({ node, selected: node === selectedNode });
       }
     });
+
     return items;
   }
 
@@ -373,13 +380,25 @@ export class NavigationService {
   getTopNavData(path: string): TopNavData {
     const cfg = this.luigi.getConfig();
     const pathData = this.getPathData(path);
-    let appSwitcher =
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
+    const profileItems = cfg.navigation?.profile?.items?.length
+      ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
+      : [];
+    const appSwitcher =
       cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
+
+    if (profileItems?.length) {
+      profileItems.map((item: ProfileItem) => ({
+        ...item,
+        label: this.luigi.i18n().getTranslation(item.label || '')
+      }));
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(cfg.navigation?.nodes) as [any],
+      topNodes: this.buildNavItems(rootNodes) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: cfg.navigation?.profile,
       appSwitcher:
@@ -397,17 +416,26 @@ export class NavigationService {
   getAppSwitcherData(appSwitcherData: AppSwitcher, headerSettings: any): AppSwitcher | undefined {
     const appSwitcher = appSwitcherData;
     const showMainAppEntry = appSwitcher?.showMainAppEntry;
+
     if (appSwitcher && appSwitcher.items && showMainAppEntry) {
       const mainAppEntry = {
-        title: headerSettings.title,
+        title: this.luigi.i18n().getTranslation(headerSettings.title || ''),
         subTitle: headerSettings.subTitle,
         link: '/'
       };
+
+      appSwitcher.items?.map((item: AppSwitcherItem) => ({
+        ...item,
+        title: this.luigi.i18n().getTranslation(item.title || '')
+      }));
+
       if (appSwitcher.items.some((item: AppSwitcherItem) => item.link === mainAppEntry.link)) {
         return appSwitcher;
       }
+
       appSwitcher.items.unshift(mainAppEntry);
     }
+
     return appSwitcher;
   }
 
@@ -477,5 +505,25 @@ export class NavigationService {
     const pathData = this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
+  }
+
+  private prepareRootNodes(navNodes: any[]): any[] {
+    const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
+
+    if (!rootNodes.length) {
+      return rootNodes;
+    }
+
+    navNodes.forEach((node: any) => {
+      if (node?.badgeCounter?.count) {
+        const badgeIitem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
+
+        if (badgeIitem) {
+          badgeIitem.badgeCounter.count = node.badgeCounter.count;
+        }
+      }
+    });
+
+    return rootNodes;
   }
 }

@@ -102,6 +102,25 @@ export const UXModule = {
     if (!UXModule.luigi) {
       throw new Error('Luigi is not initialized.');
     }
+
+    if (confirmationModalSettings) {
+      confirmationModalSettings = {
+        ...confirmationModalSettings,
+        ...{
+          header: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
+          body: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.body || 'luigi.confirmationModal.body'),
+          buttonDismiss: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
+          buttonConfirm: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
+        }
+      };
+    }
+
     UXModule.luigi.getEngine()._connector?.renderConfirmationModal(confirmationModalSettings, {
       confirm() {
         containerElement.notifyConfirmationModalClosed(true);
