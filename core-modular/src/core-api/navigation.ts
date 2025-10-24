@@ -1,8 +1,8 @@
-import type { Luigi } from './luigi';
-import { NavigationService } from '../services/navigation.service';
 import type { ModalSettings } from '../services/navigation.service';
-import { serviceRegistry } from '../services/service-registry';
+import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
+import { serviceRegistry } from '../services/service-registry';
+import type { Luigi } from './luigi';
 
 export class Navigation {
   luigi: Luigi;

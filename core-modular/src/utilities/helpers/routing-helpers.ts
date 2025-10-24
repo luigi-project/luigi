@@ -463,5 +463,29 @@ export const RoutingHelpers = {
     }
 
     return url;
+  },
+
+  /**
+   * Set feature toggles
+   * @param {string} featureToggleProperty used for identifying feature toggles
+   * @param {string} path used for retrieving and appending the path parameters
+   */
+  setFeatureToggles(featureToggleProperty: string, path: string, luigi: Luigi): void {
+    const paramsMap: Record<string, string> = this.sanitizeParamsMap(this.parseParams(path.split('?')[1]));
+    let featureTogglesFromUrl;
+
+    if (paramsMap[featureToggleProperty]) {
+      featureTogglesFromUrl = paramsMap[featureToggleProperty];
+    }
+
+    if (!featureTogglesFromUrl) {
+      return;
+    }
+
+    const featureToggleList: string[] = featureTogglesFromUrl.split(',');
+
+    if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
+      featureToggleList.forEach((ft) => luigi.ft().setFeatureToggle(ft, true));
+    }
   }
 };

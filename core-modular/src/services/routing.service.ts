@@ -83,6 +83,7 @@ export class RoutingService {
       return;
     }
 
+    this.setFeatureToggle(path);
     await this.shouldShowModalPathInUrl();
 
     urlSearchParams.forEach((value, key) => {
@@ -401,5 +402,17 @@ export class RoutingService {
       this.removeModalDataFromUrl(false);
     }
     this.luigi.getEngine()._connector?.closeModals();
+  }
+
+  /**
+   * Set feature toggles if `queryStringParam` is provided at config file
+   * @param {string} path used for retrieving and appending the path parameters
+   */
+  setFeatureToggle(path: string): void {
+    const featureToggleProperty = this.luigi.getConfigValue('settings.featureToggles.queryStringParam');
+
+    if (featureToggleProperty && typeof path === 'string') {
+      RoutingHelpers.setFeatureToggles(featureToggleProperty, path, this.luigi);
+    }
   }
 }

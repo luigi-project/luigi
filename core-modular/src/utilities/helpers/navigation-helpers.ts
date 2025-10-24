@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, PathData } from '../../services/navigation.service';
 import { GenericHelpers } from './generic-helpers';
 
@@ -46,7 +46,48 @@ export const NavigationHelpers = {
     return match;
   },
 
-  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): String | undefined => {
+  checkVisibleForFeatureToggles: (nodeToCheckPermission: any, luigi: Luigi): boolean => {
+    if (nodeToCheckPermission?.visibleForFeatureToggles) {
+      const activeFeatureToggles: string[] = luigi.ft().getActiveFeatureToggleList();
+
+      for (const ft of nodeToCheckPermission.visibleForFeatureToggles) {
+        if (ft.startsWith('!')) {
+          if (activeFeatureToggles.includes(ft.slice(1))) {
+            return false;
+          }
+        } else {
+          if (!activeFeatureToggles.includes(ft)) {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  },
+
+  isNodeAccessPermitted: (
+    nodeToCheckPermissionFor: any,
+    parentNode: any,
+    currentContext: any,
+    luigi: Luigi
+  ): boolean => {
+    // TODO add `isAuthorizationEnabled` logic
+
+    if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, luigi)) {
+      return false;
+    }
+
+    const permissionCheckerFn = luigi.getConfigValue('navigation.nodeAccessibilityResolver');
+
+    if (typeof permissionCheckerFn !== 'function') {
+      return true;
+    }
+
+    return permissionCheckerFn(nodeToCheckPermissionFor, parentNode, currentContext);
+  },
+
+  updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): string | undefined => {
     const appSwitcherItems = appSwitcherData?.items;
     if (appSwitcherItems && pathData) {
       let title = '';
@@ -60,7 +101,7 @@ export const NavigationHelpers = {
             match = NavigationHelpers.checkMatch(item.selectionConditions.route, pathData.nodesInPath ?? []);
             if (match) {
               (item.selectionConditions.contextCriteria || []).forEach((ccrit: any) => {
-                match = match && get((pathData.selectedNode as any)?.context, ccrit.key) === ccrit.value;
+                match = match && (pathData?.selectedNode as any)?.context?.[ccrit.key] === ccrit.value;
               });
             }
           }

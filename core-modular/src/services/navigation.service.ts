@@ -192,10 +192,12 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
     const items: NavItem[] = [];
     const catMap: Record<string, NavItem> = {};
+
     nodes?.forEach((node) => {
       if (node.category) {
-        let catId = node.category.id || node.category.label || node.category;
+        const catId = node.category.id || node.category.label || node.category;
         let catNode: NavItem = catMap[catId];
+
         if (!catNode) {
           catNode = {
             category: {
@@ -208,11 +210,13 @@ export class NavigationService {
           catMap[catId] = catNode;
           items.push(catNode);
         }
+
         catNode.category?.nodes?.push({ node, selected: node === selectedNode });
       } else {
         items.push({ node, selected: node === selectedNode });
       }
     });
+
     return items;
   }
 
