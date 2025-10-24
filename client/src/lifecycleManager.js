@@ -417,7 +417,7 @@ class LifecycleManager extends LuigiClientBase {
    * const activeFeatureToggleList = LuigiClient.getActiveFeatureToggles()
    */
   getActiveFeatureToggles() {
-    return this.currentContext.internal.activeFeatureToggleList;
+    return this.currentContext.internal.activeFeatureToggleList ?? [];
   }
 
   /**
