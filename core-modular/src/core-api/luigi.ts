@@ -1,5 +1,6 @@
 import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
+import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { Navigation } from './navigation';
@@ -10,10 +11,12 @@ import { Theming } from './theming';
 export class Luigi {
   config: any;
   _store: any;
+  _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
   __cssVars?: any;
-  preventLoadingModalData: boolean | undefined;
+  preventLoadingModalData?: boolean;
+  configReadyCallback = function () {};
 
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
 
@@ -28,6 +31,7 @@ export class Luigi {
   // NOTE: using arrow style functions to have "code completion" in browser dev tools
   setConfig = (cfg: any) => {
     this.config = cfg;
+    this.setConfigCallback(this.getConfigReadyCallback());
     this.engine.init();
     this.luigiAfterInit();
   };
@@ -116,6 +120,14 @@ export class Luigi {
     this.configChanged();
   }
 
+  i18n = (): i18nService => {
+    if (!this._i18n) {
+      this._i18n = new i18nService(this);
+    }
+
+    return this._i18n;
+  };
+
   navigation = (): Navigation => {
     return new Navigation(this);
   };
@@ -192,5 +204,16 @@ export class Luigi {
         unSubscriptions = [];
       }
     };
+  }
+
+  private getConfigReadyCallback(): Promise<void> {
+    return new Promise((resolve) => {
+      this.i18n()._init();
+      resolve();
+    });
+  }
+
+  private setConfigCallback(configReadyCallback: any): void {
+    this.configReadyCallback = configReadyCallback;
   }
 }

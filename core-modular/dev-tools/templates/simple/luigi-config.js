@@ -250,6 +250,13 @@ window.onload = () => {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
+      },
+      customTranslationImplementation: () => {
+        return {
+          getTranslation: (key, interpolations, locale) => {
+            return '*' + key + '* ' + (locale || Luigi.i18n().getCurrentLocale());
+          }
+        };
       }
     },
     userSettings: {
