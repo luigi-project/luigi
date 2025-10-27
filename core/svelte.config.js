@@ -12,10 +12,14 @@ const config = {
   preprocess: [
     sveltePreprocess({
       scss: {
+        silenceDeprecations: ['legacy-js-api'],
         prependData: `@use "${pathToFileURL(variablePath)}" as *; @use "${pathToFileURL(mixinPath)}" as *;`
       }
     })
-  ]
+  ],
+  onwarn: () => {
+    return false;
+  }
 };
 
 module.exports = config;
