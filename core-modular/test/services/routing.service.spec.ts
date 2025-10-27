@@ -527,4 +527,133 @@ describe('Routing Service', () => {
       expect(openAsModalSpy).toHaveBeenCalledWith('/modal/path', undefined);
     });
   });
+
+  describe('updateModalDataInUrl', () => {
+    let locationSpy: any;
+    let historyPushSpy: any;
+    let historyReplaceSpy: any;
+    let mockUrl: any;
+
+    beforeEach(() => {
+      locationSpy = jest.spyOn(window, 'location', 'get');
+      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      mockUrl = {
+        href: 'http://localhost/#/home',
+        hash: '#/home',
+        pathname: '/home',
+        search: '',
+        toString: () => 'http://localhost/#/home'
+      };
+      jest.spyOn(global, 'URL').mockImplementation((url: string | URL) => {
+        const hrefStr = typeof url === 'string' ? url : url.toString();
+        return {
+          ...mockUrl,
+          href: hrefStr,
+          hash: mockUrl.hash,
+          pathname: mockUrl.pathname,
+          search: mockUrl.search
+        } as any;
+      });
+
+      jest.spyOn(RoutingHelpers, 'getHashQueryParamSeparator').mockReturnValue('?');
+      jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({});
+      jest.spyOn(RoutingHelpers, 'getModalViewParamName').mockReturnValue('modalPath');
+      jest.spyOn(RoutingHelpers, 'encodeParams').mockImplementation((params) => {
+        return Object.entries(params)
+          .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
+          .join('&');
+      });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should pushState and update hash when hashRoutingActive and addHistoryEntry=true', () => {
+      locationSpy.mockImplementation(() => ({
+        ...mockUrl,
+        hash: '#/home'
+      }));
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
+
+      routingService.updateModalDataInUrl('newPath', { foo: 'bar' }, true);
+
+      expect(RoutingHelpers.getQueryParams).toHaveBeenCalledWith(mockLuigi);
+      expect(RoutingHelpers.getModalViewParamName).toHaveBeenCalledWith(mockLuigi);
+      expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
+        modalPath: 'newPath',
+        modalPathParams: JSON.stringify({ foo: 'bar' })
+      });
+      expect(historyPushSpy).toHaveBeenCalled();
+      expect(historyReplaceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should replaceState when hashRoutingActive and addHistoryEntry=false', () => {
+      locationSpy.mockImplementation(() => ({
+        ...mockUrl,
+        hash: '#/home?old=param'
+      }));
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
+      jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ existing: 'value' });
+
+      routingService.updateModalDataInUrl('modalA', { x: 1 }, false);
+
+      expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
+        existing: 'value',
+        modalPath: 'modalA',
+        modalPathParams: JSON.stringify({ x: 1 })
+      });
+      expect(historyReplaceSpy).toHaveBeenCalled();
+      expect(historyPushSpy).not.toHaveBeenCalled();
+    });
+
+    it('should update search and pushState when not hashRoutingActive', () => {
+      locationSpy.mockImplementation(() => ({
+        ...mockUrl,
+        search: ''
+      }));
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(false); // not hash routing
+
+      routingService.updateModalDataInUrl('/details', { foo: 'baz' }, true);
+
+      expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
+        modalPath: '/details',
+        modalPathParams: JSON.stringify({ foo: 'baz' })
+      });
+      expect(historyPushSpy).toHaveBeenCalled();
+    });
+
+    it('should omit modalPathParams when modalParams is empty object', () => {
+      locationSpy.mockImplementation(() => ({
+        ...mockUrl,
+        hash: '#/home'
+      }));
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
+
+      routingService.updateModalDataInUrl('simpleModal', {}, true);
+
+      expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
+        modalPath: 'simpleModal'
+      });
+      expect(historyPushSpy).toHaveBeenCalled();
+    });
+
+    it('should trim existing hash query segment before appending new params', () => {
+      locationSpy.mockImplementation(() => ({
+        ...mockUrl,
+        hash: '#/home?oldParam=1'
+      }));
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
+      const encodeSpy = jest.spyOn(RoutingHelpers, 'encodeParams');
+
+      routingService.updateModalDataInUrl('trimTest', { a: 'b' }, true);
+
+      expect(encodeSpy).toHaveBeenCalledWith({
+        modalPath: 'trimTest',
+        modalPathParams: JSON.stringify({ a: 'b' })
+      });
+      expect(historyPushSpy).toHaveBeenCalled();
+    });
+  });
 });

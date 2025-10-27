@@ -410,8 +410,7 @@ describe('Routing-helpers', () => {
     it('remove modal param and keep rest', () => {
       const url = new URL('https://example.com/#/home?modal=%2Fchild&keep=1');
       RoutingHelpers.removeModalDataFromHash(url, { modal: '/child', keep: '1' } as any, modalParam);
-      // Hinweis: Bug? Ergebnis ist "#/home&keep=1" statt "#/home?keep=1"
-      assert.equal(url.hash, '#/home&keep=1');
+      assert.equal(url.hash, '#/home?keep=1');
     });
 
     it('remove modal param and keep rest 2', () => {
@@ -429,8 +428,7 @@ describe('Routing-helpers', () => {
         { modal: '/child', modalParams: modalParams, x: '1' } as any,
         modalParam
       );
-      // Aktuelles Verhalten: führt zu "#/home&x=1"
-      assert.equal(url.hash, '#/home&x=1');
+      assert.equal(url.hash, '#/home?x=1');
     });
   });
 

@@ -446,22 +446,19 @@ export const RoutingHelpers = {
    * @returns The same URL instance with its hash cleaned of the targeted modal parameter data (if present)
    */
   removeModalDataFromHash(url: URL, params: Record<string, any>, modalParamName: string): URL {
-    let modalParamsObj: Record<string, string> = {};
+  const hash = url.hash || '';
+  if (!hash) return url;
 
-    if (params[modalParamName]) {
-      modalParamsObj[modalParamName] = params[modalParamName];
-    }
-    if (params[`${modalParamName}Params`]) {
-      modalParamsObj[`${modalParamName}Params`] = params[`${modalParamName}Params`];
-    }
+  const [base, queryString] = hash.split('?');
+  if (!queryString) return url; // keine Query im Hash -> nichts tun
 
-    const prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
-    if (url.hash.includes(`?${prevModalPath}`)) {
-      url.hash = url.hash.replace(`?${prevModalPath}`, '');
-    } else if (url.hash.includes(`&${prevModalPath}`)) {
-      url.hash = url.hash.replace(`&${prevModalPath}`, '');
-    }
+  const searchParams = new URLSearchParams(queryString);
+  searchParams.delete(modalParamName);
+  searchParams.delete(`${modalParamName}Params`);
 
-    return url;
-  }
+  const newQuery = searchParams.toString();
+  url.hash = newQuery ? `${base}?${newQuery}` : base;
+
+  return url;
+}
 };
