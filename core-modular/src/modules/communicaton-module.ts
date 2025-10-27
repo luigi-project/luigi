@@ -52,5 +52,8 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: any) => {
       RoutingModule.addSearchParamsFromClient(event.detail.data, event.detail.keepBrowserHistory, luigi);
     });
+    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+    });
   }
 };

@@ -31,6 +31,9 @@
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="openUserSettings()">open UserSettings</button>
       <button onclick="setDocumentTitle()">set document title</button>
+      <button onclick="setCurrentLocale()">set current locale</button>
+      <button onclick="getCurrentLocale()">get current locale</button>
+      <button onclick="getCustomTranslation()">get custom translation</button>
     </div>
     <script>
       function showAlert() {
@@ -93,6 +96,26 @@
         LuigiClient.sendCustomMessage({
           id: 'set-document-title-request',
           title: 'my-title',
+        });
+      }
+
+      function setCurrentLocale() {
+        LuigiClient.uxManager().setCurrentLocale('de');
+      }
+
+      function getCurrentLocale() {
+        const currentLocale = LuigiClient.uxManager().getCurrentLocale();
+
+        LuigiClient.uxManager().showAlert({
+          text: 'Current locale equals to: ' + currentLocale,
+          type: 'info',
+        });
+      }
+
+      function getCustomTranslation() {
+        LuigiClient.sendCustomMessage({
+          id: 'customTranslation',
+          customTranslation: true,
         });
       }
     </script>
