@@ -224,7 +224,9 @@ export class NavigationService {
     });
 
     if (items?.length) {
-      items = items.filter((item: NavItem) => NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles));
+      items = items.filter((item: NavItem) =>
+        NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles)
+      );
     }
 
     return items;
