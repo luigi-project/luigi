@@ -61,14 +61,14 @@ describe('I18N Service', function () {
 
     it('should set locale if client permission is set to true', () => {
       sinon.stub(LuigiI18N, '_notifyLocaleChange');
-      LuigiI18N.setCurrentLocale('de', {clientPermissions: {changeCurrentLocale: true}} as any);
+      LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: true } } as any);
       sinon.assert.calledWithExactly(global.sessionStorage.setItem, 'luigi.currentLocale', 'de');
       sinon.assert.calledWithExactly((LuigiI18N as any)._notifyLocaleChange, 'de');
     });
 
     it('should not set locale if client permission is set to false', () => {
       sinon.stub(LuigiI18N, '_notifyLocaleChange');
-      LuigiI18N.setCurrentLocale('de', {clientPermissions: {changeCurrentLocale: false}} as any);
+      LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: false } } as any);
       sinon.assert.notCalled(global.sessionStorage.setItem);
       sinon.assert.notCalled((LuigiI18N as any)._notifyLocaleChange);
     });
