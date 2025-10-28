@@ -48,7 +48,7 @@ export const NavigationHelpers = {
 
   checkVisibleForFeatureToggles: (nodeToCheckPermission: any, luigi: Luigi): boolean => {
     if (nodeToCheckPermission?.visibleForFeatureToggles) {
-      const activeFeatureToggles: string[] = luigi.ft().getActiveFeatureToggleList();
+      const activeFeatureToggles: string[] = luigi.featureToggles().getActiveFeatureToggleList();
 
       for (const ft of nodeToCheckPermission.visibleForFeatureToggles) {
         if (ft.startsWith('!')) {

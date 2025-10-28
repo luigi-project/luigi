@@ -22,7 +22,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
-    lcc.activeFeatureToggleList = luigi.ft().getActiveFeatureToggleList();
+    lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
@@ -40,7 +40,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
-    lc.activeFeatureToggleList = luigi.ft().getActiveFeatureToggleList();
+    lc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
@@ -193,7 +193,7 @@ export const UIModule = {
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
-        viewGroupContainer.activeFeatureToggleList = luigi.ft().getActiveFeatureToggleList();
+        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
 

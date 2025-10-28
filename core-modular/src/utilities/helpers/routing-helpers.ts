@@ -488,7 +488,7 @@ export const RoutingHelpers = {
     const featureToggleList: string[] = featureTogglesFromUrl.split(',');
 
     if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
-      featureToggleList.forEach((ft) => luigi.ft().setFeatureToggle(ft, true));
+      featureToggleList.forEach((ft) => luigi.featureToggles().setFeatureToggle(ft, true));
     }
   }
 };

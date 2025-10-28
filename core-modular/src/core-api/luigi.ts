@@ -12,7 +12,7 @@ import { UX } from './ux';
 export class Luigi {
   config: any;
   _store: any;
-  _ft?: FeatureToggles;
+  _featureToggles?: FeatureToggles;
   _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
@@ -138,11 +138,11 @@ export class Luigi {
     return new UX(this);
   };
 
-  ft = (): FeatureToggles => {
-    if (!this._ft) {
-      this._ft = new FeatureToggles();
+  featureToggles = (): FeatureToggles => {
+    if (!this._featureToggles) {
+      this._featureToggles = new FeatureToggles();
     }
-    return this._ft as FeatureToggles;
+    return this._featureToggles as FeatureToggles;
   };
 
   routing = (): Routing => {
