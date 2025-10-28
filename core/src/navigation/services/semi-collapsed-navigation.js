@@ -77,7 +77,7 @@ class SemiCollapsibleNavigationClass {
     }
 
     if (this.valueChangedFns instanceof Array) {
-      this.valueChangedFns.forEach(fn =>
+      this.valueChangedFns.forEach((fn) =>
         fn({
           isSemiCollapsed: this.isSemiCollapsed
         })
@@ -112,7 +112,7 @@ class SemiCollapsibleNavigationClass {
       //Force browser to re-render vertical scrollbar
       if (document.getElementsByClassName('lui-fd-side-nav-wrapper')[0]) {
         document.getElementsByClassName('lui-fd-side-nav-wrapper')[0].setAttribute('style', 'overflow-y:hidden;');
-        window.setTimeout(function() {
+        window.setTimeout(function () {
           document.getElementsByClassName('lui-fd-side-nav-wrapper')[0].setAttribute('style', 'overflow-y:auto;');
         });
       }
