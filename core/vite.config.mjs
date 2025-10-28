@@ -4,9 +4,12 @@ import * as csstree from 'css-tree';
 import * as fs from 'fs';
 
 const buildLogger = createLogger();
+const loggerWarn = buildLogger.warn;
 
-buildLogger.warn = () => {
-  return false;
+buildLogger.warn = (msg, options) => {
+  if (msg.includes('css-syntax-error')) return;
+
+  loggerWarn(msg, options);
 };
 
 const luigiPlugin = () => {

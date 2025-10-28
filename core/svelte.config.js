@@ -17,8 +17,10 @@ const config = {
       }
     })
   ],
-  onwarn: () => {
-    return false;
+  onwarn: (warning, defaultHandler) => {
+    if (warning.code.includes('a11y') || warning.code.includes('css')) return;
+
+    defaultHandler(warning);
   }
 };
 
