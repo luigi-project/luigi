@@ -1,4 +1,4 @@
-import { NavigationHelpers } from '../../utilities/helpers';
+import { GenericHelpers, NavigationHelpers } from '../../utilities/helpers';
 import { LuigiConfig } from '../../core-api';
 import { CSS_BREAKPOINTS } from '../../utilities/constants';
 
@@ -11,7 +11,7 @@ class SemiCollapsibleNavigationClass {
 
     //checking if there was a previous state in LocalStorage before the first load and reload
     if (
-      JSON.parse(localStorage.getItem(NavigationHelpers.COL_NAV_KEY)) !== false &&
+      GenericHelpers.parseJSON(localStorage.getItem(NavigationHelpers.COL_NAV_KEY)) !== false &&
       isResponsiveNavSemiCollapsibleOrFiori3
     ) {
       this.isSemiCollapsed = this.getCollapsed();
@@ -86,7 +86,7 @@ class SemiCollapsibleNavigationClass {
   }
 
   isStoredCollapsed() {
-    return JSON.parse(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
+    return GenericHelpers.parseJSON(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
   }
 
   getCollapsed() {

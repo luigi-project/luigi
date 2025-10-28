@@ -422,6 +422,15 @@ class GenericHelpersClass {
   isString(value) {
     return typeof value === 'string' || value instanceof String;
   }
+
+  parseJSON(value) {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      console.error(error);
+    }
+    return undefined;
+  }
 }
 
 export const GenericHelpers = new GenericHelpersClass();
