@@ -53,7 +53,10 @@ window.onload = () => {
               icon: 'group',
               viewUrl: '/microfrontend.html#child1',
               userSettingsGroup: 'mfeOne',
-              viewGroup: 'vg1'
+              viewGroup: 'vg1',
+              clientPermissions: {
+                changeCurrentLocale: true
+              }
             },
             {
               pathSegment: 'c2',
