@@ -456,7 +456,7 @@ export const RoutingHelpers = {
     }
 
     const prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
-    if(!prevModalPath) {
+    if (!prevModalPath) {
       return url;
     }
     if (url.hash.includes(`?${prevModalPath}`)) {
