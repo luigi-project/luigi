@@ -36,8 +36,8 @@ describe('Routing Service', () => {
     mockLuigi = {
       config: {},
       engine: {},
-      setConfig: () => { },
-      configChanged: () => { },
+      setConfig: () => {},
+      configChanged: () => {},
       routing: () => ({ getSearchParams: () => ({}) }),
       uxManager: () => ({}),
       linkManager: () => ({}),
@@ -220,8 +220,8 @@ describe('Routing Service', () => {
 
     beforeEach(() => {
       locationSpy = jest.spyOn(window, 'location', 'get');
-      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
-      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => { });
+      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
       mockUrl = {
         href: 'http://localhost/#/home',
         hash: '#/home',
@@ -338,7 +338,6 @@ describe('Routing Service', () => {
     });
   });
 
-
   describe('append and remove modal data from URL using hash routing', () => {
     const modalPath = encodeURIComponent('/project-modal');
     const modalParams = { hello: 'world' };
@@ -356,7 +355,6 @@ describe('Routing Service', () => {
       sinon.stub(RoutingHelpers, 'getModalViewParamName').returns(modalParamName);
 
       sinon.stub(navigationService, 'extractDataFromPath').returns({ nodeObject: {} });
-
     });
 
     afterEach(() => {
@@ -373,10 +371,7 @@ describe('Routing Service', () => {
         };
       });
       window.state = {};
-      sinon
-        .stub(mockLuigi, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(mockLuigi, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
       let historyState = {
         modalHistoryLength: 1,
         historygap: 1,
@@ -401,17 +396,12 @@ describe('Routing Service', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
       locationSpy.mockImplementation(() => {
         return {
-          href:
-            'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          hash:
-            '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
+          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
         };
       });
       window.state = {};
-      sinon
-        .stub(mockLuigi, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(mockLuigi, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
       try {
         routingService.removeModalDataFromUrl(false);
       } catch (error) {

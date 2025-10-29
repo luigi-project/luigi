@@ -150,7 +150,7 @@ export class RoutingService {
     if (!modalPath) {
       this.luigi.getEngine()._connector?.closeModals();
       return;
-    }else{
+    } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
       try {
         const modalSettingsObj = JSON.parse(modalSettings || '{}');
