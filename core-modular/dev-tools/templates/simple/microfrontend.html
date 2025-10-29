@@ -1,112 +1,134 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title></title>
-    <meta charset="utf-8" />
-    <link
-      href="https://unpkg.com/@luigi-project/core/luigi_horizon.css"
-      rel="stylesheet"
-    />
 
-    <style>
-      body {
-        font-family: var(--sapFontFamily);
-        text-align: center;
-        color: #515559;
-      }
-    </style>
-    <script src="./public_client/luigi-client.js"></script>
-  </head>
+<head>
+  <title></title>
+  <meta charset="utf-8" />
+  <link href="https://unpkg.com/@luigi-project/core/luigi_horizon.css" rel="stylesheet" />
 
-  <body>
-    <div>
-      <h1>Luigi Simple Development Template</h1>
-      <p>Some content</p>
-      <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
-      <button onclick="showAlert()">show alert</button>
-      <button onclick="showModal()">show MF2 in modal</button>
-      <button onclick="showLoadingIndicator()">show loading indicator</button>
-      <button onclick="hideLoadingIndicator()">hide loading indicator</button>
-      <button onclick="addBackdrop()">add backdrop</button>
-      <button onclick="removeBackdrop()">remove backdrop</button>
-      <button onclick="openUserSettings()">open UserSettings</button>
-      <button onclick="setDocumentTitle()">set document title</button>
-      <button onclick="updateModalSettings()">update modal Settings</button>
-      <button onclick="updateModalSettings(true)">
-        update modal Settings and history entry
-      </button>
-    </div>
-    <script>
-      function showAlert() {
-        const settings = {
-          text: 'Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}',
-          type: 'info',
-          links: {
-            goToHome: { text: 'homepage', url: '/home' },
-            goToOtherProject: { text: 'other project', url: '/home/c2' },
-            relativePath: { text: 'relative hide side nav', url: 'c3' },
-            neverShowItAgain: {
-              text: 'Never show it again',
-              dismissKey: 'neverShowItAgain',
-            },
+  <style>
+    body {
+      font-family: var(--sapFontFamily);
+      text-align: center;
+      color: #515559;
+    }
+  </style>
+  <script src="./public_client/luigi-client.js"></script>
+</head>
+
+<body>
+  <div>
+    <h1>Luigi Simple Development Template</h1>
+    <p>Some content</p>
+    <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
+    <button onclick="showAlert()">show alert</button>
+    <button onclick="showModal()">show MF2 in modal</button>
+    <button onclick="showLoadingIndicator()">show loading indicator</button>
+    <button onclick="hideLoadingIndicator()">hide loading indicator</button>
+    <button onclick="addBackdrop()">add backdrop</button>
+    <button onclick="removeBackdrop()">remove backdrop</button>
+    <button onclick="openUserSettings()">open UserSettings</button>
+    <button onclick="setDocumentTitle()">set document title</button>
+    <button onclick="updateModalSettings()">update modal Settings</button>
+    <button onclick="updateModalSettings(true)">
+      update modal Settings and history entry
+    </button>
+    <button onclick="setCurrentLocale()">set current locale</button>
+    <button onclick="getCurrentLocale()">get current locale</button>
+    <button onclick="getCustomTranslation()">get custom translation</button>
+  </div>
+  <script>
+    function showAlert() {
+      const settings = {
+        text: 'Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}',
+        type: 'info',
+        links: {
+          goToHome: { text: 'homepage', url: '/home' },
+          goToOtherProject: { text: 'other project', url: '/home/c2' },
+          relativePath: { text: 'relative hide side nav', url: 'c3' },
+          neverShowItAgain: {
+            text: 'Never show it again',
+            dismissKey: 'neverShowItAgain',
           },
-          closeAfter: 30000,
-        };
-        LuigiClient.uxManager()
-          .showAlert(settings)
-          .then((dismissKey) => {
-            console.log('ALERT CLOSED: ', dismissKey);
-          });
-      }
+        },
+        closeAfter: 30000,
+      };
+      LuigiClient.uxManager()
+        .showAlert(settings)
+        .then((dismissKey) => {
+          console.log('ALERT CLOSED: ', dismissKey);
+        });
+    }
 
-      let div = document.createElement('div');
+    let div = document.createElement('div');
+    div.innerHTML = location.hash;
+    document.body.appendChild(div);
+    window.addEventListener('hashchange', () => {
       div.innerHTML = location.hash;
-      document.body.appendChild(div);
-      window.addEventListener('hashchange', () => {
-        div.innerHTML = location.hash;
+    });
+
+    function showModal() {
+      LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 'm' });
+    }
+
+    function showLoadingIndicator() {
+      LuigiClient.uxManager().showLoadingIndicator();
+    }
+
+    function hideLoadingIndicator() {
+      LuigiClient.uxManager().hideLoadingIndicator();
+    }
+
+    function addBackdrop() {
+      LuigiClient.uxManager().addBackdrop();
+    }
+
+    function removeBackdrop() {
+      LuigiClient.uxManager().removeBackdrop();
+    }
+
+    function openUserSettings() {
+      LuigiClient.sendCustomMessage({
+        id: 'usersettingsdialog',
+        usersettings: { dialog: true },
       });
+    }
 
-      function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 'm' });
-      }
+    function setDocumentTitle() {
+      LuigiClient.sendCustomMessage({
+        id: 'set-document-title-request',
+        title: 'my-title',
+      });
+    }
 
-      function showLoadingIndicator() {
-        LuigiClient.uxManager().showLoadingIndicator();
-      }
+    function updateModalSettings(addHistoryEntry = false) {
+      const modalSettings = {
+        title: 'Updated MF2 Title',
+        size: 's',
+      };
+      LuigiClient.linkManager().updateModalSettings(modalSettings, addHistoryEntry);
+    }
 
-      function hideLoadingIndicator() {
-        LuigiClient.uxManager().hideLoadingIndicator();
-      }
+    function setCurrentLocale() {
+      LuigiClient.uxManager().setCurrentLocale('de');
+    }
 
-      function addBackdrop() {
-        LuigiClient.uxManager().addBackdrop();
-      }
+    function getCurrentLocale() {
+      const currentLocale = LuigiClient.uxManager().getCurrentLocale();
 
-      function removeBackdrop() {
-        LuigiClient.uxManager().removeBackdrop();
-      }
+      LuigiClient.uxManager().showAlert({
+        text: 'Current locale equals to: ' + currentLocale,
+        type: 'info',
+      });
+    }
 
-      function openUserSettings() {
-        LuigiClient.sendCustomMessage({
-          id: 'usersettingsdialog',
-          usersettings: { dialog: true },
-        });
-      }
+    function getCustomTranslation() {
+      LuigiClient.sendCustomMessage({
+        id: 'customTranslation',
+        customTranslation: true,
+      });
+    }
+  </script>
+</body>
 
-      function setDocumentTitle() {
-        LuigiClient.sendCustomMessage({
-          id: 'set-document-title-request',
-          title: 'my-title',
-        });
-      }
-
-      function updateModalSettings(addHistoryEntry = false) {
-        const modalSettings = {
-          title: 'Updated MF2 Title',
-          size: 's',
-        };
-        LuigiClient.linkManager().updateModalSettings(modalSettings, addHistoryEntry);
-      }
-    </script>
-  </body>
 </html>

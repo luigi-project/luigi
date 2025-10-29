@@ -12,6 +12,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
+
+    lcc.setAttribute('lui_container', 'true');
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
@@ -20,12 +22,15 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
+    lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
+
+    lc.setAttribute('lui_container', 'true');
     lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
@@ -34,6 +39,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
+    lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     setSandboxRules(lc, luigi);
@@ -183,6 +189,7 @@ export const UIModule = {
           .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;

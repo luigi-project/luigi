@@ -56,5 +56,8 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: any) => {
       UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
+    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+    });
   }
 };

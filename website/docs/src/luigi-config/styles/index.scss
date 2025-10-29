@@ -142,10 +142,6 @@ body.lightTheme {
   content: "\61";
 }
 
-.icon-twitter-icon:before {
-  content: "\62";
-}
-
 .icon-slack-icon:before {
   content: "\63";
 }
@@ -521,10 +517,6 @@ body.lightTheme {
     &:hover {
       color: $primary-color!important;
     }
-  }
-
-  .sap-icon--twitter::before {
-    content: "\62" !important;
   }
 
   .sap-icon--slack::before {

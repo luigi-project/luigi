@@ -190,7 +190,7 @@
   export function toggleDropdownState() {
     dispatch('toggleDropdownState');
     const ddStates = dropDownStates || {};
-    const isOpened = JSON.parse(ddStates['contextSwitcherPopover']);
+    const isOpened = GenericHelpers.parseJSON(ddStates['contextSwitcherPopover']);
     if (isOpened) {
       fetchOptions();
     }

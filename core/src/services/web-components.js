@@ -63,6 +63,7 @@ class WebComponentSvcClass {
     if (wc.extendedContext.currentNode) {
       wc.extendedContext.clientPermissions = wc.extendedContext.currentNode.clientPermissions;
     }
+
     const clientAPI = {
       linkManager: () => {
         const lm = window.Luigi.navigation();

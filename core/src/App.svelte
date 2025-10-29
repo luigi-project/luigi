@@ -1470,7 +1470,7 @@
       if ('luigi.navigation.back' === e.data.msg) {
         const mfModalTopMostElement = mfModalList[mfModalList.length - 1];
         const mfModalPreviousElement = mfModalList.length > 1 && mfModalList[mfModalList.length - 2];
-        const _goBackContext = e.data.goBackContext && JSON.parse(e.data.goBackContext);
+        const _goBackContext = e.data.goBackContext && GenericHelpers.parseJSON(e.data.goBackContext);
         if (IframeHelpers.isMessageSource(e, mfModalTopMostElement && mfModalTopMostElement.modalIframe)) {
           closeModal(mfModalList.length - 1, true, _goBackContext);
           let modalConfig = config;
@@ -1770,7 +1770,7 @@
       if (NavigationHelpers.getBurgerTooltipConfig()) {
         const [collapseNavTooltip, expandNavTooltip] = NavigationHelpers.getBurgerTooltipConfig();
         if (collapseNavTooltip && expandNavTooltip) {
-          const collapsedNavState = JSON.parse(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
+          const collapsedNavState = GenericHelpers.parseJSON(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
           burgerTooltip = collapsedNavState ? collapseNavTooltip : expandNavTooltip;
         }
       }
