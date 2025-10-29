@@ -18,7 +18,7 @@ const config = {
     })
   ],
   onwarn: (warning, defaultHandler) => {
-    if (warning.code.includes('a11y') || warning.code.includes('css')) return;
+    if (warning.code.includes('css-unused-selector')) return;
 
     defaultHandler(warning);
   }
