@@ -248,7 +248,7 @@ class LuigiConfig {
     }
     const localStorageValue = localStorage.getItem(this.USER_SETTINGS_KEY);
 
-    return localStorageValue && JSON.parse(localStorageValue);
+    return localStorageValue && GenericHelpers.parseJSON(localStorageValue);
   }
 
   /**
@@ -355,13 +355,17 @@ class LuigiConfig {
         if (iframe.luigi) {
           IframeHelpers.sendMessageToIframe(iframe, {
             msg: 'luigi.navigate',
-            context: JSON.stringify(Object.assign({}, JSON.parse(iframe.luigi._lastUpdatedMessage.context), ctx)),
+            context: JSON.stringify(
+              Object.assign({}, GenericHelpers.parseJSON(iframe.luigi._lastUpdatedMessage.context), ctx)
+            ),
             nodeParams: iframe.luigi._lastUpdatedMessage.nodeParams,
             pathParams: JSON.stringify(Object.assign({}, iframe.luigi.pathParams)),
             searchParams: JSON.stringify(
               Object.assign({}, RoutingHelpers.prepareSearchParamsForClient(iframe.luigi.currentNode))
             ),
-            internal: IframeHelpers.applyCoreStateData(JSON.parse(iframe.luigi._lastUpdatedMessage.internal))
+            internal: IframeHelpers.applyCoreStateData(
+              GenericHelpers.parseJSON(iframe.luigi._lastUpdatedMessage.internal)
+            )
           });
         }
       });
