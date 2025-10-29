@@ -326,7 +326,7 @@ class NavigationHelpersClass {
   }
 
   storeCollapsedSuperCategoriesState(key, value) {
-    let collapsedList = JSON.parse(localStorage.getItem(this.COLLAPSED_SUPER_CATEGORIES_KEY)) || [];
+    let collapsedList = GenericHelpers.parseJSON(localStorage.getItem(this.COLLAPSED_SUPER_CATEGORIES_KEY)) || [];
 
     if (value) {
       collapsedList = collapsedList.filter((item) => item !== key);
@@ -340,7 +340,7 @@ class NavigationHelpersClass {
   }
 
   isCollapsedSuperCategory(key) {
-    const collapsedList = JSON.parse(localStorage.getItem(this.COLLAPSED_SUPER_CATEGORIES_KEY)) || [];
+    const collapsedList = GenericHelpers.parseJSON(localStorage.getItem(this.COLLAPSED_SUPER_CATEGORIES_KEY)) || [];
     return collapsedList.includes(key);
   }
 
