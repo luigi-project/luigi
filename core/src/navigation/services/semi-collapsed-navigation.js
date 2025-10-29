@@ -1,4 +1,4 @@
-import { NavigationHelpers } from '../../utilities/helpers';
+import { GenericHelpers, NavigationHelpers } from '../../utilities/helpers';
 import { LuigiConfig } from '../../core-api';
 import { CSS_BREAKPOINTS } from '../../utilities/constants';
 
@@ -11,7 +11,7 @@ class SemiCollapsibleNavigationClass {
 
     //checking if there was a previous state in LocalStorage before the first load and reload
     if (
-      JSON.parse(localStorage.getItem(NavigationHelpers.COL_NAV_KEY)) !== false &&
+      GenericHelpers.parseJSON(localStorage.getItem(NavigationHelpers.COL_NAV_KEY)) !== false &&
       isResponsiveNavSemiCollapsibleOrFiori3
     ) {
       this.isSemiCollapsed = this.getCollapsed();
@@ -77,7 +77,7 @@ class SemiCollapsibleNavigationClass {
     }
 
     if (this.valueChangedFns instanceof Array) {
-      this.valueChangedFns.forEach(fn =>
+      this.valueChangedFns.forEach((fn) =>
         fn({
           isSemiCollapsed: this.isSemiCollapsed
         })
@@ -86,7 +86,7 @@ class SemiCollapsibleNavigationClass {
   }
 
   isStoredCollapsed() {
-    return JSON.parse(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
+    return GenericHelpers.parseJSON(localStorage.getItem(NavigationHelpers.COL_NAV_KEY));
   }
 
   getCollapsed() {
@@ -112,7 +112,7 @@ class SemiCollapsibleNavigationClass {
       //Force browser to re-render vertical scrollbar
       if (document.getElementsByClassName('lui-fd-side-nav-wrapper')[0]) {
         document.getElementsByClassName('lui-fd-side-nav-wrapper')[0].setAttribute('style', 'overflow-y:hidden;');
-        window.setTimeout(function() {
+        window.setTimeout(function () {
           document.getElementsByClassName('lui-fd-side-nav-wrapper')[0].setAttribute('style', 'overflow-y:auto;');
         });
       }
