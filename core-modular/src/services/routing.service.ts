@@ -150,12 +150,10 @@ export class RoutingService {
     if (!modalPath) {
       this.luigi.getEngine()._connector?.closeModals();
       return;
-    }
-    if (modalPath) {
-      let modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
+    }else{
+      const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
       try {
         const modalSettingsObj = JSON.parse(modalSettings || '{}');
-
         const { nodeObject } = await navService.extractDataFromPath(modalPath);
         const modalContainer: LuigiContainer | LuigiCompoundContainer | null =
           document.querySelector('.lui-modal luigi-container');

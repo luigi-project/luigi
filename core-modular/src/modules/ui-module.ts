@@ -218,12 +218,13 @@ export const UIModule = {
   },
   updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
     const routingService = serviceRegistry.get(RoutingService);
-    const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
-    if (!modalPath) {
-      return;
+    if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+      const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+      if (modalPath) {
+        routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
+      }
     }
     luigi.getEngine()._connector?.updateModalSettings(modalSettings);
-    routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
