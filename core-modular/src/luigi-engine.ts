@@ -1,4 +1,3 @@
-import { mount } from 'svelte';
 import App from './App.svelte';
 import { CommunicationModule } from './modules/communicaton-module';
 import { RoutingModule } from './modules/routing-module';
@@ -23,7 +22,7 @@ export class LuigiEngine {
   _routing = RoutingModule;
 
   bootstrap(connector: LuigiConnector): void {
-    this._app = mount(App, {
+    this._app = new App({
       target: document.body
     });
     this._connector = connector;

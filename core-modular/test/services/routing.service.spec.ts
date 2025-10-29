@@ -1,3 +1,4 @@
+import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { UIModule } from '../../src/modules/ui-module';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
@@ -30,6 +31,7 @@ describe('Routing Service', () => {
       engine: {},
       setConfig: () => {},
       configChanged: () => {},
+      featureToggles: () => new FeatureToggles(),
       routing: () => ({ getSearchParams: () => ({}) }),
       uxManager: () => ({}),
       linkManager: () => ({}),
@@ -128,7 +130,7 @@ describe('Routing Service', () => {
       assert.equal(actual, expect);
     });
 
-    it('should return false if path does not matche patterns', () => {
+    it('should return false if path does not match patterns', () => {
       locationSpy.mockImplementation(() => {
         return {
           href: 'http://some.url.de/settings'

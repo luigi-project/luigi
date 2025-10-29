@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -76,6 +77,7 @@ export class RoutingService {
   async handleRouteChange(routeInfo: { path: string; query: string }): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
+    const fullPath = path + (query ? '?' + query : '');
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
 
@@ -83,7 +85,7 @@ export class RoutingService {
       return;
     }
 
-    this.setFeatureToggle(path);
+    this.setFeatureToggle(fullPath);
     await this.shouldShowModalPathInUrl();
 
     urlSearchParams.forEach((value, key) => {
@@ -410,9 +412,10 @@ export class RoutingService {
    */
   setFeatureToggle(path: string): void {
     const featureToggleProperty = this.luigi.getConfigValue('settings.featureToggles.queryStringParam');
+    const featureToggles: FeatureToggles = this.luigi.featureToggles();
 
     if (featureToggleProperty && typeof path === 'string') {
-      RoutingHelpers.setFeatureToggles(featureToggleProperty, path, this.luigi);
+      RoutingHelpers.setFeatureToggles(featureToggleProperty, path, featureToggles);
     }
   }
 }

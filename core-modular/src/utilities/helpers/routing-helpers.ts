@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
@@ -473,7 +474,7 @@ export const RoutingHelpers = {
    * @param {string} featureToggleProperty used for identifying feature toggles
    * @param {string} path used for retrieving and appending the path parameters
    */
-  setFeatureToggles(featureToggleProperty: string, path: string, luigi: Luigi): void {
+  setFeatureToggles(featureToggleProperty: string, path: string, featureToggles: FeatureToggles): void {
     const paramsMap: Record<string, string> = this.sanitizeParamsMap(this.parseParams(path.split('?')[1]));
     let featureTogglesFromUrl;
 
@@ -488,7 +489,7 @@ export const RoutingHelpers = {
     const featureToggleList: string[] = featureTogglesFromUrl.split(',');
 
     if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
-      featureToggleList.forEach((ft) => luigi.featureToggles().setFeatureToggle(ft, true));
+      featureToggleList.forEach((ft) => featureToggles?.setFeatureToggle(ft, true));
     }
   }
 };
