@@ -84,7 +84,37 @@ class WebComponentSvcClass {
           }
         });
       },
-      uxManager: window.Luigi.ux,
+      uxManager: () => {
+        const ux = window.Luigi.ux();
+
+        return new Proxy(ux, {
+          get(target, prop) {
+            if (prop === target.showLoadingIndicator.name) {
+              return () => {
+                const wcNested = !!wc?.parentNode?.classList?.contains('iframeModalCtn');
+                const pm = new Promise((resolve) => {
+                  resolve(window.postMessage({ msg: 'luigi.show-loading-indicator', wcNested }));
+                });
+
+                return pm;
+              };
+            }
+
+            if (prop === target.hideLoadingIndicator.name) {
+              return () => {
+                const wcNested = !!wc?.parentNode?.classList?.contains('iframeModalCtn');
+                const pm = new Promise((resolve) => {
+                  resolve(window.postMessage({ msg: 'luigi.hide-loading-indicator', wcNested }));
+                });
+
+                return pm;
+              };
+            }
+
+            return target[prop];
+          }
+        });
+      },
       getCurrentLocale: () => window.Luigi.i18n().getCurrentLocale(),
       publishEvent: (ev) => {
         if (eventBusElement.eventBus) {
