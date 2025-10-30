@@ -97,6 +97,7 @@ export interface Node {
   externalLink?: ExternalLink;
   hideSideNav?: boolean;
   clientPermissions?: {
+    changeCurrentLocale?: boolean;
     urlParameters?: Record<string, any>;
   };
 }

@@ -18,6 +18,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
+    lcc.clientPermissions = node.clientPermissions;
     lcc.nodeParams = node.nodeParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
@@ -35,6 +36,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
+    lc.clientPermissions = node.clientPermissions;
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
@@ -190,6 +192,7 @@ export const UIModule = {
           .get(ViewUrlDecoratorSvc)
           .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.clientPermissions = currentNode.clientPermissions;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
