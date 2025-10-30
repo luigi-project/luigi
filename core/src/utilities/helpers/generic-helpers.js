@@ -433,10 +433,14 @@ class GenericHelpersClass {
   }
 
   calcMFELocation(element) {
-    if (!element) {
+    if (
+      !element ||
+      !element.tagName ||
+      (element.hasAttribute('lui_web_component') &&
+        !element.parentElement.classList.contains('wcContainer')) // nested compound
+    ) {
       return undefined;
     }
-    console.log(element.getRootNode());
     if (element.closest('.drawer')) {
       return 'drawer';
     } else if (element.closest('.iframeModalCtn')) {
