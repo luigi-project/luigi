@@ -431,6 +431,22 @@ class GenericHelpersClass {
     }
     return undefined;
   }
+
+  calcMFELocation(element) {
+    if (!element) {
+      return undefined;
+    }
+    console.log(element.getRootNode());
+    if (element.closest('.drawer')) {
+      return 'drawer';
+    } else if (element.closest('.iframeModalCtn')) {
+      return 'modal';
+    } else if (element.closest('.iframeSplitViewCnt')) {
+      return 'splitView';
+    }
+    return 'main';
+  }
+
 }
 
 export const GenericHelpers = new GenericHelpersClass();

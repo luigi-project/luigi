@@ -209,13 +209,17 @@
     const iframe = IframeHelpers.getValidMessageSource(e);
 
     if ('luigi.show-loading-indicator' === e.data.msg) {
-      if (iframe?.parentNode?.classList?.contains('iframeModalCtn') || e.data.wcNested) {
+      const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+      if ((isModal && mfeLocation === 'modal') 
+        || (isDrawer && mfeLocation === 'drawer')) {
         showLoadingIndicator = true;
       }
     }
 
     if ('luigi.hide-loading-indicator' === e.data.msg) {
-      if (iframe?.parentNode?.classList?.contains('iframeModalCtn') || e.data.wcNested) {
+      const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+      if ((isModal && mfeLocation === 'modal') 
+        || (isDrawer && mfeLocation === 'drawer')) {
         showLoadingIndicator = false;
       }
     }
