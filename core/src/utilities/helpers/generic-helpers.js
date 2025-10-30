@@ -436,8 +436,7 @@ class GenericHelpersClass {
     if (
       !element ||
       !element.tagName ||
-      (element.hasAttribute('lui_web_component') &&
-        !element.parentElement.classList.contains('wcContainer')) // nested compound
+      (element.hasAttribute('lui_web_component') && !element.parentElement.classList.contains('wcContainer')) // nested compound
     ) {
       return undefined;
     }
