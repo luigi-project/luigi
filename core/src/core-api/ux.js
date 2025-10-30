@@ -203,7 +203,7 @@ class LuigiUX {
    * @memberof UX
    * @ignore
    */
-  hideLoadingIndicator(wcNested) {
+  hideLoadingIndicator() {
     window.postMessage({ msg: 'luigi.hide-loading-indicator' });
   }
 }
