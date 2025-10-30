@@ -162,7 +162,7 @@ export class RoutingService {
    */
   appendModalDataToUrl(modalPath: string, modalParams: object): void {
     // global setting for persistence in url .. default false
-    let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
+    const queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
     const prevModalPath = params[modalParamName];

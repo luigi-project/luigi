@@ -296,7 +296,7 @@ export const RoutingHelpers = {
    * @returns {String} url search parameter as string without modal data
    */
   getURLWithoutModalData(searchParamsString: string, modalParamName: string): string {
-    let searchParams = new URLSearchParams(searchParamsString);
+    const searchParams = new URLSearchParams(searchParamsString);
     searchParams.delete(modalParamName);
     searchParams.delete(`${modalParamName}Params`);
     return searchParams.toString();
@@ -447,7 +447,7 @@ export const RoutingHelpers = {
    * @returns The same URL instance with its hash cleaned of the targeted modal parameter data (if present)
    */
   removeModalDataFromHash(url: URL, params: Record<string, any>, modalParamName: string): URL {
-    let modalParamsObj: Record<string, string> = {};
+    const modalParamsObj: Record<string, string> = {};
 
     if (params[modalParamName]) {
       modalParamsObj[modalParamName] = params[modalParamName];

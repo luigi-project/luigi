@@ -1,11 +1,10 @@
-import { get, writable, type Writable } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 
 export class FeatureToggles {
-  featureToggleList!: Writable<string[]>;
+  featureToggleList!: Set<string>;
 
   constructor() {
-    this.featureToggleList = writable([]);
+    this.featureToggleList = new Set();
   }
 
   /**
@@ -17,7 +16,7 @@ export class FeatureToggles {
     if (featureToggleName.startsWith('!') && !fromUrlQuery) return;
     if (this.isDuplicatedOrDisabled(featureToggleName)) return;
 
-    get(this.featureToggleList).push(featureToggleName);
+    this.featureToggleList.add(featureToggleName);
   }
 
   /**
@@ -27,14 +26,12 @@ export class FeatureToggles {
   unsetFeatureToggle(featureToggleName: string): void {
     if (!this.isValid(featureToggleName)) return;
 
-    const index = get(this.featureToggleList).indexOf(featureToggleName);
-
-    if (index === -1) {
+    if (!this.featureToggleList.has(featureToggleName)) {
       console.warn('Feature toggle name is not in the list.');
       return;
     }
 
-    get(this.featureToggleList).splice(index, 1);
+    this.featureToggleList.delete(featureToggleName);
   }
 
   /**
@@ -42,7 +39,9 @@ export class FeatureToggles {
    * @return {Array} of active feature toggles
    */
   getActiveFeatureToggleList(): string[] {
-    return [...get(this.featureToggleList)].filter((ft) => !ft.startsWith('!'));
+    const featureToggles: string[] = Array.from(this.featureToggleList);
+
+    return [...featureToggles].filter((ft) => !ft.startsWith('!'));
   }
 
   /**
@@ -65,12 +64,12 @@ export class FeatureToggles {
    * @return {boolean} of valid feature toggle name
    */
   private isDuplicatedOrDisabled(featureToggleName: string): boolean {
-    if (get(this.featureToggleList).includes(featureToggleName)) {
+    if (this.featureToggleList.has(featureToggleName)) {
       console.warn('Feature toggle name already exists');
       return true;
     }
 
-    if (get(this.featureToggleList).includes(`!${featureToggleName}`)) {
+    if (this.featureToggleList.has(`!${featureToggleName}`)) {
       console.warn('Disabled feature toggle can not be activated');
       return true;
     }

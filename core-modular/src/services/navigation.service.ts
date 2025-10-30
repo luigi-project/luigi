@@ -453,7 +453,7 @@ export class NavigationService {
 
   getTabNavData(path: string): TabNavData {
     const pathData = this.getPathData(path);
-    let selectedNode = pathData?.selectedNode;
+    const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     const items: NavItem[] = [];
     if (!selectedNode) return {};
