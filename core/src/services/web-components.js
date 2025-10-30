@@ -86,31 +86,23 @@ class WebComponentSvcClass {
       },
       uxManager: () => {
         const ux = window.Luigi.ux();
-
         return new Proxy(ux, {
           get(target, prop) {
             if (prop === target.showLoadingIndicator.name) {
               return () => {
-                const wcNested = !!wc?.parentNode?.classList?.contains('iframeModalCtn');
-                const pm = new Promise((resolve) => {
-                  resolve(window.postMessage({ msg: 'luigi.show-loading-indicator', wcNested }));
+                window.postMessage({
+                  msg: 'luigi.show-loading-indicator',
+                  location: GenericHelpers.calcMFELocation(wc)
                 });
-
-                return pm;
               };
-            }
-
-            if (prop === target.hideLoadingIndicator.name) {
+            } else if (prop === target.hideLoadingIndicator.name) {
               return () => {
-                const wcNested = !!wc?.parentNode?.classList?.contains('iframeModalCtn');
-                const pm = new Promise((resolve) => {
-                  resolve(window.postMessage({ msg: 'luigi.hide-loading-indicator', wcNested }));
+                window.postMessage({
+                  msg: 'luigi.hide-loading-indicator',
+                  location: GenericHelpers.calcMFELocation(wc)
                 });
-
-                return pm;
               };
             }
-
             return target[prop];
           }
         });

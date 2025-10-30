@@ -1351,18 +1351,16 @@
         ViewGroupPreloading.viewGroupLoaded(iframe);
       }
 
-      if ('luigi.show-loading-indicator' === e.data.msg && !e.data.wcNested) {
-        const iframeWrapper = iframe?.parentNode?.classList?.contains('iframeContainer');
-
-        if (iframeWrapper || (iframe?._ready && iframeWrapper === undefined)) {
+      if ('luigi.show-loading-indicator' === e.data.msg) {
+        const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+        if (mfeLocation === 'main') {
           showLoadingIndicator = true;
         }
       }
 
-      if ('luigi.hide-loading-indicator' === e.data.msg && !e.data.wcNested) {
-        const iframeWrapper = iframe?.parentNode?.classList?.contains('iframeContainer');
-
-        if (iframeWrapper || (iframe?._ready && iframeWrapper === undefined)) {
+      if ('luigi.hide-loading-indicator' === e.data.msg) {
+        const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+        if (mfeLocation === 'main') {
           clearTimeout(loadingIndicatorTimeout);
           showLoadingIndicator = false;
         }

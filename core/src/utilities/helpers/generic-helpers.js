@@ -431,6 +431,24 @@ class GenericHelpersClass {
     }
     return undefined;
   }
+
+  calcMFELocation(element) {
+    if (
+      !element ||
+      !element.tagName ||
+      (element.hasAttribute('lui_web_component') && !element.parentElement.classList.contains('wcContainer')) // nested compound
+    ) {
+      return undefined;
+    }
+    if (element.closest('.drawer')) {
+      return 'drawer';
+    } else if (element.closest('.iframeModalCtn')) {
+      return 'modal';
+    } else if (element.closest('.iframeSplitViewCnt')) {
+      return 'splitView';
+    }
+    return 'main';
+  }
 }
 
 export const GenericHelpers = new GenericHelpersClass();
