@@ -1,7 +1,16 @@
-import { defineConfig } from 'vite';
+import { createLogger, defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import * as csstree from 'css-tree';
 import * as fs from 'fs';
+
+const buildLogger = createLogger();
+const loggerWarn = buildLogger.warn;
+
+buildLogger.warn = (msg, options) => {
+  if (msg.includes('css-syntax-error')) return;
+
+  loggerWarn(msg, options);
+};
 
 const luigiPlugin = () => {
   return {
@@ -41,6 +50,7 @@ const luigiPlugin = () => {
 
 export default defineConfig({
   assetsInclude: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+  customLogger: buildLogger,
   base: '',
   build: {
     minify: 'terser',
@@ -56,7 +66,7 @@ export default defineConfig({
       output: {
         entryFileNames: 'luigi.js',
         format: 'es',
-        assetFileNames: assetInfo => {
+        assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith('main.css')) {
             return 'luigi_core.css';
           } else if (assetInfo.name.endsWith('fd_fiori.css')) {
@@ -70,6 +80,13 @@ export default defineConfig({
       plugins: []
     },
     outDir: 'public'
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['legacy-js-api']
+      }
+    }
   },
   publicDir: 'public_root',
   plugins: [luigiPlugin(), svelte()]

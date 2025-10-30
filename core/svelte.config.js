@@ -12,10 +12,16 @@ const config = {
   preprocess: [
     sveltePreprocess({
       scss: {
+        silenceDeprecations: ['legacy-js-api'],
         prependData: `@use "${pathToFileURL(variablePath)}" as *; @use "${pathToFileURL(mixinPath)}" as *;`
       }
     })
-  ]
+  ],
+  onwarn: (warning, defaultHandler) => {
+    if (warning.code.includes('css-unused-selector')) return;
+
+    defaultHandler(warning);
+  }
 };
 
 module.exports = config;
