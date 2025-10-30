@@ -90,11 +90,17 @@ class WebComponentSvcClass {
           get(target, prop) {
             if (prop === target.showLoadingIndicator.name) {
               return () => {
-                window.postMessage({ msg: 'luigi.show-loading-indicator', location: GenericHelpers.calcMFELocation(wc) });
+                window.postMessage({
+                  msg: 'luigi.show-loading-indicator',
+                  location: GenericHelpers.calcMFELocation(wc)
+                });
               };
             } else if (prop === target.hideLoadingIndicator.name) {
               return () => {
-                window.postMessage({ msg: 'luigi.hide-loading-indicator', location: GenericHelpers.calcMFELocation(wc) });
+                window.postMessage({
+                  msg: 'luigi.hide-loading-indicator',
+                  location: GenericHelpers.calcMFELocation(wc)
+                });
               };
             }
             return target[prop];

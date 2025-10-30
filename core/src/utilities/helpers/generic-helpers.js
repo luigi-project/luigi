@@ -446,7 +446,6 @@ class GenericHelpersClass {
     }
     return 'main';
   }
-
 }
 
 export const GenericHelpers = new GenericHelpersClass();
