@@ -508,6 +508,7 @@ const connector = {
   renderModal: (lc, modalSettings, onCloseCallback) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
+    dialog.classList.add('lui-modal');
     dialog.setAttribute('header-text', modalSettings?.title);
     setDialogSize(dialog, modalSettings);
     dialog.appendChild(lc);
@@ -545,9 +546,9 @@ const connector = {
   },
 
   updateModalSettings: (modalSettings) => {
-    const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
-    if (modalSettings.title) {
-      document.querySelector('ui5-dialog.lui-modal[open] ui5-bar').headerText = modalSettings.title;
+     if (!dialog) return;
+    if (modalSettings?.title) {
+      dialog.querySelector('ui5-bar').headerText = modalSettings.title;
     }
     setDialogSize(dialog, modalSettings);
   },
