@@ -1,12 +1,13 @@
+import { LuigiConfig, LuigiElements } from '../../../src/core-api';
+import { GenericHelpers } from '../../../src/utilities/helpers';
+
 const chai = require('chai');
 const assert = chai.assert;
 const sinon = require('sinon');
-import { LuigiConfig } from '../../../src/core-api';
-import { LuigiElements } from '../../../src/core-api';
-import { GenericHelpers } from '../../../src/utilities/helpers';
 
 describe('Generic-helpers', () => {
   let windowLocationImplementation;
+
   beforeAll(() => {
     windowLocationImplementation = window.location;
     delete window.location;
@@ -16,6 +17,7 @@ describe('Generic-helpers', () => {
       }
     };
   });
+
   afterAll(() => {
     window.location = windowLocationImplementation;
   });
@@ -104,6 +106,7 @@ describe('Generic-helpers', () => {
     };
     assert.deepEqual(GenericHelpers.removeInternalProperties(input), expected);
   });
+
   it('removeProperties', () => {
     const input = {
       some: true,
@@ -162,6 +165,7 @@ describe('Generic-helpers', () => {
       assert.equal(GenericHelpers.semverCompare('1.1.1', '0.7.4'), 1);
     });
   });
+
   describe('request experimental feature', () => {
     beforeEach(() => {
       sinon.stub(LuigiConfig, 'getConfig');
@@ -215,6 +219,48 @@ describe('Generic-helpers', () => {
     it('shellbar is present, no clientHeight', () => {
       LuigiElements.getShellbar.returns({});
       assert.equal(GenericHelpers.getShellbarHeight(), 0);
+    });
+  });
+
+  describe('calcMFELocation', () => {
+    const sb = sinon.createSandbox();
+
+    afterEach(() => {
+      sb.restore();
+    });
+
+    it.each([null, undefined, ''])('should check if element is present', (el) => {
+      assert.equal(GenericHelpers.calcMFELocation(el), undefined);
+    });
+
+    it.each(['main', undefined])('should check if element has special attribute', (context) => {
+      const el = document.createElement('div');
+
+      if (!context) {
+        el.setAttribute('lui_web_component', true);
+      }
+
+      assert.equal(GenericHelpers.calcMFELocation(el), context);
+    });
+
+    it.each([
+      { main: '.main' },
+      { drawer: '.drawer' },
+      { modal: '.iframeModalCtn' },
+      { splitView: '.iframeSplitViewCnt' }
+    ])('should check if element has specific wrapper', (obj) => {
+      const el = document.createElement('div');
+      const key = Object.keys(obj)[0];
+
+      sb.stub(Element.prototype, 'closest').callsFake((selector) => {
+        if (selector === obj[key] && selector !== '.main') {
+          return document.createElement('div');
+        }
+
+        return null;
+      });
+
+      assert.equal(GenericHelpers.calcMFELocation(el), key);
     });
   });
 });
