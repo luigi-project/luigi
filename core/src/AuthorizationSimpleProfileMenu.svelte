@@ -185,7 +185,12 @@
       {/if}
       {#each profileNav.items as profileItem}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <li class="fd-menu__item" role="presentation" on:click={() => onActionClick(profileItem)} data-testid={getTestId(profileItem)}>
+        <li
+          class="fd-menu__item"
+          role="presentation"
+          on:click={() => onActionClick(profileItem)}
+          data-testid={getTestId(profileItem)}
+        >
           <a
             class="fd-menu__link"
             data-testid="luigi-topnav-profile-item"
@@ -239,7 +244,12 @@
       {#if isAuthorizationEnabled || isProfileLogoutItem}
         {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <li class="fd-menu__item" role="presentation" on:click={onLogoutClick} data-testid={getTestId(profileNav.logout)}>
+          <li
+            class="fd-menu__item"
+            role="presentation"
+            on:click={onLogoutClick}
+            data-testid={getTestId(profileNav.logout)}
+          >
             <button title="Logout" class="fd-menu__link lui-logout-btn" data-testid="logout-btn">
               {#if profileNav.logout.icon}
                 {#if hasOpenUIicon(profileNav.logout)}
