@@ -387,7 +387,6 @@
     {/if}
     <nav
       class="fd-icon-tab-bar fd-icon-tab-bar--lg"
-      role="tablist"
       on:toggleDropdownState={(event) => toggleDropdownState(event.name)}
     >
       <div
@@ -405,6 +404,7 @@
                   <span role="presentation" class="fd-icon-tab-bar__item" uid="{index}-{index2}" {isSelected}>
                     <a
                       role="tab"
+                      tabindex="0"
                       class="fd-icon-tab-bar__tab"
                       href={getRouteLink(node)}
                       data-testid={NavigationHelpers.getTestId(node)}
@@ -479,6 +479,7 @@
                             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <a
+                              role="tab"
                               tabindex="0"
                               class="fd-list__link fd-icon-tab-bar__list-link"
                               href={getRouteLink(node)}
@@ -499,6 +500,8 @@
               <span
                 class="fd-icon-tab-bar__item fd-icon-tab-bar__item--single-click"
                 {uid}
+                role="tab"
+                tabindex="0"
                 on:click={(event) => event.stopPropagation()}
                 isSelected={isSelectedCat(key, selectedNodeForTabNav)}
               >
@@ -509,6 +512,7 @@
                       class="fd-icon-tab-bar__tab"
                       aria-expanded="false"
                       role="tab"
+                      tabindex="0"
                       on:click|preventDefault={() => toggleDropdownState(key)}
                       aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                     >
@@ -537,6 +541,8 @@
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:click|preventDefault={() => handleClick(node)}
                                 aria-selected={node === selectedNodeForTabNav}
+                                role="tab"
+                                tabindex="0"
                               >
                                 <span class="fd-list__title">
                                   {getNodeLabel(node)}
@@ -558,11 +564,13 @@
         <span
           class="luigi-tabsMoreButton fd-icon-tab-bar__item fd-icon-tab-bar__item--overflow"
           on:click={(event) => event.stopPropagation()}
+          role="button"
+          tabindex="0"
           bind:this={moreButton}
         >
           <div class="fd-popover">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <div class="fd-popover__control has-child luigi__more" aria-expanded="false" role="tab">
+            <div class="fd-popover__control has-child luigi__more" role="presentation">
               <button class="fd-icon-tab-bar__overflow" on:click|preventDefault={toggleMoreBtn} bind:this={moreLink}>
                 <span class="label fd-icon-tab-bar__overflow-text">More</span>
                 <span class="sap-icon--slim-arrow-down" />
@@ -577,6 +585,7 @@
                   {#if key === 'undefined' || key.indexOf(virtualGroupPrefix) === 0}
                     {#each nodes as node, index2}
                       <li class="fd-nested-list__item" uid="{index}-{index2}">
+                        <!-- svelte-ignore a11y-role-supports-aria-props -->
                         <a
                           href={getRouteLink(node)}
                           class="fd-nested-list__link"
@@ -596,6 +605,7 @@
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                       <div class="fd-nested-list__content has-child" tabindex="0">
                         <!-- svelte-ignore a11y-invalid-attribute -->
+                        <!-- svelte-ignore a11y-role-supports-aria-props -->
                         <a
                           href="javascript:void(null)"
                           tabindex="-1"
@@ -629,6 +639,7 @@
                         {#each nodes as node}
                           {#if node.label}
                             <li class="fd-nested-list__item" aria-labelledby="tabnav_list_level1_{index}">
+                              <!-- svelte-ignore a11y-role-supports-aria-props -->
                               <a
                                 class="fd-nested-list__link"
                                 href={getRouteLink(node)}

@@ -32,6 +32,7 @@
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <li
             class="fd-menu__item"
+            role="presentation"
             on:click={() => onActionClick(node)}
             data-testid={NavigationHelpers.getTestId(node)}
           >
@@ -64,6 +65,7 @@
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <li
             class="fd-menu__item"
+            role="presentation"
             on:click={() => goToOption(node, selectedOption)}
             data-testid={NavigationHelpers.getTestId(node)}
           >
@@ -93,6 +95,7 @@
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <li
             class="fd-menu__item"
+            role="presentation"
             on:click={() => onActionClick(node)}
             data-testid={NavigationHelpers.getTestId(node)}
           >

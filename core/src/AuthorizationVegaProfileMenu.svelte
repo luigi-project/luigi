@@ -239,6 +239,7 @@
               >
                 <a
                   class="fd-menu__link"
+                  role="button"
                   data-testid="luigi-topnav-profile-item"
                   href={addNavHrefForAnchor ? getRouteLink(profileItem) : undefined}
                   on:click={(event) => {

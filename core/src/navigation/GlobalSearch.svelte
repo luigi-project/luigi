@@ -54,6 +54,7 @@
       on:click|stopPropagation={() => {}}
       aria-hidden={!isSearchFieldVisible}
       aria-haspopup="true"
+      role="button"
     >
       <div class="fd-input-group fd-shellbar__input-group fd-shellbar__search-field">
         {#if search && search.disableInputHandlers}
@@ -101,8 +102,9 @@
                     {#if !globalSearchHelper.isCustomSearchResultItemRenderer}
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
                       <!-- svelte-ignore a11y-no-static-element-interactions -->
+                      <!-- svelte-ignore a11y-interactive-supports-focus -->
                       <!-- svelte-ignore a11y-missing-attribute -->
-                      <a class="fd-menu__link" on:click|preventDefault={() => {}}>
+                      <a class="fd-menu__link" role="button" on:click|preventDefault={() => {}}>
                         <div class="fd-product-switch__text">
                           <div class="fd-product-switch__title">{result.label}</div>
                           <div class="fd-product-switch__subtitle">{result.description}</div>
@@ -130,7 +132,7 @@
 <div class="fd-shellbar__action fd-shellbar__action--desktop">
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div on:click|stopPropagation={() => {}}>
+  <div role="presentation" on:click|stopPropagation={() => {}}>
     <button
       class="fd-button fd-button--transparent fd-shellbar__button"
       aria-haspopup="true"

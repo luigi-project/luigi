@@ -185,7 +185,12 @@
       {/if}
       {#each profileNav.items as profileItem}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <li class="fd-menu__item" on:click={() => onActionClick(profileItem)} data-testid={getTestId(profileItem)}>
+        <li
+          class="fd-menu__item"
+          role="presentation"
+          on:click={() => onActionClick(profileItem)}
+          data-testid={getTestId(profileItem)}
+        >
           <a
             class="fd-menu__link"
             data-testid="luigi-topnav-profile-item"
@@ -211,6 +216,7 @@
       {/each}
       {#if hasUserSettings}
         <li
+          role="presentation"
           tabindex="-1"
           class="fd-menu__item lui-anchor-node"
           on:click|preventDefault={onUserSettingsClick}
@@ -238,7 +244,12 @@
       {#if isAuthorizationEnabled || isProfileLogoutItem}
         {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <li class="fd-menu__item" on:click={onLogoutClick} data-testid={getTestId(profileNav.logout)}>
+          <li
+            class="fd-menu__item"
+            role="presentation"
+            on:click={onLogoutClick}
+            data-testid={getTestId(profileNav.logout)}
+          >
             <button title="Logout" class="fd-menu__link lui-logout-btn" data-testid="logout-btn">
               {#if profileNav.logout.icon}
                 {#if hasOpenUIicon(profileNav.logout)}
@@ -257,7 +268,7 @@
         {/if}
         {#if isAuthorizationEnabled && !isLoggedIn}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <li class="fd-menu__item" on:click={startAuthorization}>
+          <li class="fd-menu__item" role="presentation" on:click={startAuthorization}>
             <!-- svelte-ignore a11y-missing-attribute -->
             <a aria-label="Login" class="fd-menu__link" data-testid="login-btn">
               <span class="fd-menu__title">Login</span>

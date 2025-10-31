@@ -1163,7 +1163,7 @@
                             <li
                               is-in-group={!group.isSingleEntry}
                               class="fd-navigation-list__item lui-nav-entry"
-                              role="none"
+                              role="presentation"
                             >
                               <!-- svelte-ignore a11y-role-has-required-aria-props -->
                               <a
@@ -1297,7 +1297,7 @@
                               {#each nodes as node}
                                 {#if !node.hideFromNav}
                                   {#if node.label}
-                                    <li class="fd-navigation-list__item" role="none">
+                                    <li class="fd-navigation-list__item" role="presentation">
                                       <!-- svelte-ignore a11y-role-has-required-aria-props -->
                                       <a
                                         class="fd-navigation-list__content {node === selectedNode ? 'is-selected' : ''}"

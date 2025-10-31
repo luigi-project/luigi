@@ -265,8 +265,9 @@
     {#if collapsed}
       <div id="splitViewDraggerCollapsed" class="splitViewSeparator isCollapsed">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-interactive-supports-focus -->
         <!-- svelte-ignore a11y-missing-attribute -->
-        <a class="lui-collapse-btn" on:click|stopPropagation|preventDefault={expand}>
+        <a class="lui-collapse-btn" role="button" on:click|stopPropagation|preventDefault={expand}>
           <i class="sap-icon sap-icon--navigation-up-arrow" />
         </a>
       </div>
@@ -278,11 +279,12 @@
 </div>
 {#if !collapsed}
   <div id="splitViewDraggerBackdrop" />
-  <div id="splitViewDragger" on:mousedown|stopPropagation={onDragStart}>
+  <div id="splitViewDragger" role="presentation" on:mousedown|stopPropagation={onDragStart}>
     <div class="splitViewSeparator" />
     <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-interactive-supports-focus -->
     <!-- svelte-ignore a11y-missing-attribute -->
-    <a class="lui-collapse-btn" on:click|stopPropagation|preventDefault={collapse}>
+    <a class="lui-collapse-btn" role="button" on:click|stopPropagation|preventDefault={collapse}>
       <i class="sap-icon sap-icon--navigation-down-arrow" />
     </a>
   </div>
