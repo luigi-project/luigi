@@ -12,7 +12,7 @@ describe('Generic-helpers', () => {
     windowLocationImplementation = window.location;
     delete window.location;
     window.location = {
-      search: function() {
+      search: function () {
         return '';
       }
     };
@@ -23,7 +23,7 @@ describe('Generic-helpers', () => {
   });
 
   it('getUrlParameter', () => {
-    const setLocationSearch = url => {
+    const setLocationSearch = (url) => {
       sinon.stub(window.location, 'search').get(() => url);
     };
     const catName = 'spencer';

@@ -105,7 +105,10 @@ describe('WebComponentService', function () {
       expect(expectedCmp.LuigiClient.uxManager()).to.have.property('showLoadingIndicator');
       expect(expectedCmp.LuigiClient.uxManager().showLoadingIndicator).to.be.a('function');
       expectedCmp.LuigiClient.uxManager().showLoadingIndicator();
-      sinon.assert.calledOnceWithExactly(window.postMessage, { msg: 'luigi.show-loading-indicator', location: context });
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.show-loading-indicator',
+        location: context
+      });
     });
 
     it.each(['main', undefined])('check hiding a loading indicator in UX manager', async (context) => {
@@ -123,7 +126,10 @@ describe('WebComponentService', function () {
       expect(expectedCmp.LuigiClient.uxManager()).to.have.property('hideLoadingIndicator');
       expect(expectedCmp.LuigiClient.uxManager().hideLoadingIndicator).to.be.a('function');
       expectedCmp.LuigiClient.uxManager().hideLoadingIndicator();
-      sinon.assert.calledOnceWithExactly(window.postMessage, { msg: 'luigi.hide-loading-indicator', location: context });
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.hide-loading-indicator',
+        location: context
+      });
     });
 
     it('check post-processing', () => {
