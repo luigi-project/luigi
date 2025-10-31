@@ -546,7 +546,7 @@ const connector = {
   },
 
   updateModalSettings: (modalSettings) => {
-     if (!dialog) return;
+    if (!dialog) return;
     if (modalSettings?.title) {
       dialog.querySelector('ui5-bar').headerText = modalSettings.title;
     }
