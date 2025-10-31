@@ -1,14 +1,13 @@
 import { get } from 'svelte/store';
-import { DirtyStatusService } from '../services/dirty-status.service';
-import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
-import { serviceRegistry } from '../services/service-registry';
 import {
   type AlertSettings,
-  type ProcessedAlertSettings,
   type ConfirmationModalSettings,
   type UserSettings
 } from '../modules/ux-module';
+import { DirtyStatusService } from '../services/dirty-status.service';
+import { serviceRegistry } from '../services/service-registry';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
 import type { Luigi } from './luigi';
 
 export class UX {

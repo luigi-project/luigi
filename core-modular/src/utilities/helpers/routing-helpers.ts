@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
@@ -291,7 +292,7 @@ export const RoutingHelpers = {
    * @returns {String} url search parameter as string without modal data
    */
   getURLWithoutModalData(searchParamsString: string, modalParamName: string): string {
-    let searchParams = new URLSearchParams(searchParamsString);
+    const searchParams = new URLSearchParams(searchParamsString);
     searchParams.delete(modalParamName);
     searchParams.delete(`${modalParamName}Params`);
     return searchParams.toString();
@@ -442,7 +443,7 @@ export const RoutingHelpers = {
    * @returns The same URL instance with its hash cleaned of the targeted modal parameter data (if present)
    */
   removeModalDataFromHash(url: URL, params: Record<string, any>, modalParamName: string): URL {
-    let modalParamsObj: Record<string, string> = {};
+    const modalParamsObj: Record<string, string> = {};
 
     if (params[modalParamName]) {
       modalParamsObj[modalParamName] = params[modalParamName];
@@ -452,6 +453,9 @@ export const RoutingHelpers = {
     }
 
     const prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
+    if (!prevModalPath) {
+      return url;
+    }
     if (url.hash.includes(`?${prevModalPath}`)) {
       url.hash = url.hash.replace(`?${prevModalPath}`, '');
     } else if (url.hash.includes(`&${prevModalPath}`)) {
@@ -459,5 +463,29 @@ export const RoutingHelpers = {
     }
 
     return url;
+  },
+
+  /**
+   * Set feature toggles
+   * @param {string} featureToggleProperty used for identifying feature toggles
+   * @param {string} path used for retrieving and appending the path parameters
+   */
+  setFeatureToggles(featureToggleProperty: string, path: string, featureToggles: FeatureToggles): void {
+    const paramsMap: Record<string, string> = this.sanitizeParamsMap(this.parseParams(path.split('?')[1]));
+    let featureTogglesFromUrl;
+
+    if (paramsMap[featureToggleProperty]) {
+      featureTogglesFromUrl = paramsMap[featureToggleProperty];
+    }
+
+    if (!featureTogglesFromUrl) {
+      return;
+    }
+
+    const featureToggleList: string[] = featureTogglesFromUrl.split(',');
+
+    if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
+      featureToggleList.forEach((ft) => featureToggles?.setFeatureToggle(ft, true));
+    }
   }
 };

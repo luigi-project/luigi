@@ -37,7 +37,7 @@ class UserSettingsHelperClass {
   }
 
   findActiveCustomUserSettingsIframe(eventSource: any): any {
-    let customUserSettingsIframes = document.querySelectorAll('[userSettingsGroup]');
+    const customUserSettingsIframes = document.querySelectorAll('[userSettingsGroup]');
 
     for (let i = 0; i < customUserSettingsIframes.length; i++) {
       if ((customUserSettingsIframes[i] as any).contentWindow === eventSource) {

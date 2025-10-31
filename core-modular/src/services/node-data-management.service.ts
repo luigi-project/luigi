@@ -1,4 +1,4 @@
-import type { Node } from "./navigation.service";
+import type { Node } from './navigation.service';
 
 export class NodeDataManagementService {
   dataManagement: Map<any, any>;
@@ -10,7 +10,7 @@ export class NodeDataManagementService {
 
   /**
    * Stores node as key and value as value
-   * @param {any} node
+   * @param {Node} node
    * @param {any} value
    */
   setChildren(node: Node, value: any): void {
@@ -20,7 +20,7 @@ export class NodeDataManagementService {
 
   /**
    * Returns the map entry which belongs to the node, stored as key
-   * @param {any} node
+   * @param {Node} node
    * @returns {any} map entry
    */
   getChildren(node: Node): any {
@@ -29,7 +29,7 @@ export class NodeDataManagementService {
 
   /**
    * Checks if there is an entry of given node
-   * @param {any} node
+   * @param {Node} node
    * @returns {boolean} true or false
    */
   hasChildren(node: Node): boolean {
@@ -40,7 +40,7 @@ export class NodeDataManagementService {
 
   /**
    * Stores root node as object with key '_luigiRootNode'
-   * @param {any} node
+   * @param {Node} node
    */
   setRootNode(node: Node): void {
     this.dataManagement.set('_luigiRootNode', { node });
@@ -48,7 +48,7 @@ export class NodeDataManagementService {
 
   /**
    * Returns the root node
-   * @returns {any} root node
+   * @returns {Node} root node
    */
   getRootNode(): Node {
     return this.dataManagement.get('_luigiRootNode');
@@ -71,7 +71,7 @@ export class NodeDataManagementService {
 
   /**
    * Deletes node from cache and its children recursively
-   * @param {any} node
+   * @param {Node} node
    */
   deleteNodesRecursively(node: Node): void {
     if (this.hasChildren(node)) {

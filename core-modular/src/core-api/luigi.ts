@@ -3,14 +3,16 @@ import type { LuigiEngine } from '../luigi-engine';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
-import { UX } from './ux';
 import { Theming } from './theming';
+import { UX } from './ux';
 
 export class Luigi {
   config: any;
   _store: any;
+  _featureToggles?: FeatureToggles;
   _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
@@ -136,6 +138,13 @@ export class Luigi {
     return new UX(this);
   };
 
+  featureToggles = (): FeatureToggles => {
+    if (!this._featureToggles) {
+      this._featureToggles = new FeatureToggles();
+    }
+    return this._featureToggles as FeatureToggles;
+  };
+
   routing = (): Routing => {
     if (!this._routing) {
       this._routing = new Routing(this);
@@ -170,15 +179,15 @@ export class Luigi {
     let unSubscriptions: any[] = [];
 
     return {
-      subscribe: (fn: Subscriber<{}>) => {
+      subscribe: (fn: Subscriber<object>) => {
         // subscribe fn returns unsubscription fn
         unSubscriptions.push(subscribe(fn));
       },
       update,
-      reset: (fn: Updater<{}>) => {
+      reset: (fn: Updater<object>) => {
         update(fn);
       },
-      subscribeToScope: (fn: Subscriber<{}>, scope: any) => {
+      subscribeToScope: (fn: Subscriber<object>, scope: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (!subscribers) {

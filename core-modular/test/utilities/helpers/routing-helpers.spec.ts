@@ -1,12 +1,17 @@
+import { FeatureToggles } from '../../../src/core-api/feature-toggles';
 import { RoutingHelpers } from '../../../src/utilities/helpers/routing-helpers';
+
 const chai = require('chai');
 const sinon = require('sinon');
 import type { SinonStub } from 'sinon';
 const assert = chai.assert;
 
 describe('Routing-helpers', () => {
+  let featureToggles: FeatureToggles;
   let luigi: any = {};
+
   beforeEach(() => {
+    featureToggles = new FeatureToggles();
     luigi = {
       config: {},
       engine: {},
@@ -26,6 +31,7 @@ describe('Routing-helpers', () => {
       getActiveFeatureToggles: () => []
     };
   });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -142,6 +148,35 @@ describe('Routing-helpers', () => {
     };
     const filteredParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
     assert.deepEqual(filteredParams, {});
+  });
+
+  describe('set feature toggle from url', () => {
+    let mockPath = '/projects/pr1/settings?ft=test';
+
+    beforeEach(() => {
+      sinon.stub(featureToggles, 'setFeatureToggle');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('setFeatureToggle will be called', () => {
+      RoutingHelpers.setFeatureToggles('ft', mockPath, featureToggles);
+      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test');
+    });
+
+    it('setFeatureToggle will be called with two featureToggles', () => {
+      mockPath = '/projects/pr1/settings?ft=test,test2';
+      RoutingHelpers.setFeatureToggles('ft', mockPath, featureToggles);
+      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test');
+      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test2');
+    });
+
+    it("setFeatureToggle won't be called with wrong queryParam name", () => {
+      RoutingHelpers.setFeatureToggles('fft', mockPath, featureToggles);
+      sinon.assert.notCalled(featureToggles.setFeatureToggle);
+    });
   });
 
   it('getHashQueryParamSeparator', () => {
