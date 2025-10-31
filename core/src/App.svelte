@@ -1352,12 +1352,18 @@
       }
 
       if ('luigi.show-loading-indicator' === e.data.msg) {
-        showLoadingIndicator = true;
+        const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+        if (mfeLocation === 'main') {
+          showLoadingIndicator = true;
+        }
       }
 
       if ('luigi.hide-loading-indicator' === e.data.msg) {
-        clearTimeout(loadingIndicatorTimeout);
-        showLoadingIndicator = false;
+        const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+        if (mfeLocation === 'main') {
+          clearTimeout(loadingIndicatorTimeout);
+          showLoadingIndicator = false;
+        }
       }
 
       if ('luigi.navigation.open' === e.data.msg) {

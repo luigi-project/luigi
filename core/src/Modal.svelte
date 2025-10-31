@@ -206,12 +206,20 @@
   });
 
   const onMessage = async (e) => {
+    const iframe = IframeHelpers.getValidMessageSource(e);
+
     if ('luigi.show-loading-indicator' === e.data.msg) {
-      showLoadingIndicator = true;
+      const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+      if ((isModal && mfeLocation === 'modal') || (isDrawer && mfeLocation === 'drawer')) {
+        showLoadingIndicator = true;
+      }
     }
 
     if ('luigi.hide-loading-indicator' === e.data.msg) {
-      showLoadingIndicator = false;
+      const mfeLocation = e.data.location || GenericHelpers.calcMFELocation(iframe);
+      if ((isModal && mfeLocation === 'modal') || (isDrawer && mfeLocation === 'drawer')) {
+        showLoadingIndicator = false;
+      }
     }
 
     if ('luigi.get-context' === e.data.msg) {
