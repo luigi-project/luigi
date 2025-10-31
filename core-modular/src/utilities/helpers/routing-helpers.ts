@@ -260,7 +260,7 @@ export const RoutingHelpers = {
   parseParams(paramsString: string): Record<string, string> {
     const params = new URLSearchParams(paramsString);
 
-    const result: Record<string, string> = {};
+    const result: Record<string, string> = Object.create(null);
 
     for (const [key, value] of params.entries()) {
       result[key] = value;
