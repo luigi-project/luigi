@@ -50,6 +50,8 @@ export interface LuigiConnector {
   getCurrentLocale(): string;
 
   closeModals(): void;
+
+  updateModalSettings(modalSettings: ModalSettings): void;
 }
 
 export type { Node };

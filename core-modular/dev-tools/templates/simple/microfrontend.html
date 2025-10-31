@@ -31,6 +31,10 @@
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="openUserSettings()">open UserSettings</button>
       <button onclick="setDocumentTitle()">set document title</button>
+      <button onclick="updateModalSettings()">update modal Settings</button>
+      <button onclick="updateModalSettings(true)">
+        update modal Settings and history entry
+      </button>
       <button onclick="setCurrentLocale()">set current locale</button>
       <button onclick="getCurrentLocale()">get current locale</button>
       <button onclick="getCustomTranslation()">get custom translation</button>
@@ -66,7 +70,7 @@
       });
 
       function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 'm' });
       }
 
       function showLoadingIndicator() {
@@ -97,6 +101,14 @@
           id: 'set-document-title-request',
           title: 'my-title',
         });
+      }
+
+      function updateModalSettings(addHistoryEntry = false) {
+        const modalSettings = {
+          title: 'Updated MF2 Title',
+          size: 's',
+        };
+        LuigiClient.linkManager().updateModalSettings(modalSettings, addHistoryEntry);
       }
 
       function setCurrentLocale() {
