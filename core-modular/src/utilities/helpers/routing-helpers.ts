@@ -260,13 +260,13 @@ export const RoutingHelpers = {
   parseParams(paramsString: string): Record<string, string> {
     const params = new URLSearchParams(paramsString);
 
-    const result: Record<string, string> = Object.create(null);
+    const result = new Map<string, string>();
 
     for (const [key, value] of params.entries()) {
-      result[key] = value;
+      result.set(key, value)
     }
 
-    return result;
+    return Object.fromEntries(result);
   },
 
   getModalParamsFromPath(luigi: Luigi): any {
