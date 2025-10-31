@@ -258,9 +258,15 @@ export const RoutingHelpers = {
    * @returns An object where each key is a parameter name and each value is the corresponding decoded value.
    */
   parseParams(paramsString: string): Record<string, string> {
-    if (!paramsString) return {};
     const params = new URLSearchParams(paramsString);
-    return Object.fromEntries(params.entries());
+
+    const result: Record<string, string> = {};
+
+    for (const [key, value] of params.entries()) {
+      result[key] = value;
+    }
+
+    return result;
   },
 
   getModalParamsFromPath(luigi: Luigi): any {
