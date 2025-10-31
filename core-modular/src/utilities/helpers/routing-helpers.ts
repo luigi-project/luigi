@@ -263,7 +263,7 @@ export const RoutingHelpers = {
     const result = new Map<string, string>();
 
     for (const [key, value] of params.entries()) {
-      result.set(key, value)
+      result.set(key, value);
     }
 
     return Object.fromEntries(result);
