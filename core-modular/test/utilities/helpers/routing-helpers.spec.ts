@@ -258,6 +258,16 @@ describe('Routing-helpers', () => {
       });
     });
 
+    it('return pairs of params 2', () => {
+      mockParams = 'test=true&tets&test=false&foo&luigi=is+mega%20super';
+      assert.deepEqual(RoutingHelpers.parseParams(mockParams), {
+        foo: '',
+        test: 'false',
+        tets: '',
+        luigi: 'is mega super'
+      });
+    });
+
     it('should not fail on empty params', () => {
       mockParams = '';
       assert.deepEqual(RoutingHelpers.parseParams(mockParams), {});
