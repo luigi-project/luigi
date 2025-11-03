@@ -77,13 +77,14 @@ export interface PathData {
   selectedNodeChildren?: Node[];
   nodesInPath?: Node[];
   rootNodes: Node[];
+  pathParams: Record<string, any>;
 }
 
 export interface Node {
   pathSegment?: string;
   label?: string;
   icon?: string;
-  children: Node[];
+  children?: Node[];
   category?: any;
   tabNav?: boolean;
   viewUrl?: string;
@@ -162,7 +163,7 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) {}
+  constructor(private luigi: Luigi) { }
 
   getPathData(path: string): PathData {
     const cfg = this.luigi.getConfig();
@@ -171,15 +172,25 @@ export class NavigationService {
       pathSegments = pathSegments.slice(1);
     }
     const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
+    let pathParams: Record<string, any> = {};
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
       nodesInPath: [{ children: rootNodes }],
-      rootNodes
+      rootNodes,
+      pathParams: pathParams
     };
 
     pathSegments.forEach((segment) => {
       if (pathData.selectedNodeChildren) {
-        pathData.selectedNode = pathData.selectedNodeChildren.filter((n: Node) => n.pathSegment === segment)[0];
+        const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
+        if(!node){
+          console.log('No matching node found for segment:', segment, 'in children:', pathData.selectedNodeChildren);
+          return;
+        }
+        if (node.pathSegment?.startsWith(':')) {
+         pathParams[node.pathSegment.replace(':', '')] = segment; // TODO EscapingHelpers.sanitizeParam(segment)
+        }
+        pathData.selectedNode = node;
         pathData.selectedNodeChildren = pathData.selectedNode?.children;
         if (pathData.selectedNode) {
           pathData.nodesInPath?.push(pathData.selectedNode);
@@ -187,6 +198,46 @@ export class NavigationService {
       }
     });
     return pathData;
+  }
+
+  findMatchingNode(urlPathElement: string, nodes: Node[]): Node | null {
+    let result: Node | null = {};
+    const segmentsLength = nodes.filter(n => !!n.pathSegment).length;
+    const dynamicSegmentsLength = nodes.filter(n => n.pathSegment && n.pathSegment.startsWith(':')).length;
+    // strip hash fragment if present without risking undefined
+    urlPathElement = urlPathElement.includes('#') ? urlPathElement.split('#')[0] : urlPathElement;
+
+    if (segmentsLength > 1) {
+      if (dynamicSegmentsLength === 1) {
+        console.warn(
+          'Invalid node setup detected. \nStatic and dynamic nodes cannot be used together on the same level. Static node gets cleaned up. \nRemove the static node from the configuration to resolve this warning. \nAffected pathSegment:',
+          urlPathElement,
+          'Children:',
+          nodes
+        );
+        nodes = nodes.filter(n => n.pathSegment && n.pathSegment.startsWith(':'));
+      }
+      if (dynamicSegmentsLength > 1) {
+        console.error(
+          'Invalid node setup detected. \nMultiple dynamic nodes are not allowed on the same level. Stopped navigation. \nInvalid Children:',
+          nodes
+        );
+        return null;
+      }
+    }
+    nodes.some(node => {
+      if (
+        // Static nodes
+        node.pathSegment === urlPathElement ||
+        // Dynamic nodes
+        (node.pathSegment && node.pathSegment.startsWith(':'))
+      ) {
+        // Return last matching node
+        result = node;
+        return true;
+      }
+    });
+    return result;
   }
 
   buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
@@ -236,6 +287,10 @@ export class NavigationService {
 
   getCurrentNode(path: string): any {
     return this.getPathData(path).selectedNode;
+  }
+
+  getPathParams(path: string): Record<string, any> {
+    return this.getPathData(path).pathParams;
   }
 
   /**

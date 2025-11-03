@@ -90,6 +90,7 @@ export class RoutingService {
     });
 
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
+    const pathParams = this.getNavigationService().getPathParams(path);
     const redirect = this.getNavigationService().shouldRedirect(path);
 
     if (redirect) {
@@ -112,6 +113,7 @@ export class RoutingService {
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
+      currentNode.pathParams = pathParams || {};
       currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
