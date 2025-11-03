@@ -163,7 +163,7 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) { }
+  constructor(private luigi: Luigi) {}
 
   getPathData(path: string): PathData {
     const cfg = this.luigi.getConfig();
@@ -183,12 +183,12 @@ export class NavigationService {
     pathSegments.forEach((segment) => {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
-        if(!node){
+        if (!node) {
           console.log('No matching node found for segment:', segment, 'in children:', pathData.selectedNodeChildren);
           return;
         }
         if (node.pathSegment?.startsWith(':')) {
-         pathParams[node.pathSegment.replace(':', '')] = segment; // TODO EscapingHelpers.sanitizeParam(segment)
+          pathParams[node.pathSegment.replace(':', '')] = segment; // TODO EscapingHelpers.sanitizeParam(segment)
         }
         pathData.selectedNode = node;
         pathData.selectedNodeChildren = pathData.selectedNode?.children;
@@ -202,8 +202,8 @@ export class NavigationService {
 
   findMatchingNode(urlPathElement: string, nodes: Node[]): Node | null {
     let result: Node | null = {};
-    const segmentsLength = nodes.filter(n => !!n.pathSegment).length;
-    const dynamicSegmentsLength = nodes.filter(n => n.pathSegment && n.pathSegment.startsWith(':')).length;
+    const segmentsLength = nodes.filter((n) => !!n.pathSegment).length;
+    const dynamicSegmentsLength = nodes.filter((n) => n.pathSegment && n.pathSegment.startsWith(':')).length;
     // strip hash fragment if present without risking undefined
     urlPathElement = urlPathElement.includes('#') ? urlPathElement.split('#')[0] : urlPathElement;
 
@@ -215,7 +215,7 @@ export class NavigationService {
           'Children:',
           nodes
         );
-        nodes = nodes.filter(n => n.pathSegment && n.pathSegment.startsWith(':'));
+        nodes = nodes.filter((n) => n.pathSegment && n.pathSegment.startsWith(':'));
       }
       if (dynamicSegmentsLength > 1) {
         console.error(
@@ -225,7 +225,7 @@ export class NavigationService {
         return null;
       }
     }
-    nodes.some(node => {
+    nodes.some((node) => {
       if (
         // Static nodes
         node.pathSegment === urlPathElement ||
