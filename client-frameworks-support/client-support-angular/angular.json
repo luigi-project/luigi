@@ -10,7 +10,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/client-support-angular/tsconfig.lib.json",
             "project": "projects/client-support-angular/ng-package.json"
@@ -22,7 +22,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/client-support-angular/src/test.ts",
             "tsConfig": "projects/client-support-angular/tsconfig.spec.json",
