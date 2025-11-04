@@ -433,20 +433,20 @@ class GenericHelpersClass {
   }
 
   calcMFELocation(element) {
-    if (
-      !element ||
-      !element.tagName ||
-      (element.hasAttribute('lui_web_component') && !element?.parentElement?.classList?.contains('wcContainer')) // nested compound
-    ) {
+    if (!element || !element.tagName) {
       return undefined;
     }
+
     if (element.closest('.drawer')) {
       return 'drawer';
     } else if (element.closest('.iframeModalCtn')) {
       return 'modal';
     } else if (element.closest('.iframeSplitViewCnt')) {
       return 'splitView';
+    } else if (element.hasAttribute('lui_web_component') && !element?.parentElement?.classList?.contains('wcContainer')) {
+      return undefined;
     }
+
     return 'main';
   }
 }
