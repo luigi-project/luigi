@@ -546,6 +546,7 @@ const connector = {
   },
 
   updateModalSettings: (modalSettings) => {
+    const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
     if (!dialog) return;
     if (modalSettings?.title) {
       dialog.querySelector('ui5-bar').headerText = modalSettings.title;
