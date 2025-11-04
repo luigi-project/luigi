@@ -23,6 +23,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
+    lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
@@ -41,6 +42,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
+    lc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
@@ -194,6 +196,7 @@ export const UIModule = {
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
 
@@ -225,6 +228,16 @@ export const UIModule = {
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
+  },
+  updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
+    const routingService = serviceRegistry.get(RoutingService);
+    if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+      const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+      if (modalPath) {
+        routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
+      }
+    }
+    luigi.getEngine()._connector?.updateModalSettings(modalSettings);
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
