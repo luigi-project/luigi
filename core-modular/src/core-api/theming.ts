@@ -1,7 +1,7 @@
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { Luigi } from './luigi';
+import type { Luigi } from './luigi';
 
 declare global {
   interface Window {
