@@ -1,8 +1,7 @@
 window.onload = function () {
     const loginButton = document.getElementById('login-button');
     const expiresIn = 3600;
-    const searchParam = new URLSearchParams(window.location.search).get('state');
-    const state = /(http(s?)):\/\//i.test(searchParam) ? null : encodeURIComponent(searchParam);
+    const state = encodeURIComponent(window.location.href.match(/state=(.*?)(&|$)/)[1]);
     const goTo = (scope) => {
         return `/auth/callback.html#
           expires_in=${expiresIn}&
