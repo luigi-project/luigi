@@ -1,4 +1,5 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
+import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -75,6 +76,7 @@ export class RoutingService {
   async handleRouteChange(routeInfo: { path: string; query: string }): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
+    const fullPath = path + (query ? '?' + query : '');
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = {};
 
@@ -82,6 +84,7 @@ export class RoutingService {
       return;
     }
 
+    this.setFeatureToggle(fullPath);
     await this.shouldShowModalPathInUrl(routeInfo);
 
     urlSearchParams.forEach((value, key) => {
@@ -175,7 +178,7 @@ export class RoutingService {
    */
   appendModalDataToUrl(modalPath: string, modalParams: Record<string, any>): void {
     // global setting for persistence in url .. default false
-    let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
+    const queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
     const prevModalPath = params[modalParamName];
@@ -321,6 +324,19 @@ export class RoutingService {
       this.removeModalDataFromUrl(false);
     }
     this.luigi.getEngine()._connector?.closeModals();
+  }
+
+  /**
+   * Set feature toggles if `queryStringParam` is provided at config file
+   * @param {string} path used for retrieving and appending the path parameters
+   */
+  setFeatureToggle(path: string): void {
+    const featureToggleProperty = this.luigi.getConfigValue('settings.featureToggles.queryStringParam');
+    const featureToggles: FeatureToggles = this.luigi.featureToggles();
+
+    if (featureToggleProperty && typeof path === 'string') {
+      RoutingHelpers.setFeatureToggles(featureToggleProperty, path, featureToggles);
+    }
   }
 
   /**
