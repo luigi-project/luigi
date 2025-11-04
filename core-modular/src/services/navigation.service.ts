@@ -200,12 +200,10 @@ export class NavigationService {
     return pathData;
   }
 
-  findMatchingNode(urlPathElement: string, nodes: Node[]): Node | null {
+  findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {
     let result: Node | null = {};
     const segmentsLength = nodes.filter((n) => !!n.pathSegment).length;
     const dynamicSegmentsLength = nodes.filter((n) => n.pathSegment && n.pathSegment.startsWith(':')).length;
-    // strip hash fragment if present without risking undefined
-    urlPathElement = urlPathElement.includes('#') ? urlPathElement.split('#')[0] : urlPathElement;
 
     if (segmentsLength > 1) {
       if (dynamicSegmentsLength === 1) {
@@ -222,7 +220,7 @@ export class NavigationService {
           'Invalid node setup detected. \nMultiple dynamic nodes are not allowed on the same level. Stopped navigation. \nInvalid Children:',
           nodes
         );
-        return null;
+        return undefined;
       }
     }
     nodes.some((node) => {
@@ -232,7 +230,7 @@ export class NavigationService {
         // Dynamic nodes
         (node.pathSegment && node.pathSegment.startsWith(':'))
       ) {
-        // Return last matching node
+        // Return first matching node
         result = node;
         return true;
       }
