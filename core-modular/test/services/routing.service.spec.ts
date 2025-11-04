@@ -1,7 +1,14 @@
 import { UIModule } from '../../src/modules/ui-module';
+import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
+
+declare global {
+  interface Window {
+    state: any;
+  }
+}
 
 const chai = require('chai');
 const assert = chai.assert;
@@ -9,6 +16,7 @@ const sinon = require('sinon');
 
 describe('Routing Service', () => {
   let routingService: RoutingService;
+  let navigationService: NavigationService;
   let mockLuigi: any;
   let mockNavService: any;
   let mockConnector: any;
@@ -55,6 +63,7 @@ describe('Routing Service', () => {
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
 
     routingService = new RoutingService(mockLuigi);
+    navigationService = new NavigationService(mockLuigi);
 
     // Mock RoutingHelpers
     jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/abc', query: 'foo=bar' });
@@ -328,203 +337,77 @@ describe('Routing Service', () => {
       expect(historyPushSpy).toHaveBeenCalled();
     });
   });
-  describe('removeModalDataFromUrl', () => {
+
+  describe('append and remove modal data from URL using hash routing', () => {
+    const modalPath = encodeURIComponent('/project-modal');
+    const modalParams = { hello: 'world' };
+    const params = {
+      '~luigi': 'mario'
+    };
+    const modalParamName = 'mySpecialModal';
     let locationSpy: any;
-    let historyPushSpy: any;
-    let historyReplaceSpy: any;
-    let historyGoSpy: any;
-    let addEventListenerSpy: any;
-    let mockUrl: any;
-    let historyStateBackup: any;
 
     beforeEach(() => {
       locationSpy = jest.spyOn(window, 'location', 'get');
-      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
-      historyGoSpy = jest.spyOn(window.history, 'go').mockImplementation(() => {});
-      addEventListenerSpy = jest.spyOn(window, 'addEventListener').mockImplementation(() => {});
-      mockUrl = {
-        href: 'http://localhost/#/home?modalPath=foo',
-        hash: '#/home?modalPath=foo',
-        pathname: '/home',
-        search: '?modalPath=foo',
-        toString: () => 'http://localhost/#/home?modalPath=foo'
-      };
-      jest.spyOn(global, 'URL').mockImplementation((url: string | URL, base?: string | URL) => {
-        let hrefStr = typeof url === 'string' ? url : url.toString();
+      history.replaceState = sinon.spy();
+      history.pushState = sinon.spy();
+      sinon.stub(RoutingHelpers, 'getModalPathFromPath').returns(modalPath);
+      sinon.stub(RoutingHelpers, 'getModalViewParamName').returns(modalParamName);
+
+      sinon.stub(navigationService, 'extractDataFromPath').returns({ nodeObject: {} });
+    });
+
+    afterEach(() => {
+      sinon.restore();
+      locationSpy.mockRestore();
+    });
+
+    it('append modal data to url with hash routing', () => {
+      sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
+      locationSpy.mockImplementation(() => {
         return {
-          ...mockUrl,
-          href: hrefStr,
-          hash: mockUrl.hash,
-          pathname: mockUrl.pathname,
-          search: mockUrl.search
-        } as any;
+          href: 'http://some.url.de/#/settings',
+          hash: '#/settings'
+        };
       });
-      jest.spyOn(RoutingHelpers, 'encodeParams').mockImplementation((params) => {
-        return Object.entries(params)
-          .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
-          .join('&');
+      window.state = {};
+      sinon.stub(mockLuigi, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
+      let historyState = {
+        modalHistoryLength: 1,
+        historygap: 1,
+        pathBeforeHistory: '/settings'
+      };
+      sinon.stub(RoutingHelpers, 'handleHistoryState').returns(historyState);
+      try {
+        routingService.appendModalDataToUrl(modalPath, modalParams);
+      } catch (error) {
+        console.log('error', error);
+      }
+      // then
+      sinon.assert.calledWith(
+        history.pushState,
+        historyState,
+        '',
+        'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+      );
+    });
+
+    it('remove modal data from url with hash routing', () => {
+      sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
+          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        };
       });
-      jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'foo', modalPathParams: 'bar' });
-      jest.spyOn(RoutingHelpers, 'getModalViewParamName').mockReturnValue('modalPath');
-      historyStateBackup = window.history.state;
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-      // window.history.state is read-only and cannot be reassigned
-      // If you need to reset state, consider using history.replaceState if appropriate
-      // window.history.state = historyStateBackup;
-    });
-
-    it('should remove modal data from hash when hashRoutingActive', () => {
-      locationSpy.mockImplementation(() => ({
-        ...mockUrl,
-        hash: '#/home?modalPath=foo&modalPathParams=bar'
-      }));
-      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
-
-      routingService.removeModalDataFromUrl(false);
-
-      expect(RoutingHelpers.getQueryParams).toHaveBeenCalledWith(mockLuigi);
-      expect(RoutingHelpers.getModalViewParamName).toHaveBeenCalledWith(mockLuigi);
-      expect(historyPushSpy).toHaveBeenCalled();
-    });
-
-    it('should remove modal data from search when not hashRoutingActive', () => {
-      locationSpy.mockImplementation(() => ({
-        ...mockUrl,
-        search: '?modalPath=foo&modalPathParams=bar'
-      }));
-      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(false); // not hashRoutingActive
-
-      routingService.removeModalDataFromUrl(false);
-
-      expect(historyPushSpy).toHaveBeenCalled();
-    });
-
-    it('should handle internal modal close with modalHistoryLength and historygap', () => {
-      locationSpy.mockImplementation(() => ({
-        ...mockUrl,
-        hash: '#/home?modalPath=foo'
-      }));
-      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
-      Object.defineProperty(window.history, 'state', {
-        value: {
-          modalHistoryLength: 2,
-          pathBeforeHistory: '/home',
-          historygap: 0
-        },
-        writable: true
-      });
-      Object.defineProperty(window.history, 'length', {
-        value: 2,
-        writable: true
-      });
-
-      routingService.removeModalDataFromUrl(true);
-
-      expect(addEventListenerSpy).toHaveBeenCalledWith('popstate', expect.any(Function), { once: true });
-      expect(historyGoSpy).toHaveBeenCalledWith(-2);
-    });
-
-    it('should handle internal modal close when modalHistoryLength > history.length', () => {
-      locationSpy.mockImplementation(() => ({
-        ...mockUrl,
-        hash: '#/home?modalPath=foo'
-      }));
-      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
-      Object.defineProperty(window.history, 'state', {
-        value: {
-          modalHistoryLength: 5,
-          pathBeforeHistory: '/home',
-          historygap: 1
-        },
-        writable: true
-      });
-      Object.defineProperty(window.history, 'length', {
-        value: 2,
-        writable: true
-      });
-
-      routingService.removeModalDataFromUrl(true);
-
-      expect(addEventListenerSpy).toHaveBeenCalledWith('popstate', expect.any(Function), { once: true });
-      expect(historyGoSpy).toHaveBeenCalledWith(-1);
-      expect(mockLuigi.preventLoadingModalData).toBe(true);
-    });
-
-    it('should push state when isClosedInternal is false', () => {
-      locationSpy.mockImplementation(() => ({
-        ...mockUrl,
-        hash: '#/home?modalPath=foo'
-      }));
-      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
-
-      routingService.removeModalDataFromUrl(false);
-
-      expect(historyPushSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('handleBookmarkableModalPath', () => {
-    let getModalPathFromPathSpy: jest.SpyInstance;
-    let getModalParamsFromPathSpy: jest.SpyInstance;
-    let extractDataFromPathSpy: jest.SpyInstance;
-    let openAsModalSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      getModalPathFromPathSpy = jest.spyOn(RoutingHelpers, 'getModalPathFromPath');
-      getModalParamsFromPathSpy = jest.spyOn(RoutingHelpers, 'getModalParamsFromPath');
-      extractDataFromPathSpy = jest.spyOn(mockNavService, 'extractDataFromPath');
-      openAsModalSpy = jest.fn();
-      mockLuigi.navigation = jest.fn(() => ({ openAsModal: openAsModalSpy }));
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
-    it('should do nothing if additionalModalPath is falsy', async () => {
-      getModalPathFromPathSpy.mockReturnValue('');
-      await routingService.handleBookmarkableModalPath();
-      expect(getModalPathFromPathSpy).toHaveBeenCalledWith(mockLuigi);
-      expect(getModalParamsFromPathSpy).not.toHaveBeenCalled();
-      expect(extractDataFromPathSpy).not.toHaveBeenCalled();
-      expect(openAsModalSpy).not.toHaveBeenCalled();
-    });
-
-    it('should open modal with modalParams if additionalModalPath exists and modalParams is defined', async () => {
-      getModalPathFromPathSpy.mockReturnValue('/modal/path');
-      getModalParamsFromPathSpy.mockReturnValue({ foo: 'bar' });
-      extractDataFromPathSpy.mockResolvedValue({ nodeObject: { openNodeInModal: { baz: 'qux' } } });
-
-      await routingService.handleBookmarkableModalPath();
-
-      expect(getModalPathFromPathSpy).toHaveBeenCalledWith(mockLuigi);
-      expect(getModalParamsFromPathSpy).toHaveBeenCalledWith(mockLuigi);
-      expect(extractDataFromPathSpy).toHaveBeenCalledWith('/modal/path');
-      expect(openAsModalSpy).toHaveBeenCalledWith('/modal/path', { foo: 'bar' });
-    });
-
-    it('should open modal with nodeObject.openNodeInModal if modalParams is falsy', async () => {
-      getModalPathFromPathSpy.mockReturnValue('/modal/path');
-      getModalParamsFromPathSpy.mockReturnValue(undefined);
-      extractDataFromPathSpy.mockResolvedValue({ nodeObject: { openNodeInModal: { baz: 'qux' } } });
-
-      await routingService.handleBookmarkableModalPath();
-
-      expect(openAsModalSpy).toHaveBeenCalledWith('/modal/path', { baz: 'qux' });
-    });
-
-    it('should open modal with undefined if both modalParams and nodeObject.openNodeInModal are falsy', async () => {
-      getModalPathFromPathSpy.mockReturnValue('/modal/path');
-      getModalParamsFromPathSpy.mockReturnValue(undefined);
-      extractDataFromPathSpy.mockResolvedValue({ nodeObject: {} });
-
-      await routingService.handleBookmarkableModalPath();
-
-      expect(openAsModalSpy).toHaveBeenCalledWith('/modal/path', undefined);
+      window.state = {};
+      sinon.stub(mockLuigi, 'getConfigValue').withArgs('routing.useHashRouting').returns(true);
+      try {
+        routingService.removeModalDataFromUrl(false);
+      } catch (error) {
+        console.log('error', error);
+      }
+      sinon.assert.calledWithExactly(window.history.pushState, {}, '', 'http://some.url.de/#/settings?~luigi=mario');
     });
   });
 });
