@@ -272,13 +272,13 @@ export class NavigationService {
     return items;
   }
 
-  shouldRedirect(path: string): string | undefined {
-    const pathData = this.getPathData(path);
+  shouldRedirect(path: string, pathData?: PathData): string | undefined {
+    const pData = pathData ?? this.getPathData(path);
     if (path == '') {
       // poor mans implementation, full path resolution TBD
-      return pathData.rootNodes[0].pathSegment;
-    } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
-      return path + '/' + pathData.selectedNode.children[0].pathSegment;
+      return pData.rootNodes[0].pathSegment;
+    } else if (pData.selectedNode && !pData.selectedNode.viewUrl && pData.selectedNode.children?.length) {
+      return path + '/' + pData.selectedNode.children[0].pathSegment;
     }
     return undefined;
   }
@@ -387,13 +387,13 @@ export class NavigationService {
     });
   }
 
-  getLeftNavData(path: string): LeftNavData {
-    const pathData = this.getPathData(path);
+  getLeftNavData(path: string, pathData?: PathData): LeftNavData {
+    const pData = pathData ?? this.getPathData(path);
 
     let navItems: NavItem[] = [];
     let pathToLeftNavParent: Node[] = [];
     let basePath = '';
-    pathData.nodesInPath?.forEach((nip) => {
+    pData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         if (!nip.tabNav) {
           basePath += '/' + (nip.pathSegment || '');
@@ -402,16 +402,16 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
+    const pathDataTruncatedChildren = this.getTruncatedChildren(pData.nodesInPath);
     let lastElement = [...pathDataTruncatedChildren].pop();
-    let selectedNode = pathData.selectedNode;
+    let selectedNode = pData.selectedNode;
     if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
       selectedNode = lastElement;
       pathDataTruncatedChildren.pop();
       lastElement = [...pathDataTruncatedChildren].pop();
     }
 
-    if (selectedNode && selectedNode.children && pathData.rootNodes.includes(selectedNode)) {
+    if (selectedNode && selectedNode.children && pData.rootNodes.includes(selectedNode)) {
       navItems = this.buildNavItems(selectedNode.children);
     } else if (selectedNode && selectedNode.tabNav) {
       navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode) : [];
@@ -430,16 +430,17 @@ export class NavigationService {
     };
   }
 
-  getTopNavData(path: string): TopNavData {
+  getTopNavData(path: string, pathData?: PathData): TopNavData {
     const cfg = this.luigi.getConfig();
-    const pathData = this.getPathData(path);
+
+    const pData: PathData = pathData ?? this.getPathData(path);
     const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
       : [];
     const appSwitcher =
       cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
-    const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
+    const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pData);
 
     if (profileItems?.length) {
       profileItems.map((item: ProfileItem) => ({
@@ -492,18 +493,18 @@ export class NavigationService {
     return appSwitcher;
   }
 
-  getTabNavData(path: string): TabNavData {
-    const pathData = this.getPathData(path);
-    let selectedNode = pathData?.selectedNode;
+  getTabNavData(path: string, pathData?: PathData): TabNavData {
+    const pData = pathData ?? this.getPathData(path);
+    let selectedNode = pData?.selectedNode;
     let parentNode: Node | undefined;
     const items: NavItem[] = [];
     if (!selectedNode) return {};
     if (!selectedNode.tabNav) {
-      parentNode = this.getParentNode(selectedNode, pathData) as Node;
+      parentNode = this.getParentNode(selectedNode, pData) as Node;
       if (parentNode && !parentNode.tabNav) return {};
     }
     let basePath = '';
-    pathData.nodesInPath?.forEach((nip) => {
+    pData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         basePath += '/' + (nip.pathSegment || '');
       }
