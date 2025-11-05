@@ -514,7 +514,9 @@
                       role="tab"
                       tabindex="0"
                       on:click|preventDefault={() => toggleDropdownState(key)}
-                      on:keyup|preventDefault={(event) => {(event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key)}}
+                      on:keyup|preventDefault={(event) => {
+                        (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                      }}
                       aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                     >
                       <div class="fd-icon-tab-bar__tab-container">
