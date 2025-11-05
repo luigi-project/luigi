@@ -387,7 +387,6 @@
     {/if}
     <nav
       class="fd-icon-tab-bar fd-icon-tab-bar--lg"
-      role="tablist"
       on:toggleDropdownState={(event) => toggleDropdownState(event.name)}
     >
       <div
@@ -405,6 +404,7 @@
                   <span role="presentation" class="fd-icon-tab-bar__item" uid="{index}-{index2}" {isSelected}>
                     <a
                       role="tab"
+                      tabindex="0"
                       class="fd-icon-tab-bar__tab"
                       href={getRouteLink(node)}
                       data-testid={NavigationHelpers.getTestId(node)}
@@ -437,8 +437,8 @@
               >
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
-                  role="tab"
                   class="fd-icon-tab-bar__tab"
+                  role="tab"
                   tabindex="0"
                   aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                   href={getRouteLink(nodeToNavigateTo)}
@@ -456,6 +456,9 @@
                         aria-haspopup="true"
                         aria-label="open menu button"
                         on:click|preventDefault={() => toggleDropdownState(key)}
+                        on:keyup|preventDefault={(event) => {
+                          (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                        }}
                       >
                         <i class="sap-icon--slim-arrow-down" />
                       </button>
@@ -479,6 +482,7 @@
                             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                             <!-- svelte-ignore a11y-missing-attribute -->
                             <a
+                              role="tab"
                               tabindex="0"
                               class="fd-list__link fd-icon-tab-bar__list-link"
                               href={getRouteLink(node)}
@@ -499,6 +503,7 @@
               <span
                 class="fd-icon-tab-bar__item fd-icon-tab-bar__item--single-click"
                 {uid}
+                role="presentation"
                 on:click={(event) => event.stopPropagation()}
                 isSelected={isSelectedCat(key, selectedNodeForTabNav)}
               >
@@ -507,10 +512,15 @@
                     <!-- svelte-ignore a11y-missing-attribute -->
                     <a
                       class="fd-icon-tab-bar__tab"
-                      aria-expanded="false"
                       role="tab"
-                      on:click|preventDefault={() => toggleDropdownState(key)}
+                      tabindex="0"
+                      aria-expanded="false"
+                      aria-haspopup="true"
                       aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
+                      on:click|preventDefault={() => toggleDropdownState(key)}
+                      on:keyup|preventDefault={(event) => {
+                        (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                      }}
                     >
                       <div class="fd-icon-tab-bar__tab-container">
                         <span class="fd-icon-tab-bar__tag">{$getTranslation(key)}</span>
@@ -537,6 +547,8 @@
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:click|preventDefault={() => handleClick(node)}
                                 aria-selected={node === selectedNodeForTabNav}
+                                role="tab"
+                                tabindex="0"
                               >
                                 <span class="fd-list__title">
                                   {getNodeLabel(node)}
@@ -558,12 +570,17 @@
         <span
           class="luigi-tabsMoreButton fd-icon-tab-bar__item fd-icon-tab-bar__item--overflow"
           on:click={(event) => event.stopPropagation()}
+          role="presentation"
           bind:this={moreButton}
         >
           <div class="fd-popover">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <div class="fd-popover__control has-child luigi__more" aria-expanded="false" role="tab">
-              <button class="fd-icon-tab-bar__overflow" on:click|preventDefault={toggleMoreBtn} bind:this={moreLink}>
+            <div class="fd-popover__control has-child luigi__more">
+              <button class="fd-icon-tab-bar__overflow"
+                      role="tab"
+                      tabindex="0"
+                      on:click|preventDefault={toggleMoreBtn}
+                      bind:this={moreLink}>
                 <span class="label fd-icon-tab-bar__overflow-text">More</span>
                 <span class="sap-icon--slim-arrow-down" />
               </button>
@@ -577,6 +594,7 @@
                   {#if key === 'undefined' || key.indexOf(virtualGroupPrefix) === 0}
                     {#each nodes as node, index2}
                       <li class="fd-nested-list__item" uid="{index}-{index2}">
+                        <!-- svelte-ignore a11y-role-supports-aria-props -->
                         <a
                           href={getRouteLink(node)}
                           class="fd-nested-list__link"
@@ -593,29 +611,32 @@
                     {/each}
                   {:else}
                     <li class="fd-nested-list__item" uid="{index}-0">
-                      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                      <div class="fd-nested-list__content has-child" tabindex="0">
+                      <!-- svelte-ignore a11y-role-supports-aria-props -->
+                      <div
+                        class="fd-nested-list__content has-child"
+                        tabindex="0"
+                        role="button"
+                        aria-expanded={dropDownStates[key + index]}
+                        aria-haspopup="true"
+                        aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
+                        on:click|preventDefault={() => toggleDropdownState(key + index)}
+                        on:keyup|preventDefault={(event) => {
+                          (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key + index);
+                        }}
+                      >
                         <!-- svelte-ignore a11y-invalid-attribute -->
+                        <!-- svelte-ignore a11y-role-supports-aria-props -->
                         <a
                           href="javascript:void(null)"
                           tabindex="-1"
                           class="fd-nested-list__link"
                           id="tabnav_list_level1_{index}"
-                          aria-haspopup="true"
-                          aria-expanded={dropDownStates[key + index]}
-                          aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
-                          on:click|preventDefault={() => toggleDropdownState(key + index)}
                         >
                           <span class="fd-nested-list__title">{$getTranslation(key)}</span>
                         </a>
                         <button
                           class="fd-button fd-nested-list__button"
-                          href="#"
                           tabindex="-1"
-                          aria-label="Expand submenu"
-                          aria-haspopup="true"
-                          aria-expanded={dropDownStates[key + index]}
-                          on:click|preventDefault={() => toggleDropdownState(key + index)}
                         >
                           <i
                             class={dropDownStates[key + index]
@@ -629,6 +650,7 @@
                         {#each nodes as node}
                           {#if node.label}
                             <li class="fd-nested-list__item" aria-labelledby="tabnav_list_level1_{index}">
+                              <!-- svelte-ignore a11y-role-supports-aria-props -->
                               <a
                                 class="fd-nested-list__link"
                                 href={getRouteLink(node)}
