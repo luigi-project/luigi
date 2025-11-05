@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
@@ -245,8 +246,9 @@ export class NavigationService {
   }
 
   buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
-    const items: NavItem[] = [];
+    const featureToggles: FeatureToggles = this.luigi.featureToggles();
     const catMap: Record<string, NavItem> = {};
+    let items: NavItem[] = [];
 
     nodes?.forEach((node) => {
       if (node.label) {
@@ -269,11 +271,18 @@ export class NavigationService {
           catMap[catId] = catNode;
           items.push(catNode);
         }
+
         catNode.category?.nodes?.push({ node, selected: node === selectedNode });
       } else {
         items.push({ node, selected: node === selectedNode });
       }
     });
+
+    if (items?.length) {
+      items = items.filter((item: NavItem) =>
+        NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles)
+      );
+    }
 
     return items;
   }
@@ -395,15 +404,15 @@ export class NavigationService {
 
   getLeftNavData(path: string, pathData?: PathData): LeftNavData {
     const pData = pathData ?? this.getPathData(path);
-
     let navItems: NavItem[] = [];
-    let pathToLeftNavParent: Node[] = [];
+    const pathToLeftNavParent: Node[] = [];
     let basePath = '';
     pData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         if (!nip.tabNav) {
           basePath += '/' + (nip.pathSegment || '');
         }
+
         pathToLeftNavParent.push(nip);
       }
     });

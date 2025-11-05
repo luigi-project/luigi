@@ -550,7 +550,6 @@ const connector = {
   },
 
   updateModalSettings: (modalSettings) => {
-    console.log('moalSettings', modalSettings);
     const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
     if (!dialog) return;
     if (modalSettings?.title) {
