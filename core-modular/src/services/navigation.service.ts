@@ -193,7 +193,7 @@ export class NavigationService {
           return;
         }
         if (node.pathSegment?.startsWith(':')) {
-          pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment)
+          pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
           if (node.context) {
             node.context = RoutingHelpers.substituteDynamicParamsInObject(node.context, pathParams);
           }
@@ -451,10 +451,10 @@ export class NavigationService {
     basePath = basePath.replace(/\/\/+/g, '/');
     const pathSegments = basePath.split('/');
     pathSegments.forEach((segment: string) => {
-      if(segment.startsWith(':')) {
+      if (segment.startsWith(':')) {
         const paramKey = segment.replace(':', '');
         const paramValue = pathData?.pathParams[paramKey];
-        if(paramValue) {
+        if (paramValue) {
           basePath = basePath.replace(segment, paramValue);
         }
       }
