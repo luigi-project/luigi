@@ -568,7 +568,7 @@
           class="luigi-tabsMoreButton fd-icon-tab-bar__item fd-icon-tab-bar__item--overflow"
           on:click={(event) => event.stopPropagation()}
           role="button"
-          tabindex="0"
+          tabindex="-1"
           bind:this={moreButton}
         >
           <div class="fd-popover">
