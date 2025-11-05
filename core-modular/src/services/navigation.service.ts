@@ -1,5 +1,6 @@
 import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
+import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -192,7 +193,7 @@ export class NavigationService {
           return;
         }
         if (node.pathSegment?.startsWith(':')) {
-          pathParams[node.pathSegment.replace(':', '')] = segment; // TODO EscapingHelpers.sanitizeParam(segment)
+          pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment)
           if (node.context) {
             node.context = RoutingHelpers.substituteDynamicParamsInObject(node.context, pathParams);
           }
@@ -441,12 +442,24 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node?: Node) => this.leftNavItemClick(node, /*TODO  */ basePath)
+      navClick: (node?: Node) => this.leftNavItemClick(node, /*TODO  */ basePath, pData)
     };
   }
 
-  leftNavItemClick(item?: Node, basePath?: any): void {
+  leftNavItemClick(item?: Node, basePath?: any, pathData?: PathData): void {
     //TODO
+    basePath = basePath.replace(/\/\/+/g, '/');
+    const pathSegments = basePath.split('/');
+    pathSegments.forEach((segment: string) => {
+      if(segment.startsWith(':')) {
+        const paramKey = segment.replace(':', '');
+        const paramValue = pathData?.pathParams[paramKey];
+        if(paramValue) {
+          basePath = basePath.replace(segment, paramValue);
+        }
+      }
+    });
+    console.log('basePath', basePath);
     this.luigi.navigation().navigate(basePath + '/' + (item?.pathSegment || ''));
   }
 
