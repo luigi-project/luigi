@@ -576,11 +576,13 @@
           <div class="fd-popover">
             <!-- svelte-ignore a11y-missing-attribute -->
             <div class="fd-popover__control has-child luigi__more">
-              <button class="fd-icon-tab-bar__overflow"
-                      role="tab"
-                      tabindex="0"
-                      on:click|preventDefault={toggleMoreBtn}
-                      bind:this={moreLink}>
+              <button
+                class="fd-icon-tab-bar__overflow"
+                role="tab"
+                tabindex="0"
+                on:click|preventDefault={toggleMoreBtn}
+                bind:this={moreLink}
+              >
                 <span class="label fd-icon-tab-bar__overflow-text">More</span>
                 <span class="sap-icon--slim-arrow-down" />
               </button>
@@ -634,10 +636,7 @@
                         >
                           <span class="fd-nested-list__title">{$getTranslation(key)}</span>
                         </a>
-                        <button
-                          class="fd-button fd-nested-list__button"
-                          tabindex="-1"
-                        >
+                        <button class="fd-button fd-nested-list__button" tabindex="-1">
                           <i
                             class={dropDownStates[key + index]
                               ? 'sap-icon--navigation-down-arrow'
