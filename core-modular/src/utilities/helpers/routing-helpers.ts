@@ -463,5 +463,26 @@ export const RoutingHelpers = {
     }
 
     return url;
+  },
+
+  substituteDynamicParamsInObject(
+    object: Record<string, string>,
+    paramMap: Record<any, any>,
+    paramPrefix = ':',
+    contains = false
+  ): {} {
+    return Object.entries(object)
+      .map(([key, value]) => {
+        const foundKey = contains
+          ? Object.keys(paramMap).find((key2) => value && value.indexOf(paramPrefix + key2) >= 0)
+          : Object.keys(paramMap).find((key2) => value === paramPrefix + key2);
+        return [
+          key,
+          foundKey ? (contains ? value.replace(paramPrefix + foundKey, paramMap[foundKey]) : paramMap[foundKey]) : value
+        ];
+      })
+      .reduce((acc, [key, value]) => {
+        return Object.assign(acc, { [key]: value });
+      }, {});
   }
 };

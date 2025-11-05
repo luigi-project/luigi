@@ -70,6 +70,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
+  navClick?: (item?: NavItem) => void;
 }
 
 export interface PathData {
@@ -86,6 +87,7 @@ export interface Node {
   icon?: string;
   children?: Node[];
   category?: any;
+  context?: Record<string, any>;
   tabNav?: boolean;
   viewUrl?: string;
   openNodeInModal?: boolean;
@@ -189,6 +191,9 @@ export class NavigationService {
         }
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = segment; // TODO EscapingHelpers.sanitizeParam(segment)
+          if (node.context) {
+            node.context = RoutingHelpers.substituteDynamicParamsInObject(node.context, pathParams);
+          }
         }
         pathData.selectedNode = node;
         pathData.selectedNodeChildren = pathData.selectedNode?.children;
@@ -421,13 +426,18 @@ export class NavigationService {
 
     // convert
     navItems = this.applyNavGroups(navItems);
-
     return {
       selectedNode: selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText
+      sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
+      navClick: (node?: Node) => this.leftNavItemClick(node, /*TODO  */ basePath)
     };
+  }
+
+  leftNavItemClick(item?: Node, basePath?: any): void {
+    //TODO
+    this.luigi.navigation().navigate(basePath + '/' + (item?.pathSegment || ''));
   }
 
   getTopNavData(path: string, pathData?: PathData): TopNavData {
