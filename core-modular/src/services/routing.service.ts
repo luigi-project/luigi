@@ -109,12 +109,12 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
 
-    const currentNode = pathData.selectedNode ?? this.getNavigationService().getCurrentNode(path);
+    const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
 
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData.pathParams || {};
+      currentNode.pathParams = pathData?.pathParams || {};
       currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);

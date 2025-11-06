@@ -60,7 +60,11 @@ describe('Routing Service', () => {
       getTopNavData: jest.fn(),
       getLeftNavData: jest.fn(),
       getTabNavData: jest.fn(),
-      extractDataFromPath: jest.fn()
+      extractDataFromPath: jest.fn(),
+      getPathData: jest.fn(),
+      findMatchingNode: jest.fn(),
+      getPathParams: jest.fn(),
+      leftNavItemClick: jest.fn()
     };
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
 
@@ -162,7 +166,7 @@ describe('Routing Service', () => {
   it('should handle hashchange event and call navigation methods', async () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
     mockNavService.shouldRedirect.mockReturnValue(undefined);
-    const fakeNode = { nodeParams: {}, searchParams: {} };
+    const fakeNode = { nodeParams: {}, searchParams: {}, pathParams: {} };
     mockNavService.getCurrentNode.mockReturnValue(fakeNode);
 
     routingService.enableRouting();
@@ -179,7 +183,7 @@ describe('Routing Service', () => {
 
     expect(RoutingHelpers.getCurrentPath).toHaveBeenCalled();
     expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
-    expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc');
+    expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc', undefined);
     expect(mockNavService.getCurrentNode).toHaveBeenCalledWith('/abc');
     expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, fakeNode);
     expect(mockConnector.renderTopNav).toHaveBeenCalled();

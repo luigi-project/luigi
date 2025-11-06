@@ -1,6 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { AppSwitcher, PathData } from '../../services/navigation.service';
+import type { AppSwitcher, Node, PathData } from '../../services/navigation.service';
 import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
@@ -116,5 +116,21 @@ export const NavigationHelpers = {
       return title;
     }
     return;
+  },
+
+  buildPath(pathToLeftNavParent: Node[], pathData?: PathData): string {
+    const replacedSegments = pathToLeftNavParent.map((node) => {
+      const segment = node.pathSegment;
+      if (segment?.startsWith(':')) {
+        const key = segment.slice(1);
+        const value = pathData?.pathParams?.[key];
+        if (value != null) {
+          return encodeURIComponent(String(value));
+        }
+      }
+      return segment;
+    });
+
+    return replacedSegments.join('/');
   }
 };

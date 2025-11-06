@@ -72,7 +72,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  navClick?: (item?: NavItem) => void;
+  navClick?: (item: NavItem) => void;
 }
 
 export interface PathData {
@@ -246,7 +246,8 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
+  buildNavItems(nodes: Node[], selectedNode?: Node, pathData?: PathData): NavItem[] {
+    //TODO context vererbung
     const featureToggles: FeatureToggles = this.luigi.featureToggles();
     const catMap: Record<string, NavItem> = {};
     let items: NavItem[] = [];
@@ -281,6 +282,7 @@ export class NavigationService {
 
     if (items?.length) {
       items = items.filter((item: NavItem) =>
+        //TODO ersetzten mit isNodeAccessPermitted
         NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles)
       );
     }
@@ -403,38 +405,37 @@ export class NavigationService {
     });
   }
 
-  getLeftNavData(path: string, pathData?: PathData): LeftNavData {
-    const pData = pathData ?? this.getPathData(path);
+  getLeftNavData(path: string, pData?: PathData): LeftNavData {
+    const pathData = pData ?? this.getPathData(path);
     let navItems: NavItem[] = [];
     const pathToLeftNavParent: Node[] = [];
     let basePath = '';
-    pData.nodesInPath?.forEach((nip) => {
+    pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         if (!nip.tabNav) {
           basePath += '/' + (nip.pathSegment || '');
         }
-
         pathToLeftNavParent.push(nip);
       }
     });
 
-    const pathDataTruncatedChildren = this.getTruncatedChildren(pData.nodesInPath);
+    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
     let lastElement = [...pathDataTruncatedChildren].pop();
-    let selectedNode = pData.selectedNode;
+    let selectedNode = pathData.selectedNode;
     if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
       selectedNode = lastElement;
       pathDataTruncatedChildren.pop();
       lastElement = [...pathDataTruncatedChildren].pop();
     }
 
-    if (selectedNode && selectedNode.children && pData.rootNodes.includes(selectedNode)) {
+    if (selectedNode && selectedNode.children && pathData.rootNodes.includes(selectedNode)) {
       navItems = this.buildNavItems(selectedNode.children);
     } else if (selectedNode && selectedNode.tabNav) {
       navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode) : [];
     } else {
-      navItems = this.buildNavItems(pathToLeftNavParent.pop()?.children || [], selectedNode);
+      navItems = this.buildNavItems([...pathToLeftNavParent].pop()?.children || [], selectedNode);
     }
-
+    const newPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
     navItems = this.applyNavGroups(navItems);
     return {
@@ -442,38 +443,25 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node?: Node) => this.leftNavItemClick(node, /*TODO  */ basePath, pData)
+      navClick: (node: Node) => this.leftNavItemClick(node, newPath)
     };
   }
 
-  leftNavItemClick(item?: Node, basePath?: any, pathData?: PathData): void {
-    //TODO
-    basePath = basePath.replace(/\/\/+/g, '/');
-    const pathSegments = basePath.split('/');
-    pathSegments.forEach((segment: string) => {
-      if (segment.startsWith(':')) {
-        const paramKey = segment.replace(':', '');
-        const paramValue = pathData?.pathParams[paramKey];
-        if (paramValue) {
-          basePath = basePath.replace(segment, paramValue);
-        }
-      }
-    });
-    console.log('basePath', basePath);
-    this.luigi.navigation().navigate(basePath + '/' + (item?.pathSegment || ''));
+  leftNavItemClick(item: Node, path: string): void {
+    this.luigi.navigation().navigate(path + '/' + (item?.pathSegment || ''));
   }
 
-  getTopNavData(path: string, pathData?: PathData): TopNavData {
+  getTopNavData(path: string, pData?: PathData): TopNavData {
     const cfg = this.luigi.getConfig();
 
-    const pData: PathData = pathData ?? this.getPathData(path);
+    const pathData: PathData = pData ?? this.getPathData(path);
     const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
       : [];
     const appSwitcher =
       cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header);
-    const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pData);
+    const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
 
     if (profileItems?.length) {
       profileItems.map((item: ProfileItem) => ({
@@ -526,18 +514,18 @@ export class NavigationService {
     return appSwitcher;
   }
 
-  getTabNavData(path: string, pathData?: PathData): TabNavData {
-    const pData = pathData ?? this.getPathData(path);
-    let selectedNode = pData?.selectedNode;
+  getTabNavData(path: string, pData?: PathData): TabNavData {
+    const pathData = pData ?? this.getPathData(path);
+    let selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     const items: NavItem[] = [];
     if (!selectedNode) return {};
     if (!selectedNode.tabNav) {
-      parentNode = this.getParentNode(selectedNode, pData) as Node;
+      parentNode = this.getParentNode(selectedNode, pathData) as Node;
       if (parentNode && !parentNode.tabNav) return {};
     }
     let basePath = '';
-    pData.nodesInPath?.forEach((nip) => {
+    pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         basePath += '/' + (nip.pathSegment || '');
       }
