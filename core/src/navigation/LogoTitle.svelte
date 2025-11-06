@@ -163,7 +163,7 @@
   }
 </script>
 
-<div class="fd-shellbar__branding" role="link" tabindex="0" aria-label="SAP Corporate Portal Home">
+<div class="fd-shellbar__branding" role="presentation" aria-label="SAP Corporate Portal Home">
   {#if addNavHrefForAnchor}
     <a
       class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
