@@ -24,7 +24,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="fd-dialog fd-dialog--active" on:click|stopPropagation={() => {}}>
+<div class="fd-dialog fd-dialog--active" role="presentation" on:click|stopPropagation={() => {}}>
   <div
     class="fd-dialog__content fd-dialog__content--mobile"
     role="dialog"
@@ -49,6 +49,7 @@
                     ? 'selected'
                     : ''}"
                   on:click={() => onActionClick(node)}
+                  role="presentation"
                   data-e2e="mobile-topnav-item"
                   data-testid={NavigationHelpers.getTestId(node)}
                 >
