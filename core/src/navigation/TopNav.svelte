@@ -616,6 +616,7 @@
                   aria-expanded="true"
                   aria-haspopup="true"
                   title={userInfo.name || undefined}
+                  role="button"
                   tabindex="0"
                   on:click={() => toggleDropdownState('profilePopover')}
                   on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
@@ -656,6 +657,7 @@
                     aria-expanded="true"
                     aria-haspopup="true"
                     title={userInfo.name || undefined}
+                    role="button"
                     tabindex="0"
                     on:click={() => toggleDropdownState('profilePopover')}
                     on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}

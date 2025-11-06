@@ -199,7 +199,7 @@ describe('JS-TEST-APP 4', () => {
       });
       cy.get('body').click();
       cy.tab();
-      cy.get('.fd-shellbar__branding').should('have.focus');
+      cy.get('.fd-shellbar__branding a').should('have.focus');
     });
     it('Shellbar logo gets focused first with btpLayout', () => {
       newConfig.settings.btpToolLayout = true;
@@ -213,7 +213,7 @@ describe('JS-TEST-APP 4', () => {
       cy.get('body').click();
       cy.tab();
       cy.tab();
-      cy.get('.fd-shellbar__branding').should('have.focus');
+      cy.get('.fd-shellbar__branding a').should('have.focus');
     });
   });
 
@@ -255,7 +255,6 @@ describe('JS-TEST-APP 4', () => {
       cy.tab();
       cy.tab();
       cy.tab();
-      cy.tab();
       cy.get('.fd-user-menu__control').should('have.focus').type('{enter}');
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'false');
     });
@@ -264,7 +263,6 @@ describe('JS-TEST-APP 4', () => {
       cy.visitTestAppLoggedIn('/', newConfig);
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'true');
       cy.get('body').click();
-      cy.tab();
       cy.tab();
       cy.tab();
       cy.tab();
