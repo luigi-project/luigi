@@ -104,6 +104,7 @@
           {#if node.label}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <li
+              role="presentation"
               class="fd-menu__item"
               on:click={() => onActionClick(node)}
               data-testid={NavigationHelpers.getTestId(node)}
