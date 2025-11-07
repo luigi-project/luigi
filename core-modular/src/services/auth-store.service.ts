@@ -1,11 +1,10 @@
-
 class AuthStoreSvcClass {
   private _authKey: any;
   private _storageType: any;
   private _defaultStorage: any;
   private _newlyAuthorizedKey: any;
   private _invalidStorageMsg: any;
-  
+
   constructor() {
     this._defaultStorage = 'localStorage';
     this._authKey = 'luigi.auth';

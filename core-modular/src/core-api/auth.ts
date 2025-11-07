@@ -1,11 +1,9 @@
-import { AuthLayerSvc } from "../services/auth-layer.service";
-import { AuthStoreSvc } from "../services/auth-store.service";
-import { ConfigHelpers } from "../utilities/helpers/config-helpers";
+import { AuthLayerSvc } from '../services/auth-layer.service';
+import { AuthStoreSvc } from '../services/auth-store.service';
+import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 
-export class LuigiAuthClass {    
-    
-
-    /**
+export class LuigiAuthClass {
+  /**
    * Detects if authorization is enabled via configuration.
    * Read more about [custom authorization providers](authorization-configuration.md).
    * @memberof Authorization
@@ -53,8 +51,13 @@ export class LuigiAuthClass {
    * @param {AuthData} data
    * @param {string} redirectUrl
    */
-  async handleAuthEvent(eventName: string, providerInstanceSettings: any, data?: any, redirectUrl?: string): Promise<any> {
-    const result = undefined;// await this.#luigi.executeConfigFnAsync( // TODO: implement
+  async handleAuthEvent(
+    eventName: string,
+    providerInstanceSettings: any,
+    data?: any,
+    redirectUrl?: string
+  ): Promise<any> {
+    const result = undefined; // await this.#luigi.executeConfigFnAsync( // TODO: implement
     //   'auth.events.' + eventName,
     //   false,
     //   providerInstanceSettings,
@@ -135,6 +138,5 @@ export class LuigiAuthClass {
     };
   }
 }
-
 
 export const LuigiAuth = new LuigiAuthClass();

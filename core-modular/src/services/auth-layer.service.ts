@@ -94,10 +94,12 @@ class AuthLayerSvcClass {
     }
 
     if (this.idpProviderInstance.settings && GenericHelpers.isFunction(this.idpProviderInstance.settings.userInfoFn)) {
-      this.idpProviderInstance.settings.userInfoFn(this.idpProviderInstance.settings, authData).then((userInfo: any) => {
-        this.setUserInfo(userInfo);
-        this.setLoggedIn(true);
-      });
+      this.idpProviderInstance.settings
+        .userInfoFn(this.idpProviderInstance.settings, authData)
+        .then((userInfo: any) => {
+          this.setUserInfo(userInfo);
+          this.setLoggedIn(true);
+        });
     } else {
       if (GenericHelpers.isFunction(this.idpProviderInstance.userInfo)) {
         this.idpProviderInstance.userInfo(idpProviderSettings).then((userInfo: any) => {
