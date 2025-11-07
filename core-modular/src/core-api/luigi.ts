@@ -8,6 +8,7 @@ import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
+import { LuigiAuth, LuigiAuthClass } from './auth';
 
 export class Luigi {
   config: any;
@@ -18,6 +19,7 @@ export class Luigi {
   _routing?: Routing;
   __cssVars?: any;
   preventLoadingModalData?: boolean;
+  initialized = false;
   configReadyCallback = function () {};
 
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
@@ -35,6 +37,7 @@ export class Luigi {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
     this.engine.init();
+    this.initialized = true;
     this.luigiAfterInit();
   };
 
@@ -157,6 +160,10 @@ export class Luigi {
       this._theming = new Theming(this);
     }
     return this._theming as Theming;
+  };
+
+  auth = (): LuigiAuthClass => {
+    return LuigiAuth;
   };
 
   private luigiAfterInit(): void {
