@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="logout" />
+    <title>Logout successful</title>
+    <link
+      href="/vendor/fundamental-styles/dist/fundamental-styles.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css" />
+
+    <style>
+      .sap-icon--log::before {
+        font-size: 50px;
+        color: #a0a0a0;
+      }
+
+      .fd-container--centered {
+        text-align: center;
+      }
+
+      .fd-container {
+        padding-top: 20px;
+      }
+    </style>
+    <script type="text/javascript">
+      function login() {
+        window.location.href = '/';
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="fd-container fd-container--centered">
+      <div class="fd-col--6 fd-col--shift-3">
+        <span class="sap-icon--log"></span>
+        <br />
+        Logout successful
+        <br />
+        <br />
+        <button class="fd-button" onclick="login()">Login again</button>
+      </div>
+    </div>
+  </body>
+</html>

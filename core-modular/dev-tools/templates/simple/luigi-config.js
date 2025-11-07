@@ -45,7 +45,7 @@ window.onload = () => {
         {
           pathSegment: 'home',
           icon: 'home',
-          viewUrl: '/microfrontend.html#home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
               pathSegment: 'c1',
@@ -56,7 +56,17 @@ window.onload = () => {
               viewGroup: 'vg1',
               clientPermissions: {
                 changeCurrentLocale: true
-              }
+              },
+              children: [{
+                pathSegment: ':dynamic',
+                label: 'doesntmatter',
+                viewUrl: '/microfrontend.html#dyn',
+                children: [{
+                  pathSegment: '1',
+                  label: 'dynchild',
+                  viewUrl: '/microfrontend.html#dynchild',
+                }]
+              }]
             },
             {
               pathSegment: 'c2',
@@ -312,6 +322,22 @@ window.onload = () => {
           }
         }
       }
-    }
+    },
+
+    auth: {
+        
+        use: 'myOAuth2',
+        myOAuth2: {
+            idpProvider: window['LuigiPlugin-auth-oauth2'],
+            authorizeUrl: '/auth/idpmock/implicit.html',
+            logoutUrl: '/auth/idpmock/logout.html',
+            post_logout_redirect_uri: '/auth/logout.html',
+            authorizeMethod: 'GET',
+            oAuthData: {
+              client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
+              redirect_uri: '/auth/callback.html'
+            }
+        }
+    },
   });
 };
