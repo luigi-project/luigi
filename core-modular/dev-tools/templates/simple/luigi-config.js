@@ -57,16 +57,20 @@ window.onload = () => {
               clientPermissions: {
                 changeCurrentLocale: true
               },
-              children: [{
-                pathSegment: ':dynamic',
-                label: 'doesntmatter',
-                viewUrl: '/microfrontend.html#dyn',
-                children: [{
-                  pathSegment: '1',
-                  label: 'dynchild',
-                  viewUrl: '/microfrontend.html#dynchild',
-                }]
-              }]
+              children: [
+                {
+                  pathSegment: ':dynamic',
+                  label: 'doesntmatter',
+                  viewUrl: '/microfrontend.html#dyn',
+                  children: [
+                    {
+                      pathSegment: '1',
+                      label: 'dynchild',
+                      viewUrl: '/microfrontend.html#dynchild'
+                    }
+                  ]
+                }
+              ]
             },
             {
               pathSegment: 'c2',
@@ -325,19 +329,18 @@ window.onload = () => {
     },
 
     auth: {
-        
-        use: 'myOAuth2',
-        myOAuth2: {
-            idpProvider: window['LuigiPlugin-auth-oauth2'],
-            authorizeUrl: '/auth/idpmock/implicit.html',
-            logoutUrl: '/auth/idpmock/logout.html',
-            post_logout_redirect_uri: '/auth/logout.html',
-            authorizeMethod: 'GET',
-            oAuthData: {
-              client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
-              redirect_uri: '/auth/callback.html'
-            }
+      use: 'myOAuth2',
+      myOAuth2: {
+        idpProvider: window['LuigiPlugin-auth-oauth2'],
+        authorizeUrl: '/auth/idpmock/implicit.html',
+        logoutUrl: '/auth/idpmock/logout.html',
+        post_logout_redirect_uri: '/auth/logout.html',
+        authorizeMethod: 'GET',
+        oAuthData: {
+          client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
+          redirect_uri: '/auth/callback.html'
         }
-    },
+      }
+    }
   });
 };
