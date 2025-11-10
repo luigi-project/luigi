@@ -184,7 +184,8 @@ export class NavigationService {
       rootNodes,
       pathParams: pathParams
     };
-
+    let globalContext = cfg.navigation.globalContext || {};
+    let currentContext = globalContext;
     pathSegments.forEach((segment) => {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
@@ -192,12 +193,16 @@ export class NavigationService {
           console.log('No matching node found for segment:', segment, 'in children:', pathData.selectedNodeChildren);
           return;
         }
+        const nodeContext = node.context || {};
+        const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+        let substitutedContext = mergedContext;
+        pathData.selectedNodeChildren = node.children;
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
-          if (node.context) {
-            node.context = RoutingHelpers.substituteDynamicParamsInObject(node.context, pathParams);
-          }
+          substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
         }
+        currentContext = substitutedContext;
+        node.context = substitutedContext;
         pathData.selectedNode = node;
         pathData.selectedNodeChildren = pathData.selectedNode?.children;
         if (pathData.selectedNode) {
@@ -247,7 +252,6 @@ export class NavigationService {
   }
 
   buildNavItems(nodes: Node[], selectedNode?: Node, pathData?: PathData): NavItem[] {
-    //TODO context vererbung
     const featureToggles: FeatureToggles = this.luigi.featureToggles();
     const catMap: Record<string, NavItem> = {};
     let items: NavItem[] = [];
@@ -281,12 +285,18 @@ export class NavigationService {
     });
 
     if (items?.length) {
-      items = items.filter((item: NavItem) =>
-        //TODO ersetzten mit isNodeAccessPermitted
-        NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles)
-      );
+      items = items.filter((item: NavItem) => {
+        if (!item.node || pathData?.selectedNode === undefined) {
+          return true;
+        }
+        return NavigationHelpers.isNodeAccessPermitted(
+          item.node,
+          this.getParentNode(pathData.selectedNode, pathData) as Node,
+          pathData?.selectedNode?.context || {},
+          this.luigi
+        );
+      });
     }
-
     return items;
   }
 
@@ -429,11 +439,11 @@ export class NavigationService {
     }
 
     if (selectedNode && selectedNode.children && pathData.rootNodes.includes(selectedNode)) {
-      navItems = this.buildNavItems(selectedNode.children);
+      navItems = this.buildNavItems(selectedNode.children, undefined, pathData);
     } else if (selectedNode && selectedNode.tabNav) {
-      navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode) : [];
+      navItems = lastElement?.children ? this.buildNavItems(lastElement.children, selectedNode, pathData) : [];
     } else {
-      navItems = this.buildNavItems([...pathToLeftNavParent].pop()?.children || [], selectedNode);
+      navItems = this.buildNavItems([...pathToLeftNavParent].pop()?.children || [], selectedNode, pathData);
     }
     const newPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
@@ -448,7 +458,7 @@ export class NavigationService {
   }
 
   leftNavItemClick(item: Node, path: string): void {
-    this.luigi.navigation().navigate(path + '/' + (item?.pathSegment || ''));
+    this.luigi.navigation().navigate(path + '/' + (item.pathSegment || ''));
   }
 
   getTopNavData(path: string, pData?: PathData): TopNavData {

@@ -68,9 +68,9 @@ export const NavigationHelpers = {
   },
 
   isNodeAccessPermitted: (
-    nodeToCheckPermissionFor: any,
-    parentNode: any,
-    currentContext: any,
+    nodeToCheckPermissionFor: Node,
+    parentNode: Node,
+    currentContext: Record<string, any> | {},
     luigi: Luigi
   ): boolean => {
     const featureToggles: FeatureToggles = luigi.featureToggles();
@@ -132,5 +132,9 @@ export const NavigationHelpers = {
     });
 
     return replacedSegments.join('/');
+  },
+
+  mergeContext(...objs: Record<string, any>[]): Record<string, any> {
+    return Object.assign({}, ...objs);
   }
 };

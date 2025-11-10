@@ -264,7 +264,6 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
-  console.log('renderNodeOrCategory item', item);
 
   if (item.node) {
     const el = document.createElement('ui5-side-navigation-item');

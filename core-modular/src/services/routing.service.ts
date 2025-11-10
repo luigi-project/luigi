@@ -60,13 +60,11 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath());
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
@@ -105,7 +103,7 @@ export class RoutingService {
       nodeParams
     };
 
-    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path, pathData)); //if defined don't calculate again
+    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
 

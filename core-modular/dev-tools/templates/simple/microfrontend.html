@@ -38,6 +38,8 @@
       <button onclick="setCurrentLocale()">set current locale</button>
       <button onclick="getCurrentLocale()">get current locale</button>
       <button onclick="getCustomTranslation()">get custom translation</button>
+      <button onclick="getContext()">Get Context</button>
+      <span id="result"></span>
     </div>
     <script>
       function showAlert() {
@@ -130,6 +132,18 @@
           customTranslation: true,
         });
       }
+      LuigiClient.addInitListener((ctx) => {
+        console.log('Luigi Client initialized', ctx);
+      });
+
+      LuigiClient.addContextUpdateListener((ctx) => {
+        console.log('Luigi Client context updated', ctx);
+      });
+
+      getContext = () => {
+        const ctx = LuigiClient.getContext();
+        document.querySelector('#result').innerHTML = JSON.stringify(ctx);
+      };
     </script>
   </body>
 </html>
