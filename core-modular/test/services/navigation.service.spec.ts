@@ -37,7 +37,7 @@ describe('NavigationService', () => {
     });
 
     it('should warn if nodeChangeHook is not a function but defined', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       luigiMock.getConfigValue.mockReturnValue('notAFunction');
 
       navigationService.onNodeChange(prevNode, nextNode);
@@ -93,7 +93,6 @@ describe('NavigationService', () => {
       ];
 
       const matchingNode = navigationService.findMatchingNode('contact', nodes);
-      console.log('matchingNode:', matchingNode);
       expect(matchingNode).toBeUndefined();
     });
     it('should return undefined if nodes array is empty', () => {
@@ -187,7 +186,6 @@ describe('NavigationService', () => {
 
       const path = 'home/dashboard';
       const pathData = navigationService.getPathData(path);
-      console.log('pathData:', pathData);
       const expectedNode = cfg.navigation.nodes[0].children[0];
       (expectedNode as any).context = {};
       expect(pathData.selectedNode).toEqual(expectedNode);
@@ -306,7 +304,7 @@ describe('NavigationService', () => {
           nodes: [
             {
               pathSegment: 'home',
-              context: {  theme: 'light' },
+              context: { theme: 'light' },
               children: []
             }
           ],
@@ -342,7 +340,7 @@ describe('NavigationService', () => {
               ]
             }
           ],
-          globalContext: {  user: 'testUser'  }
+          globalContext: { user: 'testUser' }
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
