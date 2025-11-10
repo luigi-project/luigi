@@ -182,7 +182,7 @@ export class NavigationService {
       selectedNodeChildren: rootNodes,
       nodesInPath: [{ children: rootNodes }],
       rootNodes,
-      pathParams: pathParams
+      pathParams
     };
     let globalContext = cfg.navigation.globalContext || {};
     let currentContext = globalContext;
@@ -526,7 +526,7 @@ export class NavigationService {
 
   getTabNavData(path: string, pData?: PathData): TabNavData {
     const pathData = pData ?? this.getPathData(path);
-    let selectedNode = pathData?.selectedNode;
+    const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     const items: NavItem[] = [];
     if (!selectedNode) return {};
