@@ -214,7 +214,7 @@ export class NavigationService {
   }
 
   findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {
-    let result: Node | null = {};
+    let result: Node | undefined = undefined;
     const segmentsLength = nodes.filter((n) => !!n.pathSegment).length;
     const dynamicSegmentsLength = nodes.filter((n) => n.pathSegment && n.pathSegment.startsWith(':')).length;
 
