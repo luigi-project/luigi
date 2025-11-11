@@ -1,3 +1,5 @@
+import { ConfigHelpers } from "../utilities/helpers/config-helpers";
+
 class AuthStoreSvcClass {
   private _authKey: any;
   private _storageType: any;
@@ -17,9 +19,9 @@ class AuthStoreSvcClass {
     return this._authKey;
   }
 
-  getStorageType() {
+  getStorageType(): string {
     if (!this._storageType) {
-      this._storageType = LuigiConfig.getConfigValue('auth.storage') || this._defaultStorage;
+      this._storageType = ConfigHelpers.getConfigValue('auth.storage') || this._defaultStorage;
     }
     return this._storageType;
   }
@@ -28,7 +30,7 @@ class AuthStoreSvcClass {
     return this._getStore(this.getStorageKey());
   }
 
-  setAuthData(values) {
+  setAuthData(values: any) {
     this._setStore(this.getStorageKey(), values);
   }
 
@@ -48,19 +50,23 @@ class AuthStoreSvcClass {
     this._setStore(this._newlyAuthorizedKey, undefined);
   }
 
-  _setStore(key, data) {
+  _getWebStorage(sType: string): Storage {
+    return ((window as any)[this.getStorageType()] as Storage);
+  }
+
+  _setStore(key: string, data: any) {
     switch (this.getStorageType()) {
       case 'localStorage':
       case 'sessionStorage':
         if (data !== undefined) {
-          window[this.getStorageType()].setItem(key, JSON.stringify(data));
+          this._getWebStorage(this.getStorageType()).setItem(key, JSON.stringify(data));
         } else {
-          window[this.getStorageType()].removeItem(key);
+          this._getWebStorage(this.getStorageType()).removeItem(key);
         }
         break;
 
       case 'none':
-        this[key] = data;
+        (this as any)[key] = data;
         break;
 
       default:
@@ -68,15 +74,15 @@ class AuthStoreSvcClass {
     }
   }
 
-  _getStore(key) {
+  _getStore(key: string): any {
     try {
       switch (this.getStorageType()) {
         case 'localStorage':
         case 'sessionStorage':
-          return JSON.parse(window[this.getStorageType()].getItem(key));
+          return JSON.parse(this._getWebStorage(this.getStorageType()).getItem(key) as string);
 
         case 'none':
-          return this[key];
+          return (this as any)[key];
 
         default:
           console.error(this._invalidStorageMsg);
