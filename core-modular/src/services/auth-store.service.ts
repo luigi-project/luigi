@@ -1,4 +1,4 @@
-import { ConfigHelpers } from "../utilities/helpers/config-helpers";
+import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 
 class AuthStoreSvcClass {
   private _authKey: any;
@@ -51,7 +51,7 @@ class AuthStoreSvcClass {
   }
 
   _getWebStorage(sType: string): Storage {
-    return ((window as any)[this.getStorageType()] as Storage);
+    return (window as any)[this.getStorageType()] as Storage;
   }
 
   _setStore(key: string, data: any) {
