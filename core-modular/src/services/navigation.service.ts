@@ -300,13 +300,13 @@ export class NavigationService {
     return items;
   }
 
-  shouldRedirect(path: string, pathData?: PathData): string | undefined {
-    const pData = pathData ?? this.getPathData(path);
+  shouldRedirect(path: string, pData?: PathData): string | undefined {
+    const pathData = pData ?? this.getPathData(path);
     if (path == '') {
       // poor mans implementation, full path resolution TBD
-      return pData.rootNodes[0].pathSegment;
-    } else if (pData.selectedNode && !pData.selectedNode.viewUrl && pData.selectedNode.children?.length) {
-      return path + '/' + pData.selectedNode.children[0].pathSegment;
+      return pathData.rootNodes[0].pathSegment;
+    } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
+      return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
     return undefined;
   }
