@@ -268,6 +268,7 @@ function renderNodeOrCategory(item, leftNavData) {
     html += `<ui5-side-navigation-item
                             text="${item.node.label}"
                             icon="${item.node.icon}"
+                            tooltip="${item.node.tooltip}"
                             luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
                             ${item.selected ? 'selected' : ''}
                             ></ui5-side-navigation-item>`;
@@ -276,6 +277,7 @@ function renderNodeOrCategory(item, leftNavData) {
       html += `<ui5-side-navigation-item
                                 text="${item.category.label}"
                                 icon="${item.category.icon}"
+                                tooltip="${item.category.tooltip}"
                                 category-uid="${leftNavData.basePath + ':' + item.category.id}"
                                 ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
 
@@ -283,6 +285,7 @@ function renderNodeOrCategory(item, leftNavData) {
         html += `<ui5-side-navigation-sub-item
                                 text="${item.node.label}"
                                 icon="${item.node.icon}"
+                                tooltip="${item.node.tooltip}"
                                 luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
                                 ${item.selected ? 'selected' : ''}
                                 ></ui5-side-navigation-sub-item>`;
