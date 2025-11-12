@@ -199,7 +199,7 @@ describe('JS-TEST-APP 4', () => {
       });
       cy.get('body').click();
       cy.tab();
-      cy.get('.fd-shellbar__branding a').should('have.focus');
+      cy.get('.fd-shellbar__branding').should('have.focus');
     });
     it('Shellbar logo gets focused first with btpLayout', () => {
       newConfig.settings.btpToolLayout = true;
@@ -213,7 +213,7 @@ describe('JS-TEST-APP 4', () => {
       cy.get('body').click();
       cy.tab();
       cy.tab();
-      cy.get('.fd-shellbar__branding a').should('have.focus');
+      cy.get('.fd-shellbar__branding').should('have.focus');
     });
   });
 

@@ -457,7 +457,7 @@
                         aria-label="open menu button"
                         on:click|preventDefault={() => toggleDropdownState(key)}
                         on:keyup|preventDefault={(event) => {
-                          (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                          (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key);
                         }}
                       >
                         <i class="sap-icon--slim-arrow-down" />
@@ -519,7 +519,7 @@
                       aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                       on:click|preventDefault={() => toggleDropdownState(key)}
                       on:keyup|preventDefault={(event) => {
-                        (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                        (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key);
                       }}
                     >
                       <div class="fd-icon-tab-bar__tab-container">
@@ -623,7 +623,7 @@
                         aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                         on:click|preventDefault={() => toggleDropdownState(key + index)}
                         on:keyup|preventDefault={(event) => {
-                          (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key + index);
+                          (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key + index);
                         }}
                       >
                         <!-- svelte-ignore a11y-invalid-attribute -->
