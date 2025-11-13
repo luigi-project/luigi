@@ -234,7 +234,7 @@ class GenericHelpersClass {
     let processedString = inputString;
     if (params) {
       if (parenthesis) {
-        processedString = replace(processedString, /{([\s\S]+?)}/g, val => {
+        processedString = replace(processedString, /{([\s\S]+?)}/g, (val) => {
           let repl = val.slice(1, -1).trim();
           if (repl.indexOf(prefix) === 0) {
             repl = repl.substring(prefix.length);
@@ -242,7 +242,7 @@ class GenericHelpersClass {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach(entry => {
+        Object.entries(params).forEach((entry) => {
           processedString = processedString.replace(
             new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
             encodeURIComponent(entry[1])
@@ -297,7 +297,7 @@ class GenericHelpersClass {
     return (
       (input &&
         Object.keys(input)
-          .filter(key => !key.startsWith('_'))
+          .filter((key) => !key.startsWith('_'))
           .reduce((obj, key) => {
             obj[key] = input[key];
             return obj;
@@ -317,18 +317,18 @@ class GenericHelpersClass {
    */
   removeProperties(input, keys) {
     const res = {};
-    if (!keys instanceof Array || !keys.length) {
+    if ((!keys) instanceof Array || !keys.length) {
       console.error('[ERROR] removeProperties requires second parameter: array of keys to remove from object.');
       return input;
     }
     for (const key in input) {
       if (input.hasOwnProperty(key)) {
-        const noFullMatch = keys.filter(k => key.includes(k)).length === 0;
+        const noFullMatch = keys.filter((k) => key.includes(k)).length === 0;
         const noPartialMatch =
           keys
-            .filter(k => k.endsWith('*'))
-            .map(k => k.slice(0, -1))
-            .filter(k => key.startsWith(k)).length === 0;
+            .filter((k) => k.endsWith('*'))
+            .map((k) => k.slice(0, -1))
+            .filter((k) => key.startsWith(k)).length === 0;
         if (noFullMatch && noPartialMatch) {
           res[key] = input[key];
         }
@@ -383,8 +383,8 @@ class GenericHelpersClass {
    */
   createRemotePromise() {
     let res, rej;
-    const prom = new Promise(resolve => {
-      res = value => {
+    const prom = new Promise((resolve) => {
+      res = (value) => {
         resolve(value || true);
       };
       rej = () => {
@@ -403,7 +403,7 @@ class GenericHelpersClass {
     prom.id = luiRP.counter++;
     luiRP.promises[prom.id] = prom;
 
-    prom.doResolve = value => {
+    prom.doResolve = (value) => {
       delete luiRP.promises[prom.id];
       res(value);
     };
@@ -421,6 +421,36 @@ class GenericHelpersClass {
 
   isString(value) {
     return typeof value === 'string' || value instanceof String;
+  }
+
+  parseJSON(value) {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      console.error(error);
+    }
+    return undefined;
+  }
+
+  calcMFELocation(element) {
+    if (!element || !element.tagName) {
+      return undefined;
+    }
+
+    if (element.closest('.drawer')) {
+      return 'drawer';
+    } else if (element.closest('.iframeModalCtn')) {
+      return 'modal';
+    } else if (element.closest('.iframeSplitViewCnt')) {
+      return 'splitView';
+    } else if (
+      element.hasAttribute('lui_web_component') &&
+      !element?.parentElement?.classList?.contains('wcContainer')
+    ) {
+      return undefined;
+    }
+
+    return 'main';
   }
 }
 

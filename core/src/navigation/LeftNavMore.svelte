@@ -11,7 +11,7 @@
 {#if collapsedMode}
   <li class="lui-spacer" role="presentation" aria-hidden="true" />
 {/if}
-<li class="fd-navigation-list__item fd-popover lui-more" role="none" style="display: none">
+<li class="fd-navigation-list__item fd-popover lui-more" role="presentation" style="display: none">
   <!-- svelte-ignore a11y-missing-attribute -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <a

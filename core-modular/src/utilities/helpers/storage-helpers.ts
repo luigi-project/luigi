@@ -159,7 +159,7 @@ class StorageHelpersClass {
 
   sendBackOperation(microfrontendId: string, id: string, status: 'OK' | 'ERROR', result: any): any {
     // TODO
-    let message: Record<string, any> = {
+    const message: Record<string, any> = {
       msg: 'storage',
       data: {
         id,

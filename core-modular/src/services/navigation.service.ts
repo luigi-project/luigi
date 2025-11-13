@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
@@ -80,24 +81,26 @@ export interface PathData {
 }
 
 export interface Node {
-  pathSegment?: string;
-  label?: string;
-  icon?: string;
-  children: Node[];
   category?: any;
-  tabNav?: boolean;
-  viewUrl?: string;
-  openNodeInModal?: boolean;
-  drawer?: ModalSettings;
-  keepSelectedForChildren?: boolean;
-  hideFromNav?: boolean;
-  onNodeActivation?: (node: Node) => boolean | void;
-  pageErrorHandler?: PageErrorHandler;
-  externalLink?: ExternalLink;
-  hideSideNav?: boolean;
+  children: Node[];
   clientPermissions?: {
+    changeCurrentLocale?: boolean;
     urlParameters?: Record<string, any>;
   };
+  drawer?: ModalSettings;
+  externalLink?: ExternalLink;
+  hideFromNav?: boolean;
+  hideSideNav?: boolean;
+  icon?: string;
+  keepSelectedForChildren?: boolean;
+  label?: string;
+  onNodeActivation?: (node: Node) => boolean | void;
+  openNodeInModal?: boolean;
+  pageErrorHandler?: PageErrorHandler;
+  pathSegment?: string;
+  tabNav?: boolean;
+  tooltip?: string;
+  viewUrl?: string;
 }
 
 export interface PageErrorHandler {
@@ -108,12 +111,13 @@ export interface PageErrorHandler {
 }
 
 export interface Category {
-  isGroup?: boolean;
-  id: string;
-  label?: string;
-  icon?: string;
-  nodes?: NavItem[];
   collabsible?: boolean;
+  icon?: string;
+  id: string;
+  isGroup?: boolean;
+  label?: string;
+  nodes?: NavItem[];
+  tooltip?: string;
 }
 
 export interface NavItem {
@@ -190,35 +194,46 @@ export class NavigationService {
   }
 
   buildNavItems(nodes: Node[], selectedNode?: Node): NavItem[] {
-    const items: NavItem[] = [];
+    const featureToggles: FeatureToggles = this.luigi.featureToggles();
     const catMap: Record<string, NavItem> = {};
+    let items: NavItem[] = [];
 
     nodes?.forEach((node) => {
       if (node.label) {
         node.label = this.luigi.i18n().getTranslation(node.label);
+        node.tooltip = this.resolveTooltipText(node, node.label);
       }
 
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
+        const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
 
         if (!catNode) {
           catNode = {
             category: {
-              id: catId,
-              label: this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category),
               icon: node.category.icon,
-              nodes: []
+              id: catId,
+              label: catLabel,
+              nodes: [],
+              tooltip: this.resolveTooltipText(node.category, catLabel)
             }
           };
           catMap[catId] = catNode;
           items.push(catNode);
         }
+
         catNode.category?.nodes?.push({ node, selected: node === selectedNode });
       } else {
         items.push({ node, selected: node === selectedNode });
       }
     });
+
+    if (items?.length) {
+      items = items.filter((item: NavItem) =>
+        NavigationHelpers.checkVisibleForFeatureToggles(item.node, featureToggles)
+      );
+    }
 
     return items;
   }
@@ -336,15 +351,16 @@ export class NavigationService {
 
   getLeftNavData(path: string): LeftNavData {
     const pathData = this.getPathData(path);
-
+    const pathToLeftNavParent: Node[] = [];
     let navItems: NavItem[] = [];
-    let pathToLeftNavParent: Node[] = [];
     let basePath = '';
+
     pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
         if (!nip.tabNav) {
           basePath += '/' + (nip.pathSegment || '');
         }
+
         pathToLeftNavParent.push(nip);
       }
     });
@@ -352,6 +368,7 @@ export class NavigationService {
     const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
     let lastElement = [...pathDataTruncatedChildren].pop();
     let selectedNode = pathData.selectedNode;
+
     if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
       selectedNode = lastElement;
       pathDataTruncatedChildren.pop();
@@ -441,7 +458,7 @@ export class NavigationService {
 
   getTabNavData(path: string): TabNavData {
     const pathData = this.getPathData(path);
-    let selectedNode = pathData?.selectedNode;
+    const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     const items: NavItem[] = [];
     if (!selectedNode) return {};
@@ -505,6 +522,10 @@ export class NavigationService {
     const pathData = this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
+  }
+
+  private resolveTooltipText(node: any, translation: string): string {
+    return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
 
   private prepareRootNodes(navNodes: any[]): any[] {
