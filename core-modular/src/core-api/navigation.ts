@@ -19,15 +19,26 @@ export class Navigation {
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
+    const preventContextUpdate = false; //TODO just added for popState eventDetails
+    const navSync = true; //TODO just added for popState eventDetails
 
-    if (this.hashRouting) {
-      if (modalSettings) {
-        this.openAsModal(path, modalSettings);
-      } else {
-        location.hash = normalizedPath;
-      }
+    if (modalSettings) {
+      this.openAsModal(path, modalSettings);
     } else {
-      console.log('path routing not yet implemented');
+      if (this.hashRouting) {
+        location.hash = normalizedPath;
+      } else {
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        const eventDetail = {
+          detail: {
+            preventContextUpdate,
+            withoutSync: !navSync
+          }
+        };
+        const event = new CustomEvent('popstate', eventDetail);
+
+        window.dispatchEvent(event);
+      }
     }
   };
 
