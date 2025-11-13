@@ -3,6 +3,7 @@ import type { Luigi } from '../core-api/luigi';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { AuthLayerSvc } from './auth-layer.service';
 
 export interface TopNavData {
   appTitle: string;
@@ -46,6 +47,7 @@ export interface ProfileLogout {
   icon?: string;
   testId?: string;
   altText?: string;
+  doLogout: () => void;
 }
 
 export interface ProfileItem {
@@ -407,12 +409,25 @@ export class NavigationService {
       }));
     }
 
+    const profileSettings: ProfileSettings = {
+      items: profileItems,
+      logout: {
+        altText: 'Logout',
+        label: 'Logout',
+        // icon: '',
+        doLogout: () => {
+          AuthLayerSvc.logout();
+        }
+      },
+      // staticUserInfoFn
+    };
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(rootNodes) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
-      profile: cfg.navigation?.profile,
+      profile: profileSettings,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
     };

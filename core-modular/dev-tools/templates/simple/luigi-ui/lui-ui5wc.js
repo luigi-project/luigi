@@ -227,6 +227,19 @@ function renderProfilePopover(profileObj) {
     profileList.appendChild(profileLi);
   }
 
+  if (profileObj.logout) {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', profileObj.logout.altText);
+    profileLi.innerText = profileObj.logout.label;
+
+    profileLi.addEventListener('click', () => {
+      profileObj.logout.doLogout();
+    });
+
+    profileList.appendChild(profileLi);
+  }
+
   profilePopover.appendChild(profileList);
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
 }
