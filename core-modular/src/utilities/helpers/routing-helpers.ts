@@ -391,6 +391,11 @@ export const RoutingHelpers = {
    * @param {string} featureToggleProperty used for identifying feature toggles
    * @param {string} path used for retrieving and appending the path parameters
    */
+  /**
+   * Set feature toggles
+   * @param {string} featureToggleProperty used for identifying feature toggles
+   * @param {string} path used for retrieving and appending the path parameters
+   */
   setFeatureToggles(featureToggleProperty: string, path: string, featureToggles: FeatureToggles): void {
     const paramsMap: Record<string, string> = this.sanitizeParamsMap(this.parseParams(path.split('?')[1]));
     let featureTogglesFromUrl;
@@ -408,5 +413,63 @@ export const RoutingHelpers = {
     if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
       featureToggleList.forEach((ft) => featureToggles?.setFeatureToggle(ft, true));
     }
+  },
+
+  /**
+   * Replaces dynamic parameter placeholders in the values of the provided object
+   * using a mapping of parameter names to concrete values.
+   *
+   * A placeholder is defined as the concatenation of `paramPrefix` and a key from `paramMap`
+   * (e.g. ":id"). Depending on the `contains` flag, the replacement logic operates in:
+   * - Exact match mode (`contains = false`): a value is replaced only if it equals the full placeholder (e.g. value === ":id").
+   * - Containment mode (`contains = true`): a value is scanned and any single occurrence of a placeholder substring is replaced
+   *   (e.g. "/users/:id/details" becomes "/users/123/details"). Only the first matching key is replaced; subsequent occurrences
+   *   or multiple different placeholders in the same value are not handled by this implementation.
+   *
+   * The function returns a new plain object; the original `object` argument is not mutated.
+   *
+   * @param object A record whose string values may contain dynamic parameter placeholders to substitute.
+   * @param paramMap A mapping of parameter names (without prefix) to their substitution values.
+   * @param paramPrefix The prefix that denotes a placeholder in `object` values. Defaults to ":".
+   * @param contains If true, perform substring replacement; if false, only exact value matches are substituted.
+   * @returns A new object with substituted values where placeholders matched the provided `paramMap`.
+   *
+   * @example
+   * const obj = { userId: ':id', path: '/users/:id/details', untouched: 'static' };
+   * const paramMap = { id: '123' };
+   *
+   * // Exact match mode:
+   * substituteDynamicParamsInObject(obj, paramMap);
+   * // => { userId: '123', path: '/users/:id/details', untouched: 'static' }
+   *
+   * // Containment mode:
+   * substituteDynamicParamsInObject(obj, paramMap, ':', true);
+   * // => { userId: '123', path: '/users/123/details', untouched: 'static' }
+   *
+   * @remarks
+   * - Only the first matching parameter key is considered per value when `contains = true`.
+   * - Values that are undefined or null are returned as-is.
+   * - The return type is a generic object; if stronger typing is desired, consider overloading or
+   *   constraining `paramMap` and `object` to more specific record types.
+   */
+  substituteDynamicParamsInObject(
+    object: Record<string, string>,
+    paramMap: Record<any, any>,
+    paramPrefix = ':',
+    contains = false
+  ): {} {
+    return Object.entries(object)
+      .map(([key, value]) => {
+        const foundKey = contains
+          ? Object.keys(paramMap).find((key2) => value && value.indexOf(paramPrefix + key2) >= 0)
+          : Object.keys(paramMap).find((key2) => value === paramPrefix + key2);
+        return [
+          key,
+          foundKey ? (contains ? value.replace(paramPrefix + foundKey, paramMap[foundKey]) : paramMap[foundKey]) : value
+        ];
+      })
+      .reduce((acc, [key, value]) => {
+        return Object.assign(acc, { [key]: value });
+      }, {});
   }
 };

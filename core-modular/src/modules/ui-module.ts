@@ -26,6 +26,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.context = node.context;
     lcc.clientPermissions = node.clientPermissions;
     lcc.nodeParams = node.nodeParams;
+    lcc.pathParams = node.pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
@@ -45,6 +46,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.clientPermissions = node.clientPermissions;
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
+    lc.pathParams = node.pathParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
@@ -198,6 +200,7 @@ export const UIModule = {
           .get(ViewUrlDecoratorSvc)
           .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.pathParams = currentNode.pathParams;
         viewGroupContainer.clientPermissions = currentNode.clientPermissions;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
         viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
