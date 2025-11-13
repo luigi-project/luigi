@@ -1,4 +1,3 @@
-import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
@@ -9,6 +8,7 @@ import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
 import { LuigiAuth, LuigiAuthClass } from './auth';
+import { LuigiStore, writable } from '../utilities/store';
 
 export class Luigi {
   config: any;
@@ -181,20 +181,19 @@ export class Luigi {
   }
 
   private createConfigStore(): any {
-    const { subscribe, update } = writable({});
+    const luigiStore: LuigiStore = writable({});
     const scopeSubscribers: Record<any, any> = {};
     let unSubscriptions: any[] = [];
 
     return {
-      subscribe: (fn: Subscriber<object>) => {
+      subscribe: (fn: (value:any) => () => {}) => {
         // subscribe fn returns unsubscription fn
-        unSubscriptions.push(subscribe(fn));
+        unSubscriptions.push(luigiStore.subscribe(fn));
       },
-      update,
-      reset: (fn: Updater<object>) => {
-        update(fn);
+      reset: (fn: (value:any) => void) => {
+        luigiStore.update(fn);
       },
-      subscribeToScope: (fn: Subscriber<object>, scope: any) => {
+      subscribeToScope: (fn: (value:any) => void, scope: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (!subscribers) {

@@ -1,4 +1,5 @@
-import { get, writable } from 'svelte/store';
+import { get, writable } from '../utilities/store';
+import type { LuigiStore } from '../utilities/store';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LuigiAuth } from '../core-api/auth';
 import { ConfigHelpers } from '../utilities/helpers/config-helpers';
@@ -7,8 +8,8 @@ import { AuthStoreSvc } from './auth-store.service';
 
 class AuthLayerSvcClass {
   idpProviderInstance: any;
-  _userInfoStore: any;
-  private _loggedInStore: any;
+  _userInfoStore: LuigiStore;
+  private _loggedInStore: LuigiStore;
   _profileLogoutFn: any;
 
   constructor() {
