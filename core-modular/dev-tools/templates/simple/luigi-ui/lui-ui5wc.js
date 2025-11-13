@@ -53,6 +53,7 @@ function addShellbarItem(shellbar, item) {
     itemEl.setAttribute('icon', item.category.icon);
     itemEl.setAttribute('text', item.category.label);
     itemEl.setAttribute('category-uid', item.category.id);
+    itemEl.setAttribute('tooltip', item.category.tooltip);
     shellbar.appendChild(itemEl);
     renderCategoryPopover(item.category);
     itemEl.addEventListener('click', createCategoryClickHandler(item.category.id));
@@ -268,6 +269,7 @@ function renderNodeOrCategory(item, leftNavData) {
   if (item.node) {
     const el = document.createElement('ui5-side-navigation-item');
     el.setAttribute('text', item.node.label);
+    el.setAttribute('tooltip', item.node.tooltip);
     if (item.node.icon) el.setAttribute('icon', item.node.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
     el.addEventListener('click', (ev) => {
@@ -279,6 +281,7 @@ function renderNodeOrCategory(item, leftNavData) {
     if (item.category?.nodes?.length > 0) {
       const el = document.createElement('ui5-side-navigation-item');
       el.setAttribute('text', item.category.label);
+      el.setAttribute('tooltip', item.category.tooltip);
       if (item.category.icon) el.setAttribute('icon', item.category.icon);
       el.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
       if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
@@ -288,6 +291,7 @@ function renderNodeOrCategory(item, leftNavData) {
       item.category.nodes.forEach((nodeWrapper) => {
         const sub = document.createElement('ui5-side-navigation-sub-item');
         sub.setAttribute('text', nodeWrapper.node.label);
+        sub.setAttribute('tooltip', nodeWrapper.node.tooltip);
         if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.node.icon);
         sub.addEventListener('click', (ev) => {
           leftNavData.navClick(nodeWrapper.node);
@@ -456,6 +460,7 @@ const connector = {
           } else if (item.category && item.category.isGroup) {
             const group = document.createElement('ui5-side-navigation-group');
             group.setAttribute('text', item.category.label);
+            group.setAttribute('tooltip', item.category.tooltip);
             group.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
             if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
               group.setAttribute('expanded', '');

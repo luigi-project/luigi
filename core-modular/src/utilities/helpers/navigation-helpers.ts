@@ -67,6 +67,23 @@ export const NavigationHelpers = {
     return true;
   },
 
+  generateTooltipText: (node: any, translation: string, luigi: Luigi): string => {
+    let ttText: boolean | string | undefined = node?.tooltipText;
+
+    if (ttText === undefined) {
+      ttText = luigi.getConfigValue('navigation.defaults.tooltipText');
+    }
+
+    switch (ttText) {
+      case undefined:
+        return translation;
+      case false:
+        return '';
+      default:
+        return luigi.i18n().getTranslation(ttText as string);
+    }
+  },
+
   isNodeAccessPermitted: (
     nodeToCheckPermissionFor: Node,
     parentNode: Node,
