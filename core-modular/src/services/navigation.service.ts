@@ -418,7 +418,7 @@ export class NavigationService {
         doLogout: () => {
           AuthLayerSvc.logout();
         }
-      },
+      }
       // staticUserInfoFn
     };
 
