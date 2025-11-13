@@ -66,7 +66,6 @@ export class RoutingService {
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        console.log('HashChange', location.hash);
         this.handleRouteChange(RoutingHelpers.getCurrentPath());
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
