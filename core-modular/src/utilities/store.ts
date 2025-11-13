@@ -1,36 +1,36 @@
 class LuigiStore {
-    $value: any;
-    $subscribers: Set<((value: any) => void)> = new Set();
+  $value: any;
+  $subscribers: Set<(value: any) => void> = new Set();
 
-    constructor(initialValue: any) {
-        this.$value = initialValue;
-    }
+  constructor(initialValue: any) {
+    this.$value = initialValue;
+  }
 
-    set(value: any): void {
-        this.$value = value;
-        this.$subscribers.forEach(subscriber => {
-            subscriber(value);
-        })
-    }
+  set(value: any): void {
+    this.$value = value;
+    this.$subscribers.forEach((subscriber) => {
+      subscriber(value);
+    });
+  }
 
-    update(fn: (val: any) => any): void {
-        this.set(fn(this.$value));
-    }
+  update(fn: (val: any) => any): void {
+    this.set(fn(this.$value));
+  }
 
-    subscribe(subscriber: (value: any) => void): () => void {
-        this.$subscribers.add(subscriber);
-        return () => {
-            this.$subscribers.delete(subscriber);
-        }
-    }
+  subscribe(subscriber: (value: any) => void): () => void {
+    this.$subscribers.add(subscriber);
+    return () => {
+      this.$subscribers.delete(subscriber);
+    };
+  }
 }
 
-function get (store: LuigiStore) {
-    return store.$value;
+function get(store: LuigiStore) {
+  return store.$value;
 }
 
-function writable (value: any): LuigiStore {
-    return new LuigiStore(value);
+function writable(value: any): LuigiStore {
+  return new LuigiStore(value);
 }
 
 export { get, writable, LuigiStore };

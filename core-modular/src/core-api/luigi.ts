@@ -186,14 +186,14 @@ export class Luigi {
     let unSubscriptions: any[] = [];
 
     return {
-      subscribe: (fn: (value:any) => () => {}) => {
+      subscribe: (fn: (value: any) => () => {}) => {
         // subscribe fn returns unsubscription fn
         unSubscriptions.push(luigiStore.subscribe(fn));
       },
-      reset: (fn: (value:any) => void) => {
+      reset: (fn: (value: any) => void) => {
         luigiStore.update(fn);
       },
-      subscribeToScope: (fn: (value:any) => void, scope: any) => {
+      subscribeToScope: (fn: (value: any) => void, scope: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (!subscribers) {
