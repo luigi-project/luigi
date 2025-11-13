@@ -255,7 +255,6 @@ describe('JS-TEST-APP 4', () => {
       cy.tab();
       cy.tab();
       cy.tab();
-      cy.tab();
       cy.get('.fd-user-menu__control').should('have.focus').type('{enter}');
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'false');
     });
@@ -264,7 +263,6 @@ describe('JS-TEST-APP 4', () => {
       cy.visitTestAppLoggedIn('/', newConfig);
       cy.get('#profilePopover').should('have.attr', 'aria-hidden', 'true');
       cy.get('body').click();
-      cy.tab();
       cy.tab();
       cy.tab();
       cy.tab();
