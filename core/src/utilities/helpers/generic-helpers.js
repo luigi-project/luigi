@@ -443,7 +443,10 @@ class GenericHelpersClass {
       return 'modal';
     } else if (element.closest('.iframeSplitViewCnt')) {
       return 'splitView';
-    } else if (element.hasAttribute('lui_web_component') && !element?.parentElement?.classList?.contains('wcContainer')) {
+    } else if (
+      element.hasAttribute('lui_web_component') &&
+      !element?.parentElement?.classList?.contains('wcContainer')
+    ) {
       return undefined;
     }
 

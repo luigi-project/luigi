@@ -437,8 +437,8 @@
               >
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
-                  role="tab"
                   class="fd-icon-tab-bar__tab"
+                  role="tab"
                   tabindex="0"
                   aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                   href={getRouteLink(nodeToNavigateTo)}
@@ -456,6 +456,9 @@
                         aria-haspopup="true"
                         aria-label="open menu button"
                         on:click|preventDefault={() => toggleDropdownState(key)}
+                        on:keyup|preventDefault={(event) => {
+                          (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key);
+                        }}
                       >
                         <i class="sap-icon--slim-arrow-down" />
                       </button>
@@ -500,8 +503,7 @@
               <span
                 class="fd-icon-tab-bar__item fd-icon-tab-bar__item--single-click"
                 {uid}
-                role="tab"
-                tabindex="-1"
+                role="presentation"
                 on:click={(event) => event.stopPropagation()}
                 isSelected={isSelectedCat(key, selectedNodeForTabNav)}
               >
@@ -510,14 +512,15 @@
                     <!-- svelte-ignore a11y-missing-attribute -->
                     <a
                       class="fd-icon-tab-bar__tab"
-                      aria-expanded="false"
                       role="tab"
                       tabindex="0"
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                       on:click|preventDefault={() => toggleDropdownState(key)}
                       on:keyup|preventDefault={(event) => {
-                        (event.code === 'Enter' || event.code === 'Space') && toggleDropdownState(key);
+                        (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key);
                       }}
-                      aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
                     >
                       <div class="fd-icon-tab-bar__tab-container">
                         <span class="fd-icon-tab-bar__tag">{$getTranslation(key)}</span>
@@ -567,14 +570,19 @@
         <span
           class="luigi-tabsMoreButton fd-icon-tab-bar__item fd-icon-tab-bar__item--overflow"
           on:click={(event) => event.stopPropagation()}
-          role="button"
-          tabindex="-1"
+          role="presentation"
           bind:this={moreButton}
         >
           <div class="fd-popover">
             <!-- svelte-ignore a11y-missing-attribute -->
-            <div class="fd-popover__control has-child luigi__more" role="presentation">
-              <button class="fd-icon-tab-bar__overflow" on:click|preventDefault={toggleMoreBtn} bind:this={moreLink}>
+            <div class="fd-popover__control has-child luigi__more">
+              <button
+                class="fd-icon-tab-bar__overflow"
+                role="tab"
+                tabindex="0"
+                on:click|preventDefault={toggleMoreBtn}
+                bind:this={moreLink}
+              >
                 <span class="label fd-icon-tab-bar__overflow-text">More</span>
                 <span class="sap-icon--slim-arrow-down" />
               </button>
@@ -605,8 +613,19 @@
                     {/each}
                   {:else}
                     <li class="fd-nested-list__item" uid="{index}-0">
-                      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                      <div class="fd-nested-list__content has-child" tabindex="0">
+                      <!-- svelte-ignore a11y-role-supports-aria-props -->
+                      <div
+                        class="fd-nested-list__content has-child"
+                        tabindex="0"
+                        role="button"
+                        aria-expanded={dropDownStates[key + index]}
+                        aria-haspopup="true"
+                        aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
+                        on:click|preventDefault={() => toggleDropdownState(key + index)}
+                        on:keyup|preventDefault={(event) => {
+                          (event.key === 'Enter' || event.key === ' ') && toggleDropdownState(key + index);
+                        }}
+                      >
                         <!-- svelte-ignore a11y-invalid-attribute -->
                         <!-- svelte-ignore a11y-role-supports-aria-props -->
                         <a
@@ -614,22 +633,10 @@
                           tabindex="-1"
                           class="fd-nested-list__link"
                           id="tabnav_list_level1_{index}"
-                          aria-haspopup="true"
-                          aria-expanded={dropDownStates[key + index]}
-                          aria-selected={isSelectedCat(key, selectedNodeForTabNav)}
-                          on:click|preventDefault={() => toggleDropdownState(key + index)}
                         >
                           <span class="fd-nested-list__title">{$getTranslation(key)}</span>
                         </a>
-                        <button
-                          class="fd-button fd-nested-list__button"
-                          href="#"
-                          tabindex="-1"
-                          aria-label="Expand submenu"
-                          aria-haspopup="true"
-                          aria-expanded={dropDownStates[key + index]}
-                          on:click|preventDefault={() => toggleDropdownState(key + index)}
-                        >
+                        <button class="fd-button fd-nested-list__button" tabindex="-1">
                           <i
                             class={dropDownStates[key + index]
                               ? 'sap-icon--navigation-down-arrow'
