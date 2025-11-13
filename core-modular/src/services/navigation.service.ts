@@ -81,25 +81,26 @@ export interface PathData {
 }
 
 export interface Node {
-  pathSegment?: string;
-  label?: string;
-  icon?: string;
-  children: Node[];
   category?: any;
-  tabNav?: boolean;
-  viewUrl?: string;
-  openNodeInModal?: boolean;
-  drawer?: ModalSettings;
-  keepSelectedForChildren?: boolean;
-  hideFromNav?: boolean;
-  onNodeActivation?: (node: Node) => boolean | void;
-  pageErrorHandler?: PageErrorHandler;
-  externalLink?: ExternalLink;
-  hideSideNav?: boolean;
+  children: Node[];
   clientPermissions?: {
     changeCurrentLocale?: boolean;
     urlParameters?: Record<string, any>;
   };
+  drawer?: ModalSettings;
+  externalLink?: ExternalLink;
+  hideFromNav?: boolean;
+  hideSideNav?: boolean;
+  icon?: string;
+  keepSelectedForChildren?: boolean;
+  label?: string;
+  onNodeActivation?: (node: Node) => boolean | void;
+  openNodeInModal?: boolean;
+  pageErrorHandler?: PageErrorHandler;
+  pathSegment?: string;
+  tabNav?: boolean;
+  tooltip?: string;
+  viewUrl?: string;
 }
 
 export interface PageErrorHandler {
@@ -110,12 +111,13 @@ export interface PageErrorHandler {
 }
 
 export interface Category {
-  isGroup?: boolean;
-  id: string;
-  label?: string;
-  icon?: string;
-  nodes?: NavItem[];
   collabsible?: boolean;
+  icon?: string;
+  id: string;
+  isGroup?: boolean;
+  label?: string;
+  nodes?: NavItem[];
+  tooltip?: string;
 }
 
 export interface NavItem {
@@ -199,19 +201,22 @@ export class NavigationService {
     nodes?.forEach((node) => {
       if (node.label) {
         node.label = this.luigi.i18n().getTranslation(node.label);
+        node.tooltip = this.resolveTooltipText(node, node.label);
       }
 
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
+        const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
 
         if (!catNode) {
           catNode = {
             category: {
-              id: catId,
-              label: this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category),
               icon: node.category.icon,
-              nodes: []
+              id: catId,
+              label: catLabel,
+              nodes: [],
+              tooltip: this.resolveTooltipText(node.category, catLabel)
             }
           };
           catMap[catId] = catNode;
@@ -517,6 +522,10 @@ export class NavigationService {
     const pathData = this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
+  }
+
+  private resolveTooltipText(node: any, translation: string): string {
+    return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
 
   private prepareRootNodes(navNodes: any[]): any[] {
