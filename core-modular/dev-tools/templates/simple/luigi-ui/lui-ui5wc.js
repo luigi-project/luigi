@@ -53,6 +53,7 @@ function addShellbarItem(shellbar, item) {
     itemEl.setAttribute('icon', item.category.icon);
     itemEl.setAttribute('text', item.category.label);
     itemEl.setAttribute('category-uid', item.category.id);
+    itemEl.setAttribute('tooltip', item.category.tooltip);
     shellbar.appendChild(itemEl);
     renderCategoryPopover(item.category);
     itemEl.addEventListener('click', createCategoryClickHandler(item.category.id));
@@ -263,38 +264,48 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 };
 
 function renderNodeOrCategory(item, leftNavData) {
-  let html = '';
+  const frag = document.createDocumentFragment();
+
   if (item.node) {
-    html += `<ui5-side-navigation-item
-                            text="${item.node.label}"
-                            icon="${item.node.icon}"
-                            tooltip="${item.node.tooltip}"
-                            luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                            ${item.selected ? 'selected' : ''}
-                            ></ui5-side-navigation-item>`;
+    const el = document.createElement('ui5-side-navigation-item');
+    el.setAttribute('text', item.node.label);
+    el.setAttribute('tooltip', item.node.tooltip);
+    if (item.node.icon) el.setAttribute('icon', item.node.icon);
+    el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+    el.addEventListener('click', (ev) => {
+      leftNavData.navClick(item.node);
+    });
+    if (item.selected) el.setAttribute('selected', '');
+    frag.appendChild(el);
   } else if (item.category) {
     if (item.category?.nodes?.length > 0) {
-      html += `<ui5-side-navigation-item
-                                text="${item.category.label}"
-                                icon="${item.category.icon}"
-                                tooltip="${item.category.tooltip}"
-                                category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+      const el = document.createElement('ui5-side-navigation-item');
+      el.setAttribute('text', item.category.label);
+      el.setAttribute('tooltip', item.category.tooltip);
+      if (item.category.icon) el.setAttribute('icon', item.category.icon);
+      el.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
+      if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
+        el.setAttribute('expanded', '');
+      }
 
-      item.category.nodes.forEach((item) => {
-        html += `<ui5-side-navigation-sub-item
-                                text="${item.node.label}"
-                                icon="${item.node.icon}"
-                                tooltip="${item.node.tooltip}"
-                                luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                                ${item.selected ? 'selected' : ''}
-                                ></ui5-side-navigation-sub-item>`;
+      item.category.nodes.forEach((nodeWrapper) => {
+        const sub = document.createElement('ui5-side-navigation-sub-item');
+        sub.setAttribute('text', nodeWrapper.node.label);
+        sub.setAttribute('tooltip', nodeWrapper.node.tooltip);
+        if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.node.icon);
+        sub.addEventListener('click', (ev) => {
+          leftNavData.navClick(nodeWrapper.node);
+        });
+        sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+        if (nodeWrapper.selected) sub.setAttribute('selected', '');
+        el.appendChild(sub);
       });
 
-      html += '</ui5-side-navigation-item>';
+      frag.appendChild(el);
     }
   }
-  return html;
+
+  return frag;
 }
 
 /** @type {LuigiConnector} */
@@ -440,38 +451,32 @@ const connector = {
         };
         burger.addEventListener('click', burger._clickListener);
       }
-
-      let html = '';
+      sidenav.innerHTML = '';
+      const containerFrag = document.createDocumentFragment();
       if (leftNavData.items) {
         leftNavData.items.forEach((item) => {
           if (item.node || (item.category && !item.category.isGroup)) {
-            html += renderNodeOrCategory(item, leftNavData);
+            containerFrag.appendChild(renderNodeOrCategory(item, leftNavData));
           } else if (item.category && item.category.isGroup) {
-            html += `
-              <ui5-side-navigation-group
-                text="${item.category.label}"
-                category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>
-            `;
+            const group = document.createElement('ui5-side-navigation-group');
+            group.setAttribute('text', item.category.label);
+            group.setAttribute('tooltip', item.category.tooltip);
+            group.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
+            if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
+              group.setAttribute('expanded', '');
+            }
+
             item.category.nodes.forEach((subitem) => {
-              html += renderNodeOrCategory(subitem, leftNavData);
+              group.appendChild(renderNodeOrCategory(subitem, leftNavData));
             });
-            html += `</ui5-side-navigation-group>`;
+
+            containerFrag.appendChild(group);
           }
         });
       }
 
       document.body.classList.toggle('left-nav-hidden', !(leftNavData.items?.length > 0));
-      sidenav.innerHTML = html;
-
-      const items = sidenav.querySelectorAll('[luigi-route]');
-      if (items) {
-        items.forEach((item) => {
-          item.addEventListener('click', () => {
-            globalThis.Luigi.navigation().navigate(item.getAttribute('luigi-route'));
-          });
-        });
-      }
+      sidenav.appendChild(containerFrag);
 
       if (!sidenav._observer) {
         sidenav._observer = new MutationObserver((mutations) => {
