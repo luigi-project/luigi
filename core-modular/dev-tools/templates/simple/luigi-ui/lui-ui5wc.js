@@ -247,7 +247,7 @@ function renderProfilePopover(profileObj, avatar) {
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
 
   profileObj.onUserInfoUpdate((userInfo) => {
-    uInfoWrapper.innerHTML = /*html*/`
+    uInfoWrapper.innerHTML = /*html*/ `
       <div>${userInfo.name}</div>
       <div>${userInfo.email}</div>
       <div>${userInfo.description}</div>
@@ -255,7 +255,7 @@ function renderProfilePopover(profileObj, avatar) {
     if (userInfo.initials) {
       avatar.setAttribute('initials', userInfo.initials);
     }
-  })
+  });
 }
 
 function onProfileClick(event) {
@@ -396,7 +396,7 @@ const connector = {
         };
         shellbar.addEventListener('logo-click', shellbar._logoEL);
       }
-      
+
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
