@@ -190,10 +190,12 @@ function createCategoryClickHandler(id) {
   };
 }
 
-function renderProfilePopover(profileObj) {
+function renderProfilePopover(profileObj, avatar) {
   const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
   const profilePopover = document.createElement('ui5-popover');
   const profileList = document.createElement('ui5-list');
+  const uInfoWrapper = document.createElement('div');
+  uInfoWrapper.classList.add('lui-user-info');
 
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
@@ -240,8 +242,20 @@ function renderProfilePopover(profileObj) {
     profileList.appendChild(profileLi);
   }
 
+  profilePopover.appendChild(uInfoWrapper);
   profilePopover.appendChild(profileList);
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
+
+  profileObj.onUserInfoUpdate((userInfo) => {
+    uInfoWrapper.innerHTML = /*html*/`
+      <div>${userInfo.name}</div>
+      <div>${userInfo.email}</div>
+      <div>${userInfo.description}</div>
+    `;
+    if (userInfo.initials) {
+      avatar.setAttribute('initials', userInfo.initials);
+    }
+  })
 }
 
 function onProfileClick(event) {
@@ -382,17 +396,19 @@ const connector = {
         };
         shellbar.addEventListener('logo-click', shellbar._logoEL);
       }
+      
+      shellbar.innerHTML = html;
+
       if (topNavData.profile) {
-        if (topNavData.profile.staticUserInfoFn) {
-          topNavData.profile.staticUserInfoFn().then((value) => {
-            shellbar._userInfo = value;
-          });
-        }
-        html += `<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
-        renderProfilePopover(topNavData.profile);
+        const ava = document.createElement('ui5-avatar');
+        ava.setAttribute('slot', 'profile');
+        ava.setAttribute('shape', 'Circle');
+        ava.setAttribute('size', 'M');
+        ava.setAttribute('color-scheme', 'Accent7');
+        renderProfilePopover(topNavData.profile, ava);
+        shellbar.appendChild(ava);
         shellbar.addEventListener('profile-click', onProfileClick);
       }
-      shellbar.innerHTML = html;
 
       (topNavData.topNodes || []).forEach((item) => {
         addShellbarItem(shellbar, item);

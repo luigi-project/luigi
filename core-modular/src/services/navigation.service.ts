@@ -40,6 +40,7 @@ export interface ProfileSettings {
   logout: ProfileLogout;
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
+  onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
 }
 
 export interface ProfileLogout {
@@ -418,8 +419,23 @@ export class NavigationService {
         doLogout: () => {
           AuthLayerSvc.logout();
         }
+      },
+      onUserInfoUpdate: (fn) => {
+        if (cfg.navigation?.profile?.staticUserInfoFn) {
+          const uifRes = cfg.navigation?.profile?.staticUserInfoFn();
+          if (uifRes instanceof Promise) {
+            uifRes.then((uInfo) => {
+              fn(uInfo);
+            });
+          } else {
+            fn(uifRes);
+          }
+        } else {
+          AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
+            fn(uInfo);
+          });
+        }
       }
-      // staticUserInfoFn
     };
 
     return {
