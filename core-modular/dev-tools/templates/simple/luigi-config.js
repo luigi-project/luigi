@@ -331,7 +331,7 @@ window.onload = () => {
 
     lifecycleHooks: {
       luigiAfterInit: () => {
-        console.log("AFTER INIT");
+        console.log('AFTER INIT');
       }
     },
 
@@ -355,8 +355,8 @@ window.onload = () => {
         scope: 'openid profile email',
 
         client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp', // example oidc-mockserver client id
-        response_type: "code", // for PKCE
-        response_mode: "fragment", // change between `query` and `fragment`
+        response_type: 'code', // for PKCE
+        response_mode: 'fragment', // change between `query` and `fragment`
         loadUserInfo: true,
         post_logout_redirect_uri: '/auth/logout.html',
 
