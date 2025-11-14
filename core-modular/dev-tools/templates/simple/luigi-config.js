@@ -245,7 +245,7 @@ window.onload = () => {
               sameWindow: false
             }
           }
-        ],
+        ]
         // staticUserInfoFn: () => {
         //   return new Promise((resolve) => {
         //     resolve({
