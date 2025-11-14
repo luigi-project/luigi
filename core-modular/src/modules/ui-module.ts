@@ -10,6 +10,12 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+
+  if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
+    console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
+    return document.createElement('div');
+  }
+
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
 
