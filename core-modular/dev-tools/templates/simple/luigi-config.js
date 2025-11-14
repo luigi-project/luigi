@@ -329,17 +329,41 @@ window.onload = () => {
       }
     },
 
+    lifecycleHooks: {
+      luigiAfterInit: () => {
+        console.log("AFTER INIT");
+      }
+    },
+
     auth: {
-      use: 'myOAuth2',
+      use: 'myOIDC',
       myOAuth2: {
         idpProvider: window['LuigiPlugin-auth-oauth2'],
-        authorizeUrl: '/auth/idpmock/implicit.html',
-        logoutUrl: '/auth/idpmock/logout.html',
+        authorizeUrl: 'http://localhost:3000/auth',
+        logoutUrl: 'http://localhost:3000/session/end',
         post_logout_redirect_uri: '/auth/logout.html',
         authorizeMethod: 'GET',
         oAuthData: {
           client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
           redirect_uri: '/auth/callback.html'
+        }
+      },
+      myOIDC: {
+        idpProvider: window['LuigiPlugin-auth-oidc-pkce'],
+        authority: 'http://localhost:3000',
+        logoutUrl: 'http://localhost:3000/session/end',
+        scope: 'openid profile email',
+
+        client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp', // example oidc-mockserver client id
+        response_type: "code", // for PKCE
+        response_mode: "fragment", // change between `query` and `fragment`
+        loadUserInfo: true,
+        post_logout_redirect_uri: '/auth/logout.html',
+
+        userInfoFn: (settings, authdata) => {
+          return new Promise((resolve) => {
+            resolve(authdata.profile);
+          });
         }
       }
     }
