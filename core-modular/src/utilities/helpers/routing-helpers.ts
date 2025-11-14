@@ -351,6 +351,42 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Checks if given URL is allowed to be included, based on 'navigation.validWebcomponentUrls' in Luigi config.
+   *
+   * @param {string} url the URL string to be checked
+   * @param {Luigi} luigi - the Luigi instance used to determine the parameter prefix
+   * @returns {boolean} `true` if allowed - `false` otherwise
+   */
+  checkWCUrl(url: string, luigi: Luigi): boolean {
+    if (url.indexOf('://') > 0 || url.trim().indexOf('//') === 0) {
+      const path = new URL(url);
+
+      if (path.host === window.location.host) {
+        return true; // same host is okay
+      }
+
+      const validUrls = luigi.getConfigValue('navigation.validWebcomponentUrls');
+
+      if (validUrls?.length > 0) {
+        for (const el of validUrls) {
+          try {
+            if (new RegExp(el).test(url)) {
+              return true;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+
+      return false;
+    }
+
+    // relative URL is okay
+    return true;
+  },
+
+  /**
    * Set feature toggles
    * @param {string} featureToggleProperty used for identifying feature toggles
    * @param {string} path used for retrieving and appending the path parameters

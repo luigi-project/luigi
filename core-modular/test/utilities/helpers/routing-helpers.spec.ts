@@ -150,6 +150,33 @@ describe('Routing-helpers', () => {
     assert.deepEqual(filteredParams, {});
   });
 
+  describe('check valid wc url', function () {
+    const sb = sinon.createSandbox();
+
+    afterEach(() => {
+      sb.restore();
+    });
+
+    it('check permission for relative and absolute urls from same domain', () => {
+      assert.equal(RoutingHelpers.checkWCUrl('/folder/sth.js', luigi), true);
+      assert.equal(RoutingHelpers.checkWCUrl('folder/sth.js', luigi), true);
+      assert.equal(RoutingHelpers.checkWCUrl('./folder/sth.js', luigi), true);
+      assert.equal(RoutingHelpers.checkWCUrl(window.location.href + '/folder/sth.js', luigi), true);
+    });
+
+    it('check permission and denial for urls based on config', () => {
+      sb.stub(luigi, 'getConfigValue').returns([
+        'https://fiddle.luigi-project.io/.?',
+        'https://docs.luigi-project.io/.?'
+      ]);
+
+      assert.equal(RoutingHelpers.checkWCUrl('https://fiddle.luigi-project.io/folder/sth.js', luigi), true);
+      assert.equal(RoutingHelpers.checkWCUrl('https://docs.luigi-project.io/folder/sth.js', luigi), true);
+      assert.equal(RoutingHelpers.checkWCUrl('http://fiddle.luigi-project.io/folder/sth.js', luigi), false);
+      assert.equal(RoutingHelpers.checkWCUrl('https://slack.luigi-project.io/folder/sth.js', luigi), false);
+    });
+  });
+
   describe('set feature toggle from url', () => {
     let mockPath = '/projects/pr1/settings?ft=test';
 
