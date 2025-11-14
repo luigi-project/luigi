@@ -19,6 +19,7 @@ class LuigiStore {
 
   subscribe(subscriber: (value: any) => void): () => void {
     this.$subscribers.add(subscriber);
+    subscriber(this.$value);
     return () => {
       this.$subscribers.delete(subscriber);
     };

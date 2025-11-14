@@ -153,5 +153,15 @@ export const NavigationHelpers = {
 
   mergeContext(...objs: Record<string, any>[]): Record<string, any> {
     return Object.assign({}, ...objs);
+  },
+
+  prepareForTests(...parts: string[]): string {
+    let result = '';
+    parts.forEach((p) => {
+      if (p) {
+        result += (result ? '_' : '') + encodeURIComponent(p.toLowerCase().split(' ').join(''));
+      }
+    });
+    return result;
   }
 };

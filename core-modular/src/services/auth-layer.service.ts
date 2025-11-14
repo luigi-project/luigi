@@ -149,14 +149,13 @@ class AuthLayerSvcClass {
       AuthStoreSvc.removeAuthData();
     };
     const customLogoutFn = ConfigHelpers.getConfigValue(`auth.${ConfigHelpers.getConfigValue('auth.use')}.logoutFn`);
+    const profileLogoutFn = ConfigHelpers.getConfigValueAsync('navigation.profile.logout.customLogoutFn');
     if (GenericHelpers.isFunction(customLogoutFn)) {
       customLogoutFn(this.idpProviderInstance.settings, authData, logoutCallback);
     } else if (GenericHelpers.isFunction(this.idpProviderInstance.logout)) {
       this.idpProviderInstance.logout(authData, logoutCallback);
-    } else if (this._profileLogoutFn) {
-      // TODO: Is this being reached at all? similar code is in Authorization.html
-      // TODO: PROFNAVLOGOUT: three smiliar implementations. profilen
-      this._profileLogoutFn(authData, logoutCallback);
+    } else if (profileLogoutFn && GenericHelpers.isFunction(profileLogoutFn)) {
+      profileLogoutFn(authData, logoutCallback);
     } else {
       logoutCallback(this.idpProviderInstance.settings.logoutUrl);
     }

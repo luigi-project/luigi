@@ -4,6 +4,7 @@ import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
 
 export interface TopNavData {
@@ -488,12 +489,14 @@ export class NavigationService {
       }));
     }
 
+    const logoutLabel = this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
     const profileSettings: ProfileSettings = {
       items: profileItems,
       logout: {
-        altText: 'Logout',
-        label: 'Logout',
-        // icon: '',
+        altText: this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.altText) || TOP_NAV_DEFAULTS.logout.label,
+        label: logoutLabel,
+        icon: cfg.navigation?.profile?.logout?.icon || TOP_NAV_DEFAULTS.logout.icon,
+        testId: cfg.navigation?.profile?.logout?.testId || NavigationHelpers.prepareForTests(logoutLabel),
         doLogout: () => {
           AuthLayerSvc.logout();
         }

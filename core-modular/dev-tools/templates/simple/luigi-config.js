@@ -246,16 +246,17 @@ window.onload = () => {
             }
           }
         ],
-        staticUserInfoFn: () => {
-          return new Promise((resolve) => {
-            resolve({
-              name: 'Static User',
-              initials: 'LU',
-              email: 'other.luigi.user@example.com',
-              description: 'Luigi Developer'
-            });
-          });
-        }
+        // staticUserInfoFn: () => {
+        //   return new Promise((resolve) => {
+        //     resolve({
+        //       name: 'Static User',
+        //       initials: 'LU',
+        //       email: 'other.luigi.user@example.com',
+        //       description: 'Luigi Developer',
+        //       picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
+        //     });
+        //   });
+        // }
       }
     },
     routing: {

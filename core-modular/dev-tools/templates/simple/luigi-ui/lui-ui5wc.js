@@ -248,13 +248,18 @@ function renderProfilePopover(profileObj, avatar) {
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
 
   profileObj.onUserInfoUpdate((userInfo) => {
-    uInfoWrapper.innerHTML = /*html*/ `
+    uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}"/></div>` : '';
+    uInfoWrapper.innerHTML += /*html*/ `      
       <div>${userInfo.name}</div>
       <div>${userInfo.email}</div>
       <div>${userInfo.description}</div>
     `;
-    if (userInfo.initials) {
+    if (userInfo.picture) {
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');
+      avatar.innerHTML = `<img src="${userInfo.picture}"/>`;
+    } else {
       avatar.setAttribute('initials', userInfo.initials);
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-initials');
     }
   });
 }
