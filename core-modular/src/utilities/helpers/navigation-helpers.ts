@@ -1,6 +1,7 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, Node, PathData } from '../../services/navigation.service';
+import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 
 export const NavigationHelpers = {
@@ -86,13 +87,20 @@ export const NavigationHelpers = {
 
   isNodeAccessPermitted: (
     nodeToCheckPermissionFor: Node,
-    parentNode: Node,
+    parentNode: Node | undefined,
     currentContext: Record<string, any> | {},
     luigi: Luigi
   ): boolean => {
-    const featureToggles: FeatureToggles = luigi.featureToggles();
+    if (luigi.auth().isAuthorizationEnabled()) {
+      const loggedIn = AuthHelpers.isLoggedIn();
+      const anon = nodeToCheckPermissionFor.anonymousAccess;
 
-    // TODO add `isAuthorizationEnabled` logic
+      if ((loggedIn && anon === 'exclusive') || (!loggedIn && anon !== 'exclusive' && anon !== true)) {
+        return false;
+      }
+    }
+    
+    const featureToggles: FeatureToggles = luigi.featureToggles();
 
     if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, featureToggles)) {
       return false;

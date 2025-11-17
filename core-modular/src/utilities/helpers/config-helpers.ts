@@ -2,7 +2,7 @@ import type { Luigi } from '../../core-api/luigi';
 
 class ConfigHelpersClass {
   setErrorMessage(errorMsg: string) {
-    throw new Error('Method not implemented.');
+    this.getLuigi().getEngine()?._connector?.showFatalError(errorMsg);
   }
 
   getLuigi(): Luigi {

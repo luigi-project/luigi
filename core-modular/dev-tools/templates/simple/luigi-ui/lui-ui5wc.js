@@ -878,6 +878,21 @@ const connector = {
       text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
       type: 'info'
     });
+  },
+
+  showFatalError: (errorMsg) => {
+    var errorTextNode = document.createTextNode(errorMsg);
+    var fd_ui = document.createElement('div');
+    fd_ui.setAttribute('class', 'fd-ui');
+    fd_ui.setAttribute('style', 'text-align: center;');
+
+    var errorDiv = document.createElement('div');
+    errorDiv.setAttribute('class', 'fd-message-strip fd-message-strip--error');
+    errorDiv.setAttribute('style', 'max-width: 800px; display: inline-block; margin-top: 40px;');
+    errorDiv.appendChild(errorTextNode);
+
+    fd_ui.appendChild(errorDiv);
+    document.getElementById('app').appendChild(fd_ui);
   }
 };
 

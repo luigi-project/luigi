@@ -6,6 +6,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Node } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { serviceRegistry } from './service-registry';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
 export interface Route {
   raw: string;
@@ -108,6 +109,9 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
 
     const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
+    if (!NavigationHelpers.isNodeAccessPermitted(currentNode, undefined, {}, this.luigi)) { // TODO: check ctx and parent
+      return;
+    }
 
     if (currentNode) {
       this.currentRoute.node = currentNode;
