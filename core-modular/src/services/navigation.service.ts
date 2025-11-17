@@ -264,12 +264,14 @@ export class NavigationService {
     let items: NavItem[] = [];
 
     nodes?.forEach((node) => {
-      if (!NavigationHelpers.isNodeAccessPermitted(
-        node,
-        this.getParentNode(pathData.selectedNode, pathData) as Node,
-        pathData?.selectedNode?.context || {},
-        this.luigi
-      )) {
+      if (
+        !NavigationHelpers.isNodeAccessPermitted(
+          node,
+          this.getParentNode(pathData.selectedNode, pathData) as Node,
+          pathData?.selectedNode?.context || {},
+          this.luigi
+        )
+      ) {
         return;
       }
       if (node.label) {
@@ -318,12 +320,15 @@ export class NavigationService {
   getCurrentNode(path: string): any {
     const pathData = this.getPathData(path);
     const node = pathData.selectedNode;
-    if (!node || !NavigationHelpers.isNodeAccessPermitted(
+    if (
+      !node ||
+      !NavigationHelpers.isNodeAccessPermitted(
         node,
         this.getParentNode(pathData.selectedNode, pathData) as Node,
         pathData?.selectedNode?.context || {},
         this.luigi
-      )) {
+      )
+    ) {
       return undefined;
     }
     return node;

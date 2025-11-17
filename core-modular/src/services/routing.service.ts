@@ -109,7 +109,8 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
 
     const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
-    if (!NavigationHelpers.isNodeAccessPermitted(currentNode, undefined, {}, this.luigi)) { // TODO: check ctx and parent
+    if (!NavigationHelpers.isNodeAccessPermitted(currentNode, undefined, {}, this.luigi)) {
+      // TODO: check ctx and parent
       return;
     }
 

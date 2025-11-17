@@ -99,7 +99,7 @@ export const NavigationHelpers = {
         return false;
       }
     }
-    
+
     const featureToggles: FeatureToggles = luigi.featureToggles();
 
     if (!NavigationHelpers.checkVisibleForFeatureToggles(nodeToCheckPermissionFor, featureToggles)) {
