@@ -419,7 +419,7 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
-        console.log(topNavData.profile)
+        console.log(topNavData.profile);
         if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
           const ava = document.createElement('ui5-avatar');
           ava.setAttribute('slot', 'profile');

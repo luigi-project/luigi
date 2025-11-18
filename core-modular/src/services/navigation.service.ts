@@ -40,7 +40,7 @@ export interface ContextCriteria {
   value: string;
 }
 export interface ProfileSettings {
-  authEnabled:  boolean;
+  authEnabled: boolean;
   signedIn: boolean;
   logout: ProfileLogout;
   items?: ProfileItem[];
