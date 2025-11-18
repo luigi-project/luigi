@@ -173,7 +173,7 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) {}
+  constructor(private luigi: Luigi) { }
 
   getPathData(path: string): PathData {
     const cfg = this.luigi.getConfig();
@@ -466,13 +466,20 @@ export class NavigationService {
   }
 
   navItemClick(item: Node, parentPath: string): void {
-    if (parentPath === '' && !item.isRootNode) {
-      console.error('Navigation error: parentPath is empty or or node is not a root node.');
+    if (parentPath.trim() === '' && !item.isRootNode) {
+      console.error('Navigation error: parentPath is empty while the node is not a root node');
+      return;
+    }
+    if (!item.pathSegment) {
+      console.error('Navigation error: pathSegment is not defined for the node.');
       return;
     }
 
-    const segment = item.pathSegment ?? '';
-    const fullPath = `${parentPath}/${segment}`.replace(/\/+/g, '/');
+    const fullPath = '/' + [parentPath, item.pathSegment]
+      .join('/')
+      .split('/')
+      .filter(Boolean)
+      .join('/');
     this.luigi.navigation().navigate(fullPath);
   }
 
