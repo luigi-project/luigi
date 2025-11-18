@@ -197,7 +197,8 @@ describe('NavigationService', () => {
           nodes: [
             {
               pathSegment: 'home',
-              children: []
+              children: [],
+              isRootNode: true
             }
           ],
           globalContext: {}
@@ -217,7 +218,8 @@ describe('NavigationService', () => {
           nodes: [
             {
               pathSegment: 'home',
-              children: []
+              children: [],
+              isRootNode: true
             }
           ],
           globalContext: {}
