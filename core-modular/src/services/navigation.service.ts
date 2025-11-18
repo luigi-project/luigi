@@ -12,6 +12,7 @@ export interface TopNavData {
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
+  navClick?: (item: NavItem) => void;
 }
 
 export interface AppSwitcher {
@@ -134,6 +135,7 @@ export interface TabNavData {
   selectedNode?: any;
   items?: NavItem[];
   basePath?: string;
+  navClick?: (item: NavItem) => void;
 }
 
 export interface ModalSettings {
@@ -458,12 +460,12 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node: Node) => this.leftNavItemClick(node, newPath)
+      navClick: (node: Node) => this.navItemClick(node, newPath)
     };
   }
 
-  leftNavItemClick(item: Node, path: string): void {
-    this.luigi.navigation().navigate(path + '/' + (item.pathSegment || ''));
+  navItemClick(item: Node, path = ''): void {
+    this.luigi.navigation().navigate(`/${path}/${item.pathSegment ?? ''}`);
   }
 
   getTopNavData(path: string, pData?: PathData): TopNavData {
@@ -484,7 +486,6 @@ export class NavigationService {
         label: this.luigi.i18n().getTranslation(item.label || '')
       }));
     }
-
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
@@ -492,7 +493,8 @@ export class NavigationService {
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: cfg.navigation?.profile,
       appSwitcher:
-        cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
+        cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
+      navClick: (node: Node) => this.navItemClick(node)
     };
   }
 
@@ -533,7 +535,6 @@ export class NavigationService {
     const pathData = pData ?? this.getPathData(path);
     const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
-    const items: NavItem[] = [];
     if (!selectedNode) return {};
     if (!selectedNode.tabNav) {
       parentNode = this.getParentNode(selectedNode, pathData) as Node;
@@ -551,13 +552,13 @@ export class NavigationService {
       : this.getTruncatedChildren(selectedNode.children);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode);
-
-    const tabNavData = {
+    const newPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
+    return {
       selectedNode,
       items: navItems,
-      basePath: basePath.replace(/\/\/+/g, '/')
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      navClick: (node: Node) => this.navItemClick(node, newPath)
     };
-    return tabNavData;
   }
 
   /**
