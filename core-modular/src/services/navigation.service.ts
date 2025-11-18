@@ -11,10 +11,11 @@ import { AuthLayerSvc } from './auth-layer.service';
 export interface TopNavData {
   appTitle: string;
   logo: string;
-  topNodes: [any];
+  topNodes: NavItem[];
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
+  navClick?: (item: NavItem) => void;
 }
 
 export interface AppSwitcher {
@@ -113,6 +114,7 @@ export interface Node {
   tabNav?: boolean;
   tooltip?: string;
   viewUrl?: string;
+  isRootNode?: boolean;
 }
 
 export interface PageErrorHandler {
@@ -142,6 +144,7 @@ export interface TabNavData {
   selectedNode?: any;
   items?: NavItem[];
   basePath?: string;
+  navClick?: (item: NavItem) => void;
 }
 
 export interface ModalSettings {
@@ -470,7 +473,7 @@ export class NavigationService {
     } else {
       navItems = this.buildNavItems([...pathToLeftNavParent].pop()?.children || [], selectedNode, pathData);
     }
-    const newPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
+    const parentPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
     navItems = this.applyNavGroups(navItems);
     return {
@@ -478,12 +481,24 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node: Node) => this.leftNavItemClick(node, newPath)
+      navClick: (node: Node) => this.navItemClick(node, parentPath)
     };
   }
 
-  leftNavItemClick(item: Node, path: string): void {
-    this.luigi.navigation().navigate(path + '/' + (item.pathSegment || ''));
+  navItemClick(item: Node, parentPath: string): void {
+    if (!item.pathSegment) {
+      console.error('Navigation error: pathSegment is not defined for the node.');
+      return;
+    }
+    let fullPath = '/';
+    if (parentPath.trim() !== '') {
+      fullPath += parentPath + '/';
+    } else if (!item.isRootNode) {
+      console.error('Navigation error: parentPath is empty while the node is not a root node');
+      return;
+    }
+    fullPath += item.pathSegment;
+    this.luigi.navigation().navigate(fullPath);
   }
 
   getTopNavData(path: string, pData?: PathData): TopNavData {
@@ -546,7 +561,10 @@ export class NavigationService {
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: profileSettings,
       appSwitcher:
-        cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header)
+        cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
+      navClick: (node: Node) => {
+        this.navItemClick(node, '');
+      }
     };
   }
 
@@ -587,7 +605,6 @@ export class NavigationService {
     const pathData = pData ?? this.getPathData(path);
     const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
-    const items: NavItem[] = [];
     if (!selectedNode) return {};
     if (!selectedNode.tabNav) {
       parentNode = this.getParentNode(selectedNode, pathData) as Node;
@@ -605,13 +622,13 @@ export class NavigationService {
       : this.getTruncatedChildren(selectedNode.children);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
-
-    const tabNavData = {
+    const parentPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
+    return {
       selectedNode,
       items: navItems,
-      basePath: basePath.replace(/\/\/+/g, '/')
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      navClick: (node: Node) => this.navItemClick(node, parentPath)
     };
-    return tabNavData;
   }
 
   /**
@@ -657,17 +674,19 @@ export class NavigationService {
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
     const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
-
     if (!rootNodes.length) {
       return rootNodes;
     }
+    rootNodes.forEach((rootNode: Node) => {
+      rootNode.isRootNode = true;
+    });
 
     navNodes.forEach((node: any) => {
       if (node?.badgeCounter?.count) {
-        const badgeIitem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
+        const badgeItem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
 
-        if (badgeIitem) {
-          badgeIitem.badgeCounter.count = node.badgeCounter.count;
+        if (badgeItem) {
+          badgeItem.badgeCounter.count = node.badgeCounter.count;
         }
       }
     });
