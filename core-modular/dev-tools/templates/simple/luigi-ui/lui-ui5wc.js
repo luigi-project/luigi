@@ -475,7 +475,7 @@ const connector = {
     }
     shellbar._lastTopNavData = topNavData;
   },
-  renderLeftNav: (leftNavData) => {    
+  renderLeftNav: (leftNavData) => {
     const sidenav = document.querySelector('ui5-side-navigation');
     const burger = document.getElementById('toggle');
 
