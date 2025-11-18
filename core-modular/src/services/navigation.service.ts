@@ -186,7 +186,7 @@ export class NavigationService {
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
-    
+
     let globalContext = cfg.navigation.globalContext || {};
     let currentContext = globalContext;
 
@@ -216,8 +216,9 @@ export class NavigationService {
         currentContext = substitutedContext;
         node.context = substitutedContext;
         pathData.selectedNode = node;
-        pathData.selectedNodeChildren = pathData.selectedNode?.children ? 
-          this.getAccessibleNodes(pathData.selectedNode, pathData.selectedNode.children, currentContext) : undefined;
+        pathData.selectedNodeChildren = pathData.selectedNode?.children
+          ? this.getAccessibleNodes(pathData.selectedNode, pathData.selectedNode.children, currentContext)
+          : undefined;
         if (pathData.selectedNode) {
           pathData.nodesInPath?.push(pathData.selectedNode);
         }
@@ -675,6 +676,8 @@ export class NavigationService {
   }
 
   private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
-    return children ? children.filter(child => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi)) : [];
+    return children
+      ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
+      : [];
   }
 }
