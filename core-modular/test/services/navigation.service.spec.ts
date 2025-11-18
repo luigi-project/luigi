@@ -355,4 +355,41 @@ describe('NavigationService', () => {
       });
     });
   });
+
+  describe('NavigationService.navItemClick', () => {
+    it('should navigate to the given path', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        pathSegment: 'home',
+        children: []
+      };
+      navigationService.navItemClick(node, '');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/home');
+    });
+    it('should not navigate if node is undefined', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      navigationService.navItemClick({}, '');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/');
+    });
+    it('should navigate to root if node has no pathSegment', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '/projects');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/projects/pro');
+    });
+  });
 });

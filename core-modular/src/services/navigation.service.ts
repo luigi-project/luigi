@@ -8,7 +8,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 export interface TopNavData {
   appTitle: string;
   logo: string;
-  topNodes: [any];
+  topNodes: NavItem[];
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
@@ -106,6 +106,7 @@ export interface Node {
   tabNav?: boolean;
   tooltip?: string;
   viewUrl?: string;
+  isRootNode?: boolean;
 }
 
 export interface PageErrorHandler {
@@ -464,8 +465,10 @@ export class NavigationService {
     };
   }
 
-  navItemClick(item: Node, path = ''): void {
-    this.luigi.navigation().navigate(`/${path}/${item.pathSegment ?? ''}`);
+  navItemClick(item: Node, path: string): void {
+    const segment = item.pathSegment ?? '';
+    const fullPath = `${path}/${segment}`.replace(/\/+/g, '/');
+    this.luigi.navigation().navigate(fullPath);
   }
 
   getTopNavData(path: string, pData?: PathData): TopNavData {
@@ -489,12 +492,16 @@ export class NavigationService {
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(rootNodes) as [any],
+      topNodes: this.buildNavItems(rootNodes),
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: cfg.navigation?.profile,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (node: Node) => this.navItemClick(node)
+      navClick: (node: Node) => {
+        if (node?.isRootNode) {
+          this.navItemClick(node, '');
+        }
+      }
     };
   }
 
@@ -604,17 +611,19 @@ export class NavigationService {
 
   private prepareRootNodes(navNodes: any[]): any[] {
     const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
-
     if (!rootNodes.length) {
       return rootNodes;
     }
+    rootNodes.forEach((rootNode: Node) => {
+      rootNode.isRootNode = true;
+    });
 
     navNodes.forEach((node: any) => {
       if (node?.badgeCounter?.count) {
-        const badgeIitem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
+        const badgeItem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
 
-        if (badgeIitem) {
-          badgeIitem.badgeCounter.count = node.badgeCounter.count;
+        if (badgeItem) {
+          badgeItem.badgeCounter.count = node.badgeCounter.count;
         }
       }
     });
