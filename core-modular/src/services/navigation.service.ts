@@ -466,16 +466,18 @@ export class NavigationService {
   }
 
   navItemClick(item: Node, parentPath: string): void {
-    if (parentPath.trim() === '' && !item.isRootNode) {
-      console.error('Navigation error: parentPath is empty while the node is not a root node');
-      return;
-    }
     if (!item.pathSegment) {
       console.error('Navigation error: pathSegment is not defined for the node.');
       return;
     }
-
-    const fullPath = '/' + [parentPath, item.pathSegment].join('/').split('/').filter(Boolean).join('/');
+    let fullPath = '/';
+    if (parentPath.trim() !== '') {
+      fullPath += parentPath + '/';
+    } else if (!item.isRootNode) {
+      console.error('Navigation error: parentPath is empty while the node is not a root node');
+      return;
+    }
+    fullPath += item.pathSegment;
     this.luigi.navigation().navigate(fullPath);
   }
 

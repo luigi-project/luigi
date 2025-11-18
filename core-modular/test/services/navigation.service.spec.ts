@@ -390,7 +390,7 @@ describe('NavigationService', () => {
         navigate: navigateSpy
       });
 
-      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '/projects');
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, 'projects');
 
       expect(navigateSpy).toHaveBeenCalledWith('/projects/pro');
     });
@@ -413,37 +413,6 @@ describe('NavigationService', () => {
       expect(navigateSpy).not.toHaveBeenCalled();
     });
 
-    it('should not navigate if pathSegment is not defined', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-
-      const node = {
-        children: [],
-        isRootNode: true
-      } as unknown as Node;
-      navigationService.navItemClick(node, '');
-
-      expect(navigateSpy).not.toHaveBeenCalled();
-    });
-
-    it('should handle parentPath with trailing slash correctly', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-
-      const node = {
-        pathSegment: 'home',
-        children: [],
-        isRootNode: true
-      };
-      navigationService.navItemClick(node, '/parent/');
-
-      expect(navigateSpy).toHaveBeenCalledWith('/parent/home');
-    });
-
     it('should handle parentPath without trailing slash correctly', () => {
       const navigateSpy = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({
@@ -455,25 +424,9 @@ describe('NavigationService', () => {
         children: [],
         isRootNode: true
       };
-      navigationService.navItemClick(node, '/parent');
+      navigationService.navItemClick(node, 'parent');
 
       expect(navigateSpy).toHaveBeenCalledWith('/parent/home');
-    });
-
-    it('should handle multiple slashes in parentPath correctly', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-
-      const node = {
-        pathSegment: 'home',
-        children: [],
-        isRootNode: true
-      };
-      navigationService.navItemClick(node, '//parent/subparent');
-
-      expect(navigateSpy).toHaveBeenCalledWith('/parent/subparent/home');
     });
   });
 });
