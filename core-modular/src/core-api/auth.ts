@@ -57,12 +57,12 @@ export class LuigiAuthClass {
     data?: any,
     redirectUrl?: string
   ): Promise<any> {
-    const result = undefined; // await this.#luigi.executeConfigFnAsync( // TODO: implement
-    //   'auth.events.' + eventName,
-    //   false,
-    //   providerInstanceSettings,
-    //   data
-    // );
+    const result = await ConfigHelpers.executeConfigFnAsync(
+      'auth.events.' + eventName,
+      false,
+      providerInstanceSettings,
+      data
+    );
     const redirect = result === undefined || !!result;
     if (redirect && redirectUrl) {
       window.location.href = redirectUrl;

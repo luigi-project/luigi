@@ -248,7 +248,7 @@ function renderProfilePopover(profileObj, avatar) {
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
 
   profileObj.onUserInfoUpdate((userInfo) => {
-    uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}"/></div>` : '';
+    uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
     uInfoWrapper.innerHTML += /*html*/ `      
       <div>${userInfo.name}</div>
       <div>${userInfo.email}</div>

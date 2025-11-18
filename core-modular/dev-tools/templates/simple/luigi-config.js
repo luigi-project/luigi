@@ -337,6 +337,7 @@ window.onload = () => {
 
     auth: {
       use: 'myOIDC',
+      storage: 'none',
       myOAuth2: {
         idpProvider: window['LuigiPlugin-auth-oauth2'],
         authorizeUrl: 'http://localhost:3000/auth',
@@ -365,6 +366,27 @@ window.onload = () => {
             resolve(authdata.profile);
           });
         }
+      },
+
+      events: {
+        onAuthSuccessful: (settings, authData) => {
+          console.log('AUTH successful');
+        },
+        onAuthError: (settings, err) => {          
+          console.log('AUTH error');
+        },
+        onAuthExpired: (settings) => {          
+          console.log('AUTH expired');
+        },
+        onLogout: (settings) => {          
+          console.log('AUTH logout');
+        },
+        onAuthExpireSoon: (settings) => {          
+          console.log('AUTH expire soon');
+        },
+        onAuthConfigError: (settings, err) => {          
+          console.log('AUTH config error');
+        },
       }
     }
   });
