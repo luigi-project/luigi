@@ -197,7 +197,8 @@ describe('NavigationService', () => {
           nodes: [
             {
               pathSegment: 'home',
-              children: []
+              children: [],
+              isRootNode: true
             }
           ],
           globalContext: {}
@@ -217,7 +218,8 @@ describe('NavigationService', () => {
           nodes: [
             {
               pathSegment: 'home',
-              children: []
+              children: [],
+              isRootNode: true
             }
           ],
           globalContext: {}
@@ -353,6 +355,78 @@ describe('NavigationService', () => {
         region: 'US',
         theme: 'dark'
       });
+    });
+  });
+
+  describe('NavigationService.navItemClick', () => {
+    it('should navigate to the given path', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        pathSegment: 'home',
+        children: [],
+        isRootNode: true
+      };
+      navigationService.navItemClick(node, '');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/home');
+    });
+    it('should not navigate if node is undefined', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      navigationService.navItemClick({}, '');
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+    it('should navigate to root if node has no pathSegment', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, 'projects');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/projects/pro');
+    });
+
+    it('no rootNode marker', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '');
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('no rootNode marker 2', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '      ');
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle parentPath without trailing slash correctly', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        pathSegment: 'home',
+        children: [],
+        isRootNode: true
+      };
+      navigationService.navItemClick(node, 'parent');
+
+      expect(navigateSpy).toHaveBeenCalledWith('/parent/home');
     });
   });
 });
