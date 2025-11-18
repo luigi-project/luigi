@@ -186,7 +186,11 @@ export class NavigationService {
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
-    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
+    
+    let globalContext = cfg.navigation.globalContext || {};
+    let currentContext = globalContext;
+
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes, currentContext);
     let pathParams: Record<string, any> = {};
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
@@ -194,8 +198,6 @@ export class NavigationService {
       rootNodes,
       pathParams
     };
-    let globalContext = cfg.navigation.globalContext || {};
-    let currentContext = globalContext;
     pathSegments.forEach((segment) => {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
@@ -206,7 +208,7 @@ export class NavigationService {
         const nodeContext = node.context || {};
         const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
         let substitutedContext = mergedContext;
-        pathData.selectedNodeChildren = node.children;
+        pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
           substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
@@ -214,7 +216,8 @@ export class NavigationService {
         currentContext = substitutedContext;
         node.context = substitutedContext;
         pathData.selectedNode = node;
-        pathData.selectedNodeChildren = pathData.selectedNode?.children;
+        pathData.selectedNodeChildren = pathData.selectedNode?.children ? 
+          this.getAccessibleNodes(pathData.selectedNode, pathData.selectedNode.children, currentContext) : undefined;
         if (pathData.selectedNode) {
           pathData.nodesInPath?.push(pathData.selectedNode);
         }
@@ -486,7 +489,7 @@ export class NavigationService {
     const cfg = this.luigi.getConfig();
 
     const pathData: PathData = pData ?? this.getPathData(path);
-    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes);
+    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes, cfg.navigation?.globalContext || {});
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
       : [];
@@ -651,7 +654,7 @@ export class NavigationService {
     return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
 
-  private prepareRootNodes(navNodes: any[]): any[] {
+  private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
     const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
 
     if (!rootNodes.length) {
@@ -668,6 +671,10 @@ export class NavigationService {
       }
     });
 
-    return rootNodes;
+    return this.getAccessibleNodes(undefined, rootNodes, context);
+  }
+
+  private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
+    return children ? children.filter(child => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi)) : [];
   }
 }

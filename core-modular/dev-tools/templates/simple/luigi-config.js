@@ -43,7 +43,7 @@ window.onload = () => {
       },
       nodes: [
         {
-          pathSegment: 'public',
+          pathSegment: 'home',
           icon: 'home',
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           anonymousAccess: 'exclusive',
