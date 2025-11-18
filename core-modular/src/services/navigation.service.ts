@@ -1,5 +1,6 @@
 import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
+import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
@@ -39,6 +40,8 @@ export interface ContextCriteria {
   value: string;
 }
 export interface ProfileSettings {
+  authEnabled:  boolean;
+  signedIn: boolean;
   logout: ProfileLogout;
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
@@ -259,9 +262,8 @@ export class NavigationService {
   }
 
   buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
-    const featureToggles: FeatureToggles = this.luigi.featureToggles();
     const catMap: Record<string, NavItem> = {};
-    let items: NavItem[] = [];
+    const items: NavItem[] = [];
 
     nodes?.forEach((node) => {
       if (
@@ -502,6 +504,8 @@ export class NavigationService {
     const logoutLabel =
       this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
     const profileSettings: ProfileSettings = {
+      authEnabled: this.luigi.auth().isAuthorizationEnabled(),
+      signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
       items: profileItems,
       logout: {
         altText:

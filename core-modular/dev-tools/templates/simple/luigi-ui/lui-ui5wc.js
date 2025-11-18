@@ -419,14 +419,25 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
-        const ava = document.createElement('ui5-avatar');
-        ava.setAttribute('slot', 'profile');
-        ava.setAttribute('shape', 'Circle');
-        ava.setAttribute('size', 'M');
-        ava.setAttribute('color-scheme', 'Accent7');
-        renderProfilePopover(topNavData.profile, ava);
-        shellbar.appendChild(ava);
-        shellbar.addEventListener('profile-click', onProfileClick);
+        console.log(topNavData.profile)
+        if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
+          const ava = document.createElement('ui5-avatar');
+          ava.setAttribute('slot', 'profile');
+          ava.setAttribute('shape', 'Circle');
+          ava.setAttribute('size', 'M');
+          ava.setAttribute('color-scheme', 'Accent7');
+          renderProfilePopover(topNavData.profile, ava);
+          shellbar.appendChild(ava);
+          shellbar.addEventListener('profile-click', onProfileClick);
+        } else {
+          const loginBtn = document.createElement('div');
+          loginBtn.innerHTML = 'Sign In';
+          loginBtn.setAttribute('slot', 'profile');
+          shellbar.appendChild(loginBtn);
+          shellbar.addEventListener('profile-click', () => {
+            globalThis.Luigi.auth().login();
+          });
+        }
       }
 
       (topNavData.topNodes || []).forEach((item) => {

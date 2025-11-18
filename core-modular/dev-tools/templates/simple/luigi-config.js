@@ -282,6 +282,7 @@ window.onload = () => {
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
       },
+      profileType: 'vega',
       customTranslationImplementation: () => {
         return {
           getTranslation: (key, interpolations, locale) => {
