@@ -173,7 +173,7 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) { }
+  constructor(private luigi: Luigi) {}
 
   getPathData(path: string): PathData {
     const cfg = this.luigi.getConfig();
@@ -475,11 +475,7 @@ export class NavigationService {
       return;
     }
 
-    const fullPath = '/' + [parentPath, item.pathSegment]
-      .join('/')
-      .split('/')
-      .filter(Boolean)
-      .join('/');
+    const fullPath = '/' + [parentPath, item.pathSegment].join('/').split('/').filter(Boolean).join('/');
     this.luigi.navigation().navigate(fullPath);
   }
 

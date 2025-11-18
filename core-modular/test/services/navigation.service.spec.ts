@@ -409,7 +409,7 @@ describe('NavigationService', () => {
       luigiMock.navigation = jest.fn().mockReturnValue({
         navigate: navigateSpy
       });
-      navigationService.navItemClick({ pathSegment: 'pro', children: []}, '      ');
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '      ');
       expect(navigateSpy).not.toHaveBeenCalled();
     });
 
