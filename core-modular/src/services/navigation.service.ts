@@ -453,7 +453,7 @@ export class NavigationService {
     } else {
       navItems = this.buildNavItems([...pathToLeftNavParent].pop()?.children || [], selectedNode, pathData);
     }
-    const newPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
+    const parentPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
     navItems = this.applyNavGroups(navItems);
     return {
@@ -461,13 +461,17 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node: Node) => this.navItemClick(node, newPath)
+      navClick: (node: Node) => this.navItemClick(node, parentPath)
     };
   }
 
-  navItemClick(item: Node, path: string): void {
+  navItemClick(item: Node, parentPath: string): void {
+    if (parentPath === '' && !item.isRootNode) {
+      console.error('Navigation error: parentPath is empty or or node is not a root node.');
+      return;
+    }
     const segment = item.pathSegment ?? '';
-    const fullPath = `${path}/${segment}`.replace(/\/+/g, '/');
+    const fullPath = `${parentPath}/${segment}`.replace(/\/+/g, '/');
     this.luigi.navigation().navigate(fullPath);
   }
 
@@ -498,9 +502,7 @@ export class NavigationService {
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
       navClick: (node: Node) => {
-        if (node?.isRootNode) {
-          this.navItemClick(node, '');
-        }
+        this.navItemClick(node, '');
       }
     };
   }
@@ -559,12 +561,12 @@ export class NavigationService {
       : this.getTruncatedChildren(selectedNode.children);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode);
-    const newPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
+    const parentPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
     return {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (node: Node) => this.navItemClick(node, newPath)
+      navClick: (node: Node) => this.navItemClick(node, parentPath)
     };
   }
 

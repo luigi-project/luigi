@@ -367,7 +367,8 @@ describe('NavigationService', () => {
 
       const node = {
         pathSegment: 'home',
-        children: []
+        children: [],
+        isRootNode: true
       };
       navigationService.navItemClick(node, '');
 
@@ -381,7 +382,7 @@ describe('NavigationService', () => {
 
       navigationService.navItemClick({}, '');
 
-      expect(navigateSpy).toHaveBeenCalledWith('/');
+      expect(navigateSpy).not.toHaveBeenCalled();
     });
     it('should navigate to root if node has no pathSegment', () => {
       const navigateSpy = jest.fn();
@@ -392,6 +393,15 @@ describe('NavigationService', () => {
       navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '/projects');
 
       expect(navigateSpy).toHaveBeenCalledWith('/projects/pro');
+    });
+
+    it('no rootNode marker', () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '');
+      expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
 });
