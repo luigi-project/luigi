@@ -475,9 +475,10 @@ const connector = {
     }
     shellbar._lastTopNavData = topNavData;
   },
-  renderLeftNav: (leftNavData) => {
+  renderLeftNav: (leftNavData) => {    
     const sidenav = document.querySelector('ui5-side-navigation');
     const burger = document.getElementById('toggle');
+
     if (sidenav && burger) {
       if (!burger._clickListener) {
         burger._clickListener = () => {
@@ -486,6 +487,13 @@ const connector = {
         burger.addEventListener('click', burger._clickListener);
       }
       sidenav.innerHTML = '';
+      if (leftNavData?.selectedNode?.hideSideNav) {
+        sidenav.setAttribute('style', 'display: none');
+        burger.setAttribute('style', 'display: none');
+      } else {
+        sidenav.removeAttribute('style');
+        burger.removeAttribute('style');
+      }
       const containerFrag = document.createDocumentFragment();
       if (leftNavData.items) {
         leftNavData.items.forEach((item) => {

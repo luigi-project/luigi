@@ -43,6 +43,17 @@ window.onload = () => {
       },
       nodes: [
         {
+          pathSegment: 'public',
+          icon: 'home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+          anonymousAccess: 'exclusive',
+          context: {
+            title: 'You are not signed in'
+          },
+          hideSideNav: true,
+          hideFromNav: true
+        },
+        {
           pathSegment: 'home',
           icon: 'home',
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
@@ -114,7 +125,9 @@ window.onload = () => {
         {
           pathSegment: 'help',
           icon: 'sys-help',
-          viewUrl: '/microfrontend.html#help'
+          viewUrl: '/microfrontend.html#help',
+          anonymousAccess: true,
+          hideSideNav: true
         },
         {
           category: { id: 'cat', label: 'notification', icon: 'notification' },
@@ -338,6 +351,7 @@ window.onload = () => {
     auth: {
       use: 'myOIDC',
       storage: 'none',
+      disableAutoLogin: true,
       myOAuth2: {
         idpProvider: window['LuigiPlugin-auth-oauth2'],
         authorizeUrl: 'http://localhost:3000/auth',
