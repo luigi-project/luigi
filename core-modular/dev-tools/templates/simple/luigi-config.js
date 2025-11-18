@@ -372,21 +372,21 @@ window.onload = () => {
         onAuthSuccessful: (settings, authData) => {
           console.log('AUTH successful');
         },
-        onAuthError: (settings, err) => {          
+        onAuthError: (settings, err) => {
           console.log('AUTH error');
         },
-        onAuthExpired: (settings) => {          
+        onAuthExpired: (settings) => {
           console.log('AUTH expired');
         },
-        onLogout: (settings) => {          
+        onLogout: (settings) => {
           console.log('AUTH logout');
         },
-        onAuthExpireSoon: (settings) => {          
+        onAuthExpireSoon: (settings) => {
           console.log('AUTH expire soon');
         },
-        onAuthConfigError: (settings, err) => {          
+        onAuthConfigError: (settings, err) => {
           console.log('AUTH config error');
-        },
+        }
       }
     }
   });
