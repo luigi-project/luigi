@@ -470,6 +470,7 @@ export class NavigationService {
       console.error('Navigation error: parentPath is empty or or node is not a root node.');
       return;
     }
+    
     const segment = item.pathSegment ?? '';
     const fullPath = `${parentPath}/${segment}`.replace(/\/+/g, '/');
     this.luigi.navigation().navigate(fullPath);
