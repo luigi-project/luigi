@@ -1,4 +1,8 @@
 /**
+ * @module luigi-element
+ */
+
+/**
  * Base class for Luigi web component micro frontends.
  */
 export class LuigiElement extends HTMLElement {
@@ -143,8 +147,9 @@ export class LuigiElement extends HTMLElement {
  * Html string processing according to luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
  *
- * @param {String} literal The literal to process.
- * @returns {String} Returns the processed literal.
+ * @param {String} literal The literal to process
+ * @param {Array<unknown>} keys The array of keys to process
+ * @returns {String} the processed literal
  */
 export function html(literal, ...keys) {
   let html = '';

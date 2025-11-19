@@ -84,6 +84,7 @@ body {
     ol,
     ul,
     blockquote,
+    table,
     h1,
     h2,
     h3,
@@ -600,5 +601,20 @@ body {
             color: rgb(18, 143, 55);
             background-color: rgba(45, 235, 138, 0.08);
         }
+    }
+
+    table {
+        border-collapse: collapse;
+        border-color: transparent;
+        table-layout: fixed;
+    }
+
+    table td, table th {
+        padding-right: 20px;
+        text-align: left;
+    }
+
+    table p {
+        margin: 0;
     }
 }

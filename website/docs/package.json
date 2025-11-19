@@ -32,6 +32,7 @@
     "lodash.orderby": "^4.6.0",
     "rehype-raw": "^7.0.0",
     "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
     "unified": "^11.0.5",
