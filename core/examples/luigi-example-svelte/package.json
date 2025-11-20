@@ -18,7 +18,7 @@
     "cross-spawn": "^7.0.6",
     "local-web-server": "^5.4.0",
     "mini-css-extract-plugin": "^2.9.0",
-    "serve": "^14.2.3",
+    "serve": "^14.2.5",
     "svelte": "^5.34.9",
     "svelte-loader": "3.2.4",
     "webpack": "^5.99.9",
