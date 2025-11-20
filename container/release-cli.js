@@ -4,20 +4,19 @@ const packageJson = require('./public/package.json');
 const color = require('cli-color');
 
 const GITHUB_API_URL = 'https://api.github.com';
-const GITHUB_OWNER = 'SAP';
+const GITHUB_OWNER = 'luigi-project';
 const GITHUB_REPO = 'luigi';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_AUTH;
 
 const listReleases = async () => {
   try {
-    const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`, {
-      auth: {
-        token: GITHUB_TOKEN
-      },
+    const url = `${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`;
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        Accept: 'application/vnd.github+json'
-      },
-      method: 'GET'
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json'
+      }
     });
 
     if (!response.ok) {
@@ -25,7 +24,6 @@ const listReleases = async () => {
     }
 
     const data = await response.json();
-
     return data;
   } catch (error) {
     console.error('Fetch error:', error.message);
@@ -37,11 +35,9 @@ const listPullRequests = async (params) => {
 
   try {
     const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls?${queryString}`, {
-      auth: {
-        token: GITHUB_TOKEN
-      },
       headers: {
-        Accept: 'application/vnd.github+json'
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json'
       },
       method: 'GET'
     });
@@ -68,17 +64,18 @@ const logError = (str) => console.log(color.redBright.bold(str));
  */
 async function getContainerReleases() {
   try {
-    const { data: releases } = await listReleases();
-    const containerReleases = [];
-    releases.forEach((release) => {
-      if (release.tag_name.startsWith('container/v')) {
-        containerReleases.push(release);
-      }
-    });
+    const releases = await listReleases();
+    if (!Array.isArray(releases)) {
+      console.error('Releases is not an array');
+      return [];
+    }
+
+    const containerReleases = releases.filter((release) => release.tag_name.startsWith('container/v'));
+
     return containerReleases;
   } catch (error) {
     console.error('Can not fetch container releases.', error.message);
-    return null;
+    return [];
   }
 }
 
@@ -192,7 +189,7 @@ async function prepareRelease() {
     updateVersionInPgkJson(version);
 
     try {
-      const { data: pullRequests } = await listPullRequests({ state: 'closed' });
+      const pullRequests = await listPullRequests({ state: 'closed' });
       const { breakingPulls, enhancementPulls, bugPulls, noLabelPulls } = categorizePullRequests(
         pullRequests,
         lastContainerRelease
