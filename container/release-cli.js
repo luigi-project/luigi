@@ -58,9 +58,9 @@ const listPullRequests = async (params) => {
   }
 };
 
-const logWarning = str => console.log(color.yellow.bold(str));
-const logSuccess = str => console.log(color.green.bold(str));
-const logError = str => console.log(color.redBright.bold(str));
+const logWarning = (str) => console.log(color.yellow.bold(str));
+const logSuccess = (str) => console.log(color.green.bold(str));
+const logError = (str) => console.log(color.redBright.bold(str));
 
 /**
  * Fetch the container releases and return them in an array
@@ -70,7 +70,7 @@ async function getContainerReleases() {
   try {
     const { data: releases } = await listReleases();
     const containerReleases = [];
-    releases.forEach(release => {
+    releases.forEach((release) => {
       if (release.tag_name.startsWith('container/v')) {
         containerReleases.push(release);
       }
@@ -122,7 +122,7 @@ function updateVersionInPgkJson(version) {
  */
 function formatPullRequests(pullRequests) {
   return pullRequests
-    .map(pr => `* [#${pr.number}](${pr.html_url}) ${pr.title} ([@${pr.user.login}](${pr.user.html_url}))`)
+    .map((pr) => `* [#${pr.number}](${pr.html_url}) ${pr.title} ([@${pr.user.login}](${pr.user.html_url}))`)
     .join('\n');
 }
 
@@ -146,8 +146,8 @@ function categorizePullRequests(pullRequests, lastContainerRelease) {
     noLabelPulls: []
   };
 
-  pullRequests.forEach(pr => {
-    const labels = pr.labels.map(label => label.name);
+  pullRequests.forEach((pr) => {
+    const labels = pr.labels.map((label) => label.name);
 
     if (labels.includes('container') && pr.merged_at > lastContainerRelease.published_at) {
       if (labels.includes('breaking')) {
@@ -178,7 +178,7 @@ async function prepareRelease() {
   const question = color.bold.cyan(
     `Version you want to release (current version ${lastContainerRelease.tag_name.replace('container/v', '')})? `
   );
-  rl.question(question, async version => {
+  rl.question(question, async (version) => {
     if (packageJson.version >= version) {
       logWarning('Version already exists. Please check.');
       rl.close();
@@ -209,7 +209,7 @@ async function prepareRelease() {
 
       //read file before append last line to file, otherwise it will not be written
       fs.readFileSync(changelogPath, 'utf8');
-      fs.appendFileSync(changelogPath, lastline, 'utf8', err => {
+      fs.appendFileSync(changelogPath, lastline, 'utf8', (err) => {
         console.log('Append lastline to Changelog', lastline);
         if (err) {
           logError('Cannot write compare link to the last line:', err);
@@ -234,7 +234,7 @@ async function prepareRelease() {
         //Find searchText and add after the searchText the new release to the changelog
         if (data.includes(searchText)) {
           const newData = data.replace(searchText, `${searchText}\n\n${newChangelog}`);
-          fs.writeFile(changelogPath, newData, 'utf8', err => {
+          fs.writeFile(changelogPath, newData, 'utf8', (err) => {
             if (err) {
               console.error('Cannot write data to file:', err);
               return;
