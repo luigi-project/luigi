@@ -97,7 +97,7 @@
       <div class="fd-product-switch">
         <div class="fd-popover fd-popover--right">
           <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+          <div class="fd-popover__control" role="presentation" on:click|stopPropagation={() => {}}>
             <button
               class="fd-button fd-button--transparent fd-shellbar__button fd-product-switch__control"
               aria-expanded={dropDownStates.productSwitcherPopover || false}
@@ -126,6 +126,7 @@
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <li
                       class="fd-product-switch__item {productSwitcherItem.selected ? 'selected' : ''}"
+                      role="presentation"
                       on:click={() => onActionClick(productSwitcherItem)}
                       data-testid={getTestId(productSwitcherItem)}
                     >

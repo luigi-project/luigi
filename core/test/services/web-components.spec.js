@@ -1,8 +1,7 @@
-import { WebComponentService } from '../../src/services/web-components';
-import { LuigiConfig, LuigiI18N, LuigiUX } from '../../src/core-api';
-
-import { DefaultCompoundRenderer } from '../../src/utilities/helpers/web-component-helpers';
 import { LuigiElement } from '../../../client/src/luigi-element';
+import { LuigiConfig, LuigiI18N, LuigiUX } from '../../src/core-api';
+import { WebComponentService } from '../../src/services/web-components';
+import { DefaultCompoundRenderer } from '../../src/utilities/helpers/web-component-helpers';
 
 const chai = require('chai');
 const sinon = require('sinon');
@@ -59,6 +58,7 @@ describe('WebComponentService', function () {
         i18n: () => LuigiI18N
       };
 
+      sb.stub(window, 'postMessage');
       container = document.createElement('div');
       itemPlaceholder = document.createElement('div');
     });
@@ -85,11 +85,51 @@ describe('WebComponentService', function () {
       expect(expectedCmp.LuigiClient.linkManager().getCurrentRoute()).to.be.a('promise');
       const route = await expectedCmp.LuigiClient.linkManager().getCurrentRoute();
       expect(route).to.equal('mockRoute');
-      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('showLoadingIndicator');
-      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('hideLoadingIndicator');
       expect(expectedCmp.LuigiClient.getCurrentLocale()).to.equal(window.Luigi.i18n().getCurrentLocale());
       expect(expectedCmp.LuigiClient.getCurrentLocale).to.be.a('function');
       expect(expectedCmp.LuigiClient.publishEvent).to.be.a('function');
+    });
+
+    it.each(['main', undefined])('check showing a loading indicator in UX manager', async (context) => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      if (context) {
+        expectedCmp.removeAttribute('lui_web_component');
+      } else {
+        expectedCmp.setAttribute('lui_web_component', true);
+      }
+
+      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('showLoadingIndicator');
+      expect(expectedCmp.LuigiClient.uxManager().showLoadingIndicator).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().showLoadingIndicator();
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.show-loading-indicator',
+        location: context
+      });
+    });
+
+    it.each(['main', undefined])('check hiding a loading indicator in UX manager', async (context) => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      if (context) {
+        expectedCmp.removeAttribute('lui_web_component');
+      } else {
+        expectedCmp.setAttribute('lui_web_component', true);
+      }
+
+      expect(expectedCmp.LuigiClient.uxManager()).to.have.property('hideLoadingIndicator');
+      expect(expectedCmp.LuigiClient.uxManager().hideLoadingIndicator).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().hideLoadingIndicator();
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.hide-loading-indicator',
+        location: context
+      });
     });
 
     it('check post-processing', () => {

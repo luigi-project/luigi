@@ -1,3 +1,4 @@
+import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
@@ -291,7 +292,7 @@ export const RoutingHelpers = {
    * @returns {String} url search parameter as string without modal data
    */
   getURLWithoutModalData(searchParamsString: string, modalParamName: string): string {
-    let searchParams = new URLSearchParams(searchParamsString);
+    const searchParams = new URLSearchParams(searchParamsString);
     searchParams.delete(modalParamName);
     searchParams.delete(`${modalParamName}Params`);
     return searchParams.toString();
@@ -350,114 +351,125 @@ export const RoutingHelpers = {
   },
 
   /**
-   * Computes a path (pathname + optional query string) and a query string (without leading '?')
-   * from the given URL while removing any modal-related query parameter.
+   * Checks if given URL is allowed to be included, based on 'navigation.validWebcomponentUrls' in Luigi config.
    *
-   * Behavior depends on whether hash-based routing is active:
-   * - When hashRoutingActive is true, the method interprets the URL hash (e.g. "#/path?x=1&modal=abc")
-   *   as the routing portion. It strips the specified modal parameter from the hash's query segment.
-   * - When hashRoutingActive is false, it operates on the standard URL pathname and search string.
-   *
-   * The returned pathWithoutModalData will contain:
-   * - Only the hash path segment (or pathname) if, after removal, no other query parameters remain.
-   * - The path plus a '?' and the filtered query string if other parameters remain.
-   *
-   * The returned urlWithoutModalData is the filtered query string (without leading '?'), or an empty
-   * string if no non-modal parameters remain.
-   *
-   * No mutation is performed on the original URL object.
-   *
-   * @param url - A WHATWG URL instance representing the current location.
-   * @param hashRoutingActive - Indicates whether hash-based routing is in effect.
-   * @param modalParamName - The query parameter name used to carry modal state that should be removed.
-   * @returns An object containing:
-   * - pathWithoutModalData: The path (hash path or pathname) plus filtered query (if any).
-   * - urlWithoutModalData: The filtered query string without the leading '?' (empty if none).
+   * @param {string} url the URL string to be checked
+   * @param {Luigi} luigi - the Luigi instance used to determine the parameter prefix
+   * @returns {boolean} `true` if allowed - `false` otherwise
    */
-  computePathAndUrlWithoutModalData(
-    url: URL,
-    hashRoutingActive: boolean,
-    modalParamName: string
-  ): { pathWithoutModalData: string; urlWithoutModalData: string } {
-    let pathWithoutModalData: string;
-    let urlWithoutModalData: string;
+  checkWCUrl(url: string, luigi: Luigi): boolean {
+    if (url.indexOf('://') > 0 || url.trim().indexOf('//') === 0) {
+      const path = new URL(url);
 
-    if (hashRoutingActive) {
-      const [path, searchParams] = url.hash.split('?');
-      pathWithoutModalData = path;
-      urlWithoutModalData = RoutingHelpers.getURLWithoutModalData(searchParams, modalParamName);
-      if (urlWithoutModalData) {
-        pathWithoutModalData += '?' + urlWithoutModalData;
+      if (path.host === window.location.host) {
+        return true; // same host is okay
       }
-    } else {
-      pathWithoutModalData = url.pathname;
-      urlWithoutModalData = RoutingHelpers.getURLWithoutModalData(url.search, modalParamName);
-      if (urlWithoutModalData) {
-        pathWithoutModalData += '?' + urlWithoutModalData;
+
+      const validUrls = luigi.getConfigValue('navigation.validWebcomponentUrls');
+
+      if (validUrls?.length > 0) {
+        for (const el of validUrls) {
+          try {
+            if (new RegExp(el).test(url)) {
+              return true;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
       }
+
+      return false;
     }
 
-    return { pathWithoutModalData, urlWithoutModalData };
+    // relative URL is okay
+    return true;
   },
 
   /**
-   * Removes a modal-related query parameter pair from a given URL's search string.
-   *
-   * This helper deletes:
-   *  - The primary modal parameter (e.g. `?myModal=...`)
-   *  - Its companion parameters object named with the `Params` suffix (e.g. `?myModalParams=...`)
-   *
-   * After deletion, the query string is reconstructed (preserving the remaining
-   * parameters and their original order) and the provided URL object is mutated.
-   *
-   * Side effects:
-   *  - Mutates the passed-in URL instance (`url.search` is reassigned).
-   *
-   * @param url - A WHATWG `URL` object whose search parameters will be modified in place.
-   * @param modalParamName - The base name of the modal parameter to remove (without the `Params` suffix).
-   * @returns The same `URL` instance, with the specified modal parameters removed.
+   * Set feature toggles
+   * @param {string} featureToggleProperty used for identifying feature toggles
+   * @param {string} path used for retrieving and appending the path parameters
    */
-  removeModalDataFromSearch(url: URL, modalParamName: string): URL {
-    const searchParams = new URLSearchParams(url.search.slice(1));
-    searchParams.delete(modalParamName);
-    searchParams.delete(`${modalParamName}Params`);
+  /**
+   * Set feature toggles
+   * @param {string} featureToggleProperty used for identifying feature toggles
+   * @param {string} path used for retrieving and appending the path parameters
+   */
+  setFeatureToggles(featureToggleProperty: string, path: string, featureToggles: FeatureToggles): void {
+    const paramsMap: Record<string, string> = this.sanitizeParamsMap(this.parseParams(path.split('?')[1]));
+    let featureTogglesFromUrl;
 
-    let finalUrl = '';
-    Array.from(searchParams.keys()).forEach((searchParamKey) => {
-      finalUrl += (finalUrl === '' ? '?' : '&') + searchParamKey + '=' + searchParams.get(searchParamKey);
-    });
+    if (paramsMap[featureToggleProperty]) {
+      featureTogglesFromUrl = paramsMap[featureToggleProperty];
+    }
 
-    url.search = finalUrl;
-    return url;
+    if (!featureTogglesFromUrl) {
+      return;
+    }
+
+    const featureToggleList: string[] = featureTogglesFromUrl.split(',');
+
+    if (featureToggleList.length > 0 && featureToggleList[0] !== '') {
+      featureToggleList.forEach((ft) => featureToggles?.setFeatureToggle(ft, true));
+    }
   },
 
   /**
-   * Removes modal-related query/hash parameters from the hash portion of a given URL.
-   * The function mutates and returns the same URL instance (in-place change to url.hash).
+   * Replaces dynamic parameter placeholders in the values of the provided object
+   * using a mapping of parameter names to concrete values.
    *
-   * @param url - A URL object whose hash may contain encoded modal parameter data. Mutated in place.
-   * @param params - A map of current routing params; inspected for modalParamName and modalParamName + "Params".
-   * @param modalParamName - The base name of the modal parameter to remove (e.g. "modal", "myModal").
+   * A placeholder is defined as the concatenation of `paramPrefix` and a key from `paramMap`
+   * (e.g. ":id"). Depending on the `contains` flag, the replacement logic operates in:
+   * - Exact match mode (`contains = false`): a value is replaced only if it equals the full placeholder (e.g. value === ":id").
+   * - Containment mode (`contains = true`): a value is scanned and any single occurrence of a placeholder substring is replaced
+   *   (e.g. "/users/:id/details" becomes "/users/123/details"). Only the first matching key is replaced; subsequent occurrences
+   *   or multiple different placeholders in the same value are not handled by this implementation.
    *
-   * @returns The same URL instance with its hash cleaned of the targeted modal parameter data (if present)
+   * The function returns a new plain object; the original `object` argument is not mutated.
+   *
+   * @param object A record whose string values may contain dynamic parameter placeholders to substitute.
+   * @param paramMap A mapping of parameter names (without prefix) to their substitution values.
+   * @param paramPrefix The prefix that denotes a placeholder in `object` values. Defaults to ":".
+   * @param contains If true, perform substring replacement; if false, only exact value matches are substituted.
+   * @returns A new object with substituted values where placeholders matched the provided `paramMap`.
+   *
+   * @example
+   * const obj = { userId: ':id', path: '/users/:id/details', untouched: 'static' };
+   * const paramMap = { id: '123' };
+   *
+   * // Exact match mode:
+   * substituteDynamicParamsInObject(obj, paramMap);
+   * // => { userId: '123', path: '/users/:id/details', untouched: 'static' }
+   *
+   * // Containment mode:
+   * substituteDynamicParamsInObject(obj, paramMap, ':', true);
+   * // => { userId: '123', path: '/users/123/details', untouched: 'static' }
+   *
+   * @remarks
+   * - Only the first matching parameter key is considered per value when `contains = true`.
+   * - Values that are undefined or null are returned as-is.
+   * - The return type is a generic object; if stronger typing is desired, consider overloading or
+   *   constraining `paramMap` and `object` to more specific record types.
    */
-  removeModalDataFromHash(url: URL, params: Record<string, any>, modalParamName: string): URL {
-    let modalParamsObj: Record<string, string> = {};
-
-    if (params[modalParamName]) {
-      modalParamsObj[modalParamName] = params[modalParamName];
-    }
-    if (params[`${modalParamName}Params`]) {
-      modalParamsObj[`${modalParamName}Params`] = params[`${modalParamName}Params`];
-    }
-
-    const prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
-    if (url.hash.includes(`?${prevModalPath}`)) {
-      url.hash = url.hash.replace(`?${prevModalPath}`, '');
-    } else if (url.hash.includes(`&${prevModalPath}`)) {
-      url.hash = url.hash.replace(`&${prevModalPath}`, '');
-    }
-
-    return url;
+  substituteDynamicParamsInObject(
+    object: Record<string, string>,
+    paramMap: Record<any, any>,
+    paramPrefix = ':',
+    contains = false
+  ): {} {
+    return Object.entries(object)
+      .map(([key, value]) => {
+        const foundKey = contains
+          ? Object.keys(paramMap).find((key2) => value && value.indexOf(paramPrefix + key2) >= 0)
+          : Object.keys(paramMap).find((key2) => value === paramPrefix + key2);
+        return [
+          key,
+          foundKey ? (contains ? value.replace(paramPrefix + foundKey, paramMap[foundKey]) : paramMap[foundKey]) : value
+        ];
+      })
+      .reduce((acc, [key, value]) => {
+        return Object.assign(acc, { [key]: value });
+      }, {});
   }
 };

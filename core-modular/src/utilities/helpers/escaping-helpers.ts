@@ -67,8 +67,8 @@ export const EscapingHelpers = {
   },
 
   processTextAndLinks(text = '', links: Link, uniqueID: any): ProcessedTextAndLinks {
-    let sanitizedText = this.restoreSanitizedBrs(this.sanitizeHtml(text));
-    let initialValue: ProcessedTextAndLinks = { sanitizedText, links: [] };
+    const sanitizedText = this.restoreSanitizedBrs(this.sanitizeHtml(text));
+    const initialValue: ProcessedTextAndLinks = { sanitizedText, links: [] };
 
     if (!links) {
       return initialValue;
@@ -90,4 +90,4 @@ export const EscapingHelpers = {
       };
     }, initialValue);
   }
-}
+};
