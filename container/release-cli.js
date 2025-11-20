@@ -24,7 +24,9 @@ const listReleases = async () => {
       throw new Error(`HTTP Error: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    return data;
   } catch (error) {
     console.error('Fetch error:', error.message);
   }
@@ -48,7 +50,9 @@ const listPullRequests = async (params) => {
       throw new Error(`HTTP Error: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    return data;
   } catch (error) {
     console.error('Fetch error:', error.message);
   }
