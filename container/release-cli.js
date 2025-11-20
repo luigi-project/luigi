@@ -1,13 +1,58 @@
-const GitHub = require('github-api');
 const fs = require('fs');
 const readline = require('readline');
 const packageJson = require('./public/package.json');
 const color = require('cli-color');
 
-const github = new GitHub({
-  token: process.env.GITHUB_TOKEN
-});
-const repo = github.getRepo('SAP', 'luigi');
+const GITHUB_API_URL = 'https://api.github.com';
+const GITHUB_OWNER = 'SAP';
+const GITHUB_REPO = 'luigi';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+const listReleases = async () => {
+  try {
+    const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`, {
+      auth: {
+        token: GITHUB_TOKEN
+      },
+      headers: {
+        Accept: 'application/vnd.github+json'
+      },
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Fetch error:', error.message);
+  }
+};
+
+const listPullRequests = async (params) => {
+  const queryString = params ? new URLSearchParams(params).toString() : '';
+
+  try {
+    const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls?${queryString}`, {
+      auth: {
+        token: GITHUB_TOKEN
+      },
+      headers: {
+        Accept: 'application/vnd.github+json'
+      },
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Fetch error:', error.message);
+  }
+};
 
 const logWarning = str => console.log(color.yellow.bold(str));
 const logSuccess = str => console.log(color.green.bold(str));
@@ -19,7 +64,7 @@ const logError = str => console.log(color.redBright.bold(str));
  */
 async function getContainerReleases() {
   try {
-    const { data: releases } = await repo.listReleases();
+    const { data: releases } = await listReleases();
     const containerReleases = [];
     releases.forEach(release => {
       if (release.tag_name.startsWith('container/v')) {
@@ -143,7 +188,7 @@ async function prepareRelease() {
     updateVersionInPgkJson(version);
 
     try {
-      const { data: pullRequests } = await repo.listPullRequests({ state: 'closed' });
+      const { data: pullRequests } = await listPullRequests({ state: 'closed' });
       const { breakingPulls, enhancementPulls, bugPulls, noLabelPulls } = categorizePullRequests(
         pullRequests,
         lastContainerRelease
