@@ -64,15 +64,13 @@ const logError = (str) => console.log(color.redBright.bold(str));
  */
 async function getContainerReleases() {
   try {
-    const releases = await listReleases(); 
+    const releases = await listReleases();
     if (!Array.isArray(releases)) {
-      console.error("Releases is not an array");
+      console.error('Releases is not an array');
       return [];
     }
 
-    const containerReleases = releases.filter(release =>
-      release.tag_name.startsWith('container/v')
-    );
+    const containerReleases = releases.filter((release) => release.tag_name.startsWith('container/v'));
 
     return containerReleases;
   } catch (error) {
