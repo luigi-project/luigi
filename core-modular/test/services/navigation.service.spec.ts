@@ -1,3 +1,4 @@
+import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { NavigationService, type Node } from '../../src/services/navigation.service';
 
 describe('NavigationService', () => {
@@ -7,7 +8,13 @@ describe('NavigationService', () => {
   beforeEach(() => {
     luigiMock = {
       getConfigValue: jest.fn(),
-      getConfig: jest.fn()
+      getConfig: jest.fn(),
+      auth: jest.fn().mockReturnValue({
+        isAuthorizationEnabled: jest.fn()
+      }),
+      featureToggles: jest.fn().mockReturnValue({
+        getActiveFeatureToggleList: jest.fn()
+      })
     };
     navigationService = new NavigationService(luigiMock);
   });

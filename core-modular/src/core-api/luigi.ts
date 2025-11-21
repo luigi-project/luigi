@@ -1,4 +1,3 @@
-import { writable, type Subscriber, type Updater } from 'svelte/store';
 import type { LuigiEngine } from '../luigi-engine';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
@@ -8,6 +7,8 @@ import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
+import { LuigiAuth, LuigiAuthClass } from './auth';
+import { LuigiStore, writable } from '../utilities/store';
 
 export class Luigi {
   config: any;
@@ -18,6 +19,7 @@ export class Luigi {
   _routing?: Routing;
   __cssVars?: any;
   preventLoadingModalData?: boolean;
+  initialized = false;
   configReadyCallback = function () {};
 
   private USER_SETTINGS_KEY = 'luigi.preferences.userSettings';
@@ -35,6 +37,7 @@ export class Luigi {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
     this.engine.init();
+    this.initialized = true;
     this.luigiAfterInit();
   };
 
@@ -159,6 +162,10 @@ export class Luigi {
     return this._theming as Theming;
   };
 
+  auth = (): LuigiAuthClass => {
+    return LuigiAuth;
+  };
+
   private luigiAfterInit(): void {
     const shouldHideAppLoadingIndicator: boolean = GenericHelpers.getConfigBooleanValue(
       this.getConfig(),
@@ -174,20 +181,19 @@ export class Luigi {
   }
 
   private createConfigStore(): any {
-    const { subscribe, update } = writable({});
+    const luigiStore: LuigiStore = writable({});
     const scopeSubscribers: Record<any, any> = {};
     let unSubscriptions: any[] = [];
 
     return {
-      subscribe: (fn: Subscriber<object>) => {
+      subscribe: (fn: (value: any) => () => {}) => {
         // subscribe fn returns unsubscription fn
-        unSubscriptions.push(subscribe(fn));
+        unSubscriptions.push(luigiStore.subscribe(fn));
       },
-      update,
-      reset: (fn: Updater<object>) => {
-        update(fn);
+      reset: (fn: (value: any) => void) => {
+        luigiStore.update(fn);
       },
-      subscribeToScope: (fn: Subscriber<object>, scope: any) => {
+      subscribeToScope: (fn: (value: any) => void, scope: any) => {
         let subscribers = scopeSubscribers[scope];
 
         if (!subscribers) {

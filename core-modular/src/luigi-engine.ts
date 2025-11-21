@@ -11,6 +11,7 @@ import { RoutingService } from './services/routing.service';
 import { serviceRegistry } from './services/service-registry';
 import { ViewUrlDecoratorSvc } from './services/viewurl-decorator';
 import type { LuigiConnector } from './types/connector';
+import { AuthLayerSvc } from './services/auth-layer.service';
 
 export class LuigiEngine {
   config: any;
@@ -31,15 +32,17 @@ export class LuigiEngine {
 
   init(): void {
     const luigi = (window as any).Luigi;
-    serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
-    serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
-    serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());
-    serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
-    serviceRegistry.register(ViewUrlDecoratorSvc, () => new ViewUrlDecoratorSvc());
-    luigi.theming()._init();
-    UIModule.init(luigi);
-    RoutingModule.init(luigi);
-    CommunicationModule.init(luigi);
-    UXModule.init(luigi);
+    AuthLayerSvc.init().then(() => {
+      serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
+      serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
+      serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());
+      serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
+      serviceRegistry.register(ViewUrlDecoratorSvc, () => new ViewUrlDecoratorSvc());
+      luigi.theming()._init();
+      UIModule.init(luigi);
+      RoutingModule.init(luigi);
+      CommunicationModule.init(luigi);
+      UXModule.init(luigi);
+    });
   }
 }

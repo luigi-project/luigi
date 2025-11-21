@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Luigi Mock Identity Provider</title>
+    <link
+      href="/vendor/fundamental-styles/dist/fundamental-styles.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="../../styles/styles.css" />
+    <style type="text/css">
+      body {
+        background-color: #f7f7f7;
+      }
+
+      h1 {
+        text-align: center;
+        font-weight: 400;
+      }
+
+      .fd-input {
+        display: block;
+        margin: auto;
+        width: 200px;
+      }
+
+      .fd-button {
+        display: block;
+        margin: auto;
+      }
+
+      .login-form {
+        background-color: #ffffff;
+        box-shadow: 0 5px 20px 0 rgba(50, 54, 58, 0.08);
+        border-radius: 4px;
+        border: none;
+        width: 50%;
+        margin: auto;
+        margin-top: 50px;
+        min-width: 270px;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-form">
+      <h1>Login to Luigi sample app</h1>
+      <form>
+        <input
+          id="username"
+          type="text"
+          class="fd-input"
+          value="LuigiUsername"
+          placeholder="Username"
+        /><br />
+        <input
+          type="password"
+          class="fd-input"
+          value="LuigiPassword"
+          placeholder="Password"
+        /><br />
+        <button id="login-button" class="fd-button">Login</button>
+      </form>
+    </div>
+    <script src="implicit.js"></script>
+  </body>
+</html>
