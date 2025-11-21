@@ -1,60 +1,60 @@
-import { get, writable } from "../../src/utilities/store";
+import { get, writable } from '../../src/utilities/store';
 
 describe('Luigi store', () => {
-    it('Check helper functions', () => {
-        const value = { some: 'object'};
-        const store = writable(value);
-        expect(get(store)).toEqual(value);
+  it('Check helper functions', () => {
+    const value = { some: 'object' };
+    const store = writable(value);
+    expect(get(store)).toEqual(value);
+  });
+
+  it('set', () => {
+    const value = { some: 'object' };
+    const store = writable('initialValue');
+    store.set(value);
+    expect(get(store)).toEqual(value);
+  });
+
+  it('update', () => {
+    const value = { some: 'object' };
+    const store = writable(value);
+    store.update((val) => {
+      val.some = 'updated value';
+      return val;
     });
+    expect(get(store)).toEqual({ some: 'updated value' });
+  });
 
-    it('set', () => {
-        const value = { some: 'object'};
-        const store = writable('initialValue');
-        store.set(value);
-        expect(get(store)).toEqual(value);
-    });
+  it('subscribe and unsubscribe', () => {
+    const value = { some: 'object' };
+    const store = writable(value);
 
-    it('update', () => {
-        const value = { some: 'object'};
-        const store = writable(value);
-        store.update((val) => {
-            val.some = 'updated value';
-            return val;
-        });
-        expect(get(store)).toEqual({ some: 'updated value'});
-    });
+    const subscriber1 = jest.fn();
+    const subscriber2 = jest.fn();
 
-    it('subscribe and unsubscribe', () => {
-        const value = { some: 'object'};
-        const store = writable(value);
+    const unsub1 = store.subscribe(subscriber1);
+    const unsub2 = store.subscribe(subscriber2);
 
-        const subscriber1 = jest.fn();
-        const subscriber2 = jest.fn();
+    expect(subscriber1).toHaveBeenCalledWith(value);
+    expect(subscriber2).toHaveBeenCalledWith(value);
 
-        const unsub1 = store.subscribe(subscriber1);
-        const unsub2 = store.subscribe(subscriber2);
+    unsub2();
 
-        expect(subscriber1).toHaveBeenCalledWith(value);
-        expect(subscriber2).toHaveBeenCalledWith(value);
+    subscriber1.mockReset();
+    subscriber2.mockReset();
 
-        unsub2();
+    store.set('updated');
 
-        subscriber1.mockReset();
-        subscriber2.mockReset();
+    expect(subscriber1).toHaveBeenCalledWith('updated');
+    expect(subscriber2).not.toHaveBeenCalled();
 
-        store.set('updated');
+    unsub1();
 
-        expect(subscriber1).toHaveBeenCalledWith('updated');
-        expect(subscriber2).not.toHaveBeenCalled();
+    subscriber1.mockReset();
+    subscriber2.mockReset();
 
-        unsub1();
+    store.set('updated2');
 
-        subscriber1.mockReset();
-        subscriber2.mockReset();
-
-        store.set('updated2');
-
-        expect(subscriber1).not.toHaveBeenCalled();
-        expect(subscriber2).not.toHaveBeenCalled();
-    });
+    expect(subscriber1).not.toHaveBeenCalled();
+    expect(subscriber2).not.toHaveBeenCalled();
+  });
 });
