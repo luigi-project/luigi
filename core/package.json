@@ -17,7 +17,6 @@
     "jsdom-global": "^3.0.2",
     "live-server": "^1.2.2",
     "lodash": "^4.17.21",
-    "lodash.template": "^4.5.0",
     "mock-local-storage": "^1.1.23",
     "node-fetch": "2.6.7",
     "sass": "^1.54.0",
