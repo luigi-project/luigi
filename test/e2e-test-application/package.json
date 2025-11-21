@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^20.0.0",
-    "@angular-devkit/build-angular": "^20.0.4",
+    "@angular-devkit/build-angular": "^20.2.2",
     "@angular-devkit/core": "^20.0.4",
     "@angular/cli": "^20.0.4",
     "@angular/compiler-cli": "^20.0.5",
@@ -82,7 +82,7 @@
     "ts-node": "~3.2.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "8.34.1",
-    "vite": "^6.3.6",
+    "vite": "^6.4.1",
     "webpack": "^5.99.9",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.2"
