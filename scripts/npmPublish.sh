@@ -132,7 +132,8 @@ elif [ "$1" = "luigi-client-support-ui5-release" ]; then
   publishPackage "client-frameworks-support/client-support-ui5" "client-frameworks-support/client-support-ui5/dist"
 elif [ "$1" = "luigi-client-support-angular-release" ]; then
   echo "$PWD"
-  checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular" "package.json" "README.md" "index.d.ts"
+  checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular" "package.json" "README.md"
+  checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular/types" "luigi-project-client-support-angular.d.ts"
   checkRequiredFiles "client-frameworks-support/client-support-angular/dist/client-support-angular/fesm2022" "luigi-project-client-support-angular.mjs" "luigi-project-client-support-angular.mjs.map"
   publishPackage "client-frameworks-support/client-support-angular" "client-frameworks-support/client-support-angular/dist/client-support-angular"
 elif [ "$1" = "auth-oidc-pkce-plugin-release" ]; then
