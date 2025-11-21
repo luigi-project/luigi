@@ -1,8 +1,13 @@
 <!-- This script is custom made to import the client-js scripts into the svelte project and inject LuigiClient onMount since otherwise Vite will try to bundle LuigiClient it and fail -->
-<script>
+<script lang="ts">
 	import '../styles/app.scss';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const importScripts = (LuigiClient) => {
 		const scriptsToImport = [
@@ -48,5 +53,5 @@
 </script>
 
 <div class="docu-content">
-	<slot />
+	{@render children?.()}
 </div>
