@@ -52,6 +52,16 @@ const installPaths = {
 if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
   pkgJsonPaths.container = path.resolve(base, 'container', 'public', 'package.json');
   installPaths.container = path.resolve(base, 'container');
+
+  pkgJsonPaths.client_support_angular = path.resolve(
+    base,
+    'client-frameworks-support',
+    'client-support-angular',
+    'dist',
+    'client-support-angular',
+    'package.json'
+  );
+  installPaths.client_support_angular = path.resolve(base, 'client-frameworks-support', 'client-support-angular');
 }
 
 /**
@@ -178,13 +188,13 @@ function addToChangelog(versionText, changelog, lastline) {
   for (const name of Object.keys(pkgJsonPaths)) {
     let inputVersion = input.version;
 
-    // handle custom container version for nightly release
-    if (name === 'container' && process.env.NIGHTLY === 'true') {
-      const containerNightlyVersion = getVersion('container');
+    // handle custom pkg version for nightly release
+    if (process.env.NIGHTLY === 'true' && (name === 'container' || name === 'client_support_angular')) {
+      const pkgNightlyVersion = getVersion(name);
       const versionSuffix = getVersionSuffix();
 
-      inputVersion = containerNightlyVersion + versionSuffix;
-      logHeadline('\nContainer updated to v' + inputVersion + ':');
+      inputVersion = pkgNightlyVersion + versionSuffix;
+      logHeadline('\n' + name + ' updated to v' + inputVersion + ':');
     }
 
     writeVersion(pkgJsonPaths[name], inputVersion);
