@@ -33,7 +33,7 @@ describe('AuthHelpers', () => {
 
   it('isLoggedIn valid authdata', () => {
     const exp = new Date().getTime() + 5000;
-    authDataMock = { accessTokenExpirationDate: exp };    
+    authDataMock = { accessTokenExpirationDate: exp };
     expect(AuthHelpers.getStoredAuthData().accessTokenExpirationDate).toEqual(exp);
     const loggedIn = AuthHelpers.isLoggedIn();
     expect(getAuthDataSpy).toHaveBeenCalled();
@@ -47,25 +47,25 @@ describe('AuthHelpers', () => {
         location
       } as Window & typeof globalThis;
     });
-    
+
     expect(AuthHelpers.parseUrlAuthErrors()).toBeUndefined();
 
     location.search = '?error=ERROR&errorDescription=DESC';
 
-    expect(AuthHelpers.parseUrlAuthErrors()).toEqual({ error: 'ERROR', errorDescription: 'DESC'});
+    expect(AuthHelpers.parseUrlAuthErrors()).toEqual({ error: 'ERROR', errorDescription: 'DESC' });
   });
 
   it('handleUrlAuthErrors', () => {
-    const providerInstanceSettings = { 
+    const providerInstanceSettings = {
       logoutUrl: 'lo',
       post_logout_redirect_uri: 'plor'
     };
     const handleAuthEventSpy = jest.spyOn(LuigiAuth, 'handleAuthEvent').mockImplementation();
     AuthHelpers.handleUrlAuthErrors(providerInstanceSettings, 'error', 'errorDescription');
     expect(handleAuthEventSpy).toHaveBeenCalledWith(
-      'onAuthError', 
-      providerInstanceSettings, 
-      { error: 'error', errorDescription: 'errorDescription'},
+      'onAuthError',
+      providerInstanceSettings,
+      { error: 'error', errorDescription: 'errorDescription' },
       'lo?post_logout_redirect_uri=plor&error=error&errorDescription=errorDescription'
     );
 
