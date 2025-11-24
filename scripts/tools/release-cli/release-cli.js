@@ -61,14 +61,6 @@ if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
     'client-support-angular',
     'package.json'
   );
-  // installPaths.client_support_angular_src = path.resolve(
-  //   base,
-  //   'client-frameworks-support',
-  //   'client-support-angular',
-  //   'projects',
-  //   'client-support-angular',
-  //   'package.json'
-  // );
   installPaths.client_support_angular = path.resolve(base, 'client-frameworks-support', 'client-support-angular');
 }
 
