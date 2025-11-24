@@ -7,10 +7,10 @@ class AuthHelpersClass {
     return AuthStoreSvc.getAuthData();
   }
 
-  isLoggedIn() {
+  isLoggedIn(): boolean {
     const storedAuthData = this.getStoredAuthData();
     const isAuthValid = () => storedAuthData.accessTokenExpirationDate > Number(new Date());
-    return storedAuthData && isAuthValid();
+    return !!(storedAuthData && isAuthValid());
   }
 
   /**
@@ -33,7 +33,7 @@ class AuthHelpersClass {
    * @param {string} error
    * @param {string} errorDescription
    */
-  async handleUrlAuthErrors(providerInstanceSettings: any, error: string, errorDescription: string) {
+  async handleUrlAuthErrors(providerInstanceSettings: any, error?: string, errorDescription?: string) {
     if (error) {
       return await LuigiAuth.handleAuthEvent(
         'onAuthError',
