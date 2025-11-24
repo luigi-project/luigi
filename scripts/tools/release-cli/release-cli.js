@@ -53,7 +53,7 @@ if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
   pkgJsonPaths.container = path.resolve(base, 'container', 'public', 'package.json');
   installPaths.container = path.resolve(base, 'container');
 
-  installPaths.client_support_angular = path.resolve(
+  pkgJsonPaths.client_support_angular = path.resolve(
     base,
     'client-frameworks-support',
     'client-support-angular',
