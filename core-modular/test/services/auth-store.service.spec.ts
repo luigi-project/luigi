@@ -1,16 +1,16 @@
-import { AuthStoreSvc } from "../../src/services/auth-store.service";
-import { ConfigHelpers } from "../../src/utilities/helpers/config-helpers";
+import { AuthStoreSvc } from '../../src/services/auth-store.service';
+import { ConfigHelpers } from '../../src/utilities/helpers/config-helpers';
 
 describe('Auth-Store Service', () => {
   let mockedStorageType: unknown = undefined;
-  let storageGetItemMock: jest.Mock;  
+  let storageGetItemMock: jest.Mock;
   let storageSetItemMock: jest.Mock;
   let storageRemoveItemMock: jest.Mock;
   let localStorageMock: unknown;
   let sessionStorageMock: unknown;
 
   beforeEach(() => {
-    jest.spyOn(ConfigHelpers, 'getConfigValue').mockImplementation((key) => { 
+    jest.spyOn(ConfigHelpers, 'getConfigValue').mockImplementation((key) => {
       if (key === 'auth.storage') {
         return mockedStorageType;
       }
@@ -38,15 +38,15 @@ describe('Auth-Store Service', () => {
     jest.spyOn(window, 'window', 'get').mockImplementation(() => {
       return {
         localStorage: localStorageMock,
-        sessionStorage: sessionStorageMock,
+        sessionStorage: sessionStorageMock
       } as unknown as Window & typeof globalThis;
     });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();    
+    jest.restoreAllMocks();
     AuthStoreSvc.reset();
-  })
+  });
 
   it('getStorageKey', () => {
     expect(AuthStoreSvc.getStorageKey()).toEqual('luigi.auth');
@@ -70,14 +70,14 @@ describe('Auth-Store Service', () => {
     expect(storageGetItemMock).toHaveBeenCalledWith(AuthStoreSvc.getStorageKey());
   });
 
-  it('setAuthData', () => {    
+  it('setAuthData', () => {
     mockedStorageType = 'localStorage';
     const authData = { some: 'object' };
     AuthStoreSvc.setAuthData(authData);
     expect(storageSetItemMock).toHaveBeenCalledWith(AuthStoreSvc.getStorageKey(), JSON.stringify(authData));
   });
 
-  it('removeAuthData', () => {    
+  it('removeAuthData', () => {
     mockedStorageType = 'localStorage';
     AuthStoreSvc.removeAuthData();
     expect(storageRemoveItemMock).toHaveBeenCalledWith(AuthStoreSvc.getStorageKey());
