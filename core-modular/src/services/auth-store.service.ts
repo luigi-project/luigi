@@ -7,12 +7,18 @@ class AuthStoreSvcClass {
   private _newlyAuthorizedKey: any;
   private _invalidStorageMsg: any;
 
+  private _internalStorage: Record<string, any> = {};
+
   constructor() {
     this._defaultStorage = 'localStorage';
     this._authKey = 'luigi.auth';
     this._newlyAuthorizedKey = 'luigi.newlyAuthorized';
     this._invalidStorageMsg =
       'Configuration Error: Invalid auth.storage value defined. Must be one of localStorage, sessionStorage or none.';
+  }
+
+  reset() {
+    this._storageType = undefined;
   }
 
   getStorageKey() {
@@ -51,7 +57,7 @@ class AuthStoreSvcClass {
   }
 
   _getWebStorage(sType: string): Storage {
-    return (window as any)[this.getStorageType()] as Storage;
+    return (window as any)[sType] as Storage;
   }
 
   _setStore(key: string, data: any) {
@@ -66,7 +72,7 @@ class AuthStoreSvcClass {
         break;
 
       case 'none':
-        (this as any)[key] = data;
+        this._internalStorage[key] = data;
         break;
 
       default:
@@ -82,7 +88,7 @@ class AuthStoreSvcClass {
           return JSON.parse(this._getWebStorage(this.getStorageType()).getItem(key) as string);
 
         case 'none':
-          return (this as any)[key];
+          return this._internalStorage[key];
 
         default:
           console.error(this._invalidStorageMsg);
