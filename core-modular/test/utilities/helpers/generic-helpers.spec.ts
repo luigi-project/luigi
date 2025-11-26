@@ -17,7 +17,7 @@ describe('Generic-helpers', () => {
     });
   });
 
-  afterAll(() => {    
+  afterAll(() => {
     jest.restoreAllMocks();
   });
 
@@ -67,7 +67,7 @@ describe('Generic-helpers', () => {
   });
 
   it('getUrlParameter', () => {
-    locationSearchString = '?qp=val&qp2=val2'
+    locationSearchString = '?qp=val&qp2=val2';
     expect(GenericHelpers.getUrlParameter('notThere')).toBeFalsy();
     expect(GenericHelpers.getUrlParameter('qp')).toEqual('val');
     expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');
