@@ -52,7 +52,7 @@ describe('Navigation-helpers', () => {
     let permChecker: unknown = undefined;
     let authEnabled = true;
     const parentNode: Node = {
-      pathSegment: 'home'      
+      pathSegment: 'home'
     };
     const featureToggles = new FeatureToggles();
     const luigiMock: Luigi = {
@@ -61,7 +61,7 @@ describe('Navigation-helpers', () => {
           isAuthorizationEnabled: () => {
             return authEnabled;
           }
-        }
+        };
       },
       featureToggles: () => {
         return featureToggles;
@@ -82,7 +82,7 @@ describe('Navigation-helpers', () => {
 
       expect(NavigationHelpers.isNodeAccessPermitted(node, parentNode, {}, luigiMock)).toEqual(true);
 
-      node.anonymousAccess = 'exclusive'
+      node.anonymousAccess = 'exclusive';
       expect(NavigationHelpers.isNodeAccessPermitted(node, parentNode, {}, luigiMock)).toEqual(false);
 
       jest.spyOn(AuthHelpers, 'isLoggedIn').mockReturnValue(false);
@@ -97,7 +97,7 @@ describe('Navigation-helpers', () => {
           return false;
         }
         return 'perm checker result';
-      }
+      };
       const node: Node = {
         pathSegment: 'first'
       };
