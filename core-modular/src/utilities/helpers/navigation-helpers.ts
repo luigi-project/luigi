@@ -88,7 +88,7 @@ export const NavigationHelpers = {
   isNodeAccessPermitted: (
     nodeToCheckPermissionFor: Node,
     parentNode: Node | undefined,
-    currentContext: Record<string, any> | {},
+    currentContext: Record<string, any>,
     luigi: Luigi
   ): boolean => {
     if (luigi.auth().isAuthorizationEnabled()) {

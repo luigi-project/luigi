@@ -92,6 +92,7 @@ export interface PathData {
 }
 
 export interface Node {
+  visibleForFeatureToggles?: string[];
   anonymousAccess?: any;
   category?: any;
   children?: Node[];
