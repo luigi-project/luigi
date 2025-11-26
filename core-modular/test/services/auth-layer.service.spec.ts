@@ -1,10 +1,10 @@
-import { LuigiAuth } from "../../src/core-api/auth";
-import type { Luigi } from "../../src/core-api/luigi";
-import { AuthLayerSvc } from "../../src/services/auth-layer.service";
-import { AuthStoreSvc } from "../../src/services/auth-store.service";
-import { AuthHelpers } from "../../src/utilities/helpers/auth-helpers";
-import { ConfigHelpers } from "../../src/utilities/helpers/config-helpers";
-import { get } from "../../src/utilities/store";
+import { LuigiAuth } from '../../src/core-api/auth';
+import type { Luigi } from '../../src/core-api/luigi';
+import { AuthLayerSvc } from '../../src/services/auth-layer.service';
+import { AuthStoreSvc } from '../../src/services/auth-store.service';
+import { AuthHelpers } from '../../src/utilities/helpers/auth-helpers';
+import { ConfigHelpers } from '../../src/utilities/helpers/config-helpers';
+import { get } from '../../src/utilities/store';
 
 describe('Auth-Layer Service', () => {
   let auth_use: string | undefined;
@@ -27,12 +27,12 @@ describe('Auth-Layer Service', () => {
     getConfigValue = jest.fn();
     getConfigValueAsync = jest.fn();
     getEngine = jest.fn();
-    
+
     jest.spyOn(ConfigHelpers, 'getLuigi').mockImplementation(() => {
       return {
-          getConfigValue,
-          getConfigValueAsync,
-          getEngine
+        getConfigValue,
+        getConfigValueAsync,
+        getEngine
       } as unknown as Luigi;
     });
     jest.spyOn(ConfigHelpers, 'getConfigValue').mockImplementation((key) => {
@@ -51,7 +51,7 @@ describe('Auth-Layer Service', () => {
       } else if (key === 'auth.events.onAuthSuccessful') {
         return onAuthSuccessfulFn;
       }
-     
+
       return undefined;
     });
     jest.spyOn(ConfigHelpers, 'getConfigValueAsync').mockImplementation((key) => {
@@ -82,7 +82,6 @@ describe('Auth-Layer Service', () => {
     jest.restoreAllMocks();
     AuthLayerSvc.idpProviderInstance = undefined;
   });
-
 
   it('set/get/subscribe UserInfo', () => {
     const uinfoSubMock = jest.fn();
@@ -131,7 +130,7 @@ describe('Auth-Layer Service', () => {
     });
 
     it('init with no idpProviderInstance', async () => {
-      auth_use = 'myProvider';      
+      auth_use = 'myProvider';
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       await AuthLayerSvc.init();
       expect(consoleErrorSpy).toHaveBeenCalled();
@@ -146,50 +145,50 @@ describe('Auth-Layer Service', () => {
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
 
-        login () {
+        login() {
           loginFn();
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
 
-        setTokenExpirationAction () {
+        setTokenExpirationAction() {
           setTokenExpirationActionFn();
         }
 
-        setTokenExpireSoonAction () {
-          setTokenExpireSoonActionFn(); 
+        setTokenExpireSoonAction() {
+          setTokenExpireSoonActionFn();
         }
 
-        userInfo (settings: unknown) {
+        userInfo(settings: unknown) {
           return new Promise((resolve) => {
             if (settings) {
               resolve({ name: 'Luigi' });
             }
           });
         }
-      }
+      };
 
       jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
         accessTokenExpirationDate: new Date().getTime() + 5000
       });
-      
+
       await AuthLayerSvc.init();
       expect(loginFn).not.toHaveBeenCalled();
       expect(AuthStoreSvc.isNewlyAuthorized()).toBe(false);
       expect(setTokenExpirationActionFn).toHaveBeenCalled();
       expect(setTokenExpireSoonActionFn).toHaveBeenCalled();
       expect(get(AuthLayerSvc.getLoggedInStore())).toEqual(true);
-      expect(get(AuthLayerSvc.getUserInfoStore())).toEqual( { name: 'Luigi'});
+      expect(get(AuthLayerSvc.getUserInfoStore())).toEqual({ name: 'Luigi' });
 
       AuthLayerSvc.idpProviderInstance = undefined;
       providerInstanceSettings.userInfoFn = () => {
         return new Promise((resolve) => {
           resolve({ name: 'Mario' });
         });
-      }
+      };
       await AuthLayerSvc.init();
-      expect(get(AuthLayerSvc.getUserInfoStore())).toEqual( { name: 'Mario'});
+      expect(get(AuthLayerSvc.getUserInfoStore())).toEqual({ name: 'Mario' });
     });
 
     it('init with valid idpProviderInstance and valid session and newly authorized', async () => {
@@ -200,20 +199,20 @@ describe('Auth-Layer Service', () => {
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
 
-        login () {
+        login() {
           loginFn();
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
 
       jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
         accessTokenExpirationDate: new Date().getTime() + 5000
       });
 
       jest.spyOn(AuthStoreSvc, 'isNewlyAuthorized').mockReturnValueOnce(true);
-      
+
       await AuthLayerSvc.init();
       expect(loginFn).not.toHaveBeenCalled();
       expect(AuthStoreSvc.isNewlyAuthorized()).toBe(false);
@@ -228,18 +227,18 @@ describe('Auth-Layer Service', () => {
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
 
-        login () {
+        login() {
           loginFn();
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
 
       jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
         accessTokenExpirationDate: 0
       });
-      
+
       await AuthLayerSvc.init();
       expect(loginFn).toHaveBeenCalled();
       expect(AuthStoreSvc.isNewlyAuthorized()).toBe(true);
@@ -253,18 +252,18 @@ describe('Auth-Layer Service', () => {
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
 
-        login () {
+        login() {
           loginFn();
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
 
       jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
         accessTokenExpirationDate: 0
       });
-      
+
       await AuthLayerSvc.init();
       expect(loginFn).not.toHaveBeenCalled();
     });
@@ -273,19 +272,19 @@ describe('Auth-Layer Service', () => {
       auth_use = 'myProvider';
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
-        login () {
+        login() {
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
 
       jest.spyOn(AuthLayerSvc, 'getIdpProviderInstance').mockImplementation(() => {
         return 'no promise' as unknown as Promise<string>;
       });
 
       const checkAuthSpy = jest.spyOn(AuthLayerSvc, 'checkAuth').mockImplementation();
-      
+
       await AuthLayerSvc.init();
       expect(checkAuthSpy).toHaveBeenCalled();
     });
@@ -297,13 +296,13 @@ describe('Auth-Layer Service', () => {
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
 
-        login () {
+        login() {
           loginFn();
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
 
       jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
         accessTokenExpirationDate: 0
@@ -319,7 +318,7 @@ describe('Auth-Layer Service', () => {
         });
       });
       const startAuthorizationSpy = jest.spyOn(AuthLayerSvc, 'startAuthorization');
-      
+
       await AuthLayerSvc.init();
       expect(startAuthorizationSpy).not.toHaveBeenCalled();
     });
@@ -335,12 +334,12 @@ describe('Auth-Layer Service', () => {
       auth_use = 'myProvider';
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
-        login () {
+        login() {
           return new Promise((resolve) => {
             resolve(undefined);
-          })
+          });
         }
-      }
+      };
       const consoleErrorSpy = jest.spyOn(console, 'error');
       await AuthLayerSvc.init();
       expect(AuthLayerSvc.startAuthorization()).resolves.toBeUndefined();
@@ -351,12 +350,12 @@ describe('Auth-Layer Service', () => {
       auth_use = 'myProvider';
       providerInstanceSettings.idpProvider = class {
         constructor(private settings: unknown) {}
-        login () {
+        login() {
           return new Promise((resolve) => {
             resolve('some error');
-          })
+          });
         }
-      }
+      };
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       await AuthLayerSvc.init();
       expect(AuthLayerSvc.startAuthorization()).resolves.toEqual(undefined);
@@ -368,12 +367,12 @@ describe('Auth-Layer Service', () => {
     auth_use = 'myProvider';
     providerInstanceSettings.idpProvider = class {
       constructor(private settings: unknown) {}
-      login () {
+      login() {
         return new Promise((resolve) => {
           resolve(undefined);
-        })
+        });
       }
-    }
+    };
     await AuthLayerSvc.init();
     AuthLayerSvc.logout();
 
@@ -390,15 +389,15 @@ describe('Auth-Layer Service', () => {
     const providerLogout = jest.fn();
     providerInstanceSettings.idpProvider = class {
       constructor(private settings: unknown) {}
-      login () {
+      login() {
         return new Promise((resolve) => {
           resolve(undefined);
-        })
+        });
       }
-      logout () {
+      logout() {
         providerLogout();
       }
-    }
+    };
     await AuthLayerSvc.init();
     AuthLayerSvc.logout();
     expect(providerLogout).toHaveBeenCalled();
@@ -411,7 +410,7 @@ describe('Auth-Layer Service', () => {
 
     it('should call onAuthConfigError if no idp present', async () => {
       onAuthConfigErrorFn = jest.fn();
-      AuthLayerSvc.getIdpProviderInstance('someIdp', {})
+      AuthLayerSvc.getIdpProviderInstance('someIdp', {});
       expect(onAuthConfigErrorFn).toHaveBeenCalled();
     });
 
@@ -430,10 +429,10 @@ describe('Auth-Layer Service', () => {
           marker = 'myIdp';
           constructor(private settings: unknown) {}
 
-          login () {
+          login() {
             return new Promise((resolve) => {
               resolve(undefined);
-            })
+            });
           }
         }
       };
@@ -449,48 +448,48 @@ describe('Auth-Layer Service', () => {
     const unloadFn = jest.fn();
     providerInstanceSettings.idpProvider = class {
       constructor(private settings: unknown) {}
-      login () {
+      login() {
         return new Promise((resolve) => {
           resolve(undefined);
-        })
+        });
       }
-      unload () {
+      unload() {
         unloadFn();
       }
-    }
+    };
 
     jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
       accessTokenExpirationDate: new Date().getTime() + 5000
-    });    
+    });
     await AuthLayerSvc.init();
     AuthLayerSvc.unload();
 
     expect(unloadFn).toHaveBeenCalled();
   });
 
-  it('resetExpirationChecks', async () => {    
+  it('resetExpirationChecks', async () => {
     AuthLayerSvc.resetExpirationChecks(); // should just do nothing  if no provider configured
 
     auth_use = 'myProvider';
     const resetExpirationChecksFn = jest.fn();
     providerInstanceSettings.idpProvider = class {
       constructor(private settings: unknown) {}
-      login () {
+      login() {
         return new Promise((resolve) => {
           resolve(undefined);
-        })
+        });
       }
-      resetExpirationChecks () {
+      resetExpirationChecks() {
         resetExpirationChecksFn();
       }
-    }
+    };
 
     jest.spyOn(AuthHelpers, 'getStoredAuthData').mockReturnValue({
       accessTokenExpirationDate: new Date().getTime() + 5000
-    });    
+    });
     await AuthLayerSvc.init();
     AuthLayerSvc.resetExpirationChecks();
-    
+
     expect(resetExpirationChecksFn).toHaveBeenCalled();
   });
 });
