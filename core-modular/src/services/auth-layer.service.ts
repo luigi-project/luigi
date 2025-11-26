@@ -8,9 +8,8 @@ import { AuthStoreSvc } from './auth-store.service';
 
 class AuthLayerSvcClass {
   idpProviderInstance: any;
-  _userInfoStore: LuigiStore;
+  private _userInfoStore: LuigiStore;
   private _loggedInStore: LuigiStore;
-  _profileLogoutFn: any;
 
   constructor() {
     this._userInfoStore = writable({});
@@ -20,7 +19,7 @@ class AuthLayerSvcClass {
   setUserInfo(uInfo: any) {
     this._userInfoStore.set(uInfo);
   }
-  setLoggedIn(loggedIn: any) {
+  setLoggedIn(loggedIn: boolean) {
     this._loggedInStore.set(loggedIn);
   }
 
@@ -30,10 +29,6 @@ class AuthLayerSvcClass {
 
   getLoggedInStore() {
     return this._loggedInStore;
-  }
-
-  setProfileLogoutFn(fn: any) {
-    this._profileLogoutFn = fn;
   }
 
   async init() {
@@ -161,7 +156,7 @@ class AuthLayerSvcClass {
     }
   }
 
-  IdpProviderException(message: string) {
+  createIdpProviderException(message: string) {
     return { message, name: 'IdpProviderException' };
   }
 
@@ -172,7 +167,7 @@ class AuthLayerSvcClass {
       const customIdpInstance = await new idpProvider(idpProviderSettings);
       ['login'].forEach((requiredFnName) => {
         if (!GenericHelpers.isFunction(customIdpInstance[requiredFnName])) {
-          throw this.IdpProviderException(
+          throw this.createIdpProviderException(
             `${requiredFnName} function does not exist in custom IDP Provider ${idpProviderName}`
           );
         }
@@ -189,7 +184,7 @@ class AuthLayerSvcClass {
         type: 'IdpProviderException'
       });
     } else {
-      throw this.IdpProviderException(`IDP Provider ${idpProviderName} does not exist.`);
+      throw this.createIdpProviderException(`IDP Provider ${idpProviderName} does not exist.`);
     }
   }
 
