@@ -6,7 +6,6 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Node } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { serviceRegistry } from './service-registry';
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
 export interface Route {
   raw: string;
