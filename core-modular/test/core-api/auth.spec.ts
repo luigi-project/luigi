@@ -1,8 +1,8 @@
-import { LuigiAuth } from "../../src/core-api/auth";
-import type { Luigi } from "../../src/core-api/luigi";
-import { AuthLayerSvc } from "../../src/services/auth-layer.service";
-import { AuthStoreSvc } from "../../src/services/auth-store.service";
-import { ConfigHelpers } from "../../src/utilities/helpers/config-helpers";
+import { LuigiAuth } from '../../src/core-api/auth';
+import type { Luigi } from '../../src/core-api/luigi';
+import { AuthLayerSvc } from '../../src/services/auth-layer.service';
+import { AuthStoreSvc } from '../../src/services/auth-store.service';
+import { ConfigHelpers } from '../../src/utilities/helpers/config-helpers';
 
 describe('Auth', () => {
   let auth_use: string | undefined;
@@ -12,7 +12,7 @@ describe('Auth', () => {
     jest.spyOn(ConfigHelpers, 'getConfigValue').mockImplementation((key) => {
       if (key === 'auth.use') {
         return auth_use;
-      } 
+      }
 
       return undefined;
     });
@@ -24,10 +24,10 @@ describe('Auth', () => {
   });
 
   it('isAuthorizationEnabled', () => {
-      expect(LuigiAuth.isAuthorizationEnabled()).toEqual(false);
+    expect(LuigiAuth.isAuthorizationEnabled()).toEqual(false);
 
-      auth_use = 'someIDP';
-      expect(LuigiAuth.isAuthorizationEnabled()).toEqual(true);
+    auth_use = 'someIDP';
+    expect(LuigiAuth.isAuthorizationEnabled()).toEqual(true);
   });
 
   it('login', () => {
@@ -72,7 +72,7 @@ describe('Auth', () => {
         initialized: true
       } as unknown as Luigi;
     });
-    store = LuigiAuth.store;    
+    store = LuigiAuth.store;
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
 
     const spysToExecute = [];
@@ -93,6 +93,6 @@ describe('Auth', () => {
 
     spysToExecute.forEach((spy) => {
       expect(spy).toHaveBeenCalledTimes(1);
-    })
+    });
   });
 });
