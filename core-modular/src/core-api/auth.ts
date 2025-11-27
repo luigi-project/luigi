@@ -19,7 +19,6 @@ export class LuigiAuthClass {
    * Login the user dynamically.
    * This will run the same functionality as though the user clicked the login button.
    * @memberof Authorization
-   * @since 1.5.0
    * @example
    * Luigi.auth().login();
    */
@@ -33,7 +32,6 @@ export class LuigiAuthClass {
    * Logout the user dynamically.
    * This will run the same functionality as though the user clicked the logout button.
    * @memberof Authorization
-   * @since 1.5.0
    * @example
    * Luigi.auth().logout();
    */
