@@ -156,5 +156,9 @@ export const GenericHelpers = {
     }
 
     return false;
+  },
+
+  getUrlParameter: (key: string) => {
+    return new URLSearchParams(window.location.search).get(key);
   }
 };

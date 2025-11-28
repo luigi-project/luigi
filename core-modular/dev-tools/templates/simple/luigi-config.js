@@ -45,7 +45,18 @@ window.onload = () => {
         {
           pathSegment: 'home',
           icon: 'home',
-          viewUrl: '/microfrontend.html#home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+          anonymousAccess: 'exclusive',
+          context: {
+            title: 'You are not signed in'
+          },
+          hideSideNav: true,
+          hideFromNav: true
+        },
+        {
+          pathSegment: 'home',
+          icon: 'home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
               pathSegment: 'c1',
@@ -56,7 +67,21 @@ window.onload = () => {
               viewGroup: 'vg1',
               clientPermissions: {
                 changeCurrentLocale: true
-              }
+              },
+              children: [
+                {
+                  pathSegment: ':dynamic',
+                  label: 'doesntmatter',
+                  viewUrl: '/microfrontend.html#dyn',
+                  children: [
+                    {
+                      pathSegment: '1',
+                      label: 'dynchild',
+                      viewUrl: '/microfrontend.html#dynchild'
+                    }
+                  ]
+                }
+              ]
             },
             {
               pathSegment: 'c2',
@@ -100,7 +125,9 @@ window.onload = () => {
         {
           pathSegment: 'help',
           icon: 'sys-help',
-          viewUrl: '/microfrontend.html#help'
+          viewUrl: '/microfrontend.html#help',
+          anonymousAccess: true,
+          hideSideNav: true
         },
         {
           category: { id: 'cat', label: 'notification', icon: 'notification' },
@@ -231,17 +258,18 @@ window.onload = () => {
               sameWindow: false
             }
           }
-        ],
-        staticUserInfoFn: () => {
-          return new Promise((resolve) => {
-            resolve({
-              name: 'Static User',
-              initials: 'LU',
-              email: 'other.luigi.user@example.com',
-              description: 'Luigi Developer'
-            });
-          });
-        }
+        ]
+        // staticUserInfoFn: () => {
+        //   return new Promise((resolve) => {
+        //     resolve({
+        //       name: 'Static User',
+        //       initials: 'LU',
+        //       email: 'other.luigi.user@example.com',
+        //       description: 'Luigi Developer',
+        //       picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
+        //     });
+        //   });
+        // }
       }
     },
     routing: {
@@ -254,6 +282,7 @@ window.onload = () => {
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
       },
+      profileType: 'vega',
       customTranslationImplementation: () => {
         return {
           getTranslation: (key, interpolations, locale) => {
@@ -310,6 +339,68 @@ window.onload = () => {
               options: ['12 h', '24 h']
             }
           }
+        }
+      }
+    },
+
+    lifecycleHooks: {
+      luigiAfterInit: () => {
+        console.log('AFTER INIT');
+      }
+    },
+
+    auth: {
+      use: 'myOIDC',
+      storage: 'none',
+      disableAutoLogin: true,
+      myOAuth2: {
+        idpProvider: window['LuigiPlugin-auth-oauth2'],
+        authorizeUrl: 'http://localhost:3000/auth',
+        logoutUrl: 'http://localhost:3000/session/end',
+        post_logout_redirect_uri: '/auth/logout.html',
+        authorizeMethod: 'GET',
+        oAuthData: {
+          client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
+          redirect_uri: '/auth/callback.html'
+        }
+      },
+      myOIDC: {
+        idpProvider: window['LuigiPlugin-auth-oidc-pkce'],
+        authority: 'http://localhost:3000',
+        logoutUrl: 'http://localhost:3000/session/end',
+        scope: 'openid profile email',
+
+        client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp', // example oidc-mockserver client id
+        response_type: 'code', // for PKCE
+        response_mode: 'fragment', // change between `query` and `fragment`
+        loadUserInfo: true,
+        post_logout_redirect_uri: '/auth/logout.html',
+
+        userInfoFn: (settings, authdata) => {
+          return new Promise((resolve) => {
+            resolve(authdata.profile);
+          });
+        }
+      },
+
+      events: {
+        onAuthSuccessful: (settings, authData) => {
+          console.log('AUTH successful');
+        },
+        onAuthError: (settings, err) => {
+          console.log('AUTH error');
+        },
+        onAuthExpired: (settings) => {
+          console.log('AUTH expired');
+        },
+        onLogout: (settings) => {
+          console.log('AUTH logout');
+        },
+        onAuthExpireSoon: (settings) => {
+          console.log('AUTH expire soon');
+        },
+        onAuthConfigError: (settings, err) => {
+          console.log('AUTH config error');
         }
       }
     }

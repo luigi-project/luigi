@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Luigi Mock Identity Provider</title>
+  </head>
+
+  <body>
+    Logging out...
+    <script>
+      window.onload = function () {
+        let href = encodeURI(window.location.href);
+        const decodeChars = (string) => string.replace(/[<>'*+?^${}()|[\]\\]/g, '\\$&');
+        let redirectTo = decodeChars(
+          decodeURIComponent(href.match(/post_logout_redirect_uri=(.*?)(&|$)/)[1]),
+        );
+        if (!redirectTo.startsWith(window.location.origin)) {
+          console.warn(
+            'post_logout_redirect_uri has wrong input. You are redirected to /auth/logout.html!',
+          );
+          redirectTo = '/auth/logout.html';
+        }
+        window.location.href = redirectTo;
+      };
+    </script>
+  </body>
+</html>
