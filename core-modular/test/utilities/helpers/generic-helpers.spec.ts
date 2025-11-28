@@ -4,20 +4,25 @@ const chai = require('chai');
 const assert = chai.assert;
 
 describe('Generic-helpers', () => {
-  let windowLocationImplementation: any;
+  let locationSearchString: string;
 
   beforeAll(() => {
-    windowLocationImplementation = window.location;
-    delete window.location;
-    window.location = {
-      search: function () {
-        return '';
-      }
-    } as any;
+    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
+      return {
+        location: {
+          search: locationSearchString
+        },
+        crypto: globalThis.crypto
+      } as unknown as Window & typeof globalThis;
+    });
   });
 
   afterAll(() => {
-    window.location = windowLocationImplementation;
+    jest.restoreAllMocks();
+  });
+
+  beforeEach(() => {
+    locationSearchString = '';
   });
 
   it('getRandomId', () => {
@@ -59,5 +64,12 @@ describe('Generic-helpers', () => {
   it('getNodeList', () => {
     assert.equal(GenericHelpers.getNodeList('body').length, 1);
     assert.equal(GenericHelpers.getNodeList('luigi-container').length, 0);
+  });
+
+  it('getUrlParameter', () => {
+    locationSearchString = '?qp=val&qp2=val2';
+    expect(GenericHelpers.getUrlParameter('notThere')).toBeFalsy();
+    expect(GenericHelpers.getUrlParameter('qp')).toEqual('val');
+    expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');
   });
 });
