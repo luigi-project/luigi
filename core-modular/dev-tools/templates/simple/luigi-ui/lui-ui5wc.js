@@ -191,10 +191,12 @@ function createCategoryClickHandler(id) {
   };
 }
 
-function renderProfilePopover(profileObj) {
+function renderProfilePopover(profileObj, avatar) {
   const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
   const profilePopover = document.createElement('ui5-popover');
   const profileList = document.createElement('ui5-list');
+  const uInfoWrapper = document.createElement('div');
+  uInfoWrapper.classList.add('lui-user-info');
 
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
@@ -228,8 +230,38 @@ function renderProfilePopover(profileObj) {
     profileList.appendChild(profileLi);
   }
 
+  if (profileObj.logout) {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', profileObj.logout.altText);
+    profileLi.innerText = profileObj.logout.label;
+
+    profileLi.addEventListener('click', () => {
+      profileObj.logout.doLogout();
+    });
+
+    profileList.appendChild(profileLi);
+  }
+
+  profilePopover.appendChild(uInfoWrapper);
   profilePopover.appendChild(profileList);
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
+
+  profileObj.onUserInfoUpdate((userInfo) => {
+    uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
+    uInfoWrapper.innerHTML += /*html*/ `      
+      <div>${userInfo.name}</div>
+      <div>${userInfo.email}</div>
+      <div>${userInfo.description}</div>
+    `;
+    if (userInfo.picture) {
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');
+      avatar.innerHTML = `<img src="${userInfo.picture}"/>`;
+    } else {
+      avatar.setAttribute('initials', userInfo.initials);
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-initials');
+    }
+  });
 }
 
 function onProfileClick(event) {
@@ -383,17 +415,30 @@ const connector = {
         };
         shellbar.addEventListener('logo-click', shellbar._logoEL);
       }
+
+      shellbar.innerHTML = html;
+
       if (topNavData.profile) {
-        if (topNavData.profile.staticUserInfoFn) {
-          topNavData.profile.staticUserInfoFn().then((value) => {
-            shellbar._userInfo = value;
+        console.log(topNavData.profile);
+        if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
+          const ava = document.createElement('ui5-avatar');
+          ava.setAttribute('slot', 'profile');
+          ava.setAttribute('shape', 'Circle');
+          ava.setAttribute('size', 'M');
+          ava.setAttribute('color-scheme', 'Accent7');
+          renderProfilePopover(topNavData.profile, ava);
+          shellbar.appendChild(ava);
+          shellbar.addEventListener('profile-click', onProfileClick);
+        } else {
+          const loginBtn = document.createElement('div');
+          loginBtn.innerHTML = 'Sign In';
+          loginBtn.setAttribute('slot', 'profile');
+          shellbar.appendChild(loginBtn);
+          shellbar.addEventListener('profile-click', () => {
+            globalThis.Luigi.auth().login();
           });
         }
-        html += `<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
-        renderProfilePopover(topNavData.profile);
-        shellbar.addEventListener('profile-click', onProfileClick);
       }
-      shellbar.innerHTML = html;
 
       (topNavData.topNodes || []).forEach((item) => {
         addShellbarItem(shellbar, item);
@@ -444,6 +489,7 @@ const connector = {
   renderLeftNav: (leftNavData) => {
     const sidenav = document.querySelector('ui5-side-navigation');
     const burger = document.getElementById('toggle');
+
     if (sidenav && burger) {
       if (!burger._clickListener) {
         burger._clickListener = () => {
@@ -452,6 +498,13 @@ const connector = {
         burger.addEventListener('click', burger._clickListener);
       }
       sidenav.innerHTML = '';
+      if (leftNavData?.selectedNode?.hideSideNav) {
+        sidenav.setAttribute('style', 'display: none');
+        burger.setAttribute('style', 'display: none');
+      } else {
+        sidenav.removeAttribute('style');
+        burger.removeAttribute('style');
+      }
       const containerFrag = document.createDocumentFragment();
       if (leftNavData.items) {
         leftNavData.items.forEach((item) => {
@@ -844,6 +897,21 @@ const connector = {
       text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
       type: 'info'
     });
+  },
+
+  showFatalError: (errorMsg) => {
+    var errorTextNode = document.createTextNode(errorMsg);
+    var fd_ui = document.createElement('div');
+    fd_ui.setAttribute('class', 'fd-ui');
+    fd_ui.setAttribute('style', 'text-align: center;');
+
+    var errorDiv = document.createElement('div');
+    errorDiv.setAttribute('class', 'fd-message-strip fd-message-strip--error');
+    errorDiv.setAttribute('style', 'max-width: 800px; display: inline-block; margin-top: 40px;');
+    errorDiv.appendChild(errorTextNode);
+
+    fd_ui.appendChild(errorDiv);
+    document.getElementById('app').appendChild(fd_ui);
   }
 };
 
