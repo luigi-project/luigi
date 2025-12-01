@@ -25,6 +25,14 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 -->
 
 
+## [v2.26.0] (2025-12-01)
+
+#### :rocket: Added
+* [#4519](https://github.com/luigi-project/luigi/pull/4519) LoadingIndicator missing in web component LuigiClient ([@walmazacn](https://github.com/walmazacn))
+
+
+
+
 ## [v2.25.1] (2025-10-22)
 
 #### :bug: Fixed
@@ -2098,3 +2106,4 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.24.0]: https://github.com/luigi-project/luigi/compare/v2.23.1...v2.24.0
 [v2.25.0]: https://github.com/luigi-project/luigi/compare/v2.24.0...v2.25.0
 [v2.25.1]: https://github.com/luigi-project/luigi/compare/v2.25.0...v2.25.1
+[v2.26.0]: https://github.com/luigi-project/luigi/compare/v2.25.1...v2.26.0
