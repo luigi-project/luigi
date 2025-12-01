@@ -56,7 +56,11 @@ describe('Routing Service', () => {
       getTopNavData: jest.fn(),
       getLeftNavData: jest.fn(),
       getTabNavData: jest.fn(),
-      extractDataFromPath: jest.fn()
+      extractDataFromPath: jest.fn(),
+      getPathData: jest.fn(),
+      findMatchingNode: jest.fn(),
+      getPathParams: jest.fn(),
+      leftNavItemClick: jest.fn()
     };
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
 
@@ -172,7 +176,7 @@ describe('Routing Service', () => {
 
     expect(RoutingHelpers.getCurrentPath).toHaveBeenCalled();
     expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
-    expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc');
+    expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc', undefined);
     expect(mockNavService.getCurrentNode).toHaveBeenCalledWith('/abc');
     expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, fakeNode);
     expect(mockConnector.renderTopNav).toHaveBeenCalled();

@@ -7,8 +7,8 @@
     "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "peerDependencies": {
-    "@angular/common": "^20.0.0",
-    "@angular/core": "^20.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/core": "^21.0.0",
     "@luigi-project/testing-utilities": "^2.0.0",
     "@luigi-project/client": "^2.0.0"
   },
@@ -22,5 +22,5 @@
     "@luigi-project/client": "^2.0.0",
     "@luigi-project/testing-utilities": "^2.0.0"
   },
-  "version": "2.25.1"
+  "version": "21.0.1"
 }
