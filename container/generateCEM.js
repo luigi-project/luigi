@@ -84,43 +84,44 @@ function parseContainerEvents(fileContent) {
   });
 
   ast.body.forEach((stmt) => {
-    if (stmt.type === 'ExportNamedDeclaration' && stmt.declaration?.id?.name === 'Events') {
+    if (stmt.type === 'ExportNamedDeclaration' && stmt.declaration?.declarations?.length) {
       let previousDeclaration;
-      stmt.declaration.body.body.forEach((eventName, index) => {
-        const { declaration } = eventName;
-        if (eventName.type === 'ExportNamedDeclaration') {
-          if (
-            declaration.type === 'VariableDeclaration' &&
-            declaration.declarations[0].init &&
-            declaration.declarations[0].init.type === 'Literal'
-          ) {
-            const name = declaration.declarations[0].init.value;
-            const jsdocComment = findAttachedJSDocComment(declaration, previousDeclaration, jsdocComments);
-            if (jsdocComment?.value) {
-              let cleanedComment = jsdocComment.value
-                .trim()
-                .split('\n')
-                .map((line) => {
-                  if (line.trim().startsWith('*')) {
-                    return line.trim().slice(1).trim();
-                  }
-                  return line.trim();
-                })
-                .join(' ')
-                .replace('@returns {void}', '')
-                .replaceAll('<br>', '')
-                .trim();
-              if (cleanedComment && cleanedComment.indexOf('@deprecated') > 0) {
-                console.log('IGNORING', name, ': marked as deprecated');
-              } else {
-                events.push({
-                  name,
-                  description: cleanedComment || 'No description'
-                });
-              }
+      stmt.declaration.declarations.forEach((declaration) => {
+        if (
+          declaration.type === 'VariableDeclarator'
+          && declaration.init.type === 'Literal'
+        ) {
+          const name = declaration.init.value;
+          const jsdocComment = findAttachedJSDocComment(declaration, previousDeclaration, jsdocComments);
+          if (jsdocComment?.value) {
+            let cleanedComment = jsdocComment.value
+              .trim()
+              .split('\n')
+              .map((line) => {
+                if (line.trim().startsWith('*')) {
+                  return line.trim().slice(1).trim();
+                }
+                return line.trim();
+              })
+              .join(' ')
+              .replace('=> -', '-')
+              .replace('unspecified -', '-')
+              .replace('@param', '@type')
+              .replace('@returns {void}', '')
+              .replaceAll('<br>', '')
+              .trim();
+
+            if (cleanedComment && cleanedComment.indexOf('@deprecated') > 0) {
+              console.log('IGNORING', name, ': marked as deprecated');
+            } else {
+              events.push({
+                name,
+                description: cleanedComment || 'No description'
+              });
             }
           }
         }
+
         previousDeclaration = declaration;
       });
     }

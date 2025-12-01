@@ -606,15 +606,23 @@ body {
     table {
         border-collapse: collapse;
         border-color: transparent;
+        margin-top: 25px;
         table-layout: fixed;
     }
 
     table td, table th {
-        padding-right: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 5px 15px;
         text-align: left;
     }
 
     table p {
         margin: 0;
+    }
+
+    p:has(strong):has(code),
+    p:has(strong):has(code) + p {
+        display: inline-block;
+        padding-right: 5px;
     }
 }
