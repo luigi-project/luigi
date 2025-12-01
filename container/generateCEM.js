@@ -87,10 +87,7 @@ function parseContainerEvents(fileContent) {
     if (stmt.type === 'ExportNamedDeclaration' && stmt.declaration?.declarations?.length) {
       let previousDeclaration;
       stmt.declaration.declarations.forEach((declaration) => {
-        if (
-          declaration.type === 'VariableDeclarator'
-          && declaration.init.type === 'Literal'
-        ) {
+        if (declaration.type === 'VariableDeclarator' && declaration.init.type === 'Literal') {
           const name = declaration.init.value;
           const jsdocComment = findAttachedJSDocComment(declaration, previousDeclaration, jsdocComments);
           if (jsdocComment?.value) {

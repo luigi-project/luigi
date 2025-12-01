@@ -8,7 +8,7 @@ import type {
   ModalPathDataRequestPayload,
   ModalSettingsRequestPayload,
   NavigationRequestPayload,
-  ParamsRequestPayload,
+  ParamsRequestPayload
 } from 'EventPayloads';
 
 /**
@@ -427,7 +427,7 @@ export const Events = {
   SHOW_LOADING_INDICATOR_REQUEST,
   UPDATE_MODAL_PATH_DATA_REQUEST,
   UPDATE_MODAL_SETTINGS_REQUEST,
-  UPDATE_TOP_NAVIGATION_REQUEST,
+  UPDATE_TOP_NAVIGATION_REQUEST
 };
 
 export { Events as LuigiEvents };
