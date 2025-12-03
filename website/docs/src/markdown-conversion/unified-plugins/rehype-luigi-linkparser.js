@@ -18,7 +18,7 @@ export default function luigiLinkParser(options) {
   var settings = options || {};
 
   return function transformer(tree) {
-    visit(tree, 'element', function(node) {
+    visit(tree, 'element', function (node) {
       modify(node, 'href');
     });
   };
@@ -50,7 +50,8 @@ export default function luigiLinkParser(options) {
         const parsedHash = parsed.hash.toLowerCase();
 
         // current page anchor link
-        node.properties['href'] = prependForExport() + '/docs/' + settings.shortName + parsedHash.replace('lifecycle..', '');
+        node.properties['href'] =
+          prependForExport() + '/docs/' + settings.shortName + parsedHash.replace('lifecycle..', '');
         node.properties['onclick'] = 'navigateInternal(event, this)';
         node.properties['data-linktype'] = 'internal';
       } else if (

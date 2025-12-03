@@ -30,15 +30,15 @@ export class splitViewHandle extends LuigiClientBase {
     Object.assign(this.splitView, settings);
 
     const removeSplitViewListeners = () => {
-      this.splitView.listeners.forEach(id => helpers.removeEventListener(id));
+      this.splitView.listeners.forEach((id) => helpers.removeEventListener(id));
     };
 
     this.splitView.listeners = [
-      helpers.addEventListener(`luigi.navigation.splitview.internal`, e => {
+      helpers.addEventListener(`luigi.navigation.splitview.internal`, (e) => {
         Object.assign(this.splitView, e.data.data);
       })
     ];
-    this.on('resize', newSize => {
+    this.on('resize', (newSize) => {
       this.splitView.size = newSize;
     });
     this.on('close', removeSplitViewListeners);
@@ -113,7 +113,7 @@ export class splitViewHandle extends LuigiClientBase {
       console.warn(name + ' is not a valid split view event');
       return false;
     }
-    const id = helpers.addEventListener(`luigi.navigation.splitview.${name}.ok`, e => {
+    const id = helpers.addEventListener(`luigi.navigation.splitview.${name}.ok`, (e) => {
       const filterParam = typeof e.data.data == 'number' ? e.data.data : undefined;
       callback(filterParam);
     });
