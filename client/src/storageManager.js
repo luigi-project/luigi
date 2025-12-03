@@ -8,7 +8,9 @@ const pendingOperation = new Map();
  * StorageManager allows you to use browser local storage of key/values. Every storage operation is sent to be managed by Luigi Core.
  * The idea is that different micro frontends can share or persist items using local storage, as long as they come from the same domain and follow the [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
  * Since all storage operations are asynchronous (sending an event to Luigi Core that will reply once operation is finished), all the methods return Promises.
+ * @augments LuigiClientBase
  * @name storageManager
+ * @class
  */
 class StorageManager extends LuigiClientBase {
   /** @private */

@@ -7,7 +7,9 @@ import { splitViewHandle } from './splitViewHandle';
   - Provide routing inside micro frontends.
   - Reflect the route.
   - Keep the navigation state in Luigi.
+  * @augments LuigiClientBase
   * @name linkManager
+  * @class
   */
 export class linkManager extends LuigiClientBase {
   /**

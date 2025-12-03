@@ -139,11 +139,15 @@ body {
     &.page-luigi-core-api,
     &.page-luigi-client-api,
     &.page-luigi-element-api {
+        .h3Wrapper > h3[id],
         h4 {
-            margin-top: 35px;
             display: inline-block;
             border-left: 4px solid $primary-color;
             padding-left: 10px;
+        }
+
+        h4 {
+            margin-top: 35px;
         }
     }
 
@@ -219,7 +223,6 @@ body {
         li {
             position: relative;
             padding-left: 20px;
-            
             list-style: none;
 
             &:before {
@@ -621,8 +624,11 @@ body {
     }
 
     p:has(strong):has(code),
-    p:has(strong):has(code) + p {
+    p:has(strong):has(code) + p:not(:has(strong)) {
         display: inline-block;
-        padding-right: 5px;
+    }
+
+    p:has(strong):has(code) > code {
+        padding-right: 0;
     }
 }

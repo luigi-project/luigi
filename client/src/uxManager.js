@@ -4,7 +4,9 @@ import { helpers } from './helpers';
 
 /**
  * Use the UX Manager to manage the appearance features in Luigi.
+ * @augments LuigiClientBase
  * @name uxManager
+ * @class
  */
 class UxManager extends LuigiClientBase {
   /** @private */

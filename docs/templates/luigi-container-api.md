@@ -32,6 +32,5 @@ In addition you can use standard `addEventListener` function to react on events 
 {{>examples~}}
 {{>returns~}}
 {{>since~}}
-{{>separator~}}
 {{/children~}}
 {{/orphans~}}

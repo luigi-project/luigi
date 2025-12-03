@@ -9,7 +9,11 @@ function parseName(name) {
     return '';
   }
 
-  return name.replace('\\_this.', '').replace('\\_proto.', '');
+  if (name.includes('#')) {
+    name = name.substring(name.indexOf('#') + 1);
+  }
+
+  return name.replace('\\_this.', '').replace('\\_proto.', '').replace('exports.', '');
 }
 
 module.exports = { parseName };

@@ -3,7 +3,9 @@ import { helpers } from './helpers';
 
 /**
  * Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.
+ * @augments LuigiClientBase
  * @name Lifecycle
+ * @class
  */
 class LifecycleManager extends LuigiClientBase {
   /** @private */
@@ -255,8 +257,10 @@ class LifecycleManager extends LuigiClientBase {
   }
 
   /**
-   * Callback of the addInitListener
+   * Callback of the addInitListener <br><br>
+   * Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
    * @callback Lifecycle~initListenerCallback
+   * @kind function
    * @param {Object} context current context data
    * @param {string} origin Luigi Core URL
    */
@@ -357,8 +361,10 @@ class LifecycleManager extends LuigiClientBase {
   }
 
   /**
-   * Callback of the customMessageListener
+   * Callback of the customMessageListener <br><br>
+   * Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
    * @callback Lifecycle~customMessageListenerCallback
+   * @kind function
    * @param {Object} customMessage custom message object
    * @param {string} customMessage.id message id
    * @param {*} customMessage.MY_DATA_FIELD any other message data field

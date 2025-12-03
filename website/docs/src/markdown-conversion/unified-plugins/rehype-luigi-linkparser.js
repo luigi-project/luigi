@@ -25,8 +25,10 @@ export default function luigiLinkParser(options) {
 
   function modify(node, prop) {
     const githubMain = 'https://github.com/luigi-project/luigi/blob/main/';
+
     if (hasProperty(node, prop)) {
-      var parsed = url.parse(node.properties[prop]);
+      const parsed = url.parse(node.properties[prop]);
+
       if (
         (parsed.href.startsWith(githubMain + 'docs') && parsed.pathname && parsed.pathname.endsWith('.md')) ||
         (parsed.pathname && parsed.pathname.endsWith('.md') && !parsed.protocol)
@@ -45,8 +47,10 @@ export default function luigiLinkParser(options) {
 
         node.properties['href'] = prependForExport() + '/docs/' + newHref;
       } else if (parsed.hash && !parsed.pathname && !parsed.hostname) {
+        const parsedHash = parsed.hash.toLowerCase();
+
         // current page anchor link
-        node.properties['href'] = prependForExport() + '/docs/' + settings.shortName + parsed.hash.toLowerCase();
+        node.properties['href'] = prependForExport() + '/docs/' + settings.shortName + parsedHash.replace('lifecycle..', '');
         node.properties['onclick'] = 'navigateInternal(event, this)';
         node.properties['data-linktype'] = 'internal';
       } else if (

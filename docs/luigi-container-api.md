@@ -26,9 +26,6 @@ In addition you can use standard `addEventListener` function to react on events 
 ### new LuigiContainer()&nbsp;  
 <p>Base class for Luigi container.</p>
 
-
-* * *
-
 ### viewurl&nbsp;  
 <p>The URL of the microfrontend to be rendered. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -41,10 +38,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.viewurl = "/index.html"
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### deferInit&nbsp;  
 <p>If set to true defers from initializing the microfronted automatically. In that case init() can be used. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>
@@ -57,10 +53,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.deferInit = true
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### context&nbsp;  
 <p>The stringified context object to be passed to the microfrontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -73,10 +68,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.context = {label: "Dashboard"}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### label&nbsp;  
 <p>Label information for the microfrontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -89,10 +83,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.label = "Dashboard"
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### webcomponent&nbsp;  
 <p>Predicate that sets whether the microfrontend is to be rendered in a web component or not. It can also be an object with the attributes shown in a table below.</p>
 <blockquote class="warning">
@@ -120,10 +113,9 @@ Type: `Boolean` or `WebComponentSettings` or `String`
 ```js
 myContainer.webcomponent = { type: 'module', selfRegistered: true, tagName: 'my-webcomponent'}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### locale&nbsp;  
 <p>The locale to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -136,10 +128,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.locale = "en_us"
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### theme&nbsp;  
 <p>The theme to be passed to the  web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -152,10 +143,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.theme = 'sap_horizon'
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### activeFeatureToggleList&nbsp;  
 <p>The list of active feature toggles to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&lt;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>&gt;</p>
@@ -168,10 +158,9 @@ myContainer.activeFeatureToggleList = ["enable-foo", "allow-bar"]
 ```js
 <luigi-container viewurl="/index.html" active-feature-toggle-list='["enable-foo", "allow-bar"]'></luigi-container>
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### skipCookieCheck&nbsp;  
 <p>If set to true, skips third party cookie check. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>
@@ -184,10 +173,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.skipCookieCheck = true
 ```
-**Since**: 1.4.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.4.0
 ### skipInitCheck&nbsp;  
 <p>If set to true, skips handshake and ready event is fired immediately. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>
@@ -200,10 +188,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.skipInitCheck = true
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### nodeParams&nbsp;  
 <p>The parameters to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
@@ -216,10 +203,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.nodeParams = {foo: bar}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### noShadow&nbsp;  
 <p>If set to true, the Luigi container webcomponent will not use the shadow DOM for rendering. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>
@@ -232,10 +218,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.noShadow = true
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### searchParams&nbsp;  
 <p>The search parameters to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
@@ -248,10 +233,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.searchParams = {foo: bar}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### pathParams&nbsp;  
 <p>The path parameters to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
@@ -264,10 +248,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.pathParams = {foo: "bar"}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### clientPermissions&nbsp;  
 <p>The clientPermissions to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
@@ -280,10 +263,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.clientPermissions = {permission: "adminGroup"}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### userSettings&nbsp;  
 <p>The user settings to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
@@ -296,10 +278,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### anchor&nbsp;  
 <p>The anchor value to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -312,10 +293,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.anchor = '#foo'
 ```
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0
 ### allowRules&nbsp;  
 <p>The list of rules for the content in the iframe, managed by the HTML <code>allow</code> attribute.
 You can use one or more rules by adding them to the array, for example allowRules: [&quot;microphone&quot;, &quot;camera&quot;]. <br><br>
@@ -329,10 +309,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 containerElement.allowRules = ['microphone', 'camera']
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### sandboxRules&nbsp;  
 <p>The list of rules for the content in the iframe, managed by the HTML <code>sandbox</code> attribute.
 You can use one or more rules by adding them to the array, for example sandboxRules: [&quot;allow-scripts&quot;, &quot;allow-same-origin&quot;]. <br><br>
@@ -346,10 +325,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 containerElement.sandboxRules = ['allow-modals', 'allow-popups']
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### documentTitle&nbsp;  
 <p>The document title value to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>
@@ -362,10 +340,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.documentTitle = 'Luigi App'
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### hasBack&nbsp;  
 <p>The hasBack value to be passed to the web-component-based micro frontend.
 It indicates that there is one or more preserved views. Useful when you need to show a back button. <br><br>
@@ -379,10 +356,9 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.hasBack = true
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### dirtyStatus&nbsp;  
 <p>The dirty status value to be passed to the web-component-based micro frontend.
 It's used to indicate that there are unsaved changes when navigating away. <br><br>
@@ -396,18 +372,16 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 ```js
 myContainer.dirtyStatus = true
 ```
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### authData&nbsp;  
 <p>The authData value to be passed to the iframe-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
-**Since**: 1.2.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.2.0
 ### updateContext&nbsp;  
 <p>Function that updates the context of the microfrontend.</p>
 
@@ -422,7 +396,6 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 containerElement.updateContext({newContextData: 'some data'})
 ```
 **Returns**: <code>void</code> - <p>no explicit return type</p>  
-**Since**: 1.0.0  
-
-* * *
-
+  
+**Meta**:  
+* **since:** 1.0.0

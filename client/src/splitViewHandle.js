@@ -7,8 +7,10 @@ import { helpers } from './helpers';
   At a given time, you can open only one split view. It closes automatically when you navigate to a different route.
   When you call `handle.collapse()`, the split view gets destroyed. It recreates when you use `handle.expand()`.
   `openAsSplitView` returns an instance of the split view handle. The functions, actions, and event handlers listed below allow you to control and manage the split view.
+  * @augments LuigiClientBase
   * @name splitView
   * @since 0.6.0
+  * @class
   */
 export class splitViewHandle extends LuigiClientBase {
   /**

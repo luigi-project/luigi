@@ -54,7 +54,7 @@ console.log(template); // Output: <p>Hello, World!</p>
 **Extends**: <code>HTMLElement</code>  
 Base class for Luigi web component micro frontends.
 
-#### new exports.LuigiElement(options)&nbsp;  
+#### new LuigiElement(options)&nbsp;  
 
 | Param | Type | Description |
 | --- | --- | --- |
