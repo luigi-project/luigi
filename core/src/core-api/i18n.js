@@ -84,7 +84,7 @@ class LuigiI18NManager {
    * @memberof LuigiI18N
    */
   _notifyLocaleChange(locale) {
-    Object.getOwnPropertyNames(this.listeners).forEach(listenerId => {
+    Object.getOwnPropertyNames(this.listeners).forEach((listenerId) => {
       this.listeners[listenerId](locale);
     });
     config.configChanged();
@@ -159,7 +159,7 @@ class LuigiI18NManager {
     if (typeof value !== 'string' || !value.trim()) {
       return value;
     }
-    Object.keys(interpolations).forEach(item => {
+    Object.keys(interpolations).forEach((item) => {
       value = value.replace(
         new RegExp('{' + EscapingHelpers.escapeKeyForRegexp(item) + '}', 'gi'),
         interpolations[item]

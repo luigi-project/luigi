@@ -24,8 +24,8 @@ class CustomMessagesManager {
   sendToAll(message) {
     const internalMessage = MessagesListeners.convertCustomMessageUserToInternal(message);
     IframeHelpers.getMicrofrontendsInDom()
-      .map(microfrontendObj => microfrontendObj.container)
-      .map(mfContainer => IframeHelpers.sendMessageToIframe(mfContainer, internalMessage));
+      .map((microfrontendObj) => microfrontendObj.container)
+      .map((mfContainer) => IframeHelpers.sendMessageToIframe(mfContainer, internalMessage));
   }
 
   /**
@@ -47,9 +47,9 @@ class CustomMessagesManager {
   send(microfrontendId, message) {
     const internalMessage = MessagesListeners.convertCustomMessageUserToInternal(message);
     IframeHelpers.getMicrofrontendsInDom()
-      .filter(microfrontendObj => microfrontendObj.id === microfrontendId)
-      .map(microfrontendObj => microfrontendObj.container)
-      .map(mfContainer => IframeHelpers.sendMessageToIframe(mfContainer, internalMessage));
+      .filter((microfrontendObj) => microfrontendObj.id === microfrontendId)
+      .map((microfrontendObj) => microfrontendObj.container)
+      .map((mfContainer) => IframeHelpers.sendMessageToIframe(mfContainer, internalMessage));
   }
 }
 
