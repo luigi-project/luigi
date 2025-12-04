@@ -454,5 +454,17 @@ describe('Web Container Test', () => {
           expect(stub.getCall(0)).to.be.calledWith('LuigiClient.uxManager() -> Hide Loading Indicator Request');
         });
     });
+
+    it('closeCurrentModal', () => {
+      cy.on('window:alert', stub);
+
+      cy.get(containerSelector)
+        .shadow()
+        .get('#closeCurrentModalBtn')
+        .click()
+        .then(() => {
+          expect(stub.getCall(0)).to.be.calledWith('LuigiClient.uxManager().closeCurrentModal()');
+        });
+    });
   });
 });

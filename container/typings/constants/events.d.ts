@@ -368,6 +368,13 @@ export const ADD_BACKDROP_REQUEST = 'add-backdrop-request';
  */
 export const REMOVE_BACKDROP_REQUEST = 'remove-backdrop-request';
 
+/**
+ * Event fired when the micro frontend requests to close the current modal.
+ * @type {unspecified} (type is not relevant in this case)
+ * @memberof Events
+ */
+export const CLOSE_CURRENT_MODAL_REQUEST = 'close-current-modal-request';
+
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 export class LuigiEvent extends Event {
   payload?: unknown;
@@ -401,6 +408,7 @@ export const Events = {
   ALERT_REQUEST,
   BACK_NAVIGATION_REQUEST,
   CHECK_PATH_EXISTS_REQUEST,
+  CLOSE_CURRENT_MODAL_REQUEST,
   CLOSE_USER_SETTINGS_REQUEST,
   COLLAPSE_LEFT_NAV_REQUEST,
   CUSTOM_MESSAGE,

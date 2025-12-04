@@ -151,4 +151,9 @@ export namespace LuigiInternalMessageID {
    * A message emmitted from the Microfrontend when a request to set the viewgroup data is sent
    */
   export const SET_VIEW_GROUP_DATA_REQUEST = 'luigi.setVGData';
+
+  /**
+   * A message emmitted from the Microfrontend when a request to close the current modal is sent
+   */
+  export const CLOSE_CURRENT_MODAL_REQUEST = 'luigi.close-modal';
 }

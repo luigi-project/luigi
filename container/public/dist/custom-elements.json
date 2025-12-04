@@ -394,6 +394,13 @@
               "type": {
                 "text": "Event"
               }
+            },
+            {
+              "name": "close-current-modal-request",
+              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case) @memberof Events",
+              "type": {
+                "text": "Event"
+              }
             }
           ]
         }
@@ -762,6 +769,13 @@
             {
               "name": "remove-backdrop-request",
               "description": "Event fired when the micro frontend requests to remove the backdrop. @type {unspecified} (type is not relevant in this case) @memberof Events",
+              "type": {
+                "text": "Event"
+              }
+            },
+            {
+              "name": "close-current-modal-request",
+              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
