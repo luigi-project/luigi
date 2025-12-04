@@ -4,6 +4,17 @@
 
 
 
+## [v1.7.5] (2025-12-04)
+
+#### :rocket: Added
+
+* [#4645](https://github.com/luigi-project/luigi/pull/4645) Added close current modal event ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4519](https://github.com/luigi-project/luigi/pull/4519) Added loading indicator for webcomponent client api ([@walmazacn](https://github.com/walmazacn))
+
+
+
+
+
 ## [v1.7.4] (2025-09-24)
 
 #### :bug: Fixed
@@ -141,3 +152,4 @@
 [v1.7.2]: https://github.com/luigi-project/luigi/compare/container/v1.7.1...container/v1.7.2
 [v1.7.3]: https://github.com/luigi-project/luigi/compare/container/v1.7.2...container/v1.7.3
 [v1.7.4]: https://github.com/luigi-project/luigi/compare/container/v1.7.3...container/v1.7.4
+[v1.7.5]: https://github.com/luigi-project/luigi/compare/container/v1.7.4...container/v1.7.5
