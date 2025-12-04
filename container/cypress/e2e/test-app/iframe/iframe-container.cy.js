@@ -542,10 +542,7 @@ describe('Iframe Container Test', () => {
           .contains('test close current modal')
           .click()
           .then(() => {
-            cy.wrap(stub).should(
-              'have.been.calledWith',
-              'close-current-modal-request'
-            );
+            cy.wrap(stub).should('have.been.calledWith', 'close-current-modal-request');
           });
       });
   });
