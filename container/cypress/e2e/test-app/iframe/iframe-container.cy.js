@@ -529,4 +529,21 @@ describe('Iframe Container Test', () => {
         });
       });
   });
+
+  it('closeCurrentModal', () => {
+    cy.on('window:alert', stub);
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+        cy.wrap($body)
+          .contains('test close current modal')
+          .click()
+          .then(() => {
+            cy.wrap(stub).should('have.been.calledWith', 'close-current-modal-request');
+          });
+      });
+  });
 });

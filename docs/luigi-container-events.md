@@ -373,3 +373,11 @@ Event fired when the micro frontend requests to remove the backdrop.
 
 
  
+
+### CLOSE_CURRENT_MODAL_REQUEST
+
+Event fired when the micro frontend requests to close the current modal.
+
+
+
+ 
