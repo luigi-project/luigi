@@ -132,6 +132,9 @@ export default class extends HTMLElement {
     const closeAlertResponse = document.createElement('template');
     closeAlertResponse.innerHTML = '<span id="closeAlertResponse"></span>';
 
+    const closeCurrentModalBtn = document.createElement('template');
+    closeCurrentModalBtn.innerHTML = '<button id="closeCurrentModalBtn">closeCurrentModal</button>';
+
     this._shadowRoot = this.attachShadow({
       mode: 'open',
       delegatesFocus: false
@@ -171,6 +174,7 @@ export default class extends HTMLElement {
     this._shadowRoot.appendChild(confirmationModalBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(showLoadingBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(hideLoadingBtn.content.cloneNode(true));
+    this._shadowRoot.appendChild(closeCurrentModalBtn.content.cloneNode(true));
     this._shadowRoot.appendChild(customMessageDiv.content.cloneNode(true));
     this._shadowRoot.appendChild(empty.content.cloneNode(true));
     this._shadowRoot.appendChild(closeAlertResponse.content.cloneNode(true));
@@ -504,6 +508,11 @@ export default class extends HTMLElement {
             type: 'warning'
           });
         });
+    });
+
+    this.$closeCurrentModalBtn = this._shadowRoot.querySelector('#closeCurrentModalBtn');
+    this.$closeCurrentModalBtn.addEventListener('click', () => {
+      this.LuigiClient.uxManager().closeCurrentModal();
     });
   }
 

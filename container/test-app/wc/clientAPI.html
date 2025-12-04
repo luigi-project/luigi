@@ -251,6 +251,14 @@
           },
         );
 
+        luigiContainer.addEventListener(
+          MFEventID.CLOSE_CURRENT_MODAL_REQUEST,
+          (event) => {
+            console.log('Close Current Modal Request received', event.detail);
+            alert('LuigiClient.uxManager().closeCurrentModal()');
+          },
+        );
+
         // linkManager listeners:
         // path exists
         luigiContainer.addEventListener(MFEventID.PATH_EXISTS_REQUEST, (event) => {

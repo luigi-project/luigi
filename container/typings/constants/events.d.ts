@@ -401,6 +401,13 @@ export namespace Events {
    * @returns {void}
    */
   export const REMOVE_BACKDROP_REQUEST = 'remove-backdrop-request';
+
+  /**
+   * Event fired when the micro frontend requests to close the current modal.
+   * @type {unspecified} (type is not relevant in this case)
+   * @returns {void}
+   */
+  export const CLOSE_CURRENT_MODAL_REQUEST = 'close-current-modal-request';
 }
 
 export class LuigiEvent extends Event {
