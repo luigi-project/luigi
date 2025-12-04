@@ -1,13 +1,16 @@
 import { get, writable } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers';
+
 /**
- * Functions to use feature toggles in Luigi
+ * Functions to use feature toggles in Luigi.
  * @name FeatureToggles
+ * @class
  */
 class LuigiFeatureToggles {
   constructor() {
     this.featureToggleList = writable([]);
   }
+
   /**
    * Add a feature toggle to an active feature toggles list
    * @memberof FeatureToggles

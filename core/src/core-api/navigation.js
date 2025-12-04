@@ -1,16 +1,14 @@
 import { linkManager } from './_internalLinkManager';
 
 /* istanbul ignore file */
+/**
+ * Use these functions for navigation-related features.
+ * @name LuigiNavigation
+ * @class
+ */
 class LuigiNavigationManager {
   /**
-   * Use these functions for navigation-related features.
-   * @name LuigiNavigation
-   */
-  constructor() {}
-
-  /**
    * Refreshes top navigation badge counters by rendering the navigation again.
-
    * @memberof LuigiNavigation
    * @example
    * Luigi.navigation().updateTopNavigation();

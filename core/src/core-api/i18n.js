@@ -5,6 +5,7 @@ import { defaultLuigiTranslationTable } from '../utilities/defaultLuigiTranslati
 /**
  * Localization-related functions.
  * @name LuigiI18N
+ * @class
  */
 class LuigiI18NManager {
   constructor() {

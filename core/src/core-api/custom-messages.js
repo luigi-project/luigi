@@ -4,6 +4,7 @@ import { MessagesListeners } from '../services/messages-listeners';
 /**
  * Functions related to custom messages.
  * @name CustomMessages
+ * @class
  */
 class CustomMessagesManager {
   /**

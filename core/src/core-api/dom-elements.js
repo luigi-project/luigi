@@ -1,9 +1,11 @@
 import { CUSTOM_LUIGI_CONTAINER } from './../utilities/constants';
 import { IframeHelpers } from './../utilities/helpers';
+
 /* istanbul ignore file */
 /**
  * Use these functions to get DOM elements.
- * @namespace Elements
+ * @name Elements
+ * @class
  */
 class LuigiElements {
   /**
@@ -75,7 +77,7 @@ class LuigiElements {
 
   /**
    * Returns a list of all available micro frontends.
-   * @returns {{id: string, active: boolean, container: HTMLElement, type: ('main'|'split-view'|'modal')}[]} list of objects defining all micro frontends from the DOM
+   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'split-view'|'modal'}>} list of objects defining all micro frontends from the DOM
    * @example
    * Luigi.elements().getMicrofrontends();
    * @memberof Elements
@@ -87,7 +89,7 @@ class LuigiElements {
 
   /**
    * Returns all micro frontend iframes including the iframe from the modal if it exists.
-   * @returns {HTMLElement[]} an array of all micro frontend iframes from the DOM
+   * @returns {Array<HTMLElement>} an array of all micro frontend iframes from the DOM
    * @memberof Elements
    * @since 0.4.12
    * @example

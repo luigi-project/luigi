@@ -9,8 +9,10 @@ import {
 import { LuigiAuth, LuigiElements } from '.';
 import { AuthLayerSvc, LifecycleHooks } from '../services';
 import { NodeDataManagementStorage } from '../services/node-data-management.js';
+
 /**
  * @name Configuration
+ * @class
  */
 class LuigiConfig {
   /**

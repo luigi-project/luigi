@@ -3,14 +3,17 @@ import { GenericHelpers } from '../utilities/helpers';
 import { get, writable } from 'svelte/store';
 import { linkManager } from './_internalLinkManager';
 import { SemiCollapsibleNavigation } from './../navigation/services/semi-collapsed-navigation';
+
 /**
  * Functions to use Luigi Core UX features.
  * @namespace UX
+ * @class
  */
 class LuigiUX {
   constructor() {
     this.documentTitle = writable();
   }
+
   /**
    * Hides the app loading indicator.
    * @memberof UX

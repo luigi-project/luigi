@@ -1,17 +1,13 @@
 import { LuigiConfig } from './';
 import { AuthStoreSvc, AuthLayerSvc } from '../services';
+
 /* istanbul ignore file */
 /**
- * Authorization helpers
+ * Authorization helpers.
  * @name Authorization
+ * @class
  */
 class LuigiAuth {
-  /**
-   * @private
-   * @memberof Authorization
-   */
-  constructor() {}
-
   /**
    * Detects if authorization is enabled via configuration.
    * Read more about [custom authorization providers](authorization-configuration.md).
@@ -53,6 +49,18 @@ class LuigiAuth {
   }
 
   /**
+   * Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration. <br><br>
+   * Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+   * @typedef {Object} AuthData
+   * @memberof Authorization
+   * @kind typedef
+   * @property {string} accessToken - access token value
+   * @property {string} accessTokenExpirationDate - timestamp value
+   * @property {string} scope - scope, can be empty if it is not required
+   * @property {string} idToken - id token, used for renewing authentication
+   */
+
+  /**
    * @private
    * @memberof Authorization
    * @param {string} eventName
@@ -74,19 +82,15 @@ class LuigiAuth {
     }
     return redirect;
   }
-  /**
-   * Authorization Storage helpers, to be used in your custom authorization provider.
-   * Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
-   * @name AuthorizationStore
-   */
 
   /**
-   * Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration.
-   * @typedef {Object} AuthData
-   * @property {string} accessToken - access token value
-   * @property {string} accessTokenExpirationDate - timestamp value
-   * @property {string} scope - scope, can be empty if it is not required
-   * @property {string} idToken - id token, used for renewing authentication
+   * @namespace AuthorizationStore
+   */
+  /**
+   * Getter for authorization Storage helpers, to be used in your custom authorization provider.
+   * Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
+   * @memberof AuthorizationStore
+   * @returns {Object} authorization storage helpers
    */
   get store() {
     if (!LuigiConfig.initialized) {
@@ -95,11 +99,12 @@ class LuigiAuth {
           'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
       );
     }
+
     return {
       /**
        * Retrieves the key name that is used to store the auth data.
        * @memberof AuthorizationStore
-       * @returns {string} - name of the store key
+       * @returns {string} name of the store key
        * @example Luigi.auth().store.getStorageKey()
        */
       getStorageKey: () => AuthStoreSvc.getStorageKey(),

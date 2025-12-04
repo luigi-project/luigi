@@ -1,9 +1,11 @@
 import { LuigiConfig } from '.';
 import { GenericHelpers, StateHelpers } from '../utilities/helpers';
 import { ViewUrlDecorator } from '../services';
+
 /**
  * Functions to use Luigi Core Theming features.
  * @namespace Theming
+ * @class
  */
 class LuigiTheming {
   constructor() {
