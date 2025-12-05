@@ -1,4 +1,4 @@
-import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
+import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
@@ -227,12 +227,31 @@ export const UIModule = {
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
-    luigi.getEngine()._connector?.renderModal(lc, modalSettings, () => {
-      onCloseCallback?.();
-      if (luigi.getConfigValue('routing.showModalPathInUrl')) {
-        routingService.removeModalDataFromUrl(true);
-      }
-    });
+    const closeModalInternal = () => {
+      return new Promise<void>((resolve) => {
+        const closeModalInternalHandler = () => {
+          if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+            routingService.removeModalDataFromUrl(true);
+          }
+          lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, closeModalInternalHandler);
+          resolve();
+        };
+        lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, closeModalInternalHandler);
+      });
+    };
+
+    luigi.getEngine()._connector?.renderModal(
+      lc,
+      modalSettings,
+      () => {
+        onCloseCallback?.();
+        if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+          routingService.removeModalDataFromUrl(true);
+        }
+      },
+      closeModalInternal
+    );
+    
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
