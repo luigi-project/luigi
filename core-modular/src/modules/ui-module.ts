@@ -227,16 +227,16 @@ export const UIModule = {
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
-    const closeModalInternal = () => {
+    const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
-        const closeModalInternalHandler = () => {
+        const onCloseRequestHandler = () => {
           if (luigi.getConfigValue('routing.showModalPathInUrl')) {
             routingService.removeModalDataFromUrl(true);
           }
-          lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, closeModalInternalHandler);
+          lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
           resolve();
         };
-        lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, closeModalInternalHandler);
+        lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
       });
     };
 
@@ -249,7 +249,7 @@ export const UIModule = {
           routingService.removeModalDataFromUrl(true);
         }
       },
-      closeModalInternal
+      onCloseRequest
     );
 
     const connector = luigi.getEngine()._connector;

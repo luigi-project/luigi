@@ -20,7 +20,7 @@ export interface LuigiConnector {
     content: HTMLElement,
     modalSettings: ModalSettings,
     onCloseCallback?: Function,
-    closeModalInternal?: Function
+    onCloseRequest?: Function
   ): any;
 
   renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
