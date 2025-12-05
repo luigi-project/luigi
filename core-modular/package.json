@@ -6,7 +6,7 @@
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-typescript": "^7.24.5",
     "@eslint/js": "^9.39.1",
-    "@luigi-project/container": "^1.7.4",
+    "@luigi-project/container": "^1.7.5",
     "@sveltejs/vite-plugin-svelte": "5.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/chai": "^5.2.2",
