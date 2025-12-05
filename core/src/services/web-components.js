@@ -19,7 +19,7 @@ class WebComponentSvcClass {
    *  @property {object} extendedContext
    *  @property {object} node
    *  @property {string} nodeId
-   *  @property {boolean} isSpecialMf indicates whether the web component is rendered in a modal, splitView or drawer (`false` by default)
+   *  @property {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (`false` by default)
    *  @property {boolean} noTemporaryContainerHeight
    */
 
@@ -231,9 +231,9 @@ class WebComponentSvcClass {
    * Handles the import of self registered web component bundles, i.e. the web component
    * is added to the customElements registry by the bundle code rather than by luigi.
    *
-   * @param {*} node the corresponding navigation node
-   * @param {*} viewUrl the source of the wc bundle
-   * @param {*} onload callback function executed after script attached and loaded
+   * @param {*} node - the corresponding navigation node
+   * @param {*} viewUrl - the source of the wc bundle
+   * @param {*} onload - callback function executed after script attached and loaded
    */
   includeSelfRegisteredWCFromUrl(node, viewUrl, onload) {
     if (this.checkWCUrl(viewUrl)) {
@@ -266,7 +266,7 @@ class WebComponentSvcClass {
    * Checks if a url is allowed to be included, based on 'navigation.validWebcomponentUrls' in luigi config.
    * Returns true, if allowed.
    *
-   * @param {*} url the url string to check
+   * @param {*} url - the url string to check
    */
   checkWCUrl(url) {
     if (url.indexOf('://') > 0 || url.trim().indexOf('//') === 0) {
@@ -512,9 +512,9 @@ class WebComponentSvcClass {
    * Responsible for rendering web component compounds based on a renderer or a nesting
    * micro frontend.
    *
-   * @param {*} navNode the navigation node defining the compound
-   * @param {*} wc_container the web component container dom element
-   * @param {*} context the luigi node context
+   * @param {*} navNode - the navigation node defining the compound
+   * @param {*} wc_container - the web component container dom element
+   * @param {*} context - the luigi node context
    */
   renderWebComponentCompound(navNode, wc_container, extendedContext) {
     const useLazyLoading = navNode.compound?.lazyLoadingOptions?.enabled === true;
@@ -607,7 +607,7 @@ class WebComponentSvcClass {
   /**
    * Gets the stored user settings for a specific user settings group
 
-   * @param {Object} wc node object definition
+   * @param {Object} wc - node object definition
    * @returns a promise that gets resolved with the stored user settings for a specific user settings group.
    */
   getUserSettingsForWc(wc) {

@@ -304,7 +304,7 @@ class IframeHelpersClass {
   /**
    * Sets tabindex for all elements to -1, except for one element and all its children which needs the focus.
    * Setting tabindex to a negative value removes keyboard acessibility from the specified elements.
-   * @param {string} targetElementClassName the class name/s of the element to be excluded
+   * @param {string} targetElementClassName - the class name/s of the element to be excluded
    */
   disableA11YKeyboardExceptClassName(targetElementClassName) {
     const nodeList = document.querySelectorAll('*');

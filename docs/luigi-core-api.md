@@ -160,8 +160,8 @@ By default, the user settings will be written from the **localStorage**
 
 | Param | Type | Description |
 | --- | --- | --- |
-| userSettingsObj | <code>Object</code> | to store in the storage. |
-| previousUserSettingsObj | <code>Object</code> | the previous object from storage. |
+| userSettingsObj | <code>Object</code> | to store in the storage |
+| previousUserSettingsObj | <code>Object</code> | the previous object from storage |
 
 **Example**  
 ```js
@@ -197,8 +197,8 @@ Set the global context object and triggers the corresponding update.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctx | <code>Object</code> | The context object to set |
-| preventUpdate | <code>boolean</code> | If true, no view update is triggered. Default is false. |
+| ctx | <code>Object</code> | the context object to set |
+| preventUpdate | <code>boolean</code> | if true, no view update is triggered; default is false |
 
   
 **Meta**:  
@@ -216,7 +216,7 @@ Note: the updated context values are not persisted. The developers have to do it
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctx | <code>Object</code> | The context to be updated. |
+| ctx | <code>Object</code> | the context to be updated |
 
   
 **Meta**:  
@@ -327,15 +327,15 @@ Navigates to the given path in the application. It contains either a full absolu
 | [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
 | modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
 | modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
+| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
 | modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
 | splitViewSettings | <code>Object</code> |  | opens a view in a split view. Use these settings to configure the split view's behaviour |
 | splitViewSettings.title | <code>string</code> |  | split view title. By default, it is the node label. If there is no label, it is left empty |
 | [splitViewSettings.size] | <code>number</code> | <code>40</code> | height of the split view in percent |
 | [splitViewSettings.collapsed] | <code>boolean</code> | <code>false</code> | opens split view in collapsed state |
 | drawerSettings | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | By default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
-| drawerSettings.backdrop | <code>boolean</code> |  | By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
+| drawerSettings.header | <code>any</code> |  | by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
+| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
 | [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
 
 **Example**  
@@ -373,7 +373,7 @@ Opens a view in a modal. You can specify the modal's title and size. If you do n
 | [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
 | modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
 | modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
+| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
 | modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
 | onCloseCallback | <code>function</code> |  | callback function called upon closing the opened modal |
 
@@ -384,6 +384,7 @@ Luigi.navigation().openAsModal('projects/pr1/users', {title:'Users', size:'m'});
 ### openAsSplitView&nbsp;  
 Opens a view in a split view. You can specify the split view's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty. The default size of the split view is 40, which means 40% height of the split view.
 
+**See**: [SplitView Client](https://docs.luigi-project.io/docs/luigi-client-api?section=splitview) for further documentation. These methods from the Client SplitView are also implemented for Luigi Core: `close`, `collapse`, `expand`, `isCollapsed`, `isExpanded`, `exists`  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -409,8 +410,8 @@ Opens a view in a drawer. You can specify if the drawer has a header, if a backd
 | --- | --- | --- | --- |
 | path | <code>string</code> |  | navigation path |
 | [drawerSettings] | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | By default, the header is visible. Title is node label and 'x' is displayed to close the drawer view. The header could also be an object with a `title` attribute to specify an own title for the drawer component. |
-| drawerSettings.backdrop | <code>boolean</code> |  | By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
+| drawerSettings.header | <code>any</code> |  | by default, the header is visible. Title is node label and 'x' is displayed to close the drawer view. The header could also be an object with a `title` attribute to specify an own title for the drawer component. |
+| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
 | [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
 
 **Example**  
@@ -936,7 +937,7 @@ Retrieves a theme object by name.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | a theme id |
+| id | <code>string</code> | theme id |
 
 **Example**  
 ```js
@@ -1071,7 +1072,7 @@ Read more about [custom authorization providers](authorization-configuration.md)
 ```js
 Luigi.auth().isAuthorizationEnabled();
 ```
-**Returns**: <code>boolean</code> - - `true` if authorization is enabled. Otherwise returns `false`.  
+**Returns**: <code>boolean</code> - `true` if authorization is enabled. Otherwise returns `false`.  
 ### login&nbsp;  
 Login the user dynamically.
 This will run the same functionality as though the user clicked the login button.
@@ -1128,7 +1129,7 @@ Retrieves the storage type that is used to store the auth data. To set it, use t
 ```js
 Luigi.auth().store.getStorageType()
 ```
-**Returns**: <code>&#x27;localStorage&#x27;</code> \| <code>&#x27;sessionStorage&#x27;</code> \| <code>&#x27;none&#x27;</code> - - storage type  
+**Returns**: <code>&#x27;localStorage&#x27;</code> \| <code>&#x27;sessionStorage&#x27;</code> \| <code>&#x27;none&#x27;</code> - storage type  
 ### getAuthData&nbsp;  
 Retrieves the current auth object.
 
@@ -1136,7 +1137,7 @@ Retrieves the current auth object.
 ```js
 Luigi.auth().store.getAuthData()
 ```
-**Returns**: <code>AuthData</code> - - the current auth data object  
+**Returns**: <code>AuthData</code> - the current auth data object  
 ### setAuthData&nbsp;  
 Sets authorization data
 

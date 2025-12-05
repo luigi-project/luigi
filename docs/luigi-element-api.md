@@ -58,7 +58,7 @@ Base class for Luigi web component micro frontends.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| options | <code>any</code> | The config object passed in constructor |
+| options | <code>any</code> | the config object passed in constructor |
 
 #### afterInit&nbsp;  
 Override to execute logic after initialization of the web component, i.e.
@@ -67,7 +67,7 @@ after internal rendering and all context data set.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctx | <code>any</code> | The context object passed by luigi core |
+| ctx | <code>any</code> | the context object passed by luigi core |
 
 #### render&nbsp;  
 Override to return the html template string defining the web component view.
@@ -75,7 +75,7 @@ Override to return the html template string defining the web component view.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctx | <code>any</code> | The context object passed by luigi core |
+| ctx | <code>any</code> | the context object passed by luigi core |
 
 #### update&nbsp;  
 Override to execute logic after an attribute of this web component has changed.
@@ -86,11 +86,12 @@ Override to execute logic when a new context object is set.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| ctx | <code>any</code> | The new context object passed by luigi core |
+| ctx | <code>any</code> | the new context object passed by luigi core |
 
 #### querySelector&nbsp;  
 Query selector operating on shadow root.
 
+**See**: ParentNode.querySelector  
 ### html&nbsp;  
 Html string processing according to luigi functionality.
 Also useful in combination with LitElement VS Code plugins.
@@ -98,7 +99,7 @@ Also useful in combination with LitElement VS Code plugins.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| literal | <code>string</code> | The literal to process |
-| keys | <code>Array.&lt;unknown&gt;</code> | The array of keys to process |
+| literal | <code>string</code> | the literal to process |
+| keys | <code>Array.&lt;unknown&gt;</code> | the array of keys to process |
 
-**Returns**: <code>string</code> - The processed literal  
+**Returns**: <code>string</code> - the processed literal  

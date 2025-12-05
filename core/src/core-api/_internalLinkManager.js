@@ -6,7 +6,7 @@ export class linkManager extends LuigiCoreAPIBase {
    * @private
    */
   constructor(values) {
-    // @param {object} values TODO: is it necessary at all, where is it used?
+    // @param {object} values - TODO: is it necessary at all, where is it used?
     super();
     Object.assign(this, values);
 
@@ -62,8 +62,8 @@ export class linkManager extends LuigiCoreAPIBase {
    * Consequently, the following calls shall have the exact same effect:
    * - linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
    * - linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')
-   * @param {string} semanticSlug concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
-   * @param {Object} params an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`.
+   * @param {string} semanticSlug - concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
+   * @param {Object} params - an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`
    * @example
    * LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
    * LuigiClient.linkManager().navigateToIntent('Sales-settings')
@@ -94,9 +94,9 @@ export class linkManager extends LuigiCoreAPIBase {
 
   /**
    * This function navigates to a modal after adding the onClosePromise that handles the callback for when the modal is closed.
-   * @param {string} path the navigation path to open in the modal
-   * @param {Object} modalSettings settings to configure the modal's title, size, width and height
-   * @param {Function} onCloseCallback callback function called upon closing the opened modal
+   * @param {string} path - the navigation path to open in the modal
+   * @param {Object} modalSettings - settings to configure the modal's title, size, width and height
+   * @param {Function} onCloseCallback - callback function called upon closing the opened modal
    */
   openAsModal(path, modalSettings = {}, onCloseCallback) {
     if (GenericHelpers.isFunction(onCloseCallback)) {

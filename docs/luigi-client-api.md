@@ -85,7 +85,7 @@ Removes an init listener.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | the id that was returned by the `addInitListener` function. |
+| id | <code>string</code> | the id that was returned by the `addInitListener` function |
 
 **Example**  
 ```js
@@ -410,15 +410,15 @@ Navigates to the given path in the application hosted by Luigi. It contains eith
 | [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
 | modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
 | modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
+| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
 | modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
 | splitViewSettings | <code>Object</code> |  | opens a view in a split view. Use these settings to configure the split view's behaviour |
 | splitViewSettings.title | <code>string</code> |  | split view title. By default, it is the node label. If there is no label, it is left empty |
 | [splitViewSettings.size] | <code>number</code> | <code>40</code> | height of the split view in percent |
 | [splitViewSettings.collapsed] | <code>boolean</code> | <code>false</code> | creates split view but leaves it closed initially |
-| drawerSettings | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | By default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
-| drawerSettings.backdrop | <code>boolean</code> |  | By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
+| drawerSettings | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size |
+| drawerSettings.header | <code>any</code> |  | by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view |
+| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop |
 | [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
 
 **Example**  
@@ -458,7 +458,7 @@ Consequently, the following calls shall have the exact same effect:
 | Param | Type | Description |
 | --- | --- | --- |
 | semanticSlug | <code>string</code> | concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>` |
-| params | <code>Object</code> | an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`. |
+| params | <code>Object</code> | an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}` |
 
 **Example**  
 ```js
@@ -475,10 +475,10 @@ Opens a view in a modal. You can specify the modal's title and size. If you don'
 | [modalSettings] | <code>Object</code> |  | opens a view in a modal. Use these settings to configure the modal's title and size |
 | modalSettings.title | <code>string</code> |  | modal title. By default, it is the node label. If there is no label, it is left empty |
 | [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
-| modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
-| modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
+| modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw' |
+| modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw' |
+| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded |
+| modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal |
 
 **Example**  
 ```js
@@ -496,11 +496,11 @@ In addition, you can specify if a new history entry will be created with the upd
 
 | Param | Type | Description |
 | --- | --- | --- |
-| updatedModalSettings | <code>Object</code> | possibility to update the active modal. |
-| updatedModalSettings.title | <code>Object</code> | update the `title` of the active modal. |
-| updatedModalSettings.size | <code>Object</code> | update the `size` of the active modal. |
-| updatedModalSettings.width | <code>string</code> | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| updatedModalSettings.height | <code>string</code> | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
+| updatedModalSettings | <code>Object</code> | possibility to update the active modal |
+| updatedModalSettings.title | <code>Object</code> | update the `title` of the active modal |
+| updatedModalSettings.size | <code>Object</code> | update the `size` of the active modal |
+| updatedModalSettings.width | <code>string</code> | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw' |
+| updatedModalSettings.height | <code>string</code> | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw' |
 | addHistoryEntry | <code>boolean</code> | adds an entry in the history, by default it's `false`. |
 
 **Example**  
@@ -510,6 +510,7 @@ LuigiClient.linkManager().updateModalSettings({title:'LuigiModal', size:'l'});
 ### openAsSplitView&nbsp;  
 Opens a view in a split view. You can specify the split view's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty. The default size of the split view is `40`, which means 40% height of the split view.
 
+**See**: [splitView](#splitView) for further documentation about the returned instance  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -535,8 +536,8 @@ Opens a view in a drawer. You can specify the size of the drawer, whether the dr
 | --- | --- | --- | --- |
 | path | <code>string</code> |  | navigation path |
 | drawerSettings | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | By default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
-| drawerSettings.backdrop | <code>boolean</code> |  | By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
+| drawerSettings.header | <code>any</code> |  | by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
+| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
 | [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
 | [drawerSettings.overlap] | <code>boolean</code> | <code>true</code> | enable resizing of main microfrontend iFrame after drawer open |
 
@@ -615,8 +616,8 @@ Sets options to customise route changing behaviour. The parameters are used by t
 | Param | Type | Description |
 | --- | --- | --- |
 | options | <code>Object</code> | navigation options |
-| options.preventHistoryEntry | <code>boolean</code> | By default, it is set to `false`. If it is set to `true`, there is no browser history being kept. |
-| options.preventContextUpdate | <code>boolean</code> | By default, it is set to `false`. If it is set to `true`, there is no context update being triggered. |
+| options.preventHistoryEntry | <code>boolean</code> | by default, it is set to `false`. If it is set to `true`, there is no browser history being kept. |
+| options.preventContextUpdate | <code>boolean</code> | by default, it is set to `false`. If it is set to `true`, there is no context update being triggered. |
 
 **Example**  
 ```js
@@ -696,7 +697,7 @@ Keeps the URL's query parameters for a navigation request.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| preserve | <code>boolean</code> | <code>false</code> | By default, it is set to `false`. If it is set to `true`, the URL's query parameters will be kept after navigation. |
+| preserve | <code>boolean</code> | <code>false</code> | by default, it is set to `false`. If it is set to `true`, the URL's query parameters will be kept after navigation. |
 
 **Example**  
 ```js
@@ -922,7 +923,7 @@ Shows an alert.
 | settings.links.LINK_KEY | <code>Object</code> | object containing the data for a particular link. To properly render the link in the alert message refer to the description of the **settings.text** parameter |
 | settings.links.LINK_KEY.text | <code>string</code> | text which replaces the link identifier in the alert content |
 | settings.links.LINK_KEY.url | <code>string</code> | URL to navigate when you click the link. Currently, only internal links are supported in the form of relative or absolute paths |
-| settings.links.LINK_KEY.dismissKey | <code>string</code> | dismissKey which represents the key of the link. |
+| settings.links.LINK_KEY.dismissKey | <code>string</code> | dismissKey which represents the key of the link |
 | settings.closeAfter | <code>number</code> | (optional) time in milliseconds that tells Luigi when to close the Alert automatically. If not provided, the Alert will stay on until closed manually. It has to be greater than `100` |
 
 **Example**  

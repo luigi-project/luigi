@@ -229,7 +229,7 @@
           "events": [
             {
               "name": "custom-message",
-              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data event data @property {string} id event ID @example { data: {}, id: 'some-id' }",
+              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
               "type": {
                 "text": "Event"
               }
@@ -607,7 +607,7 @@
           "events": [
             {
               "name": "custom-message",
-              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data event data @property {string} id event ID @example { data: {}, id: 'some-id' }",
+              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
               "type": {
                 "text": "Event"
               }

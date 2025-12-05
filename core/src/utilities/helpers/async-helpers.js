@@ -18,8 +18,8 @@ class AsyncHelpersClass {
    * Executes a function with a set of parameters
    * and returns its value as promise
    *
-   * @param {function} value  a function
-   * @param {array} args an array of arguments
+   * @param {function} value - a function
+   * @param {array} args - an array of arguments
    * @returns {promise}
    */
   applyFunctionPromisified(fn, args) {

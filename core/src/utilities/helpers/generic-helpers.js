@@ -138,7 +138,7 @@ class GenericHelpersClass {
 
   /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {path} string full url, relative or absolute path
+   * @param {path} string - full url, relative or absolute path
    */
   prependOrigin(path) {
     if (!path || path.startsWith('http')) {
@@ -153,7 +153,7 @@ class GenericHelpersClass {
 
   /**
    * Adds a leading slash to a string if it has none
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string with a leading slash
    */
   addLeadingSlash(str) {
@@ -162,7 +162,7 @@ class GenericHelpersClass {
 
   /**
    * Adds a trailing slash to a string if it has none
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string with a trailing slash
    */
   addTrailingSlash(str) {
@@ -174,7 +174,7 @@ class GenericHelpersClass {
 
   /**
    * Removes leading slash of a string
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string without leading slash
    */
   trimLeadingSlash(str) {
@@ -183,7 +183,7 @@ class GenericHelpersClass {
 
   /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {str} string from which any number of trailing slashes should be removed
+   * @param  string - from which any number of trailing slashes should be removed
    * @returns string string without any trailing slash
    */
   trimTrailingSlash(str) {
@@ -198,7 +198,7 @@ class GenericHelpersClass {
   /**
    * Returns a path that starts and end with one (and only one) slash,
    * regardless of the slashes being already present in the path given as input
-   * @param {str} string path to normalize
+   * @param {string} string - path to normalize
    * @returns string path that starts and ends with a slash
    */
 
@@ -312,8 +312,8 @@ class GenericHelpersClass {
    * References still stay.
    * Allows wildcard ending keys
    *
-   * @param {Object} input any given object
-   * @param {Array} of keys, allows also wildcards at the end, like: _*
+   * @param {Object} input - any given object
+   * @param {Array} keys - allows also wildcards at the end, like: _*
    */
   removeProperties(input, keys) {
     const res = {};
@@ -341,8 +341,8 @@ class GenericHelpersClass {
    * Compares two semver versions and returns 1, 0 or -1
    * Can be used as sort function.
    * Limited to full number comparisons, ignores dev, rc, next versions.
-   * @param {string} a source
-   * @param {string} b target
+   * @param {string} a - source
+   * @param {string} b - target
    * @example
    * semverCompare('1.0.0', '0.7.7')
    * ['1.3', '1.2', '1.4', '1.1'].sort(semverCompare)
@@ -364,8 +364,8 @@ class GenericHelpersClass {
   /**
    * Checks, if an experimental feature is enabled under settings.experminental
    *
-   * @param {*} expFeatureName the feature name to check for
-   * @param {*} showWarn if true, prints a warning on js console that feature is not enabled
+   * @param {*} expFeatureName - the feature name to check for
+   * @param {*} showWarn - if true, prints a warning on js console that feature is not enabled
    *
    * @returns true, if feature enabled, false otherwise.
    */

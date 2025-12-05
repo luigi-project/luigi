@@ -22,7 +22,7 @@ class LuigiElements {
 
   /**
    * Returns a boolean that indicates if Luigi is being rendered in a custom container or not.
-   * @returns {Boolean} _true_ if Luigi content is wrapped in a custom html tag, _false_ otherwise
+   * @returns {Boolean} `true` if Luigi content is wrapped in a custom html tag, `false` otherwise
    * @memberof Elements
    * @private
    * @since 0.6.0

@@ -52,9 +52,9 @@ class ViewGroupPreloadingClass {
 
   /**
    * Loads an iframe on the background by keeping the display to none.
-   * @param {*} settings the viewgroup settings
-   * @param {*} name the property name of the viewgroup
-   * @param {*} iframeContainer the container to attach the iframe to
+   * @param {*} settings - the viewgroup settings
+   * @param {*} name - the property name of the viewgroup
+   * @param {*} iframeContainer - the container to attach the iframe to
    */
   preloadIframeOnBackground(settings, name, iframeContainer) {
     const iframe = IframeHelpers.createIframe(settings.preloadUrl, name, null, 'main');

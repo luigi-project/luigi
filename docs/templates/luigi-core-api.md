@@ -40,6 +40,7 @@ This document outlines the features provided by the Luigi Core API. It covers th
 {{>header~}}
 {{>augments~}}
 {{>description~}}
+{{>see~}}
 {{>params~}}
 {{>properties~}}
 {{>examples~}}

@@ -29,6 +29,7 @@ In addition you can use standard `addEventListener` function to react on events 
 {{>header~}}
 {{>description~}}
 {{>summary~}}
+{{>see~}}
 {{>properties~}}
 {{>examples~}}
 {{>separator~}}

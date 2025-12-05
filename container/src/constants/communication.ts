@@ -21,8 +21,8 @@ import type {
  * Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
  * @type {Object}
  * @memberof Events
- * @property {object} data event data
- * @property {string} id event ID
+ * @property {object} data - event data
+ * @property {string} id - event ID
  * @example
  * {
  *  data: {},

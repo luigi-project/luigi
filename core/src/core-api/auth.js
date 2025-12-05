@@ -12,7 +12,7 @@ class LuigiAuth {
    * Detects if authorization is enabled via configuration.
    * Read more about [custom authorization providers](authorization-configuration.md).
    * @memberof Authorization
-   * @returns {boolean} - `true` if authorization is enabled. Otherwise returns `false`.
+   * @returns {boolean} `true` if authorization is enabled. Otherwise returns `false`.
    * @example
    * Luigi.auth().isAuthorizationEnabled();
    */
@@ -111,14 +111,14 @@ class LuigiAuth {
       /**
        * Retrieves the storage type that is used to store the auth data. To set it, use the `storage` property of the `auth` Luigi configuration object. Find out more [here](https://docs.luigi-project.io/docs/authorization-configuration?section=general-authorization-options).
        * @memberof AuthorizationStore
-       * @returns {('localStorage'|'sessionStorage'|'none')} - storage type
+       * @returns {('localStorage'|'sessionStorage'|'none')} storage type
        * @example Luigi.auth().store.getStorageType()
        */
       getStorageType: () => AuthStoreSvc.getStorageType(),
       /**
        * Retrieves the current auth object.
        * @memberof AuthorizationStore
-       * @returns {AuthData} - the current auth data object
+       * @returns {AuthData} the current auth data object
        * @example Luigi.auth().store.getAuthData()
        */
       getAuthData: () => AuthStoreSvc.getAuthData(),

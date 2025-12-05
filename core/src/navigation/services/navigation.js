@@ -407,7 +407,7 @@ class NavigationClass {
 
   /**
    * Checks if selectedNode has a category and if yes the categoryUid in metaInfo will be written to the browsers localstorage.
-   * @param {*} sortedChildrenEntries are sorted left nav node data
+   * @param {*} sortedChildrenEntries - are sorted left nav node data
    * @param {*} selectedNode
    * @param {boolean} sideNavAccordionMode
    */

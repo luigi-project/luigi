@@ -32,7 +32,7 @@ class LuigiTheming {
   /**
    * Sets the current theme id
    * @memberof Theming
-   * @param {string} id of a theme object
+   * @param {string} id - of a theme object
    * @since 1.4.0
    * @example
    * Luigi.theming().setCurrentTheme('light')
@@ -46,7 +46,7 @@ class LuigiTheming {
   /**
    * Retrieves a theme object by name.
    * @memberof Theming
-   * @param {string} id a theme id
+   * @param {string} id - theme id
    * @returns {promise} resolves a theme object
    * @since 1.4.0
    * @example

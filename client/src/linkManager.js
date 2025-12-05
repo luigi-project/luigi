@@ -40,24 +40,24 @@ export class linkManager extends LuigiClientBase {
   /**
    * Navigates to the given path in the application hosted by Luigi. It contains either a full absolute path or a relative path without a leading slash that uses the active route as a base. This is the standard navigation.
    * @memberof linkManager
-   * @param {string} path path to be navigated to
-   * @param {string} sessionId current Luigi **sessionId**
-   * @param {boolean} preserveView preserve a view by setting it to `true`. It keeps the current view opened in the background and opens the new route in a new frame. Use the {@link #goBack goBack()} function to navigate back. You can use this feature across different levels. Preserved views are discarded as soon as you use the standard {@link #navigate navigate()} function instead of {@link #goBack goBack()}
-   * @param {Object} modalSettings opens a view in a modal. Use these settings to configure the modal's title and size
-   * @param {string} modalSettings.title modal title. By default, it is the node label. If there is no label, it is left empty
-   * @param {('fullscreen'|'l'|'m'|'s')} [modalSettings.size="l"] size of the modal
-   * @param {string} modalSettings.width updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {string} modalSettings.height updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {boolean} modalSettings.keepPrevious Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
-   * @param {string} modalSettings.closebtn_data_testid lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
-   * @param {Object} splitViewSettings opens a view in a split view. Use these settings to configure the split view's behaviour
-   * @param {string} splitViewSettings.title split view title. By default, it is the node label. If there is no label, it is left empty
-   * @param {number} [splitViewSettings.size=40] height of the split view in percent
-   * @param {boolean} [splitViewSettings.collapsed=false] creates split view but leaves it closed initially
-   * @param {Object} drawerSettings opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
-   * @param {any} drawerSettings.header By default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view.
-   * @param {boolean} drawerSettings.backdrop By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop.
-   * @param {('l'|'m'|'s'|'xs')} [drawerSettings.size="s"] size of the drawer
+   * @param {string} path - path to be navigated to
+   * @param {string} sessionId - current Luigi **sessionId**
+   * @param {boolean} preserveView - preserve a view by setting it to `true`. It keeps the current view opened in the background and opens the new route in a new frame. Use the {@link #goBack goBack()} function to navigate back. You can use this feature across different levels. Preserved views are discarded as soon as you use the standard {@link #navigate navigate()} function instead of {@link #goBack goBack()}
+   * @param {Object} modalSettings - opens a view in a modal. Use these settings to configure the modal's title and size
+   * @param {string} modalSettings.title - modal title. By default, it is the node label. If there is no label, it is left empty
+   * @param {('fullscreen'|'l'|'m'|'s')} [modalSettings.size="l"] - size of the modal
+   * @param {string} modalSettings.width - updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+   * @param {string} modalSettings.height - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+   * @param {boolean} modalSettings.keepPrevious - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
+   * @param {string} modalSettings.closebtn_data_testid - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+   * @param {Object} splitViewSettings - opens a view in a split view. Use these settings to configure the split view's behaviour
+   * @param {string} splitViewSettings.title - split view title. By default, it is the node label. If there is no label, it is left empty
+   * @param {number} [splitViewSettings.size=40] - height of the split view in percent
+   * @param {boolean} [splitViewSettings.collapsed=false] - creates split view but leaves it closed initially
+   * @param {Object} drawerSettings - opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size
+   * @param {any} drawerSettings.header - by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view
+   * @param {boolean} drawerSettings.backdrop - by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop
+   * @param {('l'|'m'|'s'|'xs')} [drawerSettings.size="s"] - size of the drawer
    * @example
    * LuigiClient.linkManager().navigate('/overview')
    * LuigiClient.linkManager().navigate('users/groups/stakeholders')
@@ -101,8 +101,8 @@ export class linkManager extends LuigiClientBase {
    * Updates path of the modalPathParam when internal navigation occurs.
    * @memberof linkManager
    * @param {string} path
-   * @param {boolean} addHistoryEntry adds an entry in the history
-   * @param {Object} [modalSettings] opens a view in a modal. Use these settings to configure the modal's title and size
+   * @param {boolean} addHistoryEntry - adds an entry in the history
+   * @param {Object} [modalSettings] - opens a view in a modal. Use these settings to configure the modal's title and size
    * @since 1.21.0
    * @example
    * LuigiClient.linkManager().updateModalPathInternalNavigation('microfrontend')
@@ -132,8 +132,8 @@ export class linkManager extends LuigiClientBase {
    * Consequently, the following calls shall have the exact same effect:
    * - linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
    * - linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')
-   * @param {string} semanticSlug concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
-   * @param {Object} params an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`.
+   * @param {string} semanticSlug - concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
+   * @param {Object} params - an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`
    * @example
    * LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
    * LuigiClient.linkManager().navigateToIntent('Sales-settings')
@@ -159,14 +159,14 @@ export class linkManager extends LuigiClientBase {
   /**
    * Opens a view in a modal. You can specify the modal's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty.  The default size of the modal is `l`, which means 80%. You can also use `m` (60%) and `s` (40%) to set the modal size. Optionally, use it in combination with any of the navigation functions.
    * @memberof linkManager
-   * @param {string} path navigation path
-   * @param {Object} [modalSettings] opens a view in a modal. Use these settings to configure the modal's title and size
-   * @param {string} modalSettings.title modal title. By default, it is the node label. If there is no label, it is left empty
-   * @param {('fullscreen'|'l'|'m'|'s')} [modalSettings.size="l"] size of the modal
-   * @param {string} modalSettings.width updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {string} modalSettings.height updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {boolean} modalSettings.keepPrevious Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
-   * @param {string} modalSettings.closebtn_data_testid lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+   * @param {string} path - navigation path
+   * @param {Object} [modalSettings] - opens a view in a modal. Use these settings to configure the modal's title and size
+   * @param {string} modalSettings.title - modal title. By default, it is the node label. If there is no label, it is left empty
+   * @param {('fullscreen'|'l'|'m'|'s')} [modalSettings.size="l"] - size of the modal
+   * @param {string} modalSettings.width - updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
+   * @param {string} modalSettings.height - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
+   * @param {boolean} modalSettings.keepPrevious - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded
+   * @param {string} modalSettings.closebtn_data_testid - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal
    * @returns {promise} which is resolved when closing the modal. By using LuigiClient.linkManager().goBack({ foo: 'bar' }) to close the modal you have access to the `goBackContext` when the promise will be resolved.
    * @example
    * LuigiClient.linkManager().openAsModal('projects/pr1/users', {title:'Users', size:'m'}).then((res) => {
@@ -198,12 +198,12 @@ export class linkManager extends LuigiClientBase {
    * Updates the current title and size of a modal. If `routing.showModalPathInUrl` is set to `true`, the URL will be updated with the modal settings data.
    * In addition, you can specify if a new history entry will be created with the updated URL.
    * @memberof linkManager
-   * @param {Object} updatedModalSettings possibility to update the active modal.
-   * @param {Object} updatedModalSettings.title update the `title` of the active modal.
-   * @param {Object} updatedModalSettings.size update the `size` of the active modal.
-   * @param {string} updatedModalSettings.width updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {string} updatedModalSettings.height updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
-   * @param {boolean} addHistoryEntry adds an entry in the history, by default it's `false`.
+   * @param {Object} updatedModalSettings - possibility to update the active modal
+   * @param {Object} updatedModalSettings.title - update the `title` of the active modal
+   * @param {Object} updatedModalSettings.size - update the `size` of the active modal
+   * @param {string} updatedModalSettings.width - updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
+   * @param {string} updatedModalSettings.height - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
+   * @param {boolean} addHistoryEntry - adds an entry in the history, by default it's `false`.
    * @example
    * LuigiClient.linkManager().updateModalSettings({title:'LuigiModal', size:'l'});
    */
@@ -219,11 +219,11 @@ export class linkManager extends LuigiClientBase {
   /**
    * Opens a view in a split view. You can specify the split view's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty. The default size of the split view is `40`, which means 40% height of the split view.
    * @memberof linkManager
-   * @param {string} path navigation path
-   * @param {Object} splitViewSettings opens a view in a split view. Use these settings to configure the split view's behaviour
-   * @param {string} splitViewSettings.title split view title. By default, it is the node label. If there is no label, it is left empty
-   * @param {number} [splitViewSettings.size=40] height of the split view in percent
-   * @param {boolean} [splitViewSettings.collapsed=false] opens split view in collapsed state
+   * @param {string} path - navigation path
+   * @param {Object} splitViewSettings - opens a view in a split view. Use these settings to configure the split view's behaviour
+   * @param {string} splitViewSettings.title - split view title. By default, it is the node label. If there is no label, it is left empty
+   * @param {number} [splitViewSettings.size=40] - height of the split view in percent
+   * @param {boolean} [splitViewSettings.collapsed=false] - opens split view in collapsed state
    * @returns {Object} instance of the SplitView. It provides Event listeners and you can use the available functions to control its behavior.
    * @see {@link splitView} for further documentation about the returned instance
    * @since 0.6.0
@@ -238,12 +238,12 @@ export class linkManager extends LuigiClientBase {
   /**
    * Opens a view in a drawer. You can specify the size of the drawer, whether the drawer has a header, and whether a backdrop is active in the background. By default, the header is shown. The backdrop is not visible and has to be activated. The size of the drawer is set to `s` by default, which means 25% of the micro frontend size. You can also use `l`(75%), `m`(50%) or `xs`(15.5%). Optionally, use it in combination with any of the navigation functions.
    * @memberof linkManager
-   * @param {string} path navigation path
-   * @param {Object} drawerSettings opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
-   * @param {any} drawerSettings.header By default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view.
-   * @param {boolean} drawerSettings.backdrop By default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop.
-   * @param {('l'|'m'|'s'|'xs')} [drawerSettings.size="s"] size of the drawer
-   * @param {boolean} [drawerSettings.overlap=true] enable resizing of main microfrontend iFrame after drawer open
+   * @param {string} path - navigation path
+   * @param {Object} drawerSettings - opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
+   * @param {any} drawerSettings.header - by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view.
+   * @param {boolean} drawerSettings.backdrop - by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop.
+   * @param {('l'|'m'|'s'|'xs')} [drawerSettings.size="s"] - size of the drawer
+   * @param {boolean} [drawerSettings.overlap=true] - enable resizing of main microfrontend iFrame after drawer open
    * @since 1.6.0
    * @example
    * LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});
@@ -342,9 +342,9 @@ export class linkManager extends LuigiClientBase {
    * <!-- label-success: Web App API only  -->
    * Sets options to customise route changing behaviour. The parameters are used by the `navigate` function. Use it optionally in combination with any of the navigation functions and receive it as part of the context object in Luigi Client.
    * @memberof linkManager
-   * @param {Object} options navigation options
-   * @param {boolean} options.preventHistoryEntry By default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
-   * @param {boolean} options.preventContextUpdate By default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+   * @param {Object} options - navigation options
+   * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+   * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
    * @returns {linkManager} link manager instance
    * @since 1.25.0
    * @example
@@ -370,7 +370,7 @@ export class linkManager extends LuigiClientBase {
   /**
    * Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
    * @memberof linkManager
-   * @param {string} path path which existence you want to check
+   * @param {string} path - path which existence you want to check
    * @returns {promise} a promise which resolves to a Boolean variable specifying whether the path exists or not
    * @example
    *  let pathExists;
@@ -434,7 +434,7 @@ export class linkManager extends LuigiClientBase {
   /**
    * Discards the active view and navigates back to the last visited view. Works with preserved views, and also acts as the substitute of the browser **back** button. **goBackContext** is only available when using preserved views.
    * @memberof linkManager
-   * @param {any} goBackValue data that is passed in the **goBackContext** field to the last visited view when using preserved views
+   * @param {any} goBackValue - data that is passed in the **goBackContext** field to the last visited view when using preserved views
    * @example
    * LuigiClient.linkManager().goBack({ foo: 'bar' });
    * LuigiClient.linkManager().goBack(true);
@@ -476,7 +476,7 @@ export class linkManager extends LuigiClientBase {
   /**
    * <!-- label-success: Web App API only  -->
    * Keeps the URL's query parameters for a navigation request.
-   * @param {boolean} preserve By default, it is set to `false`. If it is set to `true`, the URL's query parameters will be kept after navigation.
+   * @param {boolean} preserve - by default, it is set to `false`. If it is set to `true`, the URL's query parameters will be kept after navigation.
    * @since 1.19.0
    * @example
    * LuigiClient.linkManager().preserveQueryParams(true).navigate('/projects/xy/foobar');

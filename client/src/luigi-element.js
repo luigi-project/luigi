@@ -5,7 +5,7 @@
 /**
  * Base class for Luigi web component micro frontends.
  * @augments HTMLElement
- * @param {any} options - The config object passed in constructor
+ * @param {any} options - the config object passed in constructor
  * @class
  */
 export class LuigiElement extends HTMLElement {
@@ -79,7 +79,7 @@ export class LuigiElement extends HTMLElement {
    * Override to execute logic after initialization of the web component, i.e.
    * after internal rendering and all context data set.
    *
-   * @param {any} ctx - The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   afterInit(ctx) {
     return;
@@ -88,7 +88,7 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to return the html template string defining the web component view.
    *
-   * @param {any} ctx - The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   render(ctx) {
     return '';
@@ -104,7 +104,7 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to execute logic when a new context object is set.
    *
-   * @param {any} ctx - The new context object passed by luigi core
+   * @param {any} ctx - the new context object passed by luigi core
    */
   onContextUpdate(ctx) {
     return;
@@ -112,7 +112,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Query selector operating on shadow root.
-   *
    * @see ParentNode.querySelector
    */
   querySelector(selector) {
@@ -150,9 +149,9 @@ export class LuigiElement extends HTMLElement {
  * Html string processing according to luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
  *
- * @param {string} literal - The literal to process
- * @param {unknown[]} keys - The array of keys to process
- * @returns {string} The processed literal
+ * @param {string} literal - the literal to process
+ * @param {unknown[]} keys - the array of keys to process
+ * @returns {string} the processed literal
  */
 export function html(literal, ...keys) {
   let html = '';

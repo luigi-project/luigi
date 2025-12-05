@@ -55,12 +55,14 @@ console.log(template); // Output: <p>Hello, World!</p>
 {{>header~}}
 {{>augments~}}
 {{>description~}}
+{{>see~}}
 {{>params~}}
 {{>returns~}}
 {{#children inherited=undefined ~}}
 {{>header~}}
 {{>description~}}
 {{>summary~}}
+{{>see~}}
 {{>params~}}
 {{/children~}}
 {{/children~}}

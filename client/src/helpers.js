@@ -47,8 +47,8 @@ class Helpers {
    * Don't forget to remove the event listener at the end of
    * your eventFn if you do not need it anymore.
    * @private
-   * @param {string} name event name
-   * @param {function} eventFn callback function
+   * @param {string} name - event name
+   * @param {function} eventFn - callback function
    * @returns {string} listener id
    */
   addEventListener(name, eventFn) {
@@ -64,7 +64,7 @@ class Helpers {
   /**
    * Removes a post message listener
    * @private
-   * @param {string} id listenerId
+   * @param {string} id - listenerId
    */
   removeEventListener(id) {
     const listenerExists = Boolean(this.listeners.find(l => l.listenerId === id));
@@ -135,7 +135,7 @@ class Helpers {
 
   /**
    * Checks if given path contains intent navigation special syntax
-   * @param {string} path to check
+   * @param {string} path - path to be checked
    */
   hasIntent(path) {
     return !!path && path.toLowerCase().includes('#?intent=');

@@ -32,15 +32,15 @@ class LuigiUX {
   /**
    * Shows an alert.
    * @memberof UX
-   * @param {Object} settings the settings for the alert
-   * @param {string} settings.text the content of the alert. To add a link to the content, you have to set up the link in the `links` object. The key(s) in the `links` object must be used in the text to reference the links, wrapped in curly brackets with no spaces. If you do not specify any text, the alert is not displayed
-   * @param {('info'|'success'|'warning'|'error')} settings.type sets the type of alert
-   * @param {Object} settings.links provides links data
-   * @param {Object} settings.links.LINK_KEY object containing the data for a particular link. To properly render the link in the alert message refer to the description of the **settings.text** parameter
-   * @param {string} settings.links.LINK_KEY.text text which replaces the link identifier in the alert content
-   * @param {string} settings.links.LINK_KEY.url URL to navigate when you click the link. Currently, only internal links are supported in the form of relative or absolute paths
-   * @param {string} settings.links.LINK_KEY.dismissKey dismissKey which represents the key of the link.
-   * @param {number} settings.closeAfter (optional) time in milliseconds that tells Luigi when to close the Alert automatically. If not provided, the Alert will stay on until closed manually. It has to be greater than `100`
+   * @param {Object} settings - the settings for the alert
+   * @param {string} settings.text - the content of the alert. To add a link to the content, you have to set up the link in the `links` object. The key(s) in the `links` object must be used in the text to reference the links, wrapped in curly brackets with no spaces. If you do not specify any text, the alert is not displayed
+   * @param {('info'|'success'|'warning'|'error')} settings.type - sets the type of alert
+   * @param {Object} settings.links - provides links data
+   * @param {Object} settings.links.LINK_KEY - object containing the data for a particular link. To properly render the link in the alert message refer to the description of the **settings.text** parameter
+   * @param {string} settings.links.LINK_KEY.text - text which replaces the link identifier in the alert content
+   * @param {string} settings.links.LINK_KEY.url - URL to navigate when you click the link. Currently, only internal links are supported in the form of relative or absolute paths
+   * @param {string} settings.links.LINK_KEY.dismissKey - dismissKey which represents the key of the link.
+   * @param {number} settings.closeAfter - (optional) time in milliseconds that tells Luigi when to close the Alert automatically. If not provided, the Alert will stay on until closed manually. It has to be greater than `100`
    * @returns {promise} which is resolved when the alert is dismissed
    * @since 0.6.4
    * @example
@@ -76,12 +76,12 @@ class LuigiUX {
   /**
    * Shows a confirmation modal.
    * @memberof UX
-   * @param {Object} settings the settings of the confirmation modal. If you do not provide any value for any of the fields, a default value is used
-   * @param {('confirmation'|'success'|'warning'|'error'|'information')} settings.type the content of the modal type. (Optional)
-   * @param {string} [settings.header="Confirmation"] the content of the modal header
-   * @param {string} [settings.body="Are you sure you want to do this?"] the content of the modal body. It supports HTML formatting elements such as `<br>`, `<b>`, `<strong>`, `<i>`, `<em>`, `<mark>`, `<small>`, `<del>`, `<ins>`, `<sub>`, `<sup>`.
-   * @param {string|false} [settings.buttonConfirm="Yes"] the label for the modal confirmation button. If set to `false`, the button will not be shown.
-   * @param {string} [settings.buttonDismiss="No"] the label for the modal dismiss button
+   * @param {Object} settings - the settings of the confirmation modal. If you do not provide any value for any of the fields, a default value is used
+   * @param {('confirmation'|'success'|'warning'|'error'|'information')} settings.type - the content of the modal type. (Optional)
+   * @param {string} [settings.header="Confirmation"] - the content of the modal header
+   * @param {string} [settings.body="Are you sure you want to do this?"] - the content of the modal body. It supports HTML formatting elements such as `<br>`, `<b>`, `<strong>`, `<i>`, `<em>`, `<mark>`, `<small>`, `<del>`, `<ins>`, `<sub>`, `<sup>`.
+   * @param {string|false} [settings.buttonConfirm="Yes"] - the label for the modal confirmation button. If set to `false`, the button will not be shown.
+   * @param {string} [settings.buttonDismiss="No"] - the label for the modal dismiss button
    * @returns {promise} which is resolved when accepting the confirmation modal and rejected when dismissing it
    * @since 0.6.4
    * @example

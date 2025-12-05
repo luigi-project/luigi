@@ -238,8 +238,8 @@ class LifecycleManager extends LuigiClientBase {
 
   /**
    * Registers a listener called with the context object and the Luigi Core domain as soon as Luigi is instantiated. Defer your application bootstrap if you depend on authentication data coming from Luigi.
-   * @param {Lifecycle~initListenerCallback} initFn the function that is called once Luigi is initialized, receives current context and origin as parameters
-   * @param {boolean} disableTpcCheck if set to `true` third party cookie check will be disabled via LuigiClient.
+   * @param {Lifecycle~initListenerCallback} initFn - the function that is called once Luigi is initialized, receives current context and origin as parameters
+   * @param {boolean} disableTpcCheck - if set to `true` third party cookie check will be disabled via LuigiClient.
    * @memberof Lifecycle
    * @example
    * const initListenerId = LuigiClient.addInitListener((context) => storeContextToMF(context))
@@ -261,12 +261,12 @@ class LifecycleManager extends LuigiClientBase {
    * Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
    * @callback Lifecycle~initListenerCallback
    * @kind function
-   * @param {Object} context current context data
-   * @param {string} origin Luigi Core URL
+   * @param {Object} context - current context data
+   * @param {string} origin - Luigi Core URL
    */
   /**
    * Removes an init listener.
-   * @param {string} id the id that was returned by the `addInitListener` function.
+   * @param {string} id - the id that was returned by the `addInitListener` function
    * @memberof Lifecycle
    * @example
    * LuigiClient.removeInitListener(initListenerId)
@@ -281,7 +281,7 @@ class LifecycleManager extends LuigiClientBase {
 
   /**
    * Registers a listener called with the context object when the URL is changed. For example, you can use this when changing environments in a context switcher in order for the micro frontend to do an API call to the environment picked.
-   * @param {function} contextUpdatedFn the listener function called each time Luigi context changes
+   * @param {function} contextUpdatedFn - the listener function called each time Luigi context changes
    * @memberof Lifecycle
    * @example
    * const updateListenerId = LuigiClient.addContextUpdateListener((context) => storeContextToMF(context))
@@ -297,7 +297,7 @@ class LifecycleManager extends LuigiClientBase {
 
   /**
    * Removes a context update listener.
-   * @param {string} id the id that was returned by the `addContextUpdateListener` function
+   * @param {string} id - the id that was returned by the `addContextUpdateListener` function
    * @memberof Lifecycle
    * @example
    * LuigiClient.removeContextUpdateListener(updateListenerId)
@@ -318,7 +318,7 @@ class LifecycleManager extends LuigiClientBase {
    *
    * Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.
    * Once the micro frontend turns back into active state, the `addContextUpdateListener` receives an updated context.
-   * @param {function} inactiveFn the listener function called each time a micro frontend turns into an inactive state
+   * @param {function} inactiveFn - the listener function called each time a micro frontend turns into an inactive state
    * @memberof Lifecycle
    * @example
    * LuigiClient.addInactiveListener(() => mfIsInactive = true)
@@ -332,7 +332,7 @@ class LifecycleManager extends LuigiClientBase {
 
   /**
    * Removes a listener for inactive micro frontends.
-   * @param {string} id the id that was returned by the `addInactiveListener` function
+   * @param {string} id - the id that was returned by the `addInactiveListener` function
    * @memberof Lifecycle
    * @example
    * LuigiClient.removeInactiveListener(inactiveListenerId)
@@ -347,8 +347,8 @@ class LifecycleManager extends LuigiClientBase {
 
   /**
    * Registers a listener called when the micro frontend receives a custom message.
-   * @param {string} customMessageId the custom message id
-   * @param {Lifecycle~customMessageListenerCallback} customMessageListener the function that is called when the micro frontend receives the corresponding event
+   * @param {string} customMessageId - the custom message id
+   * @param {Lifecycle~customMessageListenerCallback} customMessageListener - the function that is called when the micro frontend receives the corresponding event
    * @memberof Lifecycle
    * @since 0.6.2
    * @example
@@ -365,14 +365,14 @@ class LifecycleManager extends LuigiClientBase {
    * Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
    * @callback Lifecycle~customMessageListenerCallback
    * @kind function
-   * @param {Object} customMessage custom message object
-   * @param {string} customMessage.id message id
-   * @param {*} customMessage.MY_DATA_FIELD any other message data field
-   * @param {string} listenerId custom message listener id to be used for unsubscription
+   * @param {Object} customMessage - custom message object
+   * @param {string} customMessage.id - message id
+   * @param {*} customMessage.MY_DATA_FIELD - any other message data field
+   * @param {string} listenerId - custom message listener id to be used for unsubscription
    */
   /**
    * Removes a custom message listener.
-   * @param {string} id the id that was returned by the `addInitListener` function
+   * @param {string} id - the id that was returned by the `addInitListener` function
    * @memberof Lifecycle
    * @since 0.6.2
    * @example
@@ -449,7 +449,7 @@ class LifecycleManager extends LuigiClientBase {
    * Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.
    * <!-- add-attribute:class:warning -->
    * > **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
-   * @param {boolean} shouldDesanitise defines whether the specially encoded characters should be desanitised
+   * @param {boolean} shouldDesanitise - defines whether the specially encoded characters should be desanitised
    * @returns {Object} node parameters, where the object property name is the node parameter name without the prefix, and its value is the value of the node parameter. For example `{sort: 'asc', page: 3}`
    * @memberof Lifecycle
    * @example
@@ -522,7 +522,7 @@ class LifecycleManager extends LuigiClientBase {
   /**
    * <!-- label-success: Web App API only  -->
    * When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client. Typically used only in custom micro-frontend frameworks that are compatible with LuigiClient API.
-   * @param {string} origin target origin
+   * @param {string} origin - target origin
    * @memberof Lifecycle
    * @since 0.7.3
    * @example
@@ -535,9 +535,9 @@ class LifecycleManager extends LuigiClientBase {
   /**
    * <!-- label-success: Web App API only  -->
    * Sends a custom message to the Luigi Core application.
-   * @param {Object} message an object containing data to be sent to the Luigi Core to process it further. This object is set as an input parameter of the custom message listener on the Luigi Core side
-   * @param {string} message.id a string containing the message id
-   * @param {*} message.MY_DATA_FIELD any other message data field
+   * @param {Object} message - an object containing data to be sent to the Luigi Core to process it further. This object is set as an input parameter of the custom message listener on the Luigi Core side
+   * @param {string} message.id - a string containing the message id
+   * @param {*} message.MY_DATA_FIELD - any other message data field
    * @example
    * LuigiClient.sendCustomMessage({id: 'environment.created', production: false})
    * LuigiClient.sendCustomMessage({id: 'environment.created', data: environmentDataObj})
@@ -591,7 +591,7 @@ class LifecycleManager extends LuigiClientBase {
   /**
    * This function allows you to change node labels within the same {@link navigation-advanced.md#view-groups view group}, e.g. in your node config: `label: 'my Node {viewGroupData.vg1}'`.
    * @since 2.2.0
-   * @param {Object} data a data object containing the view group name and desired label
+   * @param {Object} data - a data object containing the view group name and desired label
    * @memberof Lifecycle
    * @example LuigiClient.setViewGroupData({'vg1':' Luigi rocks!'})
    */

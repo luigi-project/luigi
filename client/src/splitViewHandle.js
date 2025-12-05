@@ -87,7 +87,7 @@ export class splitViewHandle extends LuigiClientBase {
   /**
    * Sets the height of the split view
    * @memberof splitView
-   * @param {number} value lower height in percent
+   * @param {number} value - lower height in percent
    * @since 0.6.0
    * @example
    * splitViewHandle.setSize(60);
@@ -98,8 +98,8 @@ export class splitViewHandle extends LuigiClientBase {
   /**
    * Registers a listener for split view events
    * @memberof splitView
-   * @param {('expand'|'collapse'|'resize'|'close')} name event name
-   * @param {function} callback gets called when this event gets triggered by Luigi
+   * @param {('expand'|'collapse'|'resize'|'close')} name - event name
+   * @param {function} callback - gets called when this event gets triggered by Luigi
    * @returns {string} listener id
    * @since 0.6.0
    * @example
@@ -123,7 +123,7 @@ export class splitViewHandle extends LuigiClientBase {
   /**
    * Unregisters a split view listener
    * @memberof splitView
-   * @param {string} id listener id
+   * @param {string} id - listener id
    * @since 0.6.0
    * @example
    * splitViewHandle.removeEventListener(listenerId);
