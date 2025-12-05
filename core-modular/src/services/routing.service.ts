@@ -3,7 +3,7 @@ import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { Node } from './navigation.service';
+import type { ModalSettings, Node } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { serviceRegistry } from './service-registry';
 
@@ -18,6 +18,7 @@ export class RoutingService {
   navigationService?: NavigationService;
   previousNode: Node | undefined;
   currentRoute?: Route;
+  modalSettings?: ModalSettings;
 
   constructor(private luigi: Luigi) {}
 
@@ -175,8 +176,9 @@ export class RoutingService {
    * @param {string} modalPath path of the view which is displayed in the modal
    * @param {Object} modalParams query parameter
    */
-  appendModalDataToUrl(modalPath: string, modalParams: Record<string, any>): void {
+  appendModalDataToUrl(modalPath: string, modalParams: ModalSettings): void {
     // global setting for persistence in url .. default false
+    this.modalSettings = modalParams;
     const queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
@@ -203,8 +205,8 @@ export class RoutingService {
     historyState = RoutingHelpers.handleHistoryState(historyState, pathWithoutModalData);
     if (prevModalPath !== modalPath) {
       params[modalParamName] = modalPath;
-      if (modalParams && Object.keys(modalParams).length) {
-        params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+      if (this.modalSettings && Object.keys(this.modalSettings).length) {
+        params[`${modalParamName}Params`] = JSON.stringify(this.modalSettings);
       }
       if (hashRoutingActive) {
         const queryParamIndex = location.hash.indexOf(queryParamSeparator);
@@ -237,6 +239,7 @@ export class RoutingService {
    * @param isClosedInternal flag if the modal is closed via close button or internal back navigation instead of changing browser URL manually or browser back button
    */
   removeModalDataFromUrl(isClosedInternal: boolean): void {
+    this.modalSettings = {};
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
     let url = new URL(location.href);
@@ -362,14 +365,15 @@ export class RoutingService {
    * @param addHistoryEntry If true, a new history entry is pushed (allowing back navigation); if false, the current entry is replaced.
 
    */
-  updateModalDataInUrl(modalPath: string, modalParams: Record<string, any>, addHistoryEntry: boolean): void {
+  updateModalDataInUrl(modalPath: string, modalParams: ModalSettings, addHistoryEntry: boolean): void {
+    this.modalSettings = { ...this.modalSettings, ...modalParams };
     let queryParamSeparator = RoutingHelpers.getHashQueryParamSeparator();
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
 
     params[modalParamName] = modalPath;
-    if (modalParams && Object.keys(modalParams).length) {
-      params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+    if (this.modalSettings && Object.keys(this.modalSettings).length) {
+      params[`${modalParamName}Params`] = JSON.stringify(this.modalSettings);
     }
     const url = new URL(location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
