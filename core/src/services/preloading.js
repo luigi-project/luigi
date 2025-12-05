@@ -22,13 +22,13 @@ class ViewGroupPreloadingClass {
     const iframes = IframeHelpers.getMainIframes();
     const now = new Date().getTime();
     const preloadingIframes = iframes.filter(
-      iframe => iframe.luigi && iframe.luigi.preloading && now - iframe.luigi.createdAt < 30000
+      (iframe) => iframe.luigi && iframe.luigi.preloading && now - iframe.luigi.createdAt < 30000
     );
     if (preloadingIframes.length > 0) {
       console.debug('skipping view group preloading (busy)');
       return;
     }
-    const existingVGs = iframes.map(iframe => iframe.vg).filter(Boolean);
+    const existingVGs = iframes.map((iframe) => iframe.vg).filter(Boolean);
 
     const settingsWithPreload = Object.entries(vgSettings)
       .filter(([name, _]) => !existingVGs.includes(name))
