@@ -59,5 +59,8 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
       luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
     });
+    containerElement.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, (event: any) => {
+      CommunicationModule.luigi.getEngine()._connector?.closeModal();
+    });
   }
 };

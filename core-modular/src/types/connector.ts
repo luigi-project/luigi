@@ -49,7 +49,7 @@ export interface LuigiConnector {
 
   getCurrentLocale(): string;
 
-  closeModals(): void;
+  closeModal(): void;
 
   updateModalSettings(modalSettings: ModalSettings): void;
 

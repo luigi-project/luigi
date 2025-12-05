@@ -150,7 +150,7 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      this.luigi.getEngine()._connector?.closeModals();
+      this.luigi.getEngine()._connector?.closeModal();
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
@@ -309,7 +309,7 @@ export class RoutingService {
   }
 
   /**
-   * Closes all currently open modals in the Luigi application.
+   * Closes currently open modal in the Luigi application.
    *
    * If the configuration flag `routing.showModalPathInUrl` is enabled, this method
    * first strips any modal-related data (such as modal path segments or parameters)
@@ -318,11 +318,11 @@ export class RoutingService {
    * @public
    * @returns void
    */
-  closeModals(): void {
+  closeModal(): void {
     if (this.luigi.getConfigValue('routing.showModalPathInUrl')) {
       this.removeModalDataFromUrl(false);
     }
-    this.luigi.getEngine()._connector?.closeModals();
+    this.luigi.getEngine()._connector?.closeModal();
   }
 
   /**
