@@ -304,6 +304,9 @@ export class ContainerService {
               case LuigiInternalMessageID.REMOVE_BACKDROP_REQUEST:
                 this.dispatch(Events.REMOVE_BACKDROP_REQUEST, targetCnt, event);
                 break;
+              case LuigiInternalMessageID.CLOSE_CURRENT_MODAL_REQUEST:
+                this.dispatch(Events.CLOSE_CURRENT_MODAL_REQUEST, targetCnt, event);
+                break;
             }
           }
         }

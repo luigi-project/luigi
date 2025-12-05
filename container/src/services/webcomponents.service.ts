@@ -352,6 +352,9 @@ export class WebComponentService {
           },
           hideAppLoadingIndicator: () => {
             this.dispatchLuigiEvent(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
+          },
+          closeCurrentModal: () => {
+            this.dispatchLuigiEvent(Events.CLOSE_CURRENT_MODAL_REQUEST, {});
           }
         };
       },
