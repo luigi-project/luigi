@@ -251,7 +251,7 @@ export const UIModule = {
       },
       closeModalInternal
     );
-    
+
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
