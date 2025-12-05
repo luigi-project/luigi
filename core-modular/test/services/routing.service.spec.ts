@@ -1,6 +1,6 @@
 import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { UIModule } from '../../src/modules/ui-module';
-import { NavigationService } from '../../src/services/navigation.service';
+import { NavigationService, type ModalSettings } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
@@ -270,13 +270,13 @@ describe('Routing Service', () => {
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'oldPath' });
 
-      routingService.appendModalDataToUrl('newPath', { foo: 'bar' });
+      routingService.appendModalDataToUrl('newPath', { title: 'bar' });
 
       expect(RoutingHelpers.getQueryParams).toHaveBeenCalledWith(mockLuigi);
       expect(RoutingHelpers.getModalViewParamName).toHaveBeenCalledWith(mockLuigi);
       expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
         modalPath: 'newPath',
-        modalPathParams: JSON.stringify({ foo: 'bar' })
+        modalPathParams: JSON.stringify({ title: 'bar' })
       });
       expect(historyPushSpy).toHaveBeenCalled();
     });
@@ -292,11 +292,11 @@ describe('Routing Service', () => {
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(false); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'oldPath' });
 
-      routingService.appendModalDataToUrl('newPath', { foo: 'bar' });
+      routingService.appendModalDataToUrl('newPath', { title: 'bar' });
 
       expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
         modalPath: 'newPath',
-        modalPathParams: JSON.stringify({ foo: 'bar' })
+        modalPathParams: JSON.stringify({ title: 'bar' })
       });
       expect(historyPushSpy).toHaveBeenCalled();
     });
@@ -312,7 +312,7 @@ describe('Routing Service', () => {
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'samePath' });
 
-      routingService.appendModalDataToUrl('samePath', { foo: 'bar' });
+      routingService.appendModalDataToUrl('samePath', { title: 'bar' });
 
       expect(historyReplaceSpy).toHaveBeenCalled();
       expect(historyPushSpy).toHaveBeenCalled();
@@ -329,7 +329,7 @@ describe('Routing Service', () => {
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'samePath' });
 
-      routingService.appendModalDataToUrl('samePath', { foo: 'bar' });
+      routingService.appendModalDataToUrl('samePath', { title: 'bar' });
 
       expect(historyReplaceSpy).toHaveBeenCalled();
       expect(historyPushSpy).toHaveBeenCalled();
@@ -357,7 +357,7 @@ describe('Routing Service', () => {
 
   describe('append and remove modal data from URL using hash/path routing', () => {
     const modalPath = encodeURIComponent('/project-modal');
-    const modalParams = { hello: 'world' };
+    const modalParams = { title: 'world' };
     const params = {
       '~luigi': 'mario'
     };
@@ -415,7 +415,7 @@ describe('Routing Service', () => {
       expect(window.history.pushState).toHaveBeenCalledWith(
         historyState,
         '',
-        'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
     });
 
@@ -447,7 +447,7 @@ describe('Routing Service', () => {
       expect(window.history.pushState).toHaveBeenCalledWith(
         historyState,
         '',
-        'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
     });
 
@@ -459,8 +459,8 @@ describe('Routing Service', () => {
       }));
       locationSpy.mockImplementation(() => {
         return {
-          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
+          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
         } as any;
       });
       window.state = {};
@@ -477,7 +477,7 @@ describe('Routing Service', () => {
     it('remove modal data from url with path routing', () => {
       locationSpy.mockImplementation(() => {
         return {
-          href: 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+          href: 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
         } as any;
       });
       window.state = {};
@@ -495,7 +495,7 @@ describe('Routing Service', () => {
   describe('updateModalDataInUrl', () => {
     let locationSpy: jest.SpyInstance;
     const modalPath = encodeURIComponent('/project-modal');
-    const modalParams = { hello: 'world' };
+    const modalParams = { title: 'world' };
     const params = {
       '~luigi': 'mario'
     };
@@ -538,7 +538,7 @@ describe('Routing Service', () => {
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
-        'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
     });
 
@@ -560,15 +560,15 @@ describe('Routing Service', () => {
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
-        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
     });
 
     it('should update modal data in url when modalParams change', () => {
       locationSpy.mockImplementation(() => {
         return {
-          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
+          hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
         } as any;
       });
       window.state = {};
@@ -577,13 +577,38 @@ describe('Routing Service', () => {
         return null;
       });
 
-      const newModalParams = { hello: 'universe' };
+      const newModalParams = { title: 'universe' };
       routingService.updateModalDataInUrl(modalPath, newModalParams, false);
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
-        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22universe%22%7D'
+        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22universe%22%7D'
+      );
+    });
+
+    it('should remove previous modal data when it is not in updated modal data', () => {
+      const mockModelSettings = { title: 'world' } as ModalSettings;
+      routingService.modalSettings = mockModelSettings;
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
+          hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
+        } as any;
+      });
+      window.state = {};
+      mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return false;
+        return null;
+      });
+
+      const newModalParams: ModalSettings = { size: 's' };
+      routingService.updateModalDataInUrl(modalPath, newModalParams, false);
+
+      expect(window.history.replaceState).toHaveBeenCalledWith(
+        {},
+        '',
+        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%2C%22size%22%3A%22s%22%7D'
       );
     });
   });
