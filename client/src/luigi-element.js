@@ -1,5 +1,12 @@
 /**
+ * @module luigi-element
+ */
+
+/**
  * Base class for Luigi web component micro frontends.
+ * @augments HTMLElement
+ * @param {any} options - the config object passed in constructor
+ * @class
  */
 export class LuigiElement extends HTMLElement {
   constructor(options) {
@@ -25,14 +32,14 @@ export class LuigiElement extends HTMLElement {
     const attCnt = () => {
       if (!this.__initialized) {
         this._shadowRoot.appendChild(template.content.cloneNode(true));
-        Reflect.ownKeys(Reflect.getPrototypeOf(this)).forEach(el => {
+        Reflect.ownKeys(Reflect.getPrototypeOf(this)).forEach((el) => {
           if (el.startsWith('$_')) {
             this._shadowRoot[el] = this[el].bind(this);
           }
         });
         const elementsWithIds = this._shadowRoot.querySelectorAll('[id]');
         if (elementsWithIds) {
-          elementsWithIds.forEach(el => {
+          elementsWithIds.forEach((el) => {
             this['$' + el.getAttribute('id')] = el;
           });
         }
@@ -72,7 +79,7 @@ export class LuigiElement extends HTMLElement {
    * Override to execute logic after initialization of the web component, i.e.
    * after internal rendering and all context data set.
    *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   afterInit(ctx) {
     return;
@@ -81,7 +88,7 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to return the html template string defining the web component view.
    *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   render(ctx) {
     return '';
@@ -97,7 +104,7 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to execute logic when a new context object is set.
    *
-   * @param {*} ctx The new context object passed by luigi core
+   * @param {any} ctx - the new context object passed by luigi core
    */
   onContextUpdate(ctx) {
     return;
@@ -105,7 +112,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Query selector operating on shadow root.
-   *
    * @see ParentNode.querySelector
    */
   querySelector(selector) {
@@ -143,8 +149,9 @@ export class LuigiElement extends HTMLElement {
  * Html string processing according to luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
  *
- * @param {String} literal The literal to process.
- * @returns {String} Returns the processed literal.
+ * @param {string} literal - the literal to process
+ * @param {unknown[]} keys - the array of keys to process
+ * @returns {string} the processed literal
  */
 export function html(literal, ...keys) {
   let html = '';

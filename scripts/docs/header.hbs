@@ -1,0 +1,13 @@
+{{>heading-indent}}
+{{#if virtual}}*{{/if}}{{#with (parentObject)}}{{#if virtual}}*{{/if~}}{{/with~}}
+{{#if name}}{{#sig~}}
+{{{@depOpen}~}}
+{{{@codeOpen}~}}
+{{#if @prefix}}{{@prefix}} {{/if~}}
+{{#if (isEvent)}}"{{parseName name}}"{{else}}{{parseName (escape name)}}{{/if~}}
+{{#if @prefix}}{{#if @methodSign}}{{#if (isEvent)}} {{@methodSign}}{{else}}{{@methodSign}}{{/if}}{{/if~}}{{/if~}}
+{{{@codeClose}~}}
+{{{@depClose}~}}
+{{~/sig}}{{/if~}}
+{{#if virtual}}*{{/if}}{{#with (parentObject)}}{{#if virtual}}*{{/if~}}{{/with~}}
+&nbsp;  

@@ -229,175 +229,175 @@
           "events": [
             {
               "name": "custom-message",
-              "description": "Event fired when the micro frontend sends a custom message. @type {Object} @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
+              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "navigation-request",
-              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
+              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: [NavigationRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {NavigationRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-alert-request",
-              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
+              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: [AlertRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {AlertRequestPayload} @memberof Events @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "initialized",
-              "description": "Event fired when the micro frontend has been initialized. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend has been initialized. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-search-params-request",
-              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ParamsRequestPayload} @memberof Events @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-node-params-request",
-              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ParamsRequestPayload} @memberof Events @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-confirmation-modal-request",
-              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
+              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: [ConfirmationModalRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ConfirmationModalRequestPayload} @memberof Events @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-loading-indicator-request",
-              "description": "Event fired when the micro frontend requests to show a loading indicator. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to show a loading indicator. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "hide-loading-indicator-request",
-              "description": "Event fired when the micro frontend requests to hide the loading indicator. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to hide the loading indicator. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-current-locale-request",
-              "description": "Event fired when the micro frontend requests to set the current locale. @type {Object.<string, string>} @example { currentLocale: 'en' }",
+              "description": "Event fired when the micro frontend requests to set the current locale.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { currentLocale: 'en' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-storage-request",
-              "description": "Event fired when the micro frontend requests to modify the local storage. @type {Object.<string, string>} @example { key: 'luigi-version', value: '2.21.0' }",
+              "description": "Event fired when the micro frontend requests to modify the local storage.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { key: 'luigi-version', value: '2.21.0' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "runtime-error-handling-request",
-              "description": "Event fired when the micro frontend requests to handle errors that might happen during the runtime of the micro frontend. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to handle errors that might happen during the runtime of the micro frontend. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-anchor-request",
-              "description": "Event fired when the micro frontend requests to set the anchor of the URL. @type {string} @example 'some-anchor'",
+              "description": "Event fired when the micro frontend requests to set the anchor of the URL.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) @type {String} @memberof Events @example 'some-anchor'",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-third-party-cookies-request",
-              "description": "Event fired when the micro frontend requests to set third-party cookies. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to set third-party cookies. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "get-current-route-request",
-              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests the current app route.  Payload: [CurrentRouteRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {CurrentRouteRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "report-navigation-completed-request",
-              "description": "Event fired to report that the micro frontend's navigation has completed. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired to report that the micro frontend's navigation has completed. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-path-data-request",
-              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: [ModalPathDataRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ModalPathDataRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-settings-request",
-              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: [ModalSettingsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ModalSettingsRequestPayload} @memberof Events @example { addHistoryEntry: true, updatedModalSettings: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "check-path-exists-request",
-              "description": "Event fired when the micro frontend requests to check the validity of a path. @type {Object.<string, string>} @example { link: '/test/route' }",
+              "description": "Event fired when the micro frontend requests to check the validity of a path.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { link: '/test/route' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-dirty-status-request",
-              "description": "Event fired when the micro frontend requests to set the 'dirty status' which, for example, avoids closing when there are any unsaved changes. @type {Object.<string, boolean>} @example { dirty: true }",
+              "description": "Event fired when the micro frontend requests to set the 'dirty status' which, for example, avoids closing when there are any unsaved changes.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, boolean>} @memberof Events @example { dirty: true }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-viewgroup-data-request",
-              "description": "Event fired when the micro frontend requests to set the view group data. @type {Object.<string, unknown>} @example { vg: 'some data' }",
+              "description": "Event fired when the micro frontend requests to set the view group data.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, unknown>} @memberof Events @example { vg: 'some data' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "go-back-request",
-              "description": "Event fired when the micro frontend requests to navigate back. @type {Object.<string, unknown>} @example { ctx: 'some context' }",
+              "description": "Event fired when the micro frontend requests to navigate back.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, unknown>} @memberof Events @example { ctx: 'some context' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-backdrop-request",
-              "description": "Event fired when the micro frontend requests to display the backdrop. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to display the backdrop. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "remove-backdrop-request",
-              "description": "Event fired when the micro frontend requests to remove the backdrop. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to remove the backdrop. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "close-current-modal-request",
-              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
@@ -607,175 +607,175 @@
           "events": [
             {
               "name": "custom-message",
-              "description": "Event fired when the micro frontend sends a custom message. @type {Object} @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
+              "description": "Event fired when the micro frontend sends a custom message.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object} @memberof Events @property {object} data - event data @property {string} id - event ID @example { data: {}, id: 'some-id' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "navigation-request",
-              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|NavigationRequestPayload} @type {NavigationRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
+              "description": "Event fired when a navigation has been requested by the micro frontend.  Payload: [NavigationRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {NavigationRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-alert-request",
-              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|AlertRequestPayload} @type {AlertRequestPayload} @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
+              "description": "Event fired when the micro frontend requests to show an alert.  Read more about `showAlert` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showalert).  Payload: [AlertRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {AlertRequestPayload} @memberof Events @example { text: 'Custom alert message', type: 'info', links: { goToHome: { text: 'Homepage', url: '/overview' }, goToOtherProject: { text: 'Other project', url: '/projects/pr2' }, relativePath: { text: 'Hide side nav', url: 'hideSideNav' }, neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000 }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "initialized",
-              "description": "Event fired when the micro frontend has been initialized. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend has been initialized. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-search-params-request",
-              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of search parameters to the URL.  Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ParamsRequestPayload} @memberof Events @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-node-params-request",
-              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ParamsRequestPayload} @type {ParamsRequestPayload} @example { data: {}, keepBrowserHistory: false }",
+              "description": "Event fired when the micro frontend requests the addition of node parameters to the URL.  Payload: [ParamsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ParamsRequestPayload} @memberof Events @example { data: {}, keepBrowserHistory: false }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-confirmation-modal-request",
-              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ConfirmationModalRequestPayload} @type {ConfirmationModalRequestPayload} @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
+              "description": "Event fired when the micro frontend requests to show a confirmation modal.  Read more about `showConfirmationModal` params [here](https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal).  Payload: [ConfirmationModalRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ConfirmationModalRequestPayload} @memberof Events @example { header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "show-loading-indicator-request",
-              "description": "Event fired when the micro frontend requests to show a loading indicator. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to show a loading indicator. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "hide-loading-indicator-request",
-              "description": "Event fired when the micro frontend requests to hide the loading indicator. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to hide the loading indicator. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-current-locale-request",
-              "description": "Event fired when the micro frontend requests to set the current locale. @type {Object.<string, string>} @example { currentLocale: 'en' }",
+              "description": "Event fired when the micro frontend requests to set the current locale.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { currentLocale: 'en' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-storage-request",
-              "description": "Event fired when the micro frontend requests to modify the local storage. @type {Object.<string, string>} @example { key: 'luigi-version', value: '2.21.0' }",
+              "description": "Event fired when the micro frontend requests to modify the local storage.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { key: 'luigi-version', value: '2.21.0' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "runtime-error-handling-request",
-              "description": "Event fired when the micro frontend requests to handle errors that might happen during the runtime of the micro frontend. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to handle errors that might happen during the runtime of the micro frontend. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-anchor-request",
-              "description": "Event fired when the micro frontend requests to set the anchor of the URL. @type {string} @example 'some-anchor'",
+              "description": "Event fired when the micro frontend requests to set the anchor of the URL.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) @type {String} @memberof Events @example 'some-anchor'",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-third-party-cookies-request",
-              "description": "Event fired when the micro frontend requests to set third-party cookies. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to set third-party cookies. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "get-current-route-request",
-              "description": "Event fired when the micro frontend requests the current app route.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|CurrentRouteRequestPayload} @type {CurrentRouteRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests the current app route.  Payload: [CurrentRouteRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {CurrentRouteRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "report-navigation-completed-request",
-              "description": "Event fired to report that the micro frontend's navigation has completed. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired to report that the micro frontend's navigation has completed. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-path-data-request",
-              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalPathDataRequestPayload} @type {ModalPathDataRequestPayload} @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal path parameters.  Payload: [ModalPathDataRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ModalPathDataRequestPayload} @memberof Events @example { fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "update-modal-settings-request",
-              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: {@link https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts|ModalSettingsRequestPayload} @type {ModalSettingsRequestPayload} @example { addHistoryEntry: true, updatedModalSettings: {} }",
+              "description": "Event fired when the micro frontend requests to update the modal settings.  Read more about `updateModalSettings` params [here](https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings).  Payload: [ModalSettingsRequestPayload](https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts) @type {ModalSettingsRequestPayload} @memberof Events @example { addHistoryEntry: true, updatedModalSettings: {} }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "check-path-exists-request",
-              "description": "Event fired when the micro frontend requests to check the validity of a path. @type {Object.<string, string>} @example { link: '/test/route' }",
+              "description": "Event fired when the micro frontend requests to check the validity of a path.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, string>} @memberof Events @example { link: '/test/route' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-dirty-status-request",
-              "description": "Event fired when the micro frontend requests to set the 'dirty status' which, for example, avoids closing when there are any unsaved changes. @type {Object.<string, boolean>} @example { dirty: true }",
+              "description": "Event fired when the micro frontend requests to set the 'dirty status' which, for example, avoids closing when there are any unsaved changes.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, boolean>} @memberof Events @example { dirty: true }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "set-viewgroup-data-request",
-              "description": "Event fired when the micro frontend requests to set the view group data. @type {Object.<string, unknown>} @example { vg: 'some data' }",
+              "description": "Event fired when the micro frontend requests to set the view group data.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, unknown>} @memberof Events @example { vg: 'some data' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "go-back-request",
-              "description": "Event fired when the micro frontend requests to navigate back. @type {Object.<string, unknown>} @example { ctx: 'some context' }",
+              "description": "Event fired when the micro frontend requests to navigate back.  Payload: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) @type {Object.<string, unknown>} @memberof Events @example { ctx: 'some context' }",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "add-backdrop-request",
-              "description": "Event fired when the micro frontend requests to display the backdrop. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to display the backdrop. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "remove-backdrop-request",
-              "description": "Event fired when the micro frontend requests to remove the backdrop. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to remove the backdrop. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }
             },
             {
               "name": "close-current-modal-request",
-              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case)",
+              "description": "Event fired when the micro frontend requests to close the current modal. @type {unspecified} (type is not relevant in this case) @memberof Events",
               "type": {
                 "text": "Event"
               }

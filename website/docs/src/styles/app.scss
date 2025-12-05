@@ -84,6 +84,7 @@ body {
     ol,
     ul,
     blockquote,
+    table,
     h1,
     h2,
     h3,
@@ -138,11 +139,15 @@ body {
     &.page-luigi-core-api,
     &.page-luigi-client-api,
     &.page-luigi-element-api {
+        .h3Wrapper > h3[id],
         h4 {
-            margin-top: 35px;
             display: inline-block;
             border-left: 4px solid $primary-color;
             padding-left: 10px;
+        }
+
+        h4 {
+            margin-top: 35px;
         }
     }
 
@@ -218,7 +223,6 @@ body {
         li {
             position: relative;
             padding-left: 20px;
-            
             list-style: none;
 
             &:before {
@@ -600,5 +604,31 @@ body {
             color: rgb(18, 143, 55);
             background-color: rgba(45, 235, 138, 0.08);
         }
+    }
+
+    table {
+        border-collapse: collapse;
+        border-color: transparent;
+        margin-top: 25px;
+        table-layout: fixed;
+    }
+
+    table td, table th {
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 5px 15px;
+        text-align: left;
+    }
+
+    table p {
+        margin: 0;
+    }
+
+    p:has(strong):has(code),
+    p:has(strong):has(code) + p:not(:has(strong)) {
+        display: inline-block;
+    }
+
+    p:has(strong):has(code) > code {
+        padding-right: 0;
     }
 }

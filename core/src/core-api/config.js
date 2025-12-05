@@ -9,8 +9,10 @@ import {
 import { LuigiAuth, LuigiElements } from '.';
 import { AuthLayerSvc, LifecycleHooks } from '../services';
 import { NodeDataManagementStorage } from '../services/node-data-management.js';
+
 /**
  * @name Configuration
+ * @class
  */
 class LuigiConfig {
   /**
@@ -34,7 +36,7 @@ class LuigiConfig {
   /**
    * Sets the configuration for Luigi initially. Can also be called at a later point in time again to update the configuration.
    * @memberof Configuration
-   * @param {Object} configInput the Luigi Core configuration object
+   * @param {Object} configInput - the Luigi Core configuration object
    * @example
    * Luigi.setConfig({
    *   navigation: {
@@ -85,7 +87,7 @@ class LuigiConfig {
 
   /**
    * Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
-   * @param {...string} scope one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
+   * @param {...string} scope - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
    * <p>
    * The supported scope selectors are:
    * <p>
@@ -134,7 +136,7 @@ class LuigiConfig {
   /**
    * Gets value of the given property on Luigi config object. Target can be a value or a synchronous function.
    * @memberof Configuration
-   * @param {string} property the object traversal path
+   * @param {string} property - the object traversal path
    * @example
    * Luigi.getConfigValue('auth.use')
    * Luigi.getConfigValue('settings.sideNavFooterText')
@@ -147,7 +149,7 @@ class LuigiConfig {
    * Gets boolean value of the given property on Luigi config object.
    * Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
    * @memberof Configuration
-   * @param {string} property the object traversal path
+   * @param {string} property - the object traversal path
    * @example
    * Luigi.getConfigBooleanValue('settings.hideNavigation')
    */
@@ -164,8 +166,8 @@ class LuigiConfig {
    * If the value is a Function it is called (with the given parameters) and the result of that call is the value.
    * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
    * @memberof Configuration
-   * @param {string} property the object traversal path
-   * @param {*} parameters optional parameters that are used if the target is a function
+   * @param {string} property - the object traversal path
+   * @param {*} parameters - optional parameters that are used if the target is a function
    * @example
    * Luigi.getConfigValueAsync('navigation.nodes')
    * Luigi.getConfigValueAsync('navigation.profile.items')
@@ -257,8 +259,8 @@ class LuigiConfig {
    * By default, the user settings will be written from the **localStorage**
    * @memberof Configuration
    * @returns {promise} a promise when a custom `storeUserSettings` function in the settings.userSettings section of the Luigi configuration is implemented. If it is resolved the user settings dialog will be closed. If the promise is rejected the user settings dialog will also closed if the error object has a `closeDialog` property, e.g `reject({ closeDialog: true, message: 'some error' })`. In addition a custom error message can be logged to the browser console.
-   * @param {Object} userSettingsObj to store in the storage.
-   * @param {Object} previousUserSettingsObj the previous object from storage.
+   * @param {Object} userSettingsObj - to store in the storage
+   * @param {Object} previousUserSettingsObj - the previous object from storage
    * @example
    * Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
    * @since 1.7.1
@@ -318,8 +320,8 @@ class LuigiConfig {
   /**
    * Set the global context object and triggers the corresponding update.
    * @memberof Configuration
-   * @param {Object} ctx The context object to set
-   * @param {boolean} preventUpdate If true, no view update is triggered. Default is false.
+   * @param {Object} ctx - the context object to set
+   * @param {boolean} preventUpdate - if true, no view update is triggered; default is false
    * @since 2.5.0
    */
   setGlobalContext(ctx, preventUpdate) {
@@ -343,7 +345,7 @@ class LuigiConfig {
   /**
    * Updates the context values for visible iframes and LUI web components.
    * Note: the updated context values are not persisted. The developers have to do it on their own.
-   * @param {Object} ctx - The context to be updated.
+   * @param {Object} ctx - the context to be updated
    * @memberof Configuration
    * @since 2.13.0
    */

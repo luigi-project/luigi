@@ -45,11 +45,11 @@ class RoutingClass {
   /**
     navigateTo used for navigation
     Triggers a frame reload if we are on the same route (eg. if we click on same navigation item again)
-    @param {string} route absolute path of the new route
-    @param {Object} options navigation options
-    @param {boolean} options.keepBrowserHistory By default, it is set to `true`. If it is set to `false`, there is no browser history be kept.
-    @param {boolean} options.navSync By default, it is set to `true`. If it is set to `false`, it disables the navigation handling for a single navigation request.
-    @param {boolean} options.preventContextUpdate By default, it is set to `false`. If it is set to `true`, there is no context update be triggered.
+    @param {string} route - absolute path of the new route
+    @param {Object} options - navigation options
+    @param {boolean} options.keepBrowserHistory - by default, it is set to `true`. If it is set to `false`, there is no browser history be kept.
+    @param {boolean} options.navSync - by default, it is set to `true`. If it is set to `false`, it disables the navigation handling for a single navigation request.
+    @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update be triggered.
    */
   async navigateTo(route, options = {}) {
     const { nodeObject } = await Navigation.extractDataFromPath(route);
@@ -162,7 +162,7 @@ class RoutingClass {
 
   /**
    * Set feature toggole. If `queryStringParam` is provided at config file.
-   * @param {string} path used for retrieving and appending the path parameters
+   * @param {string} path - used for retrieving and appending the path parameters
    */
   setFeatureToggle(path) {
     const featureToggleProperty = LuigiConfig.getConfigValue('settings.featureToggles.queryStringParam');
@@ -184,10 +184,10 @@ class RoutingClass {
    * Prevents the browsers default route change by bringing back previous route then
    * fires an 'Unsaved Changes' modal followed by a subsequent route change handling afterwards
    *
-   * @param {string} path the path of the view to open
-   * @param {Object} component current component data
-   * @param {Object} iframeElement the dom element of active iframe
-   * @param {Object} config the configuration of application
+   * @param {string} path - the path of the view to open
+   * @param {Object} component - current component data
+   * @param {Object} iframeElement - the dom element of active iframe
+   * @param {Object} config - the configuration of application
    */
   handleUnsavedChangesModal(path, component, iframeElement, config) {
     const newUrl = window.location.href,
@@ -208,10 +208,10 @@ class RoutingClass {
   /**
    * This function acts as a resolve callback in handleUnsavedChangesModal function
    * Logic separated to enable better unit testing of the functionality
-   * @param {string} path the path to navigate to
-   * @param {Object} component the current component data
-   * @param {Object} iframeElement the dom element of active iframe
-   * @param {Object} config the configuration of application
+   * @param {string} path - the path to navigate to
+   * @param {Object} component - the current component data
+   * @param {Object} iframeElement - the dom element of active iframe
+   * @param {Object} config - the configuration of application
    */
   resolveUnsavedChanges(path, component, iframeElement, config, newUrl) {
     if (path) {
@@ -231,11 +231,11 @@ class RoutingClass {
 
   /**
    * Handles viewUrl misconfiguration scenario
-   * @param {Object} nodeObject active node data
-   * @param {string} viewUrl the url of the current mf view
-   * @param {Object} previousCompData previous component data
-   * @param {string} pathUrlRaw path url without hash
-   * @param {Object} component current component data
+   * @param {Object} nodeObject - active node data
+   * @param {string} viewUrl - the url of the current mf view
+   * @param {Object} previousCompData - previous component data
+   * @param {string} pathUrlRaw - path url without hash
+   * @param {Object} component - current component data
    */
   async handleViewUrlMisconfigured(nodeObject, viewUrl, previousCompData, pathUrlRaw, component) {
     const { children, intendToHaveEmptyViewUrl, compound } = nodeObject;
@@ -268,13 +268,13 @@ class RoutingClass {
 
   /**
    * Deal with page not found scenario.
-   * @param {Object} nodeObject the data of node
-   * @param {string} viewUrl the url of the current mf view
-   * @param {Object} pathData the information of current path
-   * @param {string} path the path of the view to open
-   * @param {Object} component current component data
-   * @param {Object} pathUrlRaw path url without hash
-   * @param {Object} config the configuration of application
+   * @param {Object} nodeObject - the data of node
+   * @param {string} viewUrl - the url of the current mf view
+   * @param {Object} pathData - the information of current path
+   * @param {string} path - the path of the view to open
+   * @param {Object} component - current component data
+   * @param {Object} pathUrlRaw - path url without hash
+   * @param {Object} config - the configuration of application
    */
   async handlePageNotFound(nodeObject, viewUrl, pathData, path, component, pathUrlRaw, config) {
     if ((!viewUrl && !nodeObject.compound) || (nodeObject.tabNav && nodeObject.tabNav.showAsTabHeader)) {
@@ -322,12 +322,12 @@ class RoutingClass {
 
   /**
    * Deal with route changing scenario.
-   * @param {string} rawPath the path of the view to open
-   * @param {Object} component the settings/functions of component (need refactoring)
-   * @param {Object} iframeElement dom element of iframe
-   * @param {Object} config the configuration of application
-   * @param {boolean} withoutSync disables the navigation handling for a single navigation request.
-   * @param {boolean} preventContextUpdate make no context update being triggered. default is false.
+   * @param {string} rawPath - the path of the view to open
+   * @param {Object} component - the settings/functions of component (need refactoring)
+   * @param {Object} iframeElement - dom element of iframe
+   * @param {Object} config - the configuration of application
+   * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
+   * @param {boolean} preventContextUpdate - make no context update being triggered; default is false
    */
   async handleRouteChange(rawPath, component, iframeElement, config, withoutSync, preventContextUpdate = false) {
     const path = rawPath || '';
@@ -731,8 +731,8 @@ class RoutingClass {
 
   /**
    * Append modal data to url
-   * @param {string} modalPath path of the view which is displayed in the modal
-   * @param {Object} modalParams query parameter
+   * @param {string} modalPath - path of the view which is displayed in the modal
+   * @param {Object} modalParams - query parameter
    */
   appendModalDataToUrl(modalPath, modalParams) {
     // global setting for persistence in url .. default false
