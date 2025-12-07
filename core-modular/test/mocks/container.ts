@@ -1,5 +1,3 @@
-// Minimal Jest-friendly stub of '@luigi-project/container'
-
 export const LuigiEvents = {
   CLOSE_CURRENT_MODAL_REQUEST: 'close-current-modal-request'
 } as const;
@@ -8,7 +6,6 @@ export const LuigiEvents = {
 const Events = LuigiEvents;
 export default Events;
 
-// Named exports used by ui-module.ts
 export class LuigiContainer extends HTMLElement {
   viewurl?: string;
   webcomponent?: any;
