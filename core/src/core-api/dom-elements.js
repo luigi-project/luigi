@@ -3,7 +3,7 @@ import { IframeHelpers } from './../utilities/helpers';
 
 /* istanbul ignore file */
 /**
- * Use these functions to get DOM elements.
+ * @summary Use these functions to get DOM elements.
  * @name Elements
  * @class
  */

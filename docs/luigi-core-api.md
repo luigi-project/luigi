@@ -38,11 +38,11 @@ This document outlines the features provided by the Luigi Core API. It covers th
 ### setConfig&nbsp;  
 Sets the configuration for Luigi initially. Can also be called at a later point in time again to update the configuration.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| configInput | <code>Object</code> | the Luigi Core configuration object |
+- configInput <code>Object</code> - the Luigi Core configuration object
 
+  
 **Example**  
 ```js
 Luigi.setConfig({
@@ -69,6 +69,7 @@ Luigi.setConfig({
 ### getConfig&nbsp;  
 Returns the current active configuration
 
+  
 **Example**  
 ```js
 Luigi.getConfig()
@@ -77,19 +78,32 @@ Luigi.getConfig()
 ### configChanged&nbsp;  
 Tells Luigi that the configuration has been changed. Luigi will update the application or parts of it based on the specified scope.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| ...scope | <code>string</code> | one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed. <p> The supported scope selectors are: <p> <ul>   <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>   <li><code>navigation.nodes</code>: navigation nodes were changed.</li>   <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>   <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>   <li><code>navigation.profile</code>: profile menu was changed.</li>   <li><code>settings</code>: settings were changed.</li>   <li><code>settings.header</code>: header settings (title, icon) were changed.</li>   <li><code>settings.footer</code>: left navigation footer settings were changed.</li> </ul> |
+- ...scope <code>string</code> - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
+<p>
+The supported scope selectors are:
+<p>
+<ul>
+  <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
+  <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
+  <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
+  <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
+  <li><code>navigation.profile</code>: profile menu was changed.</li>
+  <li><code>settings</code>: settings were changed.</li>
+  <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
+  <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
+</ul>
 
+  
 ### getConfigValue&nbsp;  
 Gets value of the given property on Luigi config object. Target can be a value or a synchronous function.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| property | <code>string</code> | the object traversal path |
+- property <code>string</code> - the object traversal path
 
+  
 **Example**  
 ```js
 Luigi.getConfigValue('auth.use')
@@ -99,11 +113,11 @@ Luigi.getConfigValue('settings.sideNavFooterText')
 Gets boolean value of the given property on Luigi config object.
 Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| property | <code>string</code> | the object traversal path |
+- property <code>string</code> - the object traversal path
 
+  
 **Example**  
 ```js
 Luigi.getConfigBooleanValue('settings.hideNavigation')
@@ -113,12 +127,12 @@ Gets value of the given property on the Luigi config object.
 If the value is a Function it is called (with the given parameters) and the result of that call is the value.
 If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| property | <code>string</code> | the object traversal path |
-| ...parameters | <code>\*</code> | optional parameters that are used if the target is a function |
+- property <code>string</code> - the object traversal path
+- ...parameters <code>\*</code> - optional parameters that are used if the target is a function
 
+  
 **Example**  
 ```js
 Luigi.getConfigValueAsync('navigation.nodes')
@@ -128,10 +142,15 @@ Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
 ### ~~isAuthorizationEnabled~~&nbsp;  
 Detects if authorization is enabled via configuration.
 
+  
 **Returns**: <code>boolean</code> - returns true if authorization is enabled. Otherwise returns false.  
+  
+**Meta**:  
+* **deprecated:** now located in Luigi.auth() instead of Luigi
 ### unload&nbsp;  
 Unloads the current Luigi instance, which can be initialized later again by using `Luigi.setConfig({...})`
 
+  
 **Example**  
 ```js
 Luigi.unload()
@@ -144,6 +163,7 @@ Reads the user settings object.
 You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
 By default, the user settings will be read from the **localStorage**
 
+  
 **Example**  
 ```js
 Luigi.readUserSettings();
@@ -157,12 +177,12 @@ Stores the user settings object.
 You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configuration
 By default, the user settings will be written from the **localStorage**
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| userSettingsObj | <code>Object</code> | to store in the storage |
-| previousUserSettingsObj | <code>Object</code> | the previous object from storage |
+- userSettingsObj <code>Object</code> - to store in the storage
+- previousUserSettingsObj <code>Object</code> - the previous object from storage
 
+  
 **Example**  
 ```js
 Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
@@ -174,6 +194,7 @@ Luigi.storeUserSettings(userSettingsobject, previousUserSettingsObj);
 ### reset&nbsp;  
 Reset the current Luigi instance and initialize Luigi with the latest Luigi config.
 
+  
 **Example**  
 ```js
 Luigi.reset();
@@ -184,6 +205,7 @@ Luigi.reset();
 ### clearNavigationCache&nbsp;  
 Clear navigation node related caches.
 
+  
 **Example**  
 ```js
 Luigi.clearNavigationCache();
@@ -194,12 +216,12 @@ Luigi.clearNavigationCache();
 ### setGlobalContext&nbsp;  
 Set the global context object and triggers the corresponding update.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| ctx | <code>Object</code> | the context object to set |
-| preventUpdate | <code>boolean</code> | if true, no view update is triggered; default is false |
+- ctx <code>Object</code> - the context object to set
+- preventUpdate <code>boolean</code> - if true, no view update is triggered; default is false
 
+  
   
 **Meta**:  
 * **since:** 2.5.0
@@ -207,27 +229,26 @@ Set the global context object and triggers the corresponding update.
 Get the global context object.
 
   
+  
 **Meta**:  
 * **since:** 2.5.0
 ### updateContextValues&nbsp;  
 Updates the context values for visible iframes and LUI web components.
 Note: the updated context values are not persisted. The developers have to do it on their own.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| ctx | <code>Object</code> | the context to be updated |
+- ctx <code>Object</code> - the context to be updated
 
+  
   
 **Meta**:  
 * **since:** 2.13.0
 ## Elements&nbsp;  
-### new Elements()&nbsp;  
-Use these functions to get DOM elements.
-
 ### getLuigiContainer&nbsp;  
 Returns the container of the Luigi content.
 
+  
 **Example**  
 ```js
 Luigi.elements().getLuigiContainer();
@@ -239,6 +260,7 @@ Luigi.elements().getLuigiContainer();
 ### getShellbar&nbsp;  
 Returns the shellbar component.
 
+  
 **Example**  
 ```js
 Luigi.elements().getShellbar();
@@ -250,6 +272,7 @@ Luigi.elements().getShellbar();
 ### getShellbarActions&nbsp;  
 Returns the shellbar actions component.
 
+  
 **Example**  
 ```js
 Luigi.elements().getShellbarActions();
@@ -261,6 +284,7 @@ Luigi.elements().getShellbarActions();
 ### getMicrofrontends&nbsp;  
 Returns a list of all available micro frontends.
 
+  
 **Example**  
 ```js
 Luigi.elements().getMicrofrontends();
@@ -272,6 +296,7 @@ Luigi.elements().getMicrofrontends();
 ### getMicrofrontendIframes&nbsp;  
 Returns all micro frontend iframes including the iframe from the modal if it exists.
 
+  
 **Example**  
 ```js
 Luigi.elements().getMicrofrontendIframes();
@@ -284,6 +309,7 @@ Luigi.elements().getMicrofrontendIframes();
 Returns the active micro frontend iframe.
 If there is a modal, which includes the micro frontend iframe, the function returns this iframe.
 
+  
 **Example**  
 ```js
 Luigi.elements().getCurrentMicrofrontendIframe();
@@ -295,6 +321,7 @@ Luigi.elements().getCurrentMicrofrontendIframe();
 ### getNavFooterContainer&nbsp;  
 Returns a navigation footer container.
 
+  
 **Example**  
 ```js
 Luigi.elements().getNavFooterContainer();
@@ -304,12 +331,10 @@ Luigi.elements().getNavFooterContainer();
 **Meta**:  
 * **since:** 1.21.0
 ## LuigiNavigation&nbsp;  
-### new LuigiNavigation()&nbsp;  
-Use these functions for navigation-related features.
-
 ### updateTopNavigation&nbsp;  
 Refreshes top navigation badge counters by rendering the navigation again.
 
+  
 **Example**  
 ```js
 Luigi.navigation().updateTopNavigation();
@@ -317,27 +342,27 @@ Luigi.navigation().updateTopNavigation();
 ### navigate&nbsp;  
 Navigates to the given path in the application. It contains either a full absolute path or a relative path without a leading slash that uses the active route as a base. This is the standard navigation.
 
+**Params**
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| path | <code>string</code> |  | path to be navigated to |
-| preserveView | <code>boolean</code> |  | preserve a view by setting it to `true`. It keeps the current view opened in the background and opens the new route in a new frame. Use the [goBack()](#goBack) function to navigate back. You can use this feature across different levels. Preserved views are discarded as soon as you use the standard [navigate()](#navigate) function instead of [goBack()](#goBack) |
-| modalSettings | <code>Object</code> |  | opens a view in a modal. Use these settings to configure the modal's title and size |
-| modalSettings.title | <code>string</code> |  | modal title. By default, it is the node label. If there is no label, it is left empty |
-| [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
-| modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
-| modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
-| splitViewSettings | <code>Object</code> |  | opens a view in a split view. Use these settings to configure the split view's behaviour |
-| splitViewSettings.title | <code>string</code> |  | split view title. By default, it is the node label. If there is no label, it is left empty |
-| [splitViewSettings.size] | <code>number</code> | <code>40</code> | height of the split view in percent |
-| [splitViewSettings.collapsed] | <code>boolean</code> | <code>false</code> | opens split view in collapsed state |
-| drawerSettings | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view. |
-| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
-| [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
+- path <code>string</code> - path to be navigated to
+- preserveView <code>boolean</code> - preserve a view by setting it to `true`. It keeps the current view opened in the background and opens the new route in a new frame. Use the [goBack()](#goBack) function to navigate back. You can use this feature across different levels. Preserved views are discarded as soon as you use the standard [navigate()](#navigate) function instead of [goBack()](#goBack)
+- modalSettings <code>Object</code> - opens a view in a modal. Use these settings to configure the modal's title and size
+    - .title <code>string</code> - modal title. By default, it is the node label. If there is no label, it is left empty
+    - [.size] <code>&#x27;fullscreen&#x27;</code> | <code>&#x27;l&#x27;</code> | <code>&#x27;m&#x27;</code> | <code>&#x27;s&#x27;</code> <code> = &quot;l&quot;</code> - size of the modal
+    - .width <code>string</code> - updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+    - .height <code>string</code> - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+    - .keepPrevious <code>boolean</code> - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
+    - .closebtn_data_testid <code>string</code> - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+- splitViewSettings <code>Object</code> - opens a view in a split view. Use these settings to configure the split view's behaviour
+    - .title <code>string</code> - split view title. By default, it is the node label. If there is no label, it is left empty
+    - [.size] <code>number</code> <code> = 40</code> - height of the split view in percent
+    - [.collapsed] <code>boolean</code> <code> = false</code> - opens split view in collapsed state
+- drawerSettings <code>Object</code> - opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
+    - .header <code>any</code> - by default, the header is visible. The default title is the node label, but the header could also be an object with a `title` attribute allowing you to specify your own title.  An 'x' icon is displayed to close the drawer view.
+    - .backdrop <code>boolean</code> - by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop.
+    - [.size] <code>&#x27;l&#x27;</code> | <code>&#x27;m&#x27;</code> | <code>&#x27;s&#x27;</code> | <code>&#x27;xs&#x27;</code> <code> = &quot;s&quot;</code> - size of the drawer
 
+  
 **Example**  
 ```js
 Luigi.navigation().navigate('/overview')
@@ -347,12 +372,12 @@ Luigi.navigation().navigate('/settings', null, true) // preserve view
 ### navigateToIntent&nbsp;  
 Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing parameters.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| semanticSlug | <code>string</code> | concatenation of semantic object and action connected with a dash (-) |
-| params | <code>Object</code> | an object representing all the parameters passed (optional, default '{}') |
+- semanticSlug <code>string</code> - concatenation of semantic object and action connected with a dash (-)
+- params <code>Object</code> - an object representing all the parameters passed (optional, default '{}')
 
+  
 **Example**  
 ```js
 Luigi.navigation().navigateToIntent('Sales-settings')
@@ -364,19 +389,19 @@ Luigi.navigation().navigateToIntent('Sales-settings', {project: 'pr1'})
 ### openAsModal&nbsp;  
 Opens a view in a modal. You can specify the modal's title and size. If you do not specify the title, it is the node label. If there is no node label, the title remains empty.  The default size of the modal is `l`, which means 80%. You can also use `m` (60%) and `s` (40%) to set the modal size. Optionally, use it in combination with any of the navigation functions.
 
+**Params**
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| path | <code>string</code> |  | navigation path |
-| [modalSettings] | <code>Object</code> |  | opens a view in a modal. Use these settings to configure the modal's title and size |
-| modalSettings.title | <code>string</code> |  | modal title. By default, it is the node label. If there is no label, it is left empty |
-| [modalSettings.size] | <code>&#x27;fullscreen&#x27;</code> \| <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> | <code>&quot;l&quot;</code> | size of the modal |
-| modalSettings.width | <code>string</code> |  | updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.height | <code>string</code> |  | updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'. |
-| modalSettings.keepPrevious | <code>boolean</code> |  | lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded. |
-| modalSettings.closebtn_data_testid | <code>string</code> |  | lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal. |
-| onCloseCallback | <code>function</code> |  | callback function called upon closing the opened modal |
+- path <code>string</code> - navigation path
+- [modalSettings] <code>Object</code> - opens a view in a modal. Use these settings to configure the modal's title and size
+    - .title <code>string</code> - modal title. By default, it is the node label. If there is no label, it is left empty
+    - [.size] <code>&#x27;fullscreen&#x27;</code> | <code>&#x27;l&#x27;</code> | <code>&#x27;m&#x27;</code> | <code>&#x27;s&#x27;</code> <code> = &quot;l&quot;</code> - size of the modal
+    - .width <code>string</code> - updates the `width` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+    - .height <code>string</code> - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
+    - .keepPrevious <code>boolean</code> - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
+    - .closebtn_data_testid <code>string</code> - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+- onCloseCallback <code>function</code> - callback function called upon closing the opened modal
 
+  
 **Example**  
 ```js
 Luigi.navigation().openAsModal('projects/pr1/users', {title:'Users', size:'m'});
@@ -385,15 +410,15 @@ Luigi.navigation().openAsModal('projects/pr1/users', {title:'Users', size:'m'});
 Opens a view in a split view. You can specify the split view's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty. The default size of the split view is 40, which means 40% height of the split view.
 
 **See**: [SplitView Client](https://docs.luigi-project.io/docs/luigi-client-api?section=splitview) for further documentation. These methods from the Client SplitView are also implemented for Luigi Core: `close`, `collapse`, `expand`, `isCollapsed`, `isExpanded`, `exists`  
+**Params**
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| path | <code>string</code> |  | navigation path |
-| splitViewSettings | <code>Object</code> |  | opens a view in a split view. Use these settings to configure the split view's behaviour |
-| splitViewSettings.title | <code>string</code> |  | split view title. By default, it is the node label. If there is no label, it is left empty |
-| [splitViewSettings.size] | <code>number</code> | <code>40</code> | height of the split view in percent |
-| [splitViewSettings.collapsed] | <code>boolean</code> | <code>false</code> | opens split view in collapsed state |
+- path <code>string</code> - navigation path
+- splitViewSettings <code>Object</code> - opens a view in a split view. Use these settings to configure the split view's behaviour
+    - .title <code>string</code> - split view title. By default, it is the node label. If there is no label, it is left empty
+    - [.size] <code>number</code> <code> = 40</code> - height of the split view in percent
+    - [.collapsed] <code>boolean</code> <code> = false</code> - opens split view in collapsed state
 
+  
 **Example**  
 ```js
 Luigi.navigation().openAsSplitView('projects/pr1/users', {title:'Users', size:'40'});
@@ -405,15 +430,15 @@ Luigi.navigation().openAsSplitView('projects/pr1/users', {title:'Users', size:'4
 ### openAsDrawer&nbsp;  
 Opens a view in a drawer. You can specify if the drawer has a header, if a backdrop is active in the background and configure the size of the drawer. By default the header is shown. The backdrop is not visible and has to be activated. The size of the drawer is by default set to `s` which means 25% of the micro frontend size. You can also use `l`(75%), `m`(50%) or `xs`(15.5%). Optionally, use it in combination with any of the navigation functions.
 
+**Params**
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| path | <code>string</code> |  | navigation path |
-| [drawerSettings] | <code>Object</code> |  | opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size. |
-| drawerSettings.header | <code>any</code> |  | by default, the header is visible. Title is node label and 'x' is displayed to close the drawer view. The header could also be an object with a `title` attribute to specify an own title for the drawer component. |
-| drawerSettings.backdrop | <code>boolean</code> |  | by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop. |
-| [drawerSettings.size] | <code>&#x27;l&#x27;</code> \| <code>&#x27;m&#x27;</code> \| <code>&#x27;s&#x27;</code> \| <code>&#x27;xs&#x27;</code> | <code>&quot;s&quot;</code> | size of the drawer |
+- path <code>string</code> - navigation path
+- [drawerSettings] <code>Object</code> - opens a view in a drawer. Use these settings to configure if the drawer has a header, backdrop and size.
+    - .header <code>any</code> - by default, the header is visible. Title is node label and 'x' is displayed to close the drawer view. The header could also be an object with a `title` attribute to specify an own title for the drawer component.
+    - .backdrop <code>boolean</code> - by default, it is set to `false`. If it is set to `true` the rest of the screen has a backdrop.
+    - [.size] <code>&#x27;l&#x27;</code> | <code>&#x27;m&#x27;</code> | <code>&#x27;s&#x27;</code> | <code>&#x27;xs&#x27;</code> <code> = &quot;s&quot;</code> - size of the drawer
 
+  
 **Example**  
 ```js
 Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});
@@ -425,11 +450,11 @@ Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer
 ### fromContext&nbsp;  
 Sets the current navigation context to that of a specific parent node which has the [navigationContext](navigation-configuration.md) field declared in the navigation configuration. This navigation context is then used by the `navigate` function.
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| navigationContext | <code>string</code> | 
+- navigationContext <code>string</code>
 
+  
 **Example**  
 ```js
 Luigi.navigation().fromContext('project').navigate('/settings')
@@ -438,6 +463,7 @@ Luigi.navigation().fromContext('project').navigate('/settings')
 ### fromClosestContext&nbsp;  
 Sets the current navigation context which is then used by the `navigate` function. This has to be a parent navigation context, it is not possible to use the child navigation contexts.
 
+  
 **Example**  
 ```js
 Luigi.navigation().fromClosestContext().navigate('/users/groups/stakeholders')
@@ -446,6 +472,7 @@ Luigi.navigation().fromClosestContext().navigate('/users/groups/stakeholders')
 ### fromVirtualTreeRoot&nbsp;  
 Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
 
+  
 **Example**  
 ```js
 Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
@@ -457,6 +484,7 @@ Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
 ### fromParent&nbsp;  
 Enables navigating to sibling nodes without knowing the absolute path.
 
+  
 **Example**  
 ```js
 Luigi.navigation().fromParent().navigate('/sibling')
@@ -468,6 +496,7 @@ Luigi.navigation().fromParent().navigate('/sibling')
 ### getCurrentRoute&nbsp;  
 Gets the Luigi route associated with the current micro frontend.
 
+  
 **Example**  
 ```js
 Luigi.navigation().getCurrentRoute();
@@ -481,11 +510,11 @@ Luigi.navigation().fromVirtualTreeRoot().getCurrentRoute();
 ### withParams&nbsp;  
 Sends node parameters to the route. The parameters are used by the `navigate` function. Use it optionally in combination with any of the navigation functions and receive it as part of the context object in Luigi Client.
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| nodeParams | <code>Object</code> | 
+- nodeParams <code>Object</code>
 
+  
 **Example**  
 ```js
 Luigi.navigation().withParams({foo: "bar"}).navigate("path")
@@ -497,11 +526,11 @@ Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate(
 ### pathExists&nbsp;  
 Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| path | <code>string</code> | path which existence you want to check |
+- path <code>string</code> - path which existence you want to check
 
+  
 **Example**  
 ```js
 let pathExists;
@@ -516,27 +545,26 @@ let pathExists;
 ### hasBack&nbsp;  
 Checks if there is one or more preserved views. You can use it to show a **back** button.
 
+  
 **Returns**: <code>boolean</code> - indicating if there is a preserved view you can return to  
 ### goBack&nbsp;  
 Discards the active view and navigates back to the last visited view. Works with preserved views, and also acts as the substitute of the browser **back** button. **goBackContext** is only available when using preserved views.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| goBackValue | <code>any</code> | data that is passed in the **goBackContext** field to the last visited view when using preserved views |
+- goBackValue <code>any</code> - data that is passed in the **goBackContext** field to the last visited view when using preserved views
 
+  
 **Example**  
 ```js
 Luigi.navigation().goBack({ foo: 'bar' });
 Luigi.navigation().goBack(true);
 ```
 ## LuigiI18N&nbsp;  
-### new LuigiI18N()&nbsp;  
-Localization-related functions.
-
 ### getCurrentLocale&nbsp;  
 Gets the current locale.
 
+  
 **Returns**: <code>string</code> - current locale  
   
 **Meta**:  
@@ -544,22 +572,22 @@ Gets the current locale.
 ### setCurrentLocale&nbsp;  
 Sets current locale to the specified one.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| locale | <code>string</code> | locale to be set as the current locale |
+- locale <code>string</code> - locale to be set as the current locale
 
+  
   
 **Meta**:  
 * **since:** 0.5.3
 ### addCurrentLocaleChangeListener&nbsp;  
 Registers a listener for locale changes.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| listener | <code>function</code> | function called on every locale change with the new locale as argument |
+- listener <code>function</code> - function called on every locale change with the new locale as argument
 
+  
 **Returns**: <code>number</code> - listener ID associated with the given listener; use it when removing the listener  
   
 **Meta**:  
@@ -567,11 +595,11 @@ Registers a listener for locale changes.
 ### removeCurrentLocaleChangeListener&nbsp;  
 Unregisters a listener for locale changes.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| listenerId | <code>number</code> | listener ID associated with the listener to be removed, returned by addCurrentLocaleChangeListener |
+- listenerId <code>number</code> - listener ID associated with the listener to be removed, returned by addCurrentLocaleChangeListener
 
+  
   
 **Meta**:  
 * **since:** 0.5.3
@@ -582,30 +610,31 @@ Property values for token replacement in the localization key will be taken from
 <!-- add-attribute:class:success -->
 > **TIP**: Be aware that this function is not asynchronous and therefore the translation table must be existing already at initialization. Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| key | <code>string</code> | key to be translated |
-| interpolations | <code>Object</code> | objects with properties that will be used for token replacements in the localization key |
-| locale | <code>locale</code> | optional locale to get the translation for; default is the current locale |
+- key <code>string</code> - key to be translated
+- interpolations <code>Object</code> - objects with properties that will be used for token replacements in the localization key
+- locale <code>locale</code> - optional locale to get the translation for; default is the current locale
 
+  
   
 **Meta**:  
 * **since:** 0.5.3
 ## CustomMessages&nbsp;  
-### new CustomMessages()&nbsp;  
+### CustomMessages&nbsp;  
 Functions related to custom messages.
 
+  
 ### sendToAll&nbsp;  
 Sends a custom message to all opened micro frontends.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| message | <code>Object</code> | an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side. |
-| message.id | <code>string</code> | the id of the message |
-| message.MY_DATA_FIELD | <code>\*</code> | any other message data field |
+- message <code>Object</code> - an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side.
+    - .id <code>string</code> - the id of the message
+    - .MY_DATA_FIELD <code>\*</code> - any other message data field
 
+  
 **Example**  
 ```js
 Luigi.customMessages().sendToAll({
@@ -621,14 +650,14 @@ Luigi.customMessages().sendToAll({
 Sends a message to specific micro frontend identified with an id.
 Use Luigi.elements().getMicrofrontends() to get the iframe id.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| microfrontendId | <code>number</code> | the id of the micro frontend |
-| message | <code>Object</code> | an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side |
-| message.id | <code>number</code> | the id of the message |
-| message.MY_DATA_FIELD | <code>\*</code> | any other message data field |
+- microfrontendId <code>number</code> - the id of the micro frontend
+- message <code>Object</code> - an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side
+    - .id <code>number</code> - the id of the message
+    - .MY_DATA_FIELD <code>\*</code> - any other message data field
 
+  
 **Example**  
 ```js
 Luigi.customMessages().send(microfrontend.id, {
@@ -641,31 +670,29 @@ Luigi.customMessages().send(microfrontend.id, {
 **Meta**:  
 * **since:** 0.6.2
 ## UX&nbsp;  
-### new UX()&nbsp;  
-Functions to use Luigi Core UX features.
-
 ### hideAppLoadingIndicator&nbsp;  
 Hides the app loading indicator.
 
+  
   
 **Meta**:  
 * **since:** 0.6.4
 ### showAlert&nbsp;  
 Shows an alert.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| settings | <code>Object</code> | the settings for the alert |
-| settings.text | <code>string</code> | the content of the alert. To add a link to the content, you have to set up the link in the `links` object. The key(s) in the `links` object must be used in the text to reference the links, wrapped in curly brackets with no spaces. If you do not specify any text, the alert is not displayed |
-| settings.type | <code>&#x27;info&#x27;</code> \| <code>&#x27;success&#x27;</code> \| <code>&#x27;warning&#x27;</code> \| <code>&#x27;error&#x27;</code> | sets the type of alert |
-| settings.links | <code>Object</code> | provides links data |
-| settings.links.LINK_KEY | <code>Object</code> | object containing the data for a particular link. To properly render the link in the alert message refer to the description of the **settings.text** parameter |
-| settings.links.LINK_KEY.text | <code>string</code> | text which replaces the link identifier in the alert content |
-| settings.links.LINK_KEY.url | <code>string</code> | URL to navigate when you click the link. Currently, only internal links are supported in the form of relative or absolute paths |
-| settings.links.LINK_KEY.dismissKey | <code>string</code> | dismissKey which represents the key of the link. |
-| settings.closeAfter | <code>number</code> | (optional) time in milliseconds that tells Luigi when to close the Alert automatically. If not provided, the Alert will stay on until closed manually. It has to be greater than `100` |
+- settings <code>Object</code> - the settings for the alert
+    - .text <code>string</code> - the content of the alert. To add a link to the content, you have to set up the link in the `links` object. The key(s) in the `links` object must be used in the text to reference the links, wrapped in curly brackets with no spaces. If you do not specify any text, the alert is not displayed
+    - .type <code>&#x27;info&#x27;</code> | <code>&#x27;success&#x27;</code> | <code>&#x27;warning&#x27;</code> | <code>&#x27;error&#x27;</code> - sets the type of alert
+    - .links <code>Object</code> - provides links data
+        - .LINK_KEY <code>Object</code> - object containing the data for a particular link. To properly render the link in the alert message refer to the description of the **settings.text** parameter
+            - .text <code>string</code> - text which replaces the link identifier in the alert content
+            - .url <code>string</code> - URL to navigate when you click the link. Currently, only internal links are supported in the form of relative or absolute paths
+            - .dismissKey <code>string</code> - dismissKey which represents the key of the link.
+    - .closeAfter <code>number</code> - (optional) time in milliseconds that tells Luigi when to close the Alert automatically. If not provided, the Alert will stay on until closed manually. It has to be greater than `100`
 
+  
 **Example**  
 ```js
 const settings = {
@@ -693,16 +720,16 @@ Luigi
 ### showConfirmationModal&nbsp;  
 Shows a confirmation modal.
 
+**Params**
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| settings | <code>Object</code> |  | the settings of the confirmation modal. If you do not provide any value for any of the fields, a default value is used |
-| settings.type | <code>&#x27;confirmation&#x27;</code> \| <code>&#x27;success&#x27;</code> \| <code>&#x27;warning&#x27;</code> \| <code>&#x27;error&#x27;</code> \| <code>&#x27;information&#x27;</code> |  | the content of the modal type. (Optional) |
-| [settings.header] | <code>string</code> | <code>&quot;\&quot;Confirmation\&quot;&quot;</code> | the content of the modal header |
-| [settings.body] | <code>string</code> | <code>&quot;\&quot;Are you sure you want to do this?\&quot;&quot;</code> | the content of the modal body. It supports HTML formatting elements such as `<br>`, `<b>`, `<strong>`, `<i>`, `<em>`, `<mark>`, `<small>`, `<del>`, `<ins>`, `<sub>`, `<sup>`. |
-| [settings.buttonConfirm] | <code>string</code> \| <code>false</code> | <code>&quot;\&quot;Yes\&quot;&quot;</code> | the label for the modal confirmation button. If set to `false`, the button will not be shown. |
-| [settings.buttonDismiss] | <code>string</code> | <code>&quot;\&quot;No\&quot;&quot;</code> | the label for the modal dismiss button |
+- settings <code>Object</code> - the settings of the confirmation modal. If you do not provide any value for any of the fields, a default value is used
+    - .type <code>&#x27;confirmation&#x27;</code> | <code>&#x27;success&#x27;</code> | <code>&#x27;warning&#x27;</code> | <code>&#x27;error&#x27;</code> | <code>&#x27;information&#x27;</code> - the content of the modal type. (Optional)
+    - [.header] <code>string</code> <code> = &quot;\&quot;Confirmation\&quot;&quot;</code> - the content of the modal header
+    - [.body] <code>string</code> <code> = &quot;\&quot;Are you sure you want to do this?\&quot;&quot;</code> - the content of the modal body. It supports HTML formatting elements such as `<br>`, `<b>`, `<strong>`, `<i>`, `<em>`, `<mark>`, `<small>`, `<del>`, `<ins>`, `<sub>`, `<sup>`.
+    - [.buttonConfirm] <code>string</code> | <code>false</code> <code> = &quot;\&quot;Yes\&quot;&quot;</code> - the label for the modal confirmation button. If set to `false`, the button will not be shown.
+    - [.buttonDismiss] <code>string</code> <code> = &quot;\&quot;No\&quot;&quot;</code> - the label for the modal dismiss button
 
+  
 **Example**  
 ```js
 const settings = {
@@ -725,11 +752,11 @@ Luigi
 ### setDocumentTitle&nbsp;  
 Set the document title
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| documentTitle | <code>string</code> | 
+- documentTitle <code>string</code>
 
+  
 **Example**  
 ```js
 Luigi.ux().setDocumentTitle('Luigi');
@@ -740,6 +767,7 @@ Luigi.ux().setDocumentTitle('Luigi');
 ### getDocumentTitle&nbsp;  
 Get the document title
 
+  
 **Example**  
 ```js
 Luigi.ux().getDocumentTitle();
@@ -751,11 +779,11 @@ Luigi.ux().getDocumentTitle();
 ### collapseLeftSideNav&nbsp;  
 Set the collapsed state of the left side navigation
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| state | <code>boolean</code> | 
+- state <code>boolean</code>
 
+  
   
 **Meta**:  
 * **since:** 1.5.0
@@ -763,11 +791,13 @@ Set the collapsed state of the left side navigation
 Open user settings dialog
 
   
+  
 **Meta**:  
 * **since:** 1.7.1
 ### closeUserSettings&nbsp;  
 Close user settings dialog
 
+  
   
 **Meta**:  
 * **since:** 1.7.1
@@ -775,11 +805,13 @@ Close user settings dialog
 Returns the dirty status, which is set by the Client via [setDirtyStatus](luigi-client-api.md#setdirtystatus). By default, the dirty status is `false`.
 
   
+  
 **Meta**:  
 * **since:** 2.1.0
 ### getCurrentTheme&nbsp;  
 Returns the current active theme. Falls back to **defaultTheme** if one wasn't explicitly specified before.
 
+  
 **Example**  
 ```js
 Luigi.ux().getCurrentTheme()
@@ -789,12 +821,10 @@ Luigi.ux().getCurrentTheme()
 **Meta**:  
 * **since:** 2.14.0
 ## GlobalSearch&nbsp;  
-### new GlobalSearch()&nbsp;  
-Functions to use Luigi Global Search.
-
 ### openSearchField&nbsp;  
 Opens the global search field.
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().openSearchField();
@@ -805,6 +835,7 @@ Luigi.globalSearch().openSearchField();
 ### closeSearchField&nbsp;  
 Closes the global search field.
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().closeSearchField();
@@ -815,6 +846,7 @@ Luigi.globalSearch().closeSearchField();
 ### clearSearchField&nbsp;  
 Clears the global search field.
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().clearSearchField();
@@ -825,11 +857,11 @@ Luigi.globalSearch().clearSearchField();
 ### showSearchResult&nbsp;  
 Opens the global search result. By standard it is a popover.
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| searchResultItems | <code>Array</code> | 
+- searchResultItems <code>Array</code>
 
+  
 **Example**  
 ```js
 let searchResultItem = {
@@ -849,6 +881,7 @@ Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
 ### closeSearchResult&nbsp;  
 Closes the global search result. By standard it is rendered as a popover.
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().closeSearchResult();
@@ -859,6 +892,7 @@ Luigi.globalSearch().closeSearchResult();
 ### getSearchString&nbsp;  
 Gets the value of the search input field.
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().getSearchString();
@@ -869,11 +903,11 @@ Luigi.globalSearch().getSearchString();
 ### setSearchString&nbsp;  
 Sets the value of the search input field.
 
+**Params**
 
-| Param | Description |
-| --- | --- |
-| searchString | search value |
+- searchString - search value
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().setSearchString('searchString');
@@ -884,11 +918,11 @@ Luigi.globalSearch().setSearchString('searchString');
 ### setSearchInputPlaceholder&nbsp;  
 Sets the value of the Placeholder search input field.
 
+**Params**
 
-| Param | Description |
-| --- | --- |
-| searchString | search value |
+- searchString - search value
 
+  
 **Example**  
 ```js
 Luigi.globalSearch().setSearchInputPlaceholder('HERE input Placeholder');
@@ -897,12 +931,10 @@ Luigi.globalSearch().setSearchInputPlaceholder('HERE input Placeholder');
 **Meta**:  
 * **since:** 1.7.1
 ## Theming&nbsp;  
-### new Theming()&nbsp;  
-Functions to use Luigi Core Theming features.
-
 ### getAvailableThemes&nbsp;  
 Retrieves the available themes
 
+  
 **Example**  
 ```js
 Luigi
@@ -919,11 +951,11 @@ Luigi
 ### setCurrentTheme&nbsp;  
 Sets the current theme id
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| id | <code>string</code> | of a theme object |
+- id <code>string</code> - of a theme object
 
+  
 **Example**  
 ```js
 Luigi.theming().setCurrentTheme('light')
@@ -934,11 +966,11 @@ Luigi.theming().setCurrentTheme('light')
 ### getThemeObject&nbsp;  
 Retrieves a theme object by name.
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| id | <code>string</code> | theme id |
+- id <code>string</code> - theme id
 
+  
 **Example**  
 ```js
 Luigi
@@ -955,6 +987,7 @@ Luigi
 ### getCurrentTheme&nbsp;  
 Retrieves the current active theme. Falls back to **defaultTheme** if none explicitly specified before.
 
+  
 **Example**  
 ```js
 Luigi.theming().getCurrentTheme()
@@ -966,6 +999,7 @@ Luigi.theming().getCurrentTheme()
 ### isThemingAvailable&nbsp;  
 The general status about the Theming configuration.
 
+  
 **Example**  
 ```js
 Luigi.theming().isThemingAvailable()
@@ -980,6 +1014,7 @@ It's also possible to define your own variables file which can be declared in `s
 The variables should be defined in a JSON file which starts with a `root` key.
 When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
 
+  
 **Example**  
 ```js
 Luigi.theming().getCSSVariables();
@@ -989,17 +1024,14 @@ Luigi.theming().getCSSVariables();
 **Meta**:  
 * **since:** 2.3.0
 ## FeatureToggles&nbsp;  
-### new FeatureToggles()&nbsp;  
-Functions to use feature toggles in Luigi.
-
 ### setFeatureToggle&nbsp;  
 Add a feature toggle to an active feature toggles list
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| featureToggleName | <code>string</code> | the name of the feature toggle |
+- featureToggleName <code>string</code> - the name of the feature toggle
 
+  
 **Example**  
 ```js
 Luigi.featureToggles().setFeatureToggle('featureToggleName');
@@ -1010,6 +1042,7 @@ Luigi.featureToggles().setFeatureToggle('featureToggleName');
 ### unsetFeatureToggle&nbsp;  
 Remove a feature toggle from the list
 
+  
 **Example**  
 ```js
 Luigi.featureToggles().unsetFeatureToggle('featureToggleName');
@@ -1020,6 +1053,7 @@ Luigi.featureToggles().unsetFeatureToggle('featureToggleName');
 ### getActiveFeatureToggleList&nbsp;  
 Get a list of active feature toggles
 
+  
 **Example**  
 ```js
 Luigi.featureToggles().getActiveFeatureToggleList();
@@ -1029,12 +1063,10 @@ Luigi.featureToggles().getActiveFeatureToggleList();
 **Meta**:  
 * **since:** 1.4.0
 ## Routing&nbsp;  
-### new Routing()&nbsp;  
-Use these functions for navigation-related features.
-
 ### getSearchParams&nbsp;  
 Get search parameter from URL as an object.
 
+  
 **Example**  
 ```js
 Luigi.routing().getSearchParams();
@@ -1047,12 +1079,12 @@ Add search parameters to the URL.
 If [hash routing](navigation-parameters-reference.md#usehashrouting) is enabled, the search parameters will be set after the hash.
 In order to delete a search query param you can set the value of the param to undefined.
 
+**Params**
 
-| Param | Type |
-| --- | --- |
-| params | <code>Object</code> | 
-| keepBrowserHistory | <code>boolean</code> | 
+- params <code>Object</code>
+- keepBrowserHistory <code>boolean</code>
 
+  
 **Example**  
 ```js
 Luigi.routing().addSearchParams({luigi:'rocks', mario:undefined}, false);
@@ -1061,22 +1093,21 @@ Luigi.routing().addSearchParams({luigi:'rocks', mario:undefined}, false);
 **Meta**:  
 * **since:** 1.16.1
 ## Authorization&nbsp;  
-### new Authorization()&nbsp;  
-Authorization helpers.
-
 ### isAuthorizationEnabled&nbsp;  
 Detects if authorization is enabled via configuration.
 Read more about [custom authorization providers](authorization-configuration.md).
 
+  
 **Example**  
 ```js
 Luigi.auth().isAuthorizationEnabled();
 ```
-**Returns**: <code>boolean</code> - `true` if authorization is enabled. Otherwise returns `false`.  
+**Returns**: <code>boolean</code> - `true` if authorization is enabled - otherwise returns `false`  
 ### login&nbsp;  
 Login the user dynamically.
 This will run the same functionality as though the user clicked the login button.
 
+  
 **Example**  
 ```js
 Luigi.auth().login();
@@ -1088,6 +1119,7 @@ Luigi.auth().login();
 Logout the user dynamically.
 This will run the same functionality as though the user clicked the logout button.
 
+  
 **Example**  
 ```js
 Luigi.auth().logout();
@@ -1108,15 +1140,18 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 | scope | <code>string</code> | scope, can be empty if it is not required |
 | idToken | <code>string</code> | id token, used for renewing authentication |
 
+  
 ## AuthorizationStore&nbsp;  
 ### store&nbsp;  
 Getter for authorization Storage helpers, to be used in your custom authorization provider.
 Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
 
+  
 **Returns**: <code>Object</code> - authorization storage helpers  
 ### getStorageKey&nbsp;  
 Retrieves the key name that is used to store the auth data.
 
+  
 **Example**  
 ```js
 Luigi.auth().store.getStorageKey()
@@ -1125,6 +1160,7 @@ Luigi.auth().store.getStorageKey()
 ### getStorageType&nbsp;  
 Retrieves the storage type that is used to store the auth data. To set it, use the `storage` property of the `auth` Luigi configuration object. Find out more [here](https://docs.luigi-project.io/docs/authorization-configuration?section=general-authorization-options).
 
+  
 **Example**  
 ```js
 Luigi.auth().store.getStorageType()
@@ -1133,6 +1169,7 @@ Luigi.auth().store.getStorageType()
 ### getAuthData&nbsp;  
 Retrieves the current auth object.
 
+  
 **Example**  
 ```js
 Luigi.auth().store.getAuthData()
@@ -1141,11 +1178,11 @@ Luigi.auth().store.getAuthData()
 ### setAuthData&nbsp;  
 Sets authorization data
 
+**Params**
 
-| Param | Type | Description |
-| --- | --- | --- |
-| data | <code>AuthData</code> | new auth data object |
+- data <code>AuthData</code> - new auth data object
 
+  
 **Example**  
 ```js
 Luigi.auth().store.setAuthData(data)
@@ -1153,6 +1190,7 @@ Luigi.auth().store.setAuthData(data)
 ### removeAuthData&nbsp;  
 Clears authorization data from store
 
+  
 **Example**  
 ```js
 Luigi.auth().store.removeAuthData()
@@ -1160,6 +1198,7 @@ Luigi.auth().store.removeAuthData()
 ### setNewlyAuthorized&nbsp;  
 Defines a new authorization session. Must be triggered after initial `setAuthData()` in order to trigger **onAuthSuccessful** event after login.
 
+  
 **Example**  
 ```js
 Luigi.auth().store.setNewlyAuthorized()

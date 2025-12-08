@@ -2,7 +2,7 @@ import { get, writable } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers';
 
 /**
- * Functions to use feature toggles in Luigi.
+ * @summary Functions to use feature toggles in Luigi.
  * @name FeatureToggles
  * @class
  */

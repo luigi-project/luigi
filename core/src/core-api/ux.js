@@ -5,7 +5,7 @@ import { linkManager } from './_internalLinkManager';
 import { SemiCollapsibleNavigation } from './../navigation/services/semi-collapsed-navigation';
 
 /**
- * Functions to use Luigi Core UX features.
+ * @summary Functions to use Luigi Core UX features.
  * @namespace UX
  * @class
  */

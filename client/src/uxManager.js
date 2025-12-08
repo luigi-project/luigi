@@ -3,7 +3,7 @@ import { lifecycleManager } from './lifecycleManager';
 import { helpers } from './helpers';
 
 /**
- * Use the UX Manager to manage the appearance features in Luigi.
+ * @summary Use the UX Manager to manage the appearance features in Luigi.
  * @augments LuigiClientBase
  * @name uxManager
  * @class

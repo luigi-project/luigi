@@ -5,7 +5,7 @@ export declare interface WebComponentSettings {
 }
 
 /**
- * Base class for Luigi container.
+ * @summary Base class for Luigi container.
  * @augments HTMLElement
  * @class
  */
@@ -59,13 +59,8 @@ export default class LuigiContainer extends HTMLElement {
   label: string;
 
   /**
-   * Predicate that sets whether the microfrontend is to be rendered in a web component or not. It can also be an object with the attributes shown in a table below.
-   * <blockquote class="warning">
-   * <p><strong>Note:</strong> If you have to use the mechanism of `selfRegistered`, we recommend using the following code in your web component:</p>
-   * </blockquote>
-   * <pre><code>window.Luigi._registerWebcomponent(new URL(document.currentScript?.getAttribute('src'), location), <YOUR_WEBCOMPONENT_CLASS>);</code></pre>
-   * The advantage of this line of code is: you don't have to specify a tag name, thus avoiding the duplication of self-defined tag names. <br><br>
-   * Type: `Boolean` or `WebComponentSettings` or `String`
+   * @description Predicate that sets whether the microfrontend is to be rendered in a web component or not. It can also be an object with the attributes shown in a table below. <br><br>Type: [Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean) | WebComponentSettings | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+   * @summary <blockquote class="warning"><p><strong>Note:</strong> If you have to use the mechanism of `selfRegistered`, we recommend using the following code in your web component:</p></blockquote> <pre><code>window.Luigi._registerWebcomponent(new URL(document.currentScript?.getAttribute('src'), location), <YOUR_WEBCOMPONENT_CLASS>);</code></pre> The advantage of this line of code is: you don't have to specify a tag name, thus avoiding the duplication of self-defined tag names. <br><br>
    * @param {boolean} specifies - if a microfrontend is a webcomponent or not without any other settings
    * @param {Object} [WebComponentSettings] - specifies that the microfrontend is a webcomponent with addtional settings
    * @param {string} WebComponentSettings.type - a string, like module
@@ -76,7 +71,7 @@ export default class LuigiContainer extends HTMLElement {
    * @type {Boolean|WebComponentSettings|String}
    * @kind member
    * @memberof LuigiContainer
-   * @example <luigi-container webcomponent="{ type: 'module', selfRegistered: true, tagName: 'my-webcomponent'}"></luigi-container>
+   * @example <luigi-container webcomponent='{"type": "module", "selfRegistered": true, "tagName": "my-webcomponent"}'></luigi-container>
    * @example myContainer.webcomponent = { type: 'module', selfRegistered: true, tagName: 'my-webcomponent'}
    */
   webcomponent: boolean | WebComponentSettings | string;

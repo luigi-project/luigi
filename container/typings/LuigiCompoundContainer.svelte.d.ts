@@ -5,7 +5,7 @@ export declare interface WebComponentSettings {
 }
 
 /**
- * Base class for Luigi compound container.
+ * @summary Base class for Luigi compound container.
  * @augments HTMLElement
  * @class
  */
@@ -17,7 +17,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html"></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html"></luigi-compound-container>
    * @example myContainer.viewurl = "/index.html"
    */
   viewurl: string;
@@ -44,7 +44,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" defer-init></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" defer-init></luigi-compound-container>
    * @example myContainer.deferInit = true
    */
   deferInit: boolean;
@@ -57,7 +57,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container locale="en_us"></luigi-container>
+   * @example <luigi-compound-container locale="en_us"></luigi-compound-container>
    * @example myContainer.locale = "en_us"
    */
   locale: string;
@@ -69,7 +69,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Object}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" node-params='{"node":"param"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" node-params='{"node":"param"}'></luigi-compound-container>
    * @example myContainer.nodeParams = {foo: bar}
    */
   nodeParams: object;
@@ -81,7 +81,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" no-shadow></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" no-shadow></luigi-compound-container>
    * @example myContainer.noShadow = true
    */
   noShadow: boolean;
@@ -93,7 +93,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Object}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" search-params='{"search":"param"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" search-params='{"search":"param"}'></luigi-compound-container>
    * @example myContainer.searchParams = {foo: bar}
    */
   searchParams: object;
@@ -105,7 +105,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Object}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" path-params='{"path":"param"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" path-params='{"path":"param"}'></luigi-compound-container>
    * @example myContainer.pathParams = {foo: "bar"}
    */
   pathParams: object;
@@ -117,7 +117,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" context='{"label": "Dashboard"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" context='{"label": "Dashboard"}'></luigi-compound-container>
    * @example myContainer.context = {label: "Dashboard"}
    */
   context: string;
@@ -129,7 +129,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Object}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" client-permissions='{"permission": "adminGroup"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" client-permissions='{"permission": "adminGroup"}'></luigi-compound-container>
    * @example myContainer.clientPermissions = {permission: "adminGroup"}
    */
   clientPermissions: object;
@@ -141,7 +141,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Object}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" user-settings='{"language": "de", "theme":"sap_horizon"}'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" user-settings='{"language": "de", "theme":"sap_horizon"}'></luigi-compound-container>
    * @example myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
    */
   userSettings: object;
@@ -153,7 +153,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" anchor='#foo'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" anchor='#foo'></luigi-compound-container>
    * @example myContainer.anchor = '#foo'
    */
   anchor: string;
@@ -165,7 +165,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" document-title='Luigi App'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" document-title='Luigi App'></luigi-compound-container>
    * @example myContainer.documentTitle = 'Luigi App'
    */
   documentTitle: string;
@@ -178,7 +178,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" has-back></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" has-back></luigi-compound-container>
    * @example myContainer.hasBack = true
    */
   hasBack: boolean;
@@ -191,14 +191,13 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" dirty-status></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" dirty-status></luigi-compound-container>
    * @example myContainer.dirtyStatus = true
    */
   dirtyStatus: boolean;
 
   /**
-   * The following properties can be set for the web component object. By default, the web component is set to true. <br><br>
-   * Type: `Boolean` or `WebComponentSettings` or `String`
+   * @description The following properties can be set for the web component object. By default, the web component is set to true. <br><br>Type: [Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean) | WebComponentSettings | [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @param {Object} [WebComponentSettings] - specifies that the microfrontend is a webcomponent with addtional settings
    * @param {String} WebComponentSettings.type - string, like module
    * @param {Boolean} WebComponentSettings.selfRegistered - if it is true, the web component bundle will be added via script tag
@@ -208,7 +207,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean|WebComponentSettings|String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container webcomponent="{ type: 'module', selfRegistered: true, tagName: 'my-webcomponent'}"></luigi-container>
+   * @example <luigi-compound-container webcomponent='{"type": "module", "selfRegistered": true, "tagName": "my-webcomponent"}'></luigi-compound-container>
    * @example myContainer.webcomponent = { type: 'module', selfRegistered: true, tagName: 'my-webcomponent'}
    */
   webcomponent: boolean | WebComponentSettings | string;
@@ -220,7 +219,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {Boolean}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" skipInitCheck></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" skipInitCheck></luigi-compound-container>
    * @example myContainer.skipInitCheck = true
    */
   skipInitCheck: boolean;
@@ -233,7 +232,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @kind member
    * @memberof LuigiCompoundContainer
    * @example myContainer.activeFeatureToggleList = ["enable-foo", "allow-bar"]
-   * @example <luigi-container viewurl="/index.html" active-feature-toggle-list='["enable-foo", "allow-bar"]'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" active-feature-toggle-list='["enable-foo", "allow-bar"]'></luigi-compound-container>
    */
   activeFeatureToggleList: string[];
 
@@ -244,7 +243,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @type {String}
    * @kind member
    * @memberof LuigiCompoundContainer
-   * @example <luigi-container viewurl="/index.html" theme='sap_horizon'></luigi-container>
+   * @example <luigi-compound-container viewurl="/index.html" theme='sap_horizon'></luigi-compound-container>
    * @example myContainer.theme = 'sap_horizon'
    */
   theme: string;

@@ -3,7 +3,7 @@ import { AuthStoreSvc, AuthLayerSvc } from '../services';
 
 /* istanbul ignore file */
 /**
- * Authorization helpers.
+ * @summary Authorization helpers.
  * @name Authorization
  * @class
  */
@@ -12,7 +12,7 @@ class LuigiAuth {
    * Detects if authorization is enabled via configuration.
    * Read more about [custom authorization providers](authorization-configuration.md).
    * @memberof Authorization
-   * @returns {boolean} `true` if authorization is enabled. Otherwise returns `false`.
+   * @returns {boolean} `true` if authorization is enabled - otherwise returns `false`
    * @example
    * Luigi.auth().isAuthorizationEnabled();
    */

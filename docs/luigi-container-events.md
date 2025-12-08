@@ -35,6 +35,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 | data | <code>object</code> | <p>event data</p> |
 | id | <code>string</code> | <p>event ID</p> |
 
+  
 **Example**  
 ```js
 {
@@ -49,6 +50,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when a navigation has been requested by the micro frontend. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">NavigationRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -68,6 +70,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 Read more about <code>showAlert</code> params <a href="https://docs.luigi-project.io/docs/luigi-core-api?section=showalert">here</a>. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">AlertRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -88,6 +91,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 ### INITIALIZED&nbsp;  
 <p>Event fired when the micro frontend has been initialized.</p>
 
+  
 
 * * *
 
@@ -95,6 +99,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 <p>Event fired when the micro frontend requests the addition of search parameters to the URL. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">ParamsRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -109,6 +114,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 <p>Event fired when the micro frontend requests the addition of node parameters to the URL. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">ParamsRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -124,6 +130,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 Read more about <code>showConfirmationModal</code> params <a href="https://docs.luigi-project.io/docs/luigi-core-api?section=showconfirmationmodal">here</a>. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">ConfirmationModalRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -139,12 +146,14 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 ### SHOW\_LOADING\_INDICATOR\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to show a loading indicator.</p>
 
+  
 
 * * *
 
 ### HIDE\_LOADING\_INDICATOR\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to hide the loading indicator.</p>
 
+  
 
 * * *
 
@@ -152,6 +161,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 <p>Event fired when the micro frontend requests to set the current locale. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -165,6 +175,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests to modify the local storage. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -178,6 +189,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 ### RUNTIME\_ERROR\_HANDLING\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to handle errors that might happen during the runtime of the micro frontend.</p>
 
+  
 
 * * *
 
@@ -185,6 +197,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests to set the anchor of the URL. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">Object</a></p>
 
+  
 **Example**  
 ```js
 'some-anchor'
@@ -195,6 +208,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 ### SET\_THIRD\_PARTY\_COOKIES\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to set third-party cookies.</p>
 
+  
 
 * * *
 
@@ -202,6 +216,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests the current app route. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">CurrentRouteRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -218,6 +233,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 ### NAVIGATION\_COMPLETED\_REPORT&nbsp;  
 <p>Event fired to report that the micro frontend's navigation has completed.</p>
 
+  
 
 * * *
 
@@ -225,6 +241,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 <p>Event fired when the micro frontend requests to update the modal path parameters. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">ModalPathDataRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -246,6 +263,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 Read more about <code>updateModalSettings</code> params <a href="https://docs.luigi-project.io/docs/luigi-client-api?section=updatemodalsettings">here</a>. <br><br>
 Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typings/constants/event-payloads.ts">ModalSettingsRequestPayload</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -260,6 +278,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
 <p>Event fired when the micro frontend requests to check the validity of a path. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -273,6 +292,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests to set the 'dirty status' which, for example, avoids closing when there are any unsaved changes. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -286,6 +306,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests to set the view group data. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -299,6 +320,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 <p>Event fired when the micro frontend requests to navigate back. <br><br>
 Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
 
+  
 **Example**  
 ```js
 {
@@ -311,18 +333,21 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 ### ADD\_BACKDROP\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to display the backdrop.</p>
 
+  
 
 * * *
 
 ### REMOVE\_BACKDROP\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to remove the backdrop.</p>
 
+  
 
 * * *
 
 ### CLOSE\_CURRENT\_MODAL\_REQUEST&nbsp;  
 <p>Event fired when the micro frontend requests to close the current modal.</p>
 
+  
 
 * * *
 

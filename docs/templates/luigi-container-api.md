@@ -30,6 +30,7 @@ In addition you can use standard `addEventListener` function to react on events 
 {{>description~}}
 {{>see~}}
 {{>params~}}
+{{>summary~}}
 {{>examples~}}
 {{>returns~}}
 {{>since~}}

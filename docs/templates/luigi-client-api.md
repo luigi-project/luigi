@@ -41,5 +41,6 @@ This document outlines the features provided by the Luigi Client API. It covers 
 {{>examples~}}
 {{>returns~}}
 {{>since~}}
+{{>deprecated~}}
 {{/children~}}
 {{/orphans~}}

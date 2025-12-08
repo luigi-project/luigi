@@ -80,6 +80,10 @@ body {
         margin-top: 45px;
     }
 
+    .summaryWrapper {
+        margin-bottom: 25px;
+    }
+
     p,
     ol,
     ul,
@@ -238,6 +242,14 @@ body {
                 top: 12px;
             }
 
+            code {
+                padding-right: 0;
+            }
+
+            p {
+                display: inline;
+                margin: 0;
+            }
         }
     }
 
@@ -626,6 +638,11 @@ body {
     p:has(strong):has(code),
     p:has(strong):has(code) + p:not(:has(strong)) {
         display: inline-block;
+    }
+
+    h3 + p:has(strong):has(code),
+    h4 + p:has(strong):has(code) {
+        display: block;
     }
 
     p:has(strong):has(code) > code {

@@ -46,5 +46,6 @@ This document outlines the features provided by the Luigi Core API. It covers th
 {{>examples~}}
 {{>returns~}}
 {{>since~}}
+{{>deprecated~}}
 {{/children~}}
 {{/orphans~}}

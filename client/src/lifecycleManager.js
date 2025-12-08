@@ -2,7 +2,7 @@ import { LuigiClientBase } from './baseClass';
 import { helpers } from './helpers';
 
 /**
- * Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.
+ * @summary Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.
  * @augments LuigiClientBase
  * @name Lifecycle
  * @class

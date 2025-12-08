@@ -3,9 +3,8 @@
  */
 
 /**
- * Base class for Luigi web component micro frontends.
+ * @summary Base class for Luigi web component micro frontends.
  * @augments HTMLElement
- * @param {any} options - the config object passed in constructor
  * @class
  */
 export class LuigiElement extends HTMLElement {
@@ -78,7 +77,6 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to execute logic after initialization of the web component, i.e.
    * after internal rendering and all context data set.
-   *
    * @param {any} ctx - the context object passed by luigi core
    */
   afterInit(ctx) {
@@ -87,7 +85,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Override to return the html template string defining the web component view.
-   *
    * @param {any} ctx - the context object passed by luigi core
    */
   render(ctx) {
@@ -103,7 +100,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Override to execute logic when a new context object is set.
-   *
    * @param {any} ctx - the new context object passed by luigi core
    */
   onContextUpdate(ctx) {
@@ -120,7 +116,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Handles changes on the context property.
-   *
    * @private
    */
   set context(ctx) {
@@ -137,7 +132,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Handles changes on attributes.
-   *
    * @private
    */
   attributeChangedCallback(name, oldVal, newVal) {
@@ -148,7 +142,6 @@ export class LuigiElement extends HTMLElement {
 /**
  * Html string processing according to luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
- *
  * @param {string} literal - the literal to process
  * @param {unknown[]} keys - the array of keys to process
  * @returns {string} the processed literal
