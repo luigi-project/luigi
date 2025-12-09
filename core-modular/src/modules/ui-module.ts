@@ -5,7 +5,7 @@ import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import { ModalService } from '../services/modal.service';
+import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -264,7 +264,7 @@ export const UIModule = {
 
     const closePromise = onCloseRequest();
 
-    const modalPromiseObj = {
+    const modalPromiseObj: ModalPromiseObject = {
       closePromise,
       resolveFn,
       onCloseRequestHandler,
@@ -277,7 +277,7 @@ export const UIModule = {
       }
     };
 
-    modalService.modalStack.push(modalPromiseObj);
+    modalService.registerModal(modalPromiseObj);
 
     luigi.getEngine()._connector?.renderModal(
       lc,

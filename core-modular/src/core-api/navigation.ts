@@ -28,7 +28,7 @@ export class Navigation {
     if (modalSettings) {
       this.openAsModal(path, modalSettings);
     } else {
-      this.modalService.closeModal();
+      this.modalService.closeModals();
       if (this.hashRouting) {
         location.hash = normalizedPath;
       } else {

@@ -153,7 +153,7 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      modalService.closeModal();
+      modalService.closeModals();
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
