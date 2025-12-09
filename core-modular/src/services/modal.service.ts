@@ -15,23 +15,26 @@ export class ModalService {
    * Closes the topmost modal in the stack.
    */
   async closeModals(): Promise<void> {
-    if (this.modalStack.length > 0) {
-      this.modalStack.forEach(async (modalPromiseObj: ModalPromiseObject) => {
-        const { closePromise, onInternalClose } = modalPromiseObj;
+    if (this.modalStack.length === 0) return;
 
+    const toClose = [...this.modalStack];
+    for (const { closePromise, onInternalClose } of toClose) {
+      try {
+        if (typeof onInternalClose === 'function') {
+          onInternalClose();
+        }
+      } catch (e) {
+        console.warn('onInternalClose threw an error', e);
+      }
+      if (closePromise) {
         try {
-          if (typeof onInternalClose === 'function') {
-            onInternalClose();
-          }
-        } catch (e) {
-          console.warn('onInternalClose threw an error', e);
-        }
-
-        if (closePromise) {
           await closePromise;
+        } catch (e) {
+          console.warn('closePromise rejected', e);
         }
-      });
+      }
     }
+    this.modalStack = [];
   }
 
   /**

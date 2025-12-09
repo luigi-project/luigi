@@ -29,7 +29,7 @@ describe('Navigation', () => {
     };
 
     modalServiceMock = {
-      closeModal: jest.fn()
+      closeModals: jest.fn()
     };
 
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
@@ -52,7 +52,7 @@ describe('Navigation', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigation.navigate('/test/path');
-      expect(modalServiceMock.closeModal).toHaveBeenCalled();
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/test/path' }, '', '/test/path');
       expect(dispatchEventSpy).toHaveBeenCalled();
     });
@@ -82,7 +82,7 @@ describe('Navigation', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigation.navigate('/test/hashpath');
-      expect(modalServiceMock.closeModal).toHaveBeenCalled();
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(window.location.hash).toBe('#/test/hashpath');
       expect(dispatchEventSpy).not.toHaveBeenCalled();
