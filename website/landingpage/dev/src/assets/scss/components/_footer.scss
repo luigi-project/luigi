@@ -46,6 +46,62 @@
 
   .footer-wrapper {
     border-top: 1px solid $border-color;
+    padding: 32px;
+
+    .container {
+      max-width: 1152px;
+      margin: 0 auto;
+      text-align: center;
+
+      .funding-notice {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 24px;
+        padding: 0 0 24px;
+
+        .funding-image img {
+          max-width: 300px;
+          height: auto;
+          display: block;
+        }
+
+        .funding-text {
+          flex: 1;
+          min-width: 280px;
+          font-size: 12px;
+          color: var(--fg-color);
+          line-height: 1.6;
+          text-align: left;
+
+          p {
+              margin: 0;
+          }
+
+          .copyright {
+            border-top: 1px solid $border-color;
+            padding-top: 24px;
+            text-align: left;
+            font-size: 12px;
+            color: var(--fg-color);
+            margin-top: 24px;
+            line-height: 1.6;
+        }
+      }
+      }
+
+      .neonephos-logos {
+          margin: 24px 0;
+          text-align: center;
+      
+        .neonephos-logo {
+            max-height: 60px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+      }
+    }
   }
 
   .wr {
