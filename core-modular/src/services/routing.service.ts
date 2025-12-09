@@ -6,6 +6,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { ModalSettings, Node } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { serviceRegistry } from './service-registry';
+import { ModalService } from './modal.service';
 
 export interface Route {
   raw: string;
@@ -146,12 +147,13 @@ export class RoutingService {
    */
   async handleBookmarkableModalPath(routeInfo: { path: string; query: string }): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
+    const modalService = serviceRegistry.get(ModalService);
     const urlSearchParams = new URLSearchParams(routeInfo?.query || '');
     const modalViewParamName = RoutingHelpers.getModalViewParamName(this.luigi);
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      this.luigi.getEngine()._connector?.closeModals();
+      modalService.closeModal();
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
@@ -309,23 +311,6 @@ export class RoutingService {
     } else {
       history.pushState({}, '', url.href);
     }
-  }
-
-  /**
-   * Closes all currently open modals in the Luigi application.
-   *
-   * If the configuration flag `routing.showModalPathInUrl` is enabled, this method
-   * first strips any modal-related data (such as modal path segments or parameters)
-   * from the current URL without triggering a navigation update (silent removal),
-   * ensuring the URL reflects that no modals are active.
-   * @public
-   * @returns void
-   */
-  closeModals(): void {
-    if (this.luigi.getConfigValue('routing.showModalPathInUrl')) {
-      this.removeModalDataFromUrl(false);
-    }
-    this.luigi.getEngine()._connector?.closeModals();
   }
 
   /**

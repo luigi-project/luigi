@@ -1,4 +1,5 @@
 import { Navigation } from '../../src/core-api/navigation';
+import { ModalService } from '../../src/services/modal.service';
 import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
@@ -8,7 +9,7 @@ describe('Navigation', () => {
   let navigation: Navigation;
   let mockNavService: any;
   let routingServiceMock: RoutingService;
-  let navigationServiceMock: NavigationService;
+  let modalServiceMock: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -26,9 +27,19 @@ describe('Navigation', () => {
     mockNavService = {
       getCurrentNode: jest.fn()
     };
+
+    modalServiceMock = {
+      closeModal: jest.fn()
+    };
+
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
     routingServiceMock = new RoutingService(luigiMock);
-    navigationServiceMock = new NavigationService(luigiMock);
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
+      if (service === ModalService) return modalServiceMock;
+      if (service === NavigationService) return mockNavService;
+      if (service === RoutingService) return routingServiceMock;
+      return {} as any;
+    });
     navigation = new Navigation(luigiMock);
   });
 
@@ -41,7 +52,7 @@ describe('Navigation', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigation.navigate('/test/path');
-
+      expect(modalServiceMock.closeModal).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/test/path' }, '', '/test/path');
       expect(dispatchEventSpy).toHaveBeenCalled();
     });
@@ -71,7 +82,7 @@ describe('Navigation', () => {
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigation.navigate('/test/hashpath');
-
+      expect(modalServiceMock.closeModal).toHaveBeenCalled();
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(window.location.hash).toBe('#/test/hashpath');
       expect(dispatchEventSpy).not.toHaveBeenCalled();

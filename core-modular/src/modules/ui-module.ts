@@ -5,6 +5,7 @@ import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { ModalService } from '../services/modal.service';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -227,18 +228,56 @@ export const UIModule = {
   openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
+    const modalService = serviceRegistry.get(ModalService);
+
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
+    let onCloseRequestHandler: (() => void) | undefined;
+
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
-        const onCloseRequestHandler = () => {
+        resolveFn = () => {
+          if (resolved) return;
+          resolved = true;
+
+          try {
+            if (onCloseRequestHandler) {
+              lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+            }
+          } catch (e) {
+            console.warn('Error removing listeners on modal resolve', e);
+          }
+
           if (luigi.getConfigValue('routing.showModalPathInUrl')) {
             routingService.removeModalDataFromUrl(true);
           }
-          lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
           resolve();
         };
+
+        onCloseRequestHandler = () => {
+          resolveFn && resolveFn();
+        };
+
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
       });
     };
+
+    const closePromise = onCloseRequest();
+
+    const modalPromiseObj = {
+      closePromise,
+      resolveFn,
+      onCloseRequestHandler,
+      onInternalClose: () => {
+        try {
+          modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
+        } catch (e) {
+          console.warn('onInternalClose failed', e);
+        }
+      }
+    };
+
+    modalService.modalStack.push(modalPromiseObj);
 
     luigi.getEngine()._connector?.renderModal(
       lc,
@@ -249,7 +288,7 @@ export const UIModule = {
           routingService.removeModalDataFromUrl(true);
         }
       },
-      onCloseRequest
+      () => closePromise
     );
 
     const connector = luigi.getEngine()._connector;

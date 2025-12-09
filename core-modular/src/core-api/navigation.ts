@@ -1,3 +1,4 @@
+import { ModalService } from '../services/modal.service';
 import type { ModalSettings } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
@@ -9,12 +10,14 @@ export class Navigation {
   hashRouting: boolean = false;
   navService: NavigationService;
   routingService: RoutingService;
+  modalService: ModalService;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
     this.hashRouting = luigi.getConfig().routing?.useHashRouting;
     this.navService = serviceRegistry.get(NavigationService);
     this.routingService = serviceRegistry.get(RoutingService);
+    this.modalService = serviceRegistry.get(ModalService);
   }
 
   navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
@@ -25,6 +28,7 @@ export class Navigation {
     if (modalSettings) {
       this.openAsModal(path, modalSettings);
     } else {
+      this.modalService.closeModal();
       if (this.hashRouting) {
         location.hash = normalizedPath;
       } else {

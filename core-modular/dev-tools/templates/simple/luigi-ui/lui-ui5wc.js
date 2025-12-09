@@ -599,18 +599,12 @@ const connector = {
     });
 
     onCloseRequest().then(() => {
-      console.log('closeInternal from head');
+      console.log('close Modal from head');
       dialog.open = false;
       document.body.removeChild(dialog);
     });
 
     dialog.open = true;
-  },
-
-  closeModals() {
-    document.querySelectorAll('ui5-dialog.lui-modal').forEach((dialog) => {
-      dialog.open = false;
-    });
   },
 
   updateModalSettings: (modalSettings) => {

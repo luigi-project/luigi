@@ -54,8 +54,6 @@ export interface LuigiConnector {
 
   getCurrentLocale(): string;
 
-  closeModals(): void;
-
   updateModalSettings(modalSettings: ModalSettings): void;
 
   showFatalError(error: string): void;
