@@ -39,6 +39,6 @@
     "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "engines": {
-    "node": ">=18.19.1"
+    "node": ">=20.19.0"
   }
 }
