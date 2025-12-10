@@ -97,7 +97,6 @@
         .neonephos-logo {
             max-height: 60px;
             height: auto;
-            display: block;
             margin: 0 auto;
         }
       }
@@ -189,5 +188,21 @@
     .wr {
       max-width: calc(1290px - 50px);
     }
+  }
+}
+
+.neonephos-logo.dark-bg {
+  display: none;
+}
+.neonephos-logo.light-bg {
+  display: block;
+}
+
+.has-dark-bg {
+  .neonephos-logo.dark-bg {
+    display: block;
+  }
+  .neonephos-logo.light-bg {
+    display: none;
   }
 }
