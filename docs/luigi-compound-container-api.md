@@ -354,3 +354,48 @@ containerElement.updateContext({newContextData: 'some data'})
   
 **Meta**:  
 * **since:** 1.0.0
+### notifyAlertClosed&nbsp;  
+<p>A function that notifies the microfrontend that the opened alert has been closed.</p>
+
+**Params**
+
+- id <code>String</code> - <p>the id of the opened alert</p>
+- dismissKey <code>String</code> - <p>the key specifying which dismiss link was clicked on the alert message (optional)</p>
+
+  
+**Example**  
+```js
+containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
+```
+**Returns**: <code>void</code> - <p>no explicit return type</p>  
+  
+**Meta**:  
+* **since:** 1.7.0
+### notifyConfirmationModalClosed&nbsp;  
+<p>A function that notifies the microfrontend if the confirmation modal was confirmed or declined.</p>
+
+**Params**
+
+- value <code>Boolean</code> - <p>if the confirmation modal was confirmed or declined.</p>
+
+  
+**Example**  
+```js
+containerElement.notifyAlertClosed(true)
+```
+**Returns**: <code>void</code> - <p>no explicit return type</p>  
+  
+**Meta**:  
+* **since:** 1.7.0
+### init&nbsp;  
+<p>Manually triggers the micro frontend rendering process when using the defer-init attribute.</p>
+
+  
+**Example**  
+```js
+containerElement.init()
+```
+**Returns**: <code>void</code> - <p>no explicit return type</p>  
+  
+**Meta**:  
+* **since:** 1.0.0
