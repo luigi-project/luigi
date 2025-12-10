@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 
 /**
- * @summary Functions to use Luigi Global Search.
+ * Functions to use Luigi Global Search.
+ * @default Luigi.globalSearch()
  * @name GlobalSearch
  * @class
  */

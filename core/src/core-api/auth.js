@@ -3,7 +3,8 @@ import { AuthStoreSvc, AuthLayerSvc } from '../services';
 
 /* istanbul ignore file */
 /**
- * @summary Authorization helpers.
+ * Authorization helpers.
+ * @default Luigi.auth()
  * @name Authorization
  * @class
  */

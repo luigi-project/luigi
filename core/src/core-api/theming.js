@@ -3,7 +3,8 @@ import { GenericHelpers, StateHelpers } from '../utilities/helpers';
 import { ViewUrlDecorator } from '../services';
 
 /**
- * @summary Functions to use Luigi Core Theming features.
+ * Functions to use Luigi Core Theming features.
+ * @default Luigi.theming()
  * @namespace Theming
  * @class
  */

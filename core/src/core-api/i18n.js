@@ -3,7 +3,8 @@ import { GenericHelpers, StateHelpers, EscapingHelpers } from '../utilities/help
 import { defaultLuigiTranslationTable } from '../utilities/defaultLuigiTranslationTable';
 
 /**
- * @summary Localization-related functions.
+ * Localization-related functions.
+ * @default Luigi.i18n()
  * @name LuigiI18N
  * @class
  */

@@ -256,7 +256,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.updateContext({newContextData: 'some data'})
    * @returns {void} no explicit return type
    */
-  updateContext(contextObj: Object): void {}
+  updateContext(contextObj: Object): void {};
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -267,7 +267,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
    * @returns {void} no explicit return type
    */
-  notifyAlertClosed(id: string, dismissKey?: string): void {}
+  notifyAlertClosed(id: string, dismissKey?: string): void {};
 
   /**
    * A function that notifies the microfrontend if the confirmation modal was confirmed or declined.
@@ -277,7 +277,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed(true)
    * @returns {void} no explicit return type
    */
-  notifyConfirmationModalClosed(confirmed: boolean): void {}
+  notifyConfirmationModalClosed(confirmed: boolean): void {};
 
   /**
    * Manually triggers the micro frontend rendering process when using the defer-init attribute.
@@ -286,5 +286,5 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.init()
    * @returns {void} no explicit return type
    */
-  init(): void {}
+  init(): void {};
 }

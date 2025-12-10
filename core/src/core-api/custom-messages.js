@@ -3,6 +3,7 @@ import { MessagesListeners } from '../services/messages-listeners';
 
 /**
  * Functions related to custom messages.
+ * @default Luigi.customMessages()
  * @name CustomMessages
  * @class
  */

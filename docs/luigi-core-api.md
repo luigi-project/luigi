@@ -244,7 +244,11 @@ Note: the updated context values are not persisted. The developers have to do it
   
 **Meta**:  
 * **since:** 2.13.0
-## Elements&nbsp;  
+## <code>Luigi.elements()</code>&nbsp;  
+### Elements&nbsp;  
+Use these functions to get DOM elements.
+
+  
 ### getLuigiContainer&nbsp;  
 Returns the container of the Luigi content.
 
@@ -330,7 +334,11 @@ Luigi.elements().getNavFooterContainer();
   
 **Meta**:  
 * **since:** 1.21.0
-## LuigiNavigation&nbsp;  
+## <code>Luigi.navigation()</code>&nbsp;  
+### LuigiNavigation&nbsp;  
+Use these functions for navigation-related features.
+
+  
 ### updateTopNavigation&nbsp;  
 Refreshes top navigation badge counters by rendering the navigation again.
 
@@ -560,7 +568,11 @@ Discards the active view and navigates back to the last visited view. Works with
 Luigi.navigation().goBack({ foo: 'bar' });
 Luigi.navigation().goBack(true);
 ```
-## LuigiI18N&nbsp;  
+## <code>Luigi.i18n()</code>&nbsp;  
+### LuigiI18N&nbsp;  
+Localization-related functions.
+
+  
 ### getCurrentLocale&nbsp;  
 Gets the current locale.
 
@@ -620,7 +632,7 @@ Property values for token replacement in the localization key will be taken from
   
 **Meta**:  
 * **since:** 0.5.3
-## CustomMessages&nbsp;  
+## <code>Luigi.customMessages()</code>&nbsp;  
 ### CustomMessages&nbsp;  
 Functions related to custom messages.
 
@@ -669,7 +681,11 @@ Luigi.customMessages().send(microfrontend.id, {
   
 **Meta**:  
 * **since:** 0.6.2
-## UX&nbsp;  
+## <code>Luigi.ux()</code>&nbsp;  
+### UX&nbsp;  
+Functions to use Luigi Core UX features.
+
+  
 ### hideAppLoadingIndicator&nbsp;  
 Hides the app loading indicator.
 
@@ -820,7 +836,11 @@ Luigi.ux().getCurrentTheme()
   
 **Meta**:  
 * **since:** 2.14.0
-## GlobalSearch&nbsp;  
+## <code>Luigi.globalSearch()</code>&nbsp;  
+### GlobalSearch&nbsp;  
+Functions to use Luigi Global Search.
+
+  
 ### openSearchField&nbsp;  
 Opens the global search field.
 
@@ -930,7 +950,11 @@ Luigi.globalSearch().setSearchInputPlaceholder('HERE input Placeholder');
   
 **Meta**:  
 * **since:** 1.7.1
-## Theming&nbsp;  
+## <code>Luigi.theming()</code>&nbsp;  
+### Theming&nbsp;  
+Functions to use Luigi Core Theming features.
+
+  
 ### getAvailableThemes&nbsp;  
 Retrieves the available themes
 
@@ -1023,7 +1047,11 @@ Luigi.theming().getCSSVariables();
   
 **Meta**:  
 * **since:** 2.3.0
-## FeatureToggles&nbsp;  
+## <code>Luigi.featureToggles()</code>&nbsp;  
+### FeatureToggles&nbsp;  
+Functions to use feature toggles in Luigi.
+
+  
 ### setFeatureToggle&nbsp;  
 Add a feature toggle to an active feature toggles list
 
@@ -1062,7 +1090,11 @@ Luigi.featureToggles().getActiveFeatureToggleList();
   
 **Meta**:  
 * **since:** 1.4.0
-## Routing&nbsp;  
+## <code>Luigi.routing()</code>&nbsp;  
+### Routing&nbsp;  
+Use these functions for navigation-related features.
+
+  
 ### getSearchParams&nbsp;  
 Get search parameter from URL as an object.
 
@@ -1092,7 +1124,11 @@ Luigi.routing().addSearchParams({luigi:'rocks', mario:undefined}, false);
   
 **Meta**:  
 * **since:** 1.16.1
-## Authorization&nbsp;  
+## <code>Luigi.auth()</code>&nbsp;  
+### Authorization&nbsp;  
+Authorization helpers.
+
+  
 ### isAuthorizationEnabled&nbsp;  
 Detects if authorization is enabled via configuration.
 Read more about [custom authorization providers](authorization-configuration.md).

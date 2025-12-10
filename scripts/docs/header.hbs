@@ -5,7 +5,11 @@
 {{#if name}}{{#sig~}}
 {{{@depOpen}~}}
 {{{@codeOpen}~}}
+{{#if (equal defaultvalue undefined)}}
 {{#if (isEvent)}}"{{parseName name}}"{{else}}{{parseName (escape name)}}{{/if~}}
+{{else}}
+{{>defaultvalue}}
+{{/if~}}
 {{{@codeClose}~}}
 {{{@depClose}~}}
 {{~/sig}}{{/if~}}

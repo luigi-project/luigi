@@ -3,7 +3,8 @@ import { IframeHelpers } from './../utilities/helpers';
 
 /* istanbul ignore file */
 /**
- * @summary Use these functions to get DOM elements.
+ * Use these functions to get DOM elements.
+ * @default Luigi.elements()
  * @name Elements
  * @class
  */

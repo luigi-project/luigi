@@ -52,6 +52,8 @@ console.log(template); // Output: <p>Hello, World!</p>
 
 ### LuigiElement&nbsp;  
 **Extends**: <code>HTMLElement</code>  
+Base class for Luigi web component micro frontends.
+
 #### afterInit&nbsp;  
 Override to execute logic after initialization of the web component, i.e.
 after internal rendering and all context data set.

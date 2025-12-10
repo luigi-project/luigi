@@ -2,7 +2,8 @@ import { LuigiConfig } from '.';
 import { GenericHelpers, RoutingHelpers } from '../utilities/helpers';
 
 /**
- * @summary Use these functions for navigation-related features.
+ * Use these functions for navigation-related features.
+ * @default Luigi.routing()
  * @name Routing
  * @class
  */

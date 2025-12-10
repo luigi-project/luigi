@@ -3,7 +3,7 @@
  */
 
 /**
- * @summary Base class for Luigi web component micro frontends.
+ * Base class for Luigi web component micro frontends.
  * @augments HTMLElement
  * @class
  */

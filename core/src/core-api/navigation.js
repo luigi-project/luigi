@@ -2,7 +2,8 @@ import { linkManager } from './_internalLinkManager';
 
 /* istanbul ignore file */
 /**
- * @summary Use these functions for navigation-related features.
+ * Use these functions for navigation-related features.
+ * @default Luigi.navigation()
  * @name LuigiNavigation
  * @class
  */
