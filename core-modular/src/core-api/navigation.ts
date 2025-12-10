@@ -53,7 +53,7 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node.label;
     }
-    if (this.luigi.getConfigValue('routing.showModalPathInUrl')) {
+    if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
       this.routingService.appendModalDataToUrl(normalizedPath, settings);
     }
     this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);

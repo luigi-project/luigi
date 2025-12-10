@@ -247,11 +247,12 @@ export const UIModule = {
           } catch (e) {
             console.warn('Error removing listeners on modal resolve', e);
           }
-
-          if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+          
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
             routingService.removeModalDataFromUrl(true);
           }
           resolve();
+          modalService.removeModalFromStack();
         };
 
         onCloseRequestHandler = () => {
@@ -274,7 +275,8 @@ export const UIModule = {
         } catch (e) {
           console.warn('onInternalClose failed', e);
         }
-      }
+      },
+      modalsettings: modalSettings
     };
 
     modalService.registerModal(modalPromiseObj);
@@ -284,9 +286,10 @@ export const UIModule = {
       modalSettings,
       () => {
         onCloseCallback?.();
-        if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
           routingService.removeModalDataFromUrl(true);
         }
+        modalService.removeModalFromStack();
       },
       () => closePromise
     );
@@ -297,14 +300,17 @@ export const UIModule = {
     }
   },
   updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
+    const modalService = serviceRegistry.get(ModalService);
+    modalService.updateModalSettings(modalSettings);
     const routingService = serviceRegistry.get(RoutingService);
-    if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+    
+    if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
       const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
       if (modalPath) {
-        routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
+        routingService.updateModalDataInUrl(modalPath, modalService.getModalSettings(), addHistoryEntry);
       }
     }
-    luigi.getEngine()._connector?.updateModalSettings(modalSettings);
+    luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);
