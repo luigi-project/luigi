@@ -247,7 +247,7 @@ export const UIModule = {
           } catch (e) {
             console.warn('Error removing listeners on modal resolve', e);
           }
-          
+
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
             routingService.removeModalDataFromUrl(true);
           }
@@ -303,7 +303,7 @@ export const UIModule = {
     const modalService = serviceRegistry.get(ModalService);
     modalService.updateModalSettings(modalSettings);
     const routingService = serviceRegistry.get(RoutingService);
-    
+
     if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
       const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
       if (modalPath) {

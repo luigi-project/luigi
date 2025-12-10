@@ -12,8 +12,8 @@ export interface ModalPromiseObject {
 export class ModalService {
   _modalStack: ModalPromiseObject[] = [];
   modalSettings: ModalSettings = {};
-  
-  constructor(private luigi: Luigi) { }
+
+  constructor(private luigi: Luigi) {}
 
   /**
    * Closes the topmost modal in the stack.
@@ -44,7 +44,6 @@ export class ModalService {
       // }
     }
   }
-
 
   /**
    * Adds a modal promise object to the internal modal stack.
