@@ -38,7 +38,7 @@
     "@babel/preset-env": "^7.24.8",
     "cli-color": "^2.0.0",
     "diff": "^4.0.2",
-    "documentation": "13.2.5",
+    "documentation": "14.0.3",
     "prompts": "^2.3.2",
     "semver": "^7.1.3"
   },
