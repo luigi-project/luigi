@@ -49,6 +49,6 @@
     "url": "ssh://github.com/SAP/luigi.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19.0"
   }
 }
