@@ -2,7 +2,7 @@
   "name": "@luigi-project/client-support-ui5",
   "version": "0.0.1",
   "engines": {
-    "node": ">=18.19.1"
+    "node": ">=20.19.0"
   },
   "type": "module",
   "scripts": {
