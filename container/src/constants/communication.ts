@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="../../typings/constants/event-payloads.ts" />
 import type {
