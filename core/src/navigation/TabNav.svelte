@@ -279,7 +279,7 @@
    * Info: Nodes are grouped in Category or non - category groups for the tab nav logic.
    * A Category node group object usually has the Category Name as a key
    * A non-Category node usually would have an undefined key or a virtualGroupPrefix
-   * @param {string} key - The key to check.
+   * @param {string} key - the key to check
    * @returns {boolean} Returns true if the key is 'undefined' or starts with the virtualGroupPrefix; otherwise, returns false.
    */
   function isSingleTabItem(key, nodes) {
@@ -295,7 +295,7 @@
 
   /**
    * Checks if any of the nodes is a tab item with sub-items.
-   * @param {Array<Object>} nodes - An array of nodes to check.
+   * @param {Array<Object>} nodes - an array of nodes to check
    * @returns {boolean} Returns true if any node has a label and is not hidden from navigation; otherwise, returns false.
    */
   function isTabItemWithSubItems(nodes) {
@@ -325,7 +325,7 @@
   /**
    * Finds the node in the provided array of nodes to navigate to based on the category's navigateOnClick property.
    * Search based on navigateOnClick set to true or a string representing the desired pathSegment to navigate to.
-   * @param {Array<Object>} nodes - An array of nodes to search.
+   * @param {Array<Object>} nodes - an array of nodes to search
    * @returns {Object|undefined} Returns the first node with a truthy navigateOnClick property, or undefined if not found.
    */
   function getNodeToNavigateTo(nodes) {
@@ -343,7 +343,7 @@
 
   /**
    * Checks if any of the nodes is a tab item with multiple clickable areas.
-   * @param {Array<Object>} nodes - An array of nodes to check.
+   * @param {Array<Object>} nodes - an array of nodes to check
    * @returns {boolean} Returns true if any node has a category with a truthy navigateOnClick property; otherwise, returns false.
    */
   function isMultiClickAreaTabItem(nodes) {

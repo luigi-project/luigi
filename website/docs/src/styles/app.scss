@@ -72,6 +72,18 @@ body {
 
     .h2Wrapper {
         margin-top: 45px;
+
+        h2 > code {
+            background: transparent;
+            border-radius: 0;
+            display: inline;
+            font-family: unset;
+            font-size: unset;
+            padding: 0;
+        }
+    }
+
+    .h2Wrapper:has(section) {
         padding-top: 40px;
         border-top: 1px solid $powder-blue;
     }
@@ -80,10 +92,15 @@ body {
         margin-top: 45px;
     }
 
+    .summaryWrapper {
+        margin-bottom: 25px;
+    }
+
     p,
     ol,
     ul,
     blockquote,
+    table,
     h1,
     h2,
     h3,
@@ -139,10 +156,27 @@ body {
     &.page-luigi-client-api,
     &.page-luigi-element-api {
         h4 {
-            margin-top: 35px;
             display: inline-block;
             border-left: 4px solid $primary-color;
             padding-left: 10px;
+            margin-top: 35px;
+        }
+    }
+
+    &.page-luigi-core-api,
+    &.page-luigi-client-api {
+        .h3Wrapper > h3[id] {
+            display: inline-block;
+            border-left: 4px solid $primary-color;
+            padding-left: 10px;
+        }
+    }
+
+    &.page-luigi-core-api {
+        h2 + .h3Wrapper > h3[id] {
+            display: block;
+            border: 0;
+            padding: 0;
         }
     }
 
@@ -218,7 +252,6 @@ body {
         li {
             position: relative;
             padding-left: 20px;
-            
             list-style: none;
 
             &:before {
@@ -234,6 +267,14 @@ body {
                 top: 12px;
             }
 
+            code {
+                padding-right: 0;
+            }
+
+            p {
+                display: inline;
+                margin: 0;
+            }
         }
     }
 
@@ -600,5 +641,36 @@ body {
             color: rgb(18, 143, 55);
             background-color: rgba(45, 235, 138, 0.08);
         }
+    }
+
+    table {
+        border-collapse: collapse;
+        border-color: transparent;
+        margin-top: 25px;
+        table-layout: fixed;
+    }
+
+    table td, table th {
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 5px 15px;
+        text-align: left;
+    }
+
+    table p {
+        margin: 0;
+    }
+
+    p:has(strong):has(code),
+    p:has(strong):has(code) + p:not(:has(strong)) {
+        display: inline-block;
+    }
+
+    h3 + p:has(strong):has(code),
+    h4 + p:has(strong):has(code) {
+        display: block;
+    }
+
+    p:has(strong):has(code) > code {
+        padding-right: 0;
     }
 }

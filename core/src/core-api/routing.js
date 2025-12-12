@@ -1,15 +1,13 @@
 import { LuigiConfig } from '.';
 import { GenericHelpers, RoutingHelpers } from '../utilities/helpers';
+
 /**
+ * Use these functions for navigation-related features.
+ * @default Luigi.routing()
  * @name Routing
+ * @class
  */
 class LuigiRouting {
-  /**
-   * Use these functions for navigation-related features.
-   * @name Routing
-   */
-  constructor() {}
-
   /**
    * Get search parameter from URL as an object.
    * @memberof Routing
