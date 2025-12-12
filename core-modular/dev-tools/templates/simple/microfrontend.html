@@ -31,6 +31,15 @@
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="openUserSettings()">open UserSettings</button>
       <button onclick="setDocumentTitle()">set document title</button>
+      <button onclick="updateModalSettings()">update modal Settings</button>
+      <button onclick="updateModalSettings(true)">
+        update modal Settings and history entry
+      </button>
+      <button onclick="setCurrentLocale()">set current locale</button>
+      <button onclick="getCurrentLocale()">get current locale</button>
+      <button onclick="getCustomTranslation()">get custom translation</button>
+      <button onclick="getContext()">Get Context</button>
+      <span id="result"></span>
     </div>
     <script>
       function showAlert() {
@@ -63,7 +72,7 @@
       });
 
       function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 'm' });
       }
 
       function showLoadingIndicator() {
@@ -95,6 +104,46 @@
           title: 'my-title',
         });
       }
+
+      function updateModalSettings(addHistoryEntry = false) {
+        const modalSettings = {
+          title: 'Updated MF2 Title',
+          size: 's',
+        };
+        LuigiClient.linkManager().updateModalSettings(modalSettings, addHistoryEntry);
+      }
+
+      function setCurrentLocale() {
+        LuigiClient.uxManager().setCurrentLocale('de');
+      }
+
+      function getCurrentLocale() {
+        const currentLocale = LuigiClient.uxManager().getCurrentLocale();
+
+        LuigiClient.uxManager().showAlert({
+          text: 'Current locale equals to: ' + currentLocale,
+          type: 'info',
+        });
+      }
+
+      function getCustomTranslation() {
+        LuigiClient.sendCustomMessage({
+          id: 'customTranslation',
+          customTranslation: true,
+        });
+      }
+      LuigiClient.addInitListener((ctx) => {
+        console.log('Luigi Client initialized', ctx);
+      });
+
+      LuigiClient.addContextUpdateListener((ctx) => {
+        console.log('Luigi Client context updated', ctx);
+      });
+
+      getContext = () => {
+        const ctx = LuigiClient.getContext();
+        document.querySelector('#result').innerHTML = JSON.stringify(ctx);
+      };
     </script>
   </body>
 </html>

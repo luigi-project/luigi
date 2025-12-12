@@ -10,30 +10,48 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+
+  if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
+    console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
+    return document.createElement('div');
+  }
+
   if (node.compound) {
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
+
+    lcc.setAttribute('lui_container', 'true');
     lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
+    lcc.clientPermissions = node.clientPermissions;
     lcc.nodeParams = node.nodeParams;
+    lcc.pathParams = node.pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
     lcc.searchParams = node.searchParams;
+    lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
+    lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
+
+    lc.setAttribute('lui_container', 'true');
     lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
+    lc.clientPermissions = node.clientPermissions;
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = node.nodeParams;
+    lc.pathParams = node.pathParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
     lc.searchParams = node.searchParams;
+    lc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
+    lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     setSandboxRules(lc, luigi);
@@ -182,8 +200,12 @@ export const UIModule = {
           .get(ViewUrlDecoratorSvc)
           .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
         viewGroupContainer.nodeParams = currentNode.nodeParams;
+        viewGroupContainer.pathParams = currentNode.pathParams;
+        viewGroupContainer.clientPermissions = currentNode.clientPermissions;
         viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
         viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
         viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
         viewGroupContainer.userSettings = userSettings;
 
@@ -215,6 +237,16 @@ export const UIModule = {
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
+  },
+  updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
+    const routingService = serviceRegistry.get(RoutingService);
+    if (luigi.getConfigValue('routing.showModalPathInUrl')) {
+      const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+      if (modalPath) {
+        routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
+      }
+    }
+    luigi.getEngine()._connector?.updateModalSettings(modalSettings);
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
     const lc = await createContainer(node, luigi);

@@ -63,6 +63,49 @@ export const GenericHelpers = {
   },
 
   /**
+   * Checks if HTML element is visible
+   * @param {Element} element to be checked in DOM
+   * @returns {boolean} `true` if element is visible - otherwise `false`
+   */
+  isElementVisible: (element: Element): boolean => {
+    if (!element) {
+      return false;
+    }
+
+    const cssDisplayValue: string = window.getComputedStyle(element).getPropertyValue('display');
+
+    return cssDisplayValue !== 'none';
+  },
+
+  /**
+   * Gets collection of HTML elements
+   * @param {string} selector to be searched in DOM
+   * @param {boolean} onlyVisible elements should be included
+   * @returns {Array} collection of HTML elements
+   */
+  getNodeList: (selector: string, onlyVisible = false): Element[] => {
+    const items: Element[] = [];
+
+    if (!selector) {
+      return items;
+    }
+
+    const elements: Element[] = Array.from(document.querySelectorAll(selector));
+
+    elements.forEach((item: Element) => {
+      if (onlyVisible) {
+        if (GenericHelpers.isElementVisible(item)) {
+          items.push(item);
+        }
+      } else {
+        items.push(item);
+      }
+    });
+
+    return items;
+  },
+
+  /**
    * Prepend current url to redirect_uri, if it is a relative path
    * @param {path} string full url, relative or absolute path
    * @returns {string} window location origin
@@ -113,5 +156,9 @@ export const GenericHelpers = {
     }
 
     return false;
+  },
+
+  getUrlParameter: (key: string) => {
+    return new URLSearchParams(window.location.search).get(key);
   }
 };

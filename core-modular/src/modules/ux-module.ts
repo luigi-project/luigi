@@ -1,8 +1,8 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
-import { writable, type Writable } from 'svelte/store';
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
 import { DirtyStatusService } from '../services/dirty-status.service';
+import { writable } from '../utilities/store';
 
 export interface AlertSettings {
   text?: string;
@@ -59,7 +59,7 @@ export const UXModule = {
   init: (luigi: Luigi) => {
     console.log('ux init...');
     UXModule.luigi = luigi;
-    UXModule.documentTitle = writable() as Writable<string>;
+    UXModule.documentTitle = writable(undefined);
     dirtyStatusService = serviceRegistry.get(DirtyStatusService);
   },
   processAlert: (
@@ -102,6 +102,25 @@ export const UXModule = {
     if (!UXModule.luigi) {
       throw new Error('Luigi is not initialized.');
     }
+
+    if (confirmationModalSettings) {
+      confirmationModalSettings = {
+        ...confirmationModalSettings,
+        ...{
+          header: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
+          body: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.body || 'luigi.confirmationModal.body'),
+          buttonDismiss: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
+          buttonConfirm: UXModule.luigi
+            .i18n()
+            .getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
+        }
+      };
+    }
+
     UXModule.luigi.getEngine()._connector?.renderConfirmationModal(confirmationModalSettings, {
       confirm() {
         containerElement.notifyConfirmationModalClosed(true);

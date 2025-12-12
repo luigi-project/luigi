@@ -155,7 +155,7 @@ export class GridCompoundRenderer extends DefaultCompoundRenderer {
  * Returns the compound renderer class for a given config.
  * If no specific one is found, {DefaultCompoundRenderer} is returned.
  *
- * @param {*} rendererConfig the renderer config object defined in luigi config
+ * @param {*} rendererConfig - the renderer config object defined in luigi config
  */
 export const resolveRenderer = (rendererConfig: RendererObject) => {
   const rendererDef: string | RendererUseProps | undefined = rendererConfig.use;
@@ -178,10 +178,10 @@ export const resolveRenderer = (rendererConfig: RendererObject) => {
 /**
  * Registers event listeners defined at the navNode.
  *
- * @param {*} eventbusListeners a map of event listener arrays with event id as key
- * @param {*} navNode the web component node configuration object
- * @param {*} nodeId the web component node id
- * @param {*} wcElement the web component element - optional
+ * @param {*} eventbusListeners - a map of event listener arrays with event id as key
+ * @param {*} navNode - the web component node configuration object
+ * @param {*} nodeId - the web component node id
+ * @param {*} wcElement - the web component element - optional
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const registerEventListeners = (eventbusListeners: any, navNode: any, nodeId: string, wcElement?: any) => {

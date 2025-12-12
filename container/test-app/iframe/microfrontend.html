@@ -83,6 +83,7 @@
       <button onclick="getActiveFeatureToggleList()">
         get active feature toggle list
       </button>
+      <button onclick="testCloseCurrentModal()">test close current modal</button>
       <br /><br />
       <span id="result"></span>
     </div>
@@ -364,6 +365,10 @@
             document.body.appendChild(span);
             console.log('Callback called on microfrontend', param);
           });
+      }
+
+      function testCloseCurrentModal() {
+        LuigiClient.uxManager().closeCurrentModal();
       }
 
       function updateFn(context) {

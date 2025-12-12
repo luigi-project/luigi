@@ -1,7 +1,7 @@
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { Luigi } from './luigi';
+import type { Luigi } from './luigi';
 
 declare global {
   interface Window {
@@ -106,7 +106,6 @@ export class Theming {
    * When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
    * @memberof Theming
    * @returns {Object} CSS variables with their value.
-   * @since 2.3.0
    * @example Luigi.theming().getCSSVariables();
    */
   async getCSSVariables() {

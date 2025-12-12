@@ -159,8 +159,7 @@
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
           const internalObj = {
-            ...(internal || {}),
-            ...{
+            ...internal || {}, ...{
               activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
               currentLocale: thisComponent.locale,
               currentTheme: thisComponent.theme,

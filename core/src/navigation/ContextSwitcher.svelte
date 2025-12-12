@@ -190,7 +190,7 @@
   export function toggleDropdownState() {
     dispatch('toggleDropdownState');
     const ddStates = dropDownStates || {};
-    const isOpened = JSON.parse(ddStates['contextSwitcherPopover']);
+    const isOpened = GenericHelpers.parseJSON(ddStates['contextSwitcherPopover']);
     if (isOpened) {
       fetchOptions();
     }
@@ -203,7 +203,7 @@
     <div class="fd-shellbar__action fd-shellbar__action--desktop">
       <div class="fd-popover fd-popover--right">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+        <div class="fd-popover__control" role="presentation" on:click|stopPropagation={() => {}}>
           {#if addNavHrefForAnchor && selectedOption !== config.defaultLabel}
             <a
               href={selectedOption ? getRouteLink(selectedOption) : undefined}
@@ -273,7 +273,7 @@
   <!-- MOBILE VERSION (fullscreen dialog): -->
   {#if isMobile && dropDownStates.contextSwitcherPopover && renderAsDropdown}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="fd-dialog fd-dialog--active" on:click|stopPropagation={() => {}}>
+    <div class="fd-dialog fd-dialog--active" role="presentation" on:click|stopPropagation={() => {}}>
       <div
         class="fd-dialog__content fd-dialog__content--mobile"
         role="dialog"

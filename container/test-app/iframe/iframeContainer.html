@@ -313,6 +313,15 @@
           'message received: ' + JSON.stringify(event.detail.data),
         );
       });
+
+      // CLOSE_CURRENT_MODAL_REQUEST
+      luigiContainer.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, (event) => {
+        console.log(Events.CLOSE_CURRENT_MODAL_REQUEST, event);
+        alert(
+          Events.CLOSE_CURRENT_MODAL_REQUEST,
+          'message received: ' + JSON.stringify(event.detail.data),
+        );
+      });
     </script>
   </body>
 </html>

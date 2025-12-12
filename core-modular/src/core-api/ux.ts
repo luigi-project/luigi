@@ -1,14 +1,9 @@
-import { get } from 'svelte/store';
+import { type AlertSettings, type ConfirmationModalSettings, type UserSettings } from '../modules/ux-module';
 import { DirtyStatusService } from '../services/dirty-status.service';
+import { serviceRegistry } from '../services/service-registry';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
-import { serviceRegistry } from '../services/service-registry';
-import {
-  type AlertSettings,
-  type ProcessedAlertSettings,
-  type ConfirmationModalSettings,
-  type UserSettings
-} from '../modules/ux-module';
+import { get } from '../utilities/store';
 import type { Luigi } from './luigi';
 
 export class UX {
@@ -50,6 +45,18 @@ export class UX {
   };
 
   showConfirmationModal = (settings: ConfirmationModalSettings) => {
+    if (settings) {
+      settings = {
+        ...settings,
+        ...{
+          header: this.luigi.i18n().getTranslation(settings.header || 'luigi.confirmationModal.header'),
+          body: this.luigi.i18n().getTranslation(settings.body || 'luigi.confirmationModal.body'),
+          buttonDismiss: this.luigi.i18n().getTranslation(settings.buttonDismiss || 'luigi.button.dismiss'),
+          buttonConfirm: this.luigi.i18n().getTranslation(settings.buttonConfirm || 'luigi.button.confirm')
+        }
+      };
+    }
+
     return new Promise((resolve, reject) => {
       this.luigi.getEngine()._connector?.renderConfirmationModal(settings, {
         confirm() {
@@ -100,9 +107,11 @@ export class UX {
     }, 500);
   };
 
-  showLoadingIndicator = (containerWrapper: HTMLElement) => this.luigi.getEngine()._connector?.showLoadingIndicator(containerWrapper);
+  showLoadingIndicator = (containerWrapper: HTMLElement) =>
+    this.luigi.getEngine()._connector?.showLoadingIndicator(containerWrapper);
 
-  hideLoadingIndicator = (containerWrapper: HTMLElement) => this.luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+  hideLoadingIndicator = (containerWrapper: HTMLElement) =>
+    this.luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
 
   addBackdrop = () => this.luigi.getEngine()._connector?.addBackdrop();
 

@@ -1,9 +1,12 @@
 import { CUSTOM_LUIGI_CONTAINER } from './../utilities/constants';
 import { IframeHelpers } from './../utilities/helpers';
+
 /* istanbul ignore file */
 /**
  * Use these functions to get DOM elements.
- * @namespace Elements
+ * @default Luigi.elements()
+ * @name Elements
+ * @class
  */
 class LuigiElements {
   /**
@@ -20,7 +23,7 @@ class LuigiElements {
 
   /**
    * Returns a boolean that indicates if Luigi is being rendered in a custom container or not.
-   * @returns {Boolean} _true_ if Luigi content is wrapped in a custom html tag, _false_ otherwise
+   * @returns {Boolean} `true` if Luigi content is wrapped in a custom html tag, `false` otherwise
    * @memberof Elements
    * @private
    * @since 0.6.0
@@ -75,7 +78,7 @@ class LuigiElements {
 
   /**
    * Returns a list of all available micro frontends.
-   * @returns {{id: string, active: boolean, container: HTMLElement, type: ('main'|'split-view'|'modal')}[]} list of objects defining all micro frontends from the DOM
+   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'split-view'|'modal'}>} list of objects defining all micro frontends from the DOM
    * @example
    * Luigi.elements().getMicrofrontends();
    * @memberof Elements
@@ -87,7 +90,7 @@ class LuigiElements {
 
   /**
    * Returns all micro frontend iframes including the iframe from the modal if it exists.
-   * @returns {HTMLElement[]} an array of all micro frontend iframes from the DOM
+   * @returns {Array<HTMLElement>} an array of all micro frontend iframes from the DOM
    * @memberof Elements
    * @since 0.4.12
    * @example
