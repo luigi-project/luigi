@@ -47,6 +47,7 @@ export interface ProfileSettings {
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
   onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
+  itemClick: (item: ProfileItem) => void;
 }
 
 export interface ProfileLogout {
@@ -523,10 +524,23 @@ export class NavigationService {
 
     const logoutLabel =
       this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
+    const itemClick = (item: ProfileItem) => {
+      if(item.link){
+        this.luigi.navigation().navigate(item.link);
+      }else if(item.externalLink?.url){
+        if(item.externalLink.sameWindow){
+          window.location.href = item.externalLink.url;
+        }else{
+          window.open(item.externalLink.url, '_blank');
+        }
+      }
+
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
       items: profileItems,
+      itemClick,
       logout: {
         altText:
           this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.altText) || TOP_NAV_DEFAULTS.logout.label,
