@@ -172,6 +172,14 @@ body {
         }
     }
 
+    &.page-luigi-core-api {
+        h2 + .h3Wrapper > h3[id] {
+            display: block;
+            border: 0;
+            padding: 0;
+        }
+    }
+
     &.page-luigi-container-api,
     &.page-luigi-compound-container-api {
         h3 {
