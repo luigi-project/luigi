@@ -525,17 +525,16 @@ export class NavigationService {
     const logoutLabel =
       this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
     const itemClick = (item: ProfileItem) => {
-      if(item.link){
+      if (item.link) {
         this.luigi.navigation().navigate(item.link);
-      }else if(item.externalLink?.url){
-        if(item.externalLink.sameWindow){
+      } else if (item.externalLink?.url) {
+        if (item.externalLink.sameWindow) {
           window.location.href = item.externalLink.url;
-        }else{
+        } else {
           window.open(item.externalLink.url, '_blank');
         }
       }
-
-    }
+    };
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
