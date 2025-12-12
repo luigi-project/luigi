@@ -11,9 +11,9 @@
     "start": "npm run build && next start"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.25.1",
-    "@luigi-project/core": "^2.25.1",
-    "next": "^15.5.7",
+    "@luigi-project/client": "^2.26.0",
+    "@luigi-project/core": "^2.26.0",
+    "next": "^15.5.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
