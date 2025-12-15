@@ -1503,7 +1503,6 @@
                             role={!addNavHrefForAnchor ? 'button' : undefined}
                             id="collapsible_listnode_{index}"
                             aria-haspopup="true"
-                            aria-expanded={isExpanded(nodes, expandedCategories)}
                             on:click|preventDefault={() =>
                               setExpandedState(nodes, !isExpanded(nodes, expandedCategories), this)}
                           >

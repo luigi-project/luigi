@@ -45,26 +45,7 @@ Sets the configuration for Luigi initially. Can also be called at a later point 
   
 **Example**  
 ```js
-Luigi.setConfig({
-  navigation: {
-    nodes: () => [
-      {
-        pathSegment: 'home',
-        label: 'Home',
-        children: [
-          {
-            pathSegment: 'hello',
-            label: 'Hello Luigi!',
-            viewUrl: '/assets/basicexternal.html'
-          }
-        ]
-      }
-    ]
-  },
-  routing: {
-    useHashRouting: true
-  }
-})
+Luigi.setConfig({  navigation: {    nodes: () => [      {        pathSegment: 'home',        label: 'Home',        children: [          {            pathSegment: 'hello',            label: 'Hello Luigi!',            viewUrl: '/assets/basicexternal.html'          }        ]      }    ]  },  routing: {    useHashRouting: true  }})
 ```
 ### getConfig&nbsp;  
 Returns the current active configuration
@@ -80,20 +61,7 @@ Tells Luigi that the configuration has been changed. Luigi will update the appli
 
 **Params**
 
-- ...scope <code>string</code> - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
-<p>
-The supported scope selectors are:
-<p>
-<ul>
-  <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
-  <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
-  <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
-  <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
-  <li><code>navigation.profile</code>: profile menu was changed.</li>
-  <li><code>settings</code>: settings were changed.</li>
-  <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
-  <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
-</ul>
+- ...scope <code>string</code> - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.<p>The supported scope selectors are:<p><ul>  <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>  <li><code>navigation.nodes</code>: navigation nodes were changed.</li>  <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>  <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>  <li><code>navigation.profile</code>: profile menu was changed.</li>  <li><code>settings</code>: settings were changed.</li>  <li><code>settings.header</code>: header settings (title, icon) were changed.</li>  <li><code>settings.footer</code>: left navigation footer settings were changed.</li></ul>
 
   
 ### getConfigValue&nbsp;  
@@ -106,12 +74,10 @@ Gets value of the given property on Luigi config object. Target can be a value o
   
 **Example**  
 ```js
-Luigi.getConfigValue('auth.use')
-Luigi.getConfigValue('settings.sideNavFooterText')
+Luigi.getConfigValue('auth.use')Luigi.getConfigValue('settings.sideNavFooterText')
 ```
 ### getConfigBooleanValue&nbsp;  
-Gets boolean value of the given property on Luigi config object.
-Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
+Gets boolean value of the given property on Luigi config object.Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
 
 **Params**
 
@@ -123,9 +89,7 @@ Function return true if the property value is equal true or 'true'. Otherwise th
 Luigi.getConfigBooleanValue('settings.hideNavigation')
 ```
 ### getConfigValueAsync&nbsp;  
-Gets value of the given property on the Luigi config object.
-If the value is a Function it is called (with the given parameters) and the result of that call is the value.
-If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
+Gets value of the given property on the Luigi config object.If the value is a Function it is called (with the given parameters) and the result of that call is the value.If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
 
 **Params**
 
@@ -135,9 +99,7 @@ If the value is not a Promise it is wrapped to a Promise so that the returned va
   
 **Example**  
 ```js
-Luigi.getConfigValueAsync('navigation.nodes')
-Luigi.getConfigValueAsync('navigation.profile.items')
-Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
+Luigi.getConfigValueAsync('navigation.nodes')Luigi.getConfigValueAsync('navigation.profile.items')Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
 ```
 ### ~~isAuthorizationEnabled~~&nbsp;  
 Detects if authorization is enabled via configuration.
@@ -159,9 +121,7 @@ Luigi.unload()
 **Meta**:  
 * **since:** 1.2.2
 ### readUserSettings&nbsp;  
-Reads the user settings object.
-You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
-By default, the user settings will be read from the **localStorage**
+Reads the user settings object.You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.By default, the user settings will be read from the **localStorage**
 
   
 **Example**  
@@ -173,9 +133,7 @@ Luigi.readUserSettings();
 **Meta**:  
 * **since:** 1.7.1
 ### storeUserSettings&nbsp;  
-Stores the user settings object.
-You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configuration
-By default, the user settings will be written from the **localStorage**
+Stores the user settings object.You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configurationBy default, the user settings will be written from the **localStorage**
 
 **Params**
 
@@ -233,8 +191,7 @@ Get the global context object.
 **Meta**:  
 * **since:** 2.5.0
 ### updateContextValues&nbsp;  
-Updates the context values for visible iframes and LUI web components.
-Note: the updated context values are not persisted. The developers have to do it on their own.
+Updates the context values for visible iframes and LUI web components.Note: the updated context values are not persisted. The developers have to do it on their own.
 
 **Params**
 
@@ -310,8 +267,7 @@ Luigi.elements().getMicrofrontendIframes();
 **Meta**:  
 * **since:** 0.4.12
 ### getCurrentMicrofrontendIframe&nbsp;  
-Returns the active micro frontend iframe.
-If there is a modal, which includes the micro frontend iframe, the function returns this iframe.
+Returns the active micro frontend iframe.If there is a modal, which includes the micro frontend iframe, the function returns this iframe.
 
   
 **Example**  
@@ -373,9 +329,7 @@ Navigates to the given path in the application. It contains either a full absolu
   
 **Example**  
 ```js
-Luigi.navigation().navigate('/overview')
-Luigi.navigation().navigate('users/groups/stakeholders')
-Luigi.navigation().navigate('/settings', null, true) // preserve view
+Luigi.navigation().navigate('/overview')Luigi.navigation().navigate('users/groups/stakeholders')Luigi.navigation().navigate('/settings', null, true) // preserve view
 ```
 ### navigateToIntent&nbsp;  
 Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing parameters.
@@ -388,8 +342,7 @@ Offers an alternative way of navigating with intents. This involves specifying a
   
 **Example**  
 ```js
-Luigi.navigation().navigateToIntent('Sales-settings')
-Luigi.navigation().navigateToIntent('Sales-settings', {project: 'pr1'})
+Luigi.navigation().navigateToIntent('Sales-settings')Luigi.navigation().navigateToIntent('Sales-settings', {project: 'pr1'})
 ```
   
 **Meta**:  
@@ -449,8 +402,7 @@ Opens a view in a drawer. You can specify if the drawer has a header, if a backd
   
 **Example**  
 ```js
-Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});
-Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
+Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
 ```
   
 **Meta**:  
@@ -507,9 +459,7 @@ Gets the Luigi route associated with the current micro frontend.
   
 **Example**  
 ```js
-Luigi.navigation().getCurrentRoute();
-Luigi.navigation().fromContext('project').getCurrentRoute();
-Luigi.navigation().fromVirtualTreeRoot().getCurrentRoute();
+Luigi.navigation().getCurrentRoute();Luigi.navigation().fromContext('project').getCurrentRoute();Luigi.navigation().fromVirtualTreeRoot().getCurrentRoute();
 ```
 **Returns**: a String value specifying the current Luigi route  
   
@@ -525,10 +475,7 @@ Sends node parameters to the route. The parameters are used by the `navigate` fu
   
 **Example**  
 ```js
-Luigi.navigation().withParams({foo: "bar"}).navigate("path")
-
-// Can be chained with context setting functions such as:
-Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
+Luigi.navigation().withParams({foo: "bar"}).navigate("path")// Can be chained with context setting functions such as:Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
 ```
 **Returns**: <code>linkManager</code> - link manager instance  
 ### pathExists&nbsp;  
@@ -541,13 +488,7 @@ Checks if the path you can navigate to exists in the main application. For examp
   
 **Example**  
 ```js
-let pathExists;
- Luigi
- .navigation()
- .pathExists('projects/pr2')
- .then(
-   (pathExists) => {  }
- );
+let pathExists; Luigi .navigation() .pathExists('projects/pr2') .then(   (pathExists) => {  } );
 ```
 **Returns**: <code>promise</code> - a promise which resolves to a Boolean variable specifying whether the path exists or not  
 ### hasBack&nbsp;  
@@ -565,8 +506,7 @@ Discards the active view and navigates back to the last visited view. Works with
   
 **Example**  
 ```js
-Luigi.navigation().goBack({ foo: 'bar' });
-Luigi.navigation().goBack(true);
+Luigi.navigation().goBack({ foo: 'bar' });Luigi.navigation().goBack(true);
 ```
 ## <code>Luigi.i18n()</code>&nbsp;  
 ### LuigiI18N&nbsp;  
@@ -649,18 +589,13 @@ Sends a custom message to all opened micro frontends.
   
 **Example**  
 ```js
-Luigi.customMessages().sendToAll({
-    id: 'myprefix.my-custom-message-for-client',
-    dataField1: 'here goes some data',
-    moreData: 'here goes some more'
-});
+Luigi.customMessages().sendToAll({    id: 'myprefix.my-custom-message-for-client',    dataField1: 'here goes some data',    moreData: 'here goes some more'});
 ```
   
 **Meta**:  
 * **since:** 0.6.2
 ### send&nbsp;  
-Sends a message to specific micro frontend identified with an id.
-Use Luigi.elements().getMicrofrontends() to get the iframe id.
+Sends a message to specific micro frontend identified with an id.Use Luigi.elements().getMicrofrontends() to get the iframe id.
 
 **Params**
 
@@ -672,11 +607,7 @@ Use Luigi.elements().getMicrofrontends() to get the iframe id.
   
 **Example**  
 ```js
-Luigi.customMessages().send(microfrontend.id, {
-    id: 'myprefix.my-custom-message-for-client',
-    dataField1: 'here goes some data',
-    moreData: 'here goes some more'
-});
+Luigi.customMessages().send(microfrontend.id, {    id: 'myprefix.my-custom-message-for-client',    dataField1: 'here goes some data',    moreData: 'here goes some more'});
 ```
   
 **Meta**:  
@@ -711,23 +642,7 @@ Shows an alert.
   
 **Example**  
 ```js
-const settings = {
- text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}",
- type: 'info',
- links: {
-   goToHome: { text: 'homepage', url: '/overview' },
-   goToOtherProject: { text: 'other project', url: '/projects/pr2' },
-   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },
-   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
- },
- closeAfter: 3000
-}
-Luigi
- .ux()
- .showAlert(settings)
- .then(() => {
-    // Logic to execute when the alert is dismissed
- });
+const settings = { text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}", type: 'info', links: {   goToHome: { text: 'homepage', url: '/overview' },   goToOtherProject: { text: 'other project', url: '/projects/pr2' },   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000}Luigi .ux() .showAlert(settings) .then(() => {    // Logic to execute when the alert is dismissed });
 ```
 **Returns**: <code>promise</code> - which is resolved when the alert is dismissed  
   
@@ -748,18 +663,7 @@ Shows a confirmation modal.
   
 **Example**  
 ```js
-const settings = {
- header: "Confirmation",
- body: "Are you sure you want to do this?",
- buttonConfirm: "Yes",
- buttonDismiss: "No"
-}
-Luigi
- .ux()
- .showConfirmationModal(settings)
- .then(() => {
-    // Logic to execute when the confirmation modal is dismissed
- });
+const settings = { header: "Confirmation", body: "Are you sure you want to do this?", buttonConfirm: "Yes", buttonDismiss: "No"}Luigi .ux() .showConfirmationModal(settings) .then(() => {    // Logic to execute when the confirmation modal is dismissed });
 ```
 **Returns**: <code>promise</code> - which is resolved when accepting the confirmation modal and rejected when dismissing it  
   
@@ -884,16 +788,7 @@ Opens the global search result. By standard it is a popover.
   
 **Example**  
 ```js
-let searchResultItem = {
-  pathObject: {
-    link,
-    params: {}
-  },
-  label,
-  description
-}
-
-Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
+let searchResultItem = {  pathObject: {    link,    params: {}  },  label,  description}Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
 ```
   
 **Meta**:  
@@ -961,12 +856,7 @@ Retrieves the available themes
   
 **Example**  
 ```js
-Luigi
- .theming()
- .getAvailableThemes()
- .then((themes) => {
-    // Logic to generate theme selector
- });
+Luigi .theming() .getAvailableThemes() .then((themes) => {    // Logic to generate theme selector });
 ```
 **Returns**: <code>promise</code> - resolves an array of theming objects  
   
@@ -997,12 +887,7 @@ Retrieves a theme object by name.
   
 **Example**  
 ```js
-Luigi
- .theming()
- .getThemeObject('light')
- .then((id => {
-   // Logic
- }))
+Luigi .theming() .getThemeObject('light') .then((id => {   // Logic }))
 ```
 **Returns**: <code>promise</code> - resolves a theme object  
   
@@ -1033,10 +918,7 @@ Luigi.theming().isThemingAvailable()
 **Meta**:  
 * **since:** 1.4.0
 ### getCSSVariables&nbsp;  
-Returns CSS variables with key value from Luigi if `@luigi-project/core/luigi_theme-vars.js` is included in the `index.html` and `settings.theming.variables==='fiori'` is defined in the [settings](general-settings.md) section.
-It's also possible to define your own variables file which can be declared in `settings.theming.variables.file` in the [settings](general-settings.md) section.
-The variables should be defined in a JSON file which starts with a `root` key.
-When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
+Returns CSS variables with key value from Luigi if `@luigi-project/core/luigi_theme-vars.js` is included in the `index.html` and `settings.theming.variables==='fiori'` is defined in the [settings](general-settings.md) section.It's also possible to define your own variables file which can be declared in `settings.theming.variables.file` in the [settings](general-settings.md) section.The variables should be defined in a JSON file which starts with a `root` key.When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
 
   
 **Example**  
@@ -1107,9 +989,7 @@ Luigi.routing().getSearchParams();
 **Meta**:  
 * **since:** 1.16.1
 ### addSearchParams&nbsp;  
-Add search parameters to the URL.
-If [hash routing](navigation-parameters-reference.md#usehashrouting) is enabled, the search parameters will be set after the hash.
-In order to delete a search query param you can set the value of the param to undefined.
+Add search parameters to the URL.If [hash routing](navigation-parameters-reference.md#usehashrouting) is enabled, the search parameters will be set after the hash.In order to delete a search query param you can set the value of the param to undefined.
 
 **Params**
 
@@ -1130,8 +1010,7 @@ Authorization helpers.
 
   
 ### isAuthorizationEnabled&nbsp;  
-Detects if authorization is enabled via configuration.
-Read more about [custom authorization providers](authorization-configuration.md).
+Detects if authorization is enabled via configuration.Read more about [custom authorization providers](authorization-configuration.md).
 
   
 **Example**  
@@ -1140,8 +1019,7 @@ Luigi.auth().isAuthorizationEnabled();
 ```
 **Returns**: <code>boolean</code> - `true` if authorization is enabled - otherwise returns `false`  
 ### login&nbsp;  
-Login the user dynamically.
-This will run the same functionality as though the user clicked the login button.
+Login the user dynamically.This will run the same functionality as though the user clicked the login button.
 
   
 **Example**  
@@ -1152,8 +1030,7 @@ Luigi.auth().login();
 **Meta**:  
 * **since:** 1.5.0
 ### logout&nbsp;  
-Logout the user dynamically.
-This will run the same functionality as though the user clicked the logout button.
+Logout the user dynamically.This will run the same functionality as though the user clicked the logout button.
 
   
 **Example**  
@@ -1164,8 +1041,7 @@ Luigi.auth().logout();
 **Meta**:  
 * **since:** 1.5.0
 ### AuthData&nbsp;  
-Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration. <br><br>
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration. <br><br>Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 **Properties**
 
@@ -1179,8 +1055,7 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
   
 ## AuthorizationStore&nbsp;  
 ### store&nbsp;  
-Getter for authorization Storage helpers, to be used in your custom authorization provider.
-Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
+Getter for authorization Storage helpers, to be used in your custom authorization provider.Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
 
   
 **Returns**: <code>Object</code> - authorization storage helpers  
