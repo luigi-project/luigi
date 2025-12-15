@@ -531,7 +531,7 @@ export class NavigationService {
         if (item.externalLink.sameWindow) {
           window.location.href = item.externalLink.url;
         } else {
-          window.open(item.externalLink.url, '_blank');
+          window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
         }
       }
     };
