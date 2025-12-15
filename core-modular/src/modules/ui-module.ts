@@ -248,15 +248,15 @@ export const UIModule = {
             console.warn('Error removing listeners on modal resolve', e);
           }
 
-          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
-            routingService.removeModalDataFromUrl(true);
-          }
           resolve();
           modalService.removeLastModalFromStack();
         };
 
         onCloseRequestHandler = () => {
           resolveFn && resolveFn();
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -286,7 +286,7 @@ export const UIModule = {
       modalSettings,
       () => {
         onCloseCallback?.();
-        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
+        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
           routingService.removeModalDataFromUrl(true);
         }
         modalService.removeLastModalFromStack();
@@ -304,12 +304,12 @@ export const UIModule = {
     modalService.updateLastModalSettings(modalSettings);
     const routingService = serviceRegistry.get(RoutingService);
 
-    if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
+    // if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
       const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
       if (modalPath) {
         routingService.updateModalDataInUrl(modalPath, modalService.getModalSettings(), addHistoryEntry);
       }
-    }
+    // }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
   openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {

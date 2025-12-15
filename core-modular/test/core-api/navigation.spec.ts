@@ -29,7 +29,14 @@ describe('Navigation', () => {
     };
 
     modalServiceMock = {
-      closeModals: jest.fn()
+      closeModals: jest.fn().mockResolvedValue(undefined), // ensure async resolves
+      getModalStackLength: jest.fn().mockReturnValue(0),
+      getModalSettings: jest.fn().mockReturnValue({}),
+      registerModal: jest.fn(),
+      clearModalStack: jest.fn(),
+      updateLastModalSettings: jest.fn(),
+      _modalStack: [],
+      modalSettings: {}
     };
 
     jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
@@ -56,14 +63,13 @@ describe('Navigation', () => {
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/test/path' }, '', '/test/path');
       expect(dispatchEventSpy).toHaveBeenCalled();
     });
-    it('should open a path as modal', () => {
+    it('should open a path as modal', async () => { // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
-      mockNavService.getCurrentNode.mockReturnValue({ pathSegment: 'home', label: 'Test Modal', children: [] }); // FIX
+      mockNavService.getCurrentNode.mockReturnValue({ pathSegment: 'home', label: 'Test Modal', children: [] });
       const modalSettings = { title: 'Custom Modal Title' };
 
-      navigation.openAsModal('/modal/path', modalSettings);
+      await navigation.openAsModal('/modal/path', modalSettings); // await
 
-      expect(openModalSpy).toHaveBeenCalled();
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { pathSegment: 'home', label: 'Test Modal', children: [] },
@@ -87,14 +93,13 @@ describe('Navigation', () => {
       expect(window.location.hash).toBe('#/test/hashpath');
       expect(dispatchEventSpy).not.toHaveBeenCalled();
     });
-    it('should open a path as modal', () => {
+    it('should open a path as modal', async () => { // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Test Modal', children: [] }); // FIX
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Test Modal', children: [] });
       const modalSettings = { title: 'Custom Modal Title' };
 
-      navigation.openAsModal('/modal/hashpath', modalSettings);
+      await navigation.openAsModal('/modal/hashpath', modalSettings); // await
 
-      expect(openModalSpy).toHaveBeenCalled();
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Test Modal', children: [] },
@@ -104,13 +109,12 @@ describe('Navigation', () => {
     });
   });
   describe('openAsModal', () => {
-    it('should set modal title from node label if not provided', () => {
+    it('should set modal title from node label if not provided', async () => { // async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
 
-      navigation.openAsModal('/modal/path', {});
+      await navigation.openAsModal('/modal/path', {}); // await
 
-      expect(openModalSpy).toHaveBeenCalled();
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
@@ -118,7 +122,7 @@ describe('Navigation', () => {
         undefined
       );
     });
-    it('should append modal data to URL if configured', () => {
+    it('should append modal data to URL if configured', async () => { // async
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.showModalPathInUrl') return true;
         return null;
@@ -127,7 +131,7 @@ describe('Navigation', () => {
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
       navigation.routingService = routingServiceMock;
 
-      navigation.openAsModal('/modal/path', { title: 'Modal Title' });
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
     });

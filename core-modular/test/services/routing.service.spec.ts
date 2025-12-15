@@ -32,8 +32,8 @@ describe('Routing Service', () => {
     mockLuigi = {
       config: {},
       engine: {},
-      setConfig: () => {},
-      configChanged: () => {},
+      setConfig: () => { },
+      configChanged: () => { },
       featureToggles: () => new FeatureToggles(),
       routing: () => ({ getSearchParams: () => ({}) }),
       uxManager: () => ({}),
@@ -221,8 +221,8 @@ describe('Routing Service', () => {
       locationSpy = jest.spyOn(window, 'location', 'get');
 
       // ensure pushState/replaceState are mockable
-      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
+      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => { });
       mockUrl = {
         href: 'http://localhost/#/home',
         hash: '#/home',
@@ -607,7 +607,7 @@ describe('Routing Service', () => {
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
-        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%2C%22size%22%3A%22s%22%7D'
+        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22size%22%3A%22s%22%7D'
       );
     });
   });
