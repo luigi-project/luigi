@@ -44,6 +44,6 @@
   },
   "browserslist": "> 0.25%, not dead",
   "engines": {
-    "node": ">=18.19.1"
+    "node": ">=20.19.0"
   }
 }
