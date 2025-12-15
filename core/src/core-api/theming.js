@@ -1,9 +1,12 @@
 import { LuigiConfig } from '.';
 import { GenericHelpers, StateHelpers } from '../utilities/helpers';
 import { ViewUrlDecorator } from '../services';
+
 /**
  * Functions to use Luigi Core Theming features.
+ * @default Luigi.theming()
  * @namespace Theming
+ * @class
  */
 class LuigiTheming {
   constructor() {
@@ -30,7 +33,7 @@ class LuigiTheming {
   /**
    * Sets the current theme id
    * @memberof Theming
-   * @param {string} id of a theme object
+   * @param {string} id - of a theme object
    * @since 1.4.0
    * @example
    * Luigi.theming().setCurrentTheme('light')
@@ -44,7 +47,7 @@ class LuigiTheming {
   /**
    * Retrieves a theme object by name.
    * @memberof Theming
-   * @param {string} id a theme id
+   * @param {string} id - theme id
    * @returns {promise} resolves a theme object
    * @since 1.4.0
    * @example
@@ -57,7 +60,7 @@ class LuigiTheming {
    */
   async getThemeObject(id) {
     const themes = await this.getAvailableThemes();
-    return themes && themes.find(t => t.id === id);
+    return themes && themes.find((t) => t.id === id);
   }
   /**
    * Retrieves the current active theme. Falls back to **defaultTheme** if none explicitly specified before.
@@ -112,7 +115,7 @@ class LuigiTheming {
         try {
           const resp = await fetch(varFile);
           window.Luigi.__cssVars = (await resp.json()).root;
-          Object.keys(window.Luigi.__cssVars).forEach(key => {
+          Object.keys(window.Luigi.__cssVars).forEach((key) => {
             const livePropVal = getComputedStyle(document.documentElement).getPropertyValue('--' + key);
             if (livePropVal) {
               window.Luigi.__cssVars[key] = livePropVal;
@@ -127,7 +130,7 @@ class LuigiTheming {
         }
       } else if (LuigiConfig.getConfigValue('settings.theming.variables') === 'fiori' && window.__luigiThemeVars) {
         window.Luigi.__cssVars = {};
-        window.__luigiThemeVars.forEach(key => {
+        window.__luigiThemeVars.forEach((key) => {
           window.Luigi.__cssVars[key] = getComputedStyle(document.documentElement).getPropertyValue('--' + key);
         });
       } else {
