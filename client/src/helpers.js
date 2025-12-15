@@ -5,19 +5,19 @@ class Helpers {
     this.listeners = [];
     this.origin = '';
 
-    const helperListener = function(evt) {
+    const helperListener = function (evt) {
       if (!evt.data.msg) {
         return;
       }
       if (evt.data.msg === 'custom') {
         const message = this.convertCustomMessageInternalToUser(evt.data);
         this.listeners
-          .filter(listener => listener.name === message.id)
-          .map(listener => listener.eventFn(message, listener.listenerId));
+          .filter((listener) => listener.name === message.id)
+          .map((listener) => listener.eventFn(message, listener.listenerId));
       } else {
         this.listeners
-          .filter(listener => listener.name === evt.data.msg)
-          .map(listener => listener.eventFn(evt, listener.listenerId));
+          .filter((listener) => listener.name === evt.data.msg)
+          .map((listener) => listener.eventFn(evt, listener.listenerId));
       }
     }.bind(this);
 
@@ -47,8 +47,8 @@ class Helpers {
    * Don't forget to remove the event listener at the end of
    * your eventFn if you do not need it anymore.
    * @private
-   * @param {string} name event name
-   * @param {function} eventFn callback function
+   * @param {string} name - event name
+   * @param {function} eventFn - callback function
    * @returns {string} listener id
    */
   addEventListener(name, eventFn) {
@@ -64,12 +64,12 @@ class Helpers {
   /**
    * Removes a post message listener
    * @private
-   * @param {string} id listenerId
+   * @param {string} id - listenerId
    */
   removeEventListener(id) {
-    const listenerExists = Boolean(this.listeners.find(l => l.listenerId === id));
+    const listenerExists = Boolean(this.listeners.find((l) => l.listenerId === id));
     if (listenerExists) {
-      this.listeners = this.listeners.filter(l => l.listenerId !== id);
+      this.listeners = this.listeners.filter((l) => l.listenerId !== id);
       return true;
     }
     return false;
@@ -135,7 +135,7 @@ class Helpers {
 
   /**
    * Checks if given path contains intent navigation special syntax
-   * @param {string} path to check
+   * @param {string} path - path to be checked
    */
   hasIntent(path) {
     return !!path && path.toLowerCase().includes('#?intent=');

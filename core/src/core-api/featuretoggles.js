@@ -1,17 +1,21 @@
 import { get, writable } from 'svelte/store';
 import { GenericHelpers } from '../utilities/helpers';
+
 /**
- * Functions to use feature toggles in Luigi
+ * Functions to use feature toggles in Luigi.
+ * @default Luigi.featureToggles()
  * @name FeatureToggles
+ * @class
  */
 class LuigiFeatureToggles {
   constructor() {
     this.featureToggleList = writable([]);
   }
+
   /**
    * Add a feature toggle to an active feature toggles list
    * @memberof FeatureToggles
-   * @param {string} featureToggleName the name of the feature toggle
+   * @param {string} featureToggleName - the name of the feature toggle
    * @since 1.4.0
    * @example Luigi.featureToggles().setFeatureToggle('featureToggleName');
    */
@@ -48,14 +52,14 @@ class LuigiFeatureToggles {
    * @example Luigi.featureToggles().getActiveFeatureToggleList();
    */
   getActiveFeatureToggleList() {
-    return [...get(this.featureToggleList)].filter(ft => !ft.startsWith('!'));
+    return [...get(this.featureToggleList)].filter((ft) => !ft.startsWith('!'));
   }
 
   /**
    * Check if it is a valid feature toggle
    * @private
    * @memberof FeatureToggles
-   * @param {string} featureToggleName
+   * @param {string} featureToggleName - the name of the feature toggle
    * @return {boolean} of valid feature toggle name
    * @example Luigi.featureToggles().isValid('foo');
    */
@@ -70,7 +74,7 @@ class LuigiFeatureToggles {
    * Check if feature toggle is duplicated or already disabled
    * @private
    * @memberof FeatureToggles
-   * @param {string} featureToggleName
+   * @param {string} featureToggleName - the name of the feature toggle
    * @return {boolean} of valid feature toggle name
    * @example Luigi.featureToggles().isDuplicateOrDisabled('foo');
    */

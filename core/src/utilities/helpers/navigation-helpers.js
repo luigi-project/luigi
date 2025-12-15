@@ -375,7 +375,7 @@ class NavigationHelpersClass {
   /**
    * Checks, if icon class is businessSuiteInAppSymbols or TNT suite and renders the icon name accordingly
    * I.e. will return sap-icon--home or sap-icon-TNT--systemjava or sap-icon-businessSuiteInAppSymbols--birthday
-   * @param {*} iconString icon name
+   * @param {*} iconString - icon name
    * @returns properly formatted icon name.
    */
   renderIconClassName(iconString) {
@@ -424,7 +424,7 @@ class NavigationHelpersClass {
 
   /**
    * Checks if for the given node path navigation should be prevented or not
-   * @param {string} nodepath path to check
+   * @param {string} nodepath - path to check
    * @returns {boolean} navigation should be prevented or not
    */
   async shouldPreventNavigationForPath(nodepath) {
@@ -437,9 +437,9 @@ class NavigationHelpersClass {
 
   /**
    * Returns a nested property value defined by a chain string
-   * @param {*} obj the object
-   * @param {*} propChain a string defining the property chain
-   * @param {*} fallback fallback value if resolution fails
+   * @param {*} obj - the object
+   * @param {*} propChain - a string defining the property chain
+   * @param {*} fallback - fallback value if resolution fails
    * @returns the value or fallback
    */
   getPropertyChainValue(obj, propChain, fallback) {
@@ -531,7 +531,7 @@ class NavigationHelpersClass {
    * In addition custom behavior that might be inflicted from any parent click event should be stopped,
    * to make way for the default behavior, ergo the stopPropagation() function in the else condition.
    * If none of the buttons is pressed, then the default behavior is prevented and the custom behavior fn takes over.
-   * @param {*} event the click event to be handled
+   * @param {*} event - the click event to be handled
    * @returns {boolean} true if keyboard meta controls are not pressed, false otherwise
    */
   handleNavAnchorClickedWithoutMetaKey(event) {
@@ -582,7 +582,7 @@ class NavigationHelpersClass {
 
   /**
    * Retrieves the settings for a specific view group.
-   * @param {string} viewGroup - The name of the view group for which settings are to be retrieved.
+   * @param {string} viewGroup - the name of the view group for which settings are to be retrieved
    * @returns {Object} The settings for the specified view group. If the view group is not found, an empty object is returned.
    */
   getViewGroupSettings(viewGroup) {
@@ -596,8 +596,8 @@ class NavigationHelpersClass {
 
   /**
    * Recursively finds the view group associated with a given node in a hierarchical structure.
-   * @param {Object} node - The current node being examined.
-   * @param {Object} [originalNode] - The original node from which the search started.
+   * @param {Object} node - the current node being examined
+   * @param {Object} [originalNode] - the original node from which the search started
    * @returns {string | undefined} The view group associated with the node, or undefined if not found.
    */
   findViewGroup(node, originalNode) {

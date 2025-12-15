@@ -1,0 +1,18 @@
+{{#if @prefix}}
+{{else}}
+{{>heading-indent}}
+{{#if virtual}}*{{/if}}{{#with (parentObject)}}{{#if virtual}}*{{/if~}}{{/with~}}
+{{#if name}}{{#sig~}}
+{{{@depOpen}~}}
+{{{@codeOpen}~}}
+{{#if (equal defaultvalue undefined)}}
+{{#if (isEvent)}}"{{parseName name}}"{{else}}{{parseName (escape name)}}{{/if~}}
+{{else}}
+{{>defaultvalue}}
+{{/if~}}
+{{{@codeClose}~}}
+{{{@depClose}~}}
+{{~/sig}}{{/if~}}
+{{#if virtual}}*{{/if}}{{#with (parentObject)}}{{#if virtual}}*{{/if~}}{{/with~}}
+&nbsp;  
+{{/if~}}
