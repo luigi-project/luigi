@@ -52,7 +52,7 @@ export class ModalService {
 
   /**
    * Gets the settings of the last modal in the stack.
-   * @returns The settings of the last modal in the stack, or an empty object if the stack is empty. 
+   * @returns The settings of the last modal in the stack, or an empty object if the stack is empty.
    */
   getModalSettings(): ModalSettings | {} {
     if (this._modalStack.length > 0) {
