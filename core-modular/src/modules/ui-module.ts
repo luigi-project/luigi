@@ -252,7 +252,7 @@ export const UIModule = {
             routingService.removeModalDataFromUrl(true);
           }
           resolve();
-          modalService.removeModalFromStack();
+          modalService.removeLastModalFromStack();
         };
 
         onCloseRequestHandler = () => {
@@ -289,7 +289,7 @@ export const UIModule = {
         if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
           routingService.removeModalDataFromUrl(true);
         }
-        modalService.removeModalFromStack();
+        modalService.removeLastModalFromStack();
       },
       () => closePromise
     );
@@ -301,7 +301,7 @@ export const UIModule = {
   },
   updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
     const modalService = serviceRegistry.get(ModalService);
-    modalService.updateModalSettings(modalSettings);
+    modalService.updateLastModalSettings(modalSettings);
     const routingService = serviceRegistry.get(RoutingService);
 
     if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {

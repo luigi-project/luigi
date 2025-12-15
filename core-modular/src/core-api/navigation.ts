@@ -46,13 +46,17 @@ export class Navigation {
     }
   };
 
-  openAsModal = (path: string, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+  openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+    if(!modalSettings.keepPrevious){
+        await this.modalService.closeModals();
+      }
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const node = this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node.label;
     }
+    // Append modal data to URL only if configured and if no other modals are open
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
       this.routingService.appendModalDataToUrl(normalizedPath, settings);
     }

@@ -26,23 +26,12 @@ export class ModalService {
       try {
         if (typeof onInternalClose === 'function') {
           onInternalClose();
-          this.clearModalStack();
         }
       } catch (e) {
         console.warn('onInternalClose threw an error', e);
       }
-      //Clarify if this is needed
-      // if (closePromise) {
-      //   try {
-      //     //called when browser back
-      //     console.log('browser back');
-      //     await closePromise;
-      //     this.removeModalFromStack();
-      //   } catch (e) {
-      //     console.warn('closePromise rejected', e);
-      //   }
-      // }
     }
+    this.clearModalStack();
   }
 
   /**
@@ -61,6 +50,10 @@ export class ModalService {
     this._modalStack.push(modalObj);
   }
 
+  /**
+   * Gets the settings of the last modal in the stack.
+   * @returns The settings of the last modal in the stack, or an empty object if the stack is empty. 
+   */
   getModalSettings(): ModalSettings | {} {
     if (this._modalStack.length > 0) {
       return this._modalStack[this._modalStack.length - 1].modalsettings || {};
@@ -68,22 +61,36 @@ export class ModalService {
     return {};
   }
 
+  /**
+   * Gets the current number of modals in the stack.
+   * @returns number The current number of modals in the stack.
+   */
   getModalStackLength(): number {
     return this._modalStack.length;
   }
 
-  updateModalSettings(settings: ModalSettings): void {
+  /**
+   * Updates the settings of the last modal in the stack.
+   * @param settings modal settings to update the last modal with
+   */
+  updateLastModalSettings(settings: ModalSettings): void {
     if (this._modalStack.length > 0) {
       const topModal = this._modalStack[this._modalStack.length - 1];
       topModal.modalsettings = { ...topModal.modalsettings, ...settings };
     }
   }
 
+  /**
+   * Clears the entire modal stack.
+   */
   clearModalStack(): void {
     this._modalStack = [];
   }
 
-  removeModalFromStack(): void {
+  /**
+   * Removes the last modal from the stack.
+   */
+  removeLastModalFromStack(): void {
     this._modalStack.pop();
   }
 }
