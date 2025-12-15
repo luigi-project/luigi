@@ -305,10 +305,10 @@ export const UIModule = {
     const routingService = serviceRegistry.get(RoutingService);
 
     // if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 1) {
-      const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
-      if (modalPath) {
-        routingService.updateModalDataInUrl(modalPath, modalService.getModalSettings(), addHistoryEntry);
-      }
+    const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+    if (modalPath) {
+      routingService.updateModalDataInUrl(modalPath, modalService.getModalSettings(), addHistoryEntry);
+    }
     // }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },

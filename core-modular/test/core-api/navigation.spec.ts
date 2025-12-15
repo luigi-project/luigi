@@ -63,7 +63,8 @@ describe('Navigation', () => {
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/test/path' }, '', '/test/path');
       expect(dispatchEventSpy).toHaveBeenCalled();
     });
-    it('should open a path as modal', async () => { // make async
+    it('should open a path as modal', async () => {
+      // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ pathSegment: 'home', label: 'Test Modal', children: [] });
       const modalSettings = { title: 'Custom Modal Title' };
@@ -93,7 +94,8 @@ describe('Navigation', () => {
       expect(window.location.hash).toBe('#/test/hashpath');
       expect(dispatchEventSpy).not.toHaveBeenCalled();
     });
-    it('should open a path as modal', async () => { // make async
+    it('should open a path as modal', async () => {
+      // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Test Modal', children: [] });
       const modalSettings = { title: 'Custom Modal Title' };
@@ -109,7 +111,8 @@ describe('Navigation', () => {
     });
   });
   describe('openAsModal', () => {
-    it('should set modal title from node label if not provided', async () => { // async
+    it('should set modal title from node label if not provided', async () => {
+      // async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
 
@@ -122,7 +125,8 @@ describe('Navigation', () => {
         undefined
       );
     });
-    it('should append modal data to URL if configured', async () => { // async
+    it('should append modal data to URL if configured', async () => {
+      // async
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.showModalPathInUrl') return true;
         return null;

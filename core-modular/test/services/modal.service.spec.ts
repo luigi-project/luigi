@@ -8,7 +8,7 @@ describe('ModalService', () => {
 
   beforeEach(() => {
     service = new ModalService(mockLuigi);
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -66,7 +66,6 @@ describe('ModalService', () => {
       expect(warnSpy).toHaveBeenCalledWith('onInternalClose threw an error', expect.any(Error));
       expect(service._modalStack.length).toBe(0);
     });
-
   });
 
   describe('getModalSettings', () => {

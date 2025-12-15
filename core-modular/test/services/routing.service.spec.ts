@@ -32,8 +32,8 @@ describe('Routing Service', () => {
     mockLuigi = {
       config: {},
       engine: {},
-      setConfig: () => { },
-      configChanged: () => { },
+      setConfig: () => {},
+      configChanged: () => {},
       featureToggles: () => new FeatureToggles(),
       routing: () => ({ getSearchParams: () => ({}) }),
       uxManager: () => ({}),
@@ -221,8 +221,8 @@ describe('Routing Service', () => {
       locationSpy = jest.spyOn(window, 'location', 'get');
 
       // ensure pushState/replaceState are mockable
-      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
-      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => { });
+      historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
       mockUrl = {
         href: 'http://localhost/#/home',
         hash: '#/home',
