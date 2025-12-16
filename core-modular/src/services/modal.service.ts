@@ -51,12 +51,12 @@ export class ModalService {
   }
 
   /**
-   * Gets the settings of the last modal in the stack.
-   * @returns The settings of the last modal in the stack, or an empty object if the stack is empty.
+   * Gets the settings of the first modal in the stack.
+   * @returns The settings of the first modal in the stack, or an empty object if the stack is empty.
    */
   getModalSettings(): ModalSettings | {} {
     if (this._modalStack.length > 0) {
-      return this._modalStack[this._modalStack.length - 1].modalsettings || {};
+      return this._modalStack[0].modalsettings || {};
     }
     return {};
   }
@@ -70,12 +70,12 @@ export class ModalService {
   }
 
   /**
-   * Updates the settings of the last modal in the stack.
-   * @param settings modal settings to update the last modal with
+   * Updates the settings of the first modal in the stack.
+   * @param settings modal settings to update the first modal with
    */
-  updateLastModalSettings(settings: ModalSettings): void {
+  updateFirstModalSettings(settings: ModalSettings): void {
     if (this._modalStack.length > 0) {
-      const topModal = this._modalStack[this._modalStack.length - 1];
+      const topModal = this._modalStack[0];
       topModal.modalsettings = { ...topModal.modalsettings, ...settings };
     }
   }

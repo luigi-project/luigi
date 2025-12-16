@@ -54,7 +54,7 @@ window.onload = () => {
           hideFromNav: true
         },
         {
-          pathSegment: 'home',
+          pathSegment: 'home2',
           icon: 'home',
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
@@ -274,6 +274,7 @@ window.onload = () => {
     },
     routing: {
       useHashRouting: true
+      //showModalPathInUrl: true
     },
     settings: {
       responsiveNavigation: 'Fiori3',

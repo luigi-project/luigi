@@ -82,7 +82,7 @@ describe('ModalService', () => {
       service.registerModal(m2);
 
       const settings = service.getModalSettings();
-      expect(settings).toEqual({ title: 'Second' });
+      expect(settings).toEqual({ title: 'First' });
     });
 
     it('returns empty object if last modal has no modalsettings', () => {
@@ -92,7 +92,7 @@ describe('ModalService', () => {
       service.registerModal(m2);
 
       const settings = service.getModalSettings();
-      expect(settings).toEqual({});
+      expect(settings).toEqual({ title: 'First' });
     });
   });
 
@@ -130,7 +130,7 @@ describe('ModalService', () => {
   describe('updateLastModalSettings', () => {
     it('does nothing when stack is empty', () => {
       expect(service._modalStack.length).toBe(0);
-      service.updateLastModalSettings({ title: 'New Title' });
+      service.updateFirstModalSettings({ title: 'New Title' });
       expect(service._modalStack.length).toBe(0);
     });
 
@@ -140,10 +140,10 @@ describe('ModalService', () => {
       service.registerModal(m1);
       service.registerModal(m2);
 
-      service.updateLastModalSettings({ size: 'l' });
+      service.updateFirstModalSettings({ size: 'l' });
 
-      expect(service._modalStack[1].modalsettings).toEqual({ title: 'Second', size: 'l' });
-      expect(service._modalStack[0].modalsettings).toEqual({ title: 'First' });
+      expect(service._modalStack[1].modalsettings).toEqual({ title: 'Second' });
+      expect(service._modalStack[0].modalsettings).toEqual({ title: 'First', size: 'l' });
     });
   });
 
