@@ -5,7 +5,7 @@ export interface ModalPromiseObject {
   closePromise?: Promise<void>;
   resolveFn?: () => void;
   onCloseRequestHandler?: () => void;
-  onInternalClose?: Function;
+  onInternalClose?: () => void;
   modalsettings?: ModalSettings;
 }
 
@@ -41,7 +41,7 @@ export class ModalService {
    * enabling the service to manage and resolve/dismiss modals in the correct order.
    *
    * @param modalObj - The modal promise object to register on the stack.
-   * @returns void
+   * @returns {void}
    */
   registerModal(modalObj: ModalPromiseObject): void {
     if (!modalObj) {

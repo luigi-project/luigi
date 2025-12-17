@@ -19,11 +19,11 @@ export interface LuigiConnector {
   renderModal(
     content: HTMLElement,
     modalSettings: ModalSettings,
-    onCloseCallback?: Function,
-    onCloseRequest?: Function
+    onCloseCallback?: () => void,
+    onCloseRequest?: () => void
   ): any;
 
-  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
+  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: ()=> void): any;
 
   renderTabNav(data: TabNavData): void;
 

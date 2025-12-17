@@ -225,7 +225,7 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -239,15 +239,6 @@ export const UIModule = {
         resolveFn = () => {
           if (resolved) return;
           resolved = true;
-
-          try {
-            if (onCloseRequestHandler) {
-              lc.removeEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
-            }
-          } catch (e) {
-            console.warn('Error removing listeners on modal resolve', e);
-          }
-
           resolve();
           modalService.removeLastModalFromStack();
         };
@@ -313,7 +304,7 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;
