@@ -158,9 +158,26 @@ export class ContainerService {
                   event.origin
                 );
                 break;
-              case LuigiInternalMessageID.NAVIGATION_REQUEST:
-                this.dispatch(Events.NAVIGATION_REQUEST, targetCnt, event.data.params as NavigationRequestPayload);
+              case LuigiInternalMessageID.NAVIGATION_REQUEST: {
+                let clientModalPromise = null;
+                if (event.data?.params?.modal) {
+                  clientModalPromise = () => {
+                    target.postMessage(
+                      {
+                        msg: LuigiInternalMessageID.CLOSE_MODAL_ANSWER
+                      },
+                      event.origin
+                    );
+                  };
+                }
+                this.dispatch(
+                  Events.NAVIGATION_REQUEST,
+                  targetCnt,
+                  event.data.params as NavigationRequestPayload,
+                  clientModalPromise
+                );
                 break;
+              }
               case LuigiInternalMessageID.ALERT_REQUEST:
                 this.dispatchWithPayload(
                   Events.ALERT_REQUEST,

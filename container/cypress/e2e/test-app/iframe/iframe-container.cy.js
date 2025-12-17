@@ -266,6 +266,26 @@ describe('Iframe Container Test', () => {
       });
   });
 
+  it('openAsModal with close callback', () => {
+    cy.on('window:confirm', () => false);
+
+    cy.get(containerSelector)
+      .shadow()
+      .get('iframe')
+      .then((iframe) => {
+        const $body = iframe.contents().find('body');
+        cy.wrap($body)
+          .contains('openAsModal with close callback')
+          .click()
+          .then(() => {
+            cy.wrap($body).contains('Hello from promise! Modal is closed');
+          });
+        cy.location().should((loc) => {
+          expect(loc.hash).to.eq('#openAsModal-iframe');
+        });
+      });
+  });
+
   it('openAsDrawer', () => {
     cy.on('window:confirm', () => false);
 

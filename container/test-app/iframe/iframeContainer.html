@@ -50,6 +50,7 @@
         if (confirm('Do you want to leave this page?')) {
           window.location = event.detail.link;
         }
+        event.callback(true);
       });
 
       luigiContainer.addEventListener(Events.GO_BACK_REQUEST, (event) => {
