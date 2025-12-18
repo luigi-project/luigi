@@ -126,6 +126,10 @@ elif [ "$1" = "luigi-container-release" ]; then
   echo "$PWD"
   checkRequiredFiles "container/public" "bundle.js" "bundle.js.map" "index.d.ts" "LuigiCompoundContainer.svelte.d.ts" "LuigiContainer.svelte.d.ts" "package.json" "README.md"
   publishPackage "container" "container/public"
+elif [ "$1" = "luigi-headless-release" ]; then
+  echo "$PWD"
+  checkRequiredFiles "core-modular/public" "luigi.js" "luigi.js.map" "main.d.ts" "package.json" "README.md"
+  publishPackage "core-modular" "core-modular/public"
 elif [ "$1" = "luigi-client-support-ui5-release" ]; then
   echo "$PWD"
   checkRequiredFiles "client-frameworks-support/client-support-ui5/dist" "package.json" "README.md" "ui5-support-lib.js"
