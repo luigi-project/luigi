@@ -1,7 +1,9 @@
 import type { LuigiEngine } from '../luigi-engine';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
+import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { LifecycleHooks } from '../utilities/lifecycle-hooks';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
@@ -33,12 +35,16 @@ export class Luigi {
   }
 
   // NOTE: using arrow style functions to have "code completion" in browser dev tools
-  setConfig = (cfg: any) => {
+  setConfig = async (cfg: any) => {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
     this.engine.init();
-    this.initialized = true;
-    this.luigiAfterInit();
+
+    if (!this.initialized) {
+      this.initialized = true;
+      LifecycleHooks.luigiAfterInit(this);
+      await ConfigHelpers.executeConfigFnAsync('lifecycleHooks.luigiAfterInit');
+    }
   };
 
   getConfig = (): any => {
@@ -64,7 +70,6 @@ export class Luigi {
    * Gets value of the given property on the Luigi config object.
    * If the value is a Function it is called (with the given parameters) and the result of that call is the value.
    * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
-   * @memberof Configuration
    * @param {string} property the object traversal path
    * @param {*} parameters optional parameters that are used if the target is a function
    * @example
@@ -165,20 +170,6 @@ export class Luigi {
   auth = (): LuigiAuthClass => {
     return LuigiAuth;
   };
-
-  private luigiAfterInit(): void {
-    const shouldHideAppLoadingIndicator: boolean = GenericHelpers.getConfigBooleanValue(
-      this.getConfig(),
-      'settings.appLoadingIndicator.hideAutomatically'
-    );
-
-    if (shouldHideAppLoadingIndicator) {
-      // Timeout needed, otherwise loading indicator might not be present yet and when displayed will not be hidden
-      setTimeout(() => {
-        this.ux().hideAppLoadingIndicator();
-      }, 0);
-    }
-  }
 
   private createConfigStore(): any {
     const luigiStore: LuigiStore = writable({});

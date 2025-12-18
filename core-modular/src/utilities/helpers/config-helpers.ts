@@ -26,10 +26,13 @@ class ConfigHelpersClass {
    * If the value is a Function it is called (with the given parameters) and the result of that call is the value.
    * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
    * @private
-   * @memberof Configuration
+   * @param {string} property the object traversal path
+   * @param {boolean} throwError to throw an error or not
+   * @param {*} parameters optional parameters that are used if the target is a function
    */
-  async executeConfigFnAsync(property: string, throwError = false, ...parameters: any) {
+  async executeConfigFnAsync(property: string, throwError = false, ...parameters: any): Promise<any> {
     const fn = this.getConfigValue(property);
+
     if (GenericHelpers.isFunction(fn)) {
       try {
         return await AsyncHelpers.applyFunctionPromisified(fn, parameters);
@@ -39,6 +42,7 @@ class ConfigHelpersClass {
         }
       }
     }
+
     return Promise.resolve(undefined);
   }
 }
