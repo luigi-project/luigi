@@ -74,7 +74,9 @@
         test showAlert with notifyAlertClosed
       </button>
       <button onclick="goBack()">test goBack()</button>
-      <button onclick="openAsModal()">test openAsModal()</button>
+      <button onclick="openAsModalWithCloseCallback()">
+        openAsModal with close callback
+      </button>
       <button onclick="openAsDrawer()">test openAsDrawer()</button>
       <button onclick="openAsSplitview()">test openAsSplitview()</button>
       <button onclick="updateModalSettings()">test updateModalSettings</button>
@@ -91,11 +93,16 @@
     <script>
       // List of onclick handlers for client calls
 
-      function openAsModal() {
-        LuigiClient.linkManager().openAsModal('openAsModal-iframe', {
-          title: 'Modal Title',
-          size: 'm',
-        });
+      function openAsModalWithCloseCallback() {
+        LuigiClient.linkManager()
+          .openAsModal('openAsModal-iframe', {
+            title: 'Modal Title',
+            size: 'm',
+          })
+          .then(() => {
+            document.querySelector('#result').innerHTML =
+              'Hello from promise! Modal is closed';
+          });
       }
 
       function updateModalSettings() {
