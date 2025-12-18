@@ -158,12 +158,12 @@ export class ContainerService {
                   event.origin
                 );
                 break;
-              case LuigiInternalMessageID.NAVIGATION_REQUEST: {
+              case LuigiInternalMessageID.NAVIGATION_REQUEST:
                 this.dispatch(
                   Events.NAVIGATION_REQUEST,
                   targetCnt,
                   event.data.params as NavigationRequestPayload,
-                  (val: any) => {
+                  (val: unknown) => {
                     target.postMessage(
                       {
                         msg: LuigiInternalMessageID.CLOSE_MODAL_ANSWER,
@@ -174,7 +174,6 @@ export class ContainerService {
                   }
                 );
                 break;
-              }
               case LuigiInternalMessageID.ALERT_REQUEST:
                 this.dispatchWithPayload(
                   Events.ALERT_REQUEST,
