@@ -20,13 +20,18 @@ export class Navigation {
     this.modalService = serviceRegistry.get(ModalService);
   }
 
-  navigate = (path: string, preserveView?: string, modalSettings?: ModalSettings) => {
+  navigate = (
+    path: string,
+    preserveView?: string,
+    modalSettings?: ModalSettings,
+    callbackFn?: (val?: unknown) => void
+  ) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const preventContextUpdate = false; //TODO just added for popState eventDetails
     const navSync = true; //TODO just added for popState eventDetails
 
     if (modalSettings) {
-      this.openAsModal(path, modalSettings);
+      this.openAsModal(path, modalSettings, callbackFn);
     } else {
       this.modalService.closeModals();
       if (this.hashRouting) {
