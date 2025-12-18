@@ -112,9 +112,7 @@
 
       updateContextButton.addEventListener('click', () => {
         luigiContainer.updateContext({ myContext: 'some context data' });
-        document.querySelector('#container-ctx').innerHTML = JSON.stringify(
-          luigiContainer.context,
-        );
+        document.querySelector('#container-ctx').innerHTML = luigiContainer.context;
       });
 
       updateViewUrlButton.addEventListener('click', () => {
