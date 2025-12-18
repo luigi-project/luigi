@@ -217,7 +217,7 @@ class IframeHelpersClass {
       iframe.allow = allowRules.join(' ');
     }
     iframe.sandbox = activeSandboxRules.join(' ');
-    iframe.title = 'MF Iframe';
+    iframe.title = 'MFE';
     iframe.luigi = {
       viewUrl,
       currentNode,
