@@ -27,7 +27,7 @@
       aria-selected={expanded}
       on:click|preventDefault|stopPropagation={toggleExpanded}
       on:keyup={(event) => {
-        (event.code === 'Enter' || event.code === 'Space') && toggleExpanded();
+        (event.key === 'Enter' || event.code === 'Space') && toggleExpanded();
       }}
     >
       <div class="fd-navigation-list__content-container">
@@ -60,7 +60,7 @@
         tabindex="0"
         on:click|preventDefault|stopPropagation={toggleExpanded}
         on:keyup={(event) => {
-          (event.code === 'Enter' || event.code === 'Space') && toggleExpanded();
+          (event.key === 'Enter' || event.code === 'Space') && toggleExpanded();
         }}
       >
         <span class="fd-navigation__text">{navGroup.title}</span>

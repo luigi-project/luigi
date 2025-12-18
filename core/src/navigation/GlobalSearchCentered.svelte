@@ -11,6 +11,7 @@
   export let globalSearchConfig;
   const dispatch = createEventDispatcher();
   let cancelBtn = TOP_NAV_DEFAULTS.globalSearchCenteredCancelButton;
+  let submitBtn = TOP_NAV_DEFAULTS.globalSearchSubmitButton;
   export let isSearchFieldVisible;
   let search = {};
   let displayClearSearchFieldBtn = false;
@@ -20,6 +21,7 @@
   onMount(async () => {
     search = globalSearchConfig;
     cancelBtn = search.globalSearchCenteredCancelButton ? search.globalSearchCenteredCancelButton : cancelBtn;
+    submitBtn = search.globalSearchSubmitButton ? search.globalSearchSubmitButton : submitBtn;
     globalSearchHelper.setSearchPlaceholder(inputElem);
     globalSearchHelper.getCustomRenderer();
     globalSearchHelper.handleVisibilityGlobalSearch();
@@ -200,6 +202,7 @@
         class="fd-button fd-button--transparent fd-shellbar__button"
         aria-haspopup="true"
         aria-expanded={!isSearchFieldVisible}
+        aria-label={$getTranslation(submitBtn)}
         on:click={toggleSearch}
         data-testid="luigi-search-btn-desktop"
       >
