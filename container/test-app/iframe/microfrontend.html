@@ -74,7 +74,6 @@
         test showAlert with notifyAlertClosed
       </button>
       <button onclick="goBack()">test goBack()</button>
-      <button onclick="openAsModal()">test openAsModal()</button>
       <button onclick="openAsModalWithCloseCallback()">
         openAsModal with close callback
       </button>
@@ -104,13 +103,6 @@
             document.querySelector('#result').innerHTML =
               'Hello from promise! Modal is closed';
           });
-      }
-
-      function openAsModal() {
-        LuigiClient.linkManager().openAsModal('openAsModal-iframe', {
-          title: 'Modal Title',
-          size: 'm',
-        });
       }
 
       function updateModalSettings() {
