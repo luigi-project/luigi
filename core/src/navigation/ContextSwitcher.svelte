@@ -208,11 +208,16 @@
             <a
               href={selectedOption ? getRouteLink(selectedOption) : undefined}
               class="fd-button fd-button--transparent fd-shellbar__button fd-button--menu fd-shellbar__button--menu lui-ctx-switch-menu"
-              aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
+              tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click|preventDefault={() => {
                 if (renderAsDropdown) toggleDropdownState();
+              }}
+              on:keyup={(event) => {
+                if (renderAsDropdown) {
+                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
+                }
               }}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
@@ -227,11 +232,18 @@
           {:else}
             <button
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
+              aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
+              tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click={() => {
                 if (renderAsDropdown) toggleDropdownState();
+              }}
+              on:keyup={(event) => {
+                if (renderAsDropdown) {
+                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
+                }
               }}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
