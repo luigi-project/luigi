@@ -4,6 +4,16 @@
 
 
 
+## [v1.7.6] (2025-12-18)
+
+#### :bug: Fixed
+
+* [#4667](https://github.com/luigi-project/luigi/pull/4667) Add promise support openAsModal ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.5] (2025-12-04)
 
 #### :rocket: Added
@@ -153,3 +163,4 @@
 [v1.7.3]: https://github.com/luigi-project/luigi/compare/container/v1.7.2...container/v1.7.3
 [v1.7.4]: https://github.com/luigi-project/luigi/compare/container/v1.7.3...container/v1.7.4
 [v1.7.5]: https://github.com/luigi-project/luigi/compare/container/v1.7.4...container/v1.7.5
+[v1.7.6]: https://github.com/luigi-project/luigi/compare/container/v1.7.5...container/v1.7.6
