@@ -566,7 +566,7 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
-  renderModal: (lc, modalSettings, onCloseCallback) => {
+  renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
     dialog.classList.add('lui-modal');
@@ -580,39 +580,37 @@ const connector = {
     dialog.appendChild(bar);
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopImmediatePropagation();
+      e.preventDefault();
       dialog.open = false;
       if (onCloseCallback) {
         onCloseCallback();
       }
+      document.body.removeChild(dialog);
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);
 
     document.body.appendChild(dialog);
-    dialog.addEventListener('close', () => {
-      console.log('close');
-      if (onCloseCallback) {
-        onCloseCallback();
-      }
-      //document.body.removeChild(dialog);
+    onCloseRequest().then(() => {
+      dialog.open = false;
+      document.body.removeChild(dialog);
     });
+
     dialog.open = true;
   },
 
-  closeModals() {
-    document.querySelectorAll('ui5-dialog.lui-modal').forEach((dialog) => {
-      dialog.open = false;
-    });
-  },
-
   updateModalSettings: (modalSettings) => {
-    const dialog = document.querySelector('ui5-dialog.lui-modal[open]');
-    if (!dialog) return;
-    if (modalSettings?.title) {
-      dialog.querySelector('ui5-bar').headerText = modalSettings.title;
-    }
-    setDialogSize(dialog, modalSettings);
+    console.log('modalSettings', modalSettings);
+    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
+    if (!dialogs) return;
+    dialogs.forEach((dialog) => {
+      if (modalSettings?.title) {
+        dialog.querySelector('.lui-modal-title').innerText = modalSettings.title;
+      }
+      setDialogSize(dialog, modalSettings);
+    });
   },
 
   renderTabNav: (tabNavData) => {

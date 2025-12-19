@@ -155,6 +155,7 @@ export interface ModalSettings {
   height?: string;
   title?: string;
   closebtn_data_testid?: string;
+  keepPrevious?: boolean;
 }
 
 export interface ProductSwitcher {

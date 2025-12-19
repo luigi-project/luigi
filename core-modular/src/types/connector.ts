@@ -16,9 +16,14 @@ export interface LuigiConnector {
 
   getContainerWrapper(): HTMLElement;
 
-  renderModal(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
+  renderModal(
+    content: HTMLElement,
+    modalSettings: ModalSettings,
+    onCloseCallback?: () => void,
+    onCloseRequest?: () => void
+  ): any;
 
-  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: Function): any;
+  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: () => void): any;
 
   renderTabNav(data: TabNavData): void;
 
@@ -48,8 +53,6 @@ export interface LuigiConnector {
   setCurrentLocale(locale: string): void;
 
   getCurrentLocale(): string;
-
-  closeModals(): void;
 
   updateModalSettings(modalSettings: ModalSettings): void;
 
