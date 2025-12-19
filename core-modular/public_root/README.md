@@ -1,8 +1,10 @@
-# Luigi Core
+# Luigi Modular Core
 
 ## Overview
 
 Luigi Core, headless, modular.
+
+This is an early version and not yet recommended for production use.
 
 For details on Luigi Core, see [this](https://github.com/luigi-project/luigi/tree/main/core) document.
 
