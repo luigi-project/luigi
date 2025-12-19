@@ -1,10 +1,11 @@
-import { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
+import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService, type ModalSettings } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -224,31 +225,86 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
-    luigi.getEngine()._connector?.renderModal(lc, modalSettings, () => {
-      onCloseCallback?.();
-      if (luigi.getConfigValue('routing.showModalPathInUrl')) {
-        routingService.removeModalDataFromUrl(true);
-      }
-    });
+    const modalService = serviceRegistry.get(ModalService);
+
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
+    let onCloseRequestHandler: (() => void) | undefined;
+
+    const onCloseRequest = () => {
+      return new Promise<void>((resolve) => {
+        resolveFn = () => {
+          if (resolved) return;
+          resolved = true;
+          resolve();
+          modalService.removeLastModalFromStack();
+        };
+
+        onCloseRequestHandler = () => {
+          resolveFn && resolveFn();
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
+        };
+
+        lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+      });
+    };
+
+    const closePromise = onCloseRequest();
+
+    const modalPromiseObj: ModalPromiseObject = {
+      closePromise,
+      resolveFn,
+      onCloseRequestHandler,
+      onInternalClose: () => {
+        try {
+          modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
+        } catch (e) {
+          console.warn('onInternalClose failed', e);
+        }
+      },
+      modalsettings: modalSettings
+    };
+
+    modalService.registerModal(modalPromiseObj);
+
+    luigi.getEngine()._connector?.renderModal(
+      lc,
+      modalSettings,
+      () => {
+        onCloseCallback?.();
+        modalService.removeLastModalFromStack();
+        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+          routingService.removeModalDataFromUrl(true);
+        }
+      },
+      () => closePromise
+    );
+
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
   },
   updateModalSettings: (modalSettings: ModalSettings, addHistoryEntry: boolean, luigi: Luigi) => {
-    const routingService = serviceRegistry.get(RoutingService);
-    if (luigi.getConfigValue('routing.showModalPathInUrl')) {
-      const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
-      if (modalPath) {
-        routingService.updateModalDataInUrl(modalPath, modalSettings, addHistoryEntry);
-      }
+    const modalService = serviceRegistry.get(ModalService);
+    if (modalService.getModalStackLength() === 0) {
+      return;
     }
-    luigi.getEngine()._connector?.updateModalSettings(modalSettings);
+    modalService.updateFirstModalSettings(modalSettings);
+    const routingService = serviceRegistry.get(RoutingService);
+
+    const modalPath = RoutingHelpers.getModalPathFromPath(luigi);
+    if (modalPath) {
+      routingService.updateModalDataInUrl(modalPath, modalService.getModalSettings(), addHistoryEntry);
+    }
+    luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: Function) => {
+  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;
