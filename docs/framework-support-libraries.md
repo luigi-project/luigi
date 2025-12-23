@@ -29,6 +29,7 @@ On this page, you can find more information about Luigi Client support libraries
 
 The [ClientSupportAngular](https://github.com/luigi-project/luigi/tree/main/client-frameworks-support/client-support-angular/projects/client-support-angular) library provides several features which make it easier to run your Angular application inside the Luigi micro frontend framework.
 
+> **NOTE:** Starting from v20 and on this package will only be released alongside Angular versions. So, `@luigi-project/client-support-angular@v20.0.0` will support Angular `v20.0.0` and so on. 
 
 ### How to use the library
 
@@ -37,13 +38,20 @@ The [ClientSupportAngular](https://github.com/luigi-project/luigi/tree/main/clie
 npm install @luigi-project/client-support-angular -s
 ```
 
-2. Once the library is imported and saved in your Angular project, you need to import the module `LuigiAngularSupportModule`:
+2. Once the library is imported and saved in your Angular project, provide the module `LuigiAngularSupportModule` in your app configuration:
+
+```javascript
+providers: [
+  importProvidersFrom(LuigiAngularSupportModule)
+]
+```
+
+> **NOTE:** For legacy Angular apps where **bootstrapModule** function is still in use, you need to import the module `LuigiAngularSupportModule` in your root NgModule:
 
 ```javascript
 imports: [
-  ........
-  ,LuigiAngularSupportModule
-],
+  LuigiAngularSupportModule
+]
 ```
 
 ### Features
@@ -61,7 +69,7 @@ These are the features provided by the library:
 
 You can inject this service inside your Angular items in order to:
 * Get the current (latest) [context](navigation-parameters-reference.md#context) that we received from Luigi Core
-* Provide an `Observable<Context>` where through subscribing, you can get any context change
+* Provide an `Observable<IContextMessage>` and `Signal<IContextMessage>` where through subscribing, you can get any context change
 
 **LuigiContextService** is an abstract class. Its implementation is in the **LuigiContextServiceImpl** class.
 If you need to change or extend the implementation, you can easily create a new class extending **LuigiContextServiceImpl**:

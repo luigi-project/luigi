@@ -43,7 +43,7 @@ These are the features provided by the library:
 
 You can inject this service inside your Angular items in order to:
 * Get the current (latest) [context](https://docs.luigi-project.io/docs/navigation-advanced?section=contexts) that we received from Luigi Core
-* Provide an `Observable<Context>` where through subscribing, you can get any context change
+* Provide an `Observable<IContextMessage>` and `Signal<IContextMessage>` where through subscribing, you can get any context change
 
 **LuigiContextService** is an abstract class. Its implementation is in the **LuigiContextServiceImpl** class.
 If you need to change or extend the implementation, you can easily create a new class extending **LuigiContextServiceImpl**:
