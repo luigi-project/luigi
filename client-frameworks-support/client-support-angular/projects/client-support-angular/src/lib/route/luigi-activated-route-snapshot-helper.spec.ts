@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { LuigiActivatedRouteSnapshotHelper } from './luigi-activated-route-snapshot-helper';
 
 describe('NgLuigiActivatedRouteSnapshotService', () => {
-  const mockedSnapshot: ActivatedRouteSnapshot = {data: {}} as ActivatedRouteSnapshot;
+  const mockedSnapshot: ActivatedRouteSnapshot = { data: {} } as ActivatedRouteSnapshot;
   let helper: LuigiActivatedRouteSnapshotHelper;
 
   beforeEach(() => {
