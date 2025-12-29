@@ -62,7 +62,7 @@ describe('LuigiAutoRoutingService', () => {
   });
 
   describe('doSubscription', () => {
-    it('doSubscription should take a NavigationEnd event and not do anything if the navigation was to no route with Luigi data', () => {
+    it('doSubscription should take a NavigationEnd event and not do anything if the navigation was set to no route with Luigi data', () => {
       const doSubscriptionSpy = spyOn(LuigiAutoRoutingService.prototype, 'doSubscription').and.callThrough();
       const navigateSpy = jasmine.createSpy('navigate');
       const linkManagerSpy = spyOn(Client, 'linkManager').and.returnValue({
