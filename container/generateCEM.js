@@ -231,7 +231,10 @@ function generateMembers(props, methods) {
       description: props.descData[key] || 'No description',
       default: 'undefined'
     };
-    members.push(member);
+
+    if (key !== 'descData') {
+      members.push(member);
+    }
   }
   methods.forEach((methodName) => {
     members.push({

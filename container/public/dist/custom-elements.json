@@ -221,13 +221,6 @@
               "default": "undefined"
             },
             {
-              "kind": "field",
-              "name": "descData",
-              "type": {},
-              "description": "No description",
-              "default": "undefined"
-            },
-            {
               "kind": "method",
               "name": "updateContext"
             },
@@ -634,13 +627,6 @@
                 "text": "any"
               },
               "description": "The following properties can be set for the web component object. By default, the web component is set to true. ",
-              "default": "undefined"
-            },
-            {
-              "kind": "field",
-              "name": "descData",
-              "type": {},
-              "description": "No description",
               "default": "undefined"
             },
             {
