@@ -19,6 +19,7 @@
               "type": {
                 "text": "Array<string>"
               },
+              "description": "The list of active feature toggles to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -27,6 +28,7 @@
               "type": {
                 "text": "Array<string>"
               },
+              "description": "The list of rules for the content in the iframe, managed by the HTML `allow` attribute.\nYou can use one or more rules by adding them to the array, for example allowRules: [\"microphone\", \"camera\"]. ",
               "default": "undefined"
             },
             {
@@ -35,6 +37,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The anchor value to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -43,6 +46,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The authData value to be passed to the iframe-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -51,6 +55,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The clientPermissions to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -59,6 +64,7 @@
               "type": {
                 "text": "any"
               },
+              "description": "The stringified context object to be passed to the microfrontend. ",
               "default": "undefined"
             },
             {
@@ -67,6 +73,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true defers from initializing the microfronted automatically. In that case init() can be used. ",
               "default": "undefined"
             },
             {
@@ -75,6 +82,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "The dirty status value to be passed to the web-component-based micro frontend.\nIt's used to indicate that there are unsaved changes when navigating away. ",
               "default": "undefined"
             },
             {
@@ -83,6 +91,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The document title value to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -91,6 +100,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "The hasBack value to be passed to the web-component-based micro frontend.\nIt indicates that there is one or more preserved views. Useful when you need to show a back button. ",
               "default": "undefined"
             },
             {
@@ -99,6 +109,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "Label information for the microfrontend. ",
               "default": "undefined"
             },
             {
@@ -107,6 +118,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The locale to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -115,6 +127,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true, the Luigi container webcomponent will not use the shadow DOM for rendering. ",
               "default": "undefined"
             },
             {
@@ -123,6 +136,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The parameters to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -131,6 +145,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The path parameters to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -139,6 +154,7 @@
               "type": {
                 "text": "Array<string>"
               },
+              "description": "The list of rules for the content in the iframe, managed by the HTML `sandbox` attribute.\nYou can use one or more rules by adding them to the array, for example sandboxRules: [\"allow-scripts\", \"allow-same-origin\"]. ",
               "default": "undefined"
             },
             {
@@ -147,6 +163,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The search parameters to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -155,6 +172,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "If set to true, skips third party cookie check. ",
               "default": "undefined"
             },
             {
@@ -163,6 +181,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true, skips handshake and ready event is fired immediately. ",
               "default": "undefined"
             },
             {
@@ -171,6 +190,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The theme to be passed to the  web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -179,6 +199,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The user settings to be passed to the web-component-based micro frontend. ",
               "default": "undefined"
             },
             {
@@ -187,6 +208,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The URL of the microfrontend to be rendered. ",
               "default": "undefined"
             },
             {
@@ -195,6 +217,14 @@
               "type": {
                 "text": "any"
               },
+              "description": "Predicate that sets whether the microfrontend is to be rendered in a web component or not. It can also be an object with the attributes shown in a table below. ",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "descData",
+              "type": {},
+              "description": "No description",
               "default": "undefined"
             },
             {
@@ -441,6 +471,7 @@
               "type": {
                 "text": "Array<string>"
               },
+              "description": "The list of active feature toggles to be passed to the compound microfrontend. ",
               "default": "undefined"
             },
             {
@@ -449,6 +480,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The anchor value to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -457,6 +489,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The clientPermissions to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -465,6 +498,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The configuration for the compound microfrontend.\nTake a look at the [compound parameter](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=compound) for details. ",
               "default": "undefined"
             },
             {
@@ -473,6 +507,7 @@
               "type": {
                 "text": "any"
               },
+              "description": "The stringified context to be passed to the compound microfrontend. ",
               "default": "undefined"
             },
             {
@@ -481,6 +516,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true defers from initializing the microfronted automatically. In that case init() can be used. ",
               "default": "undefined"
             },
             {
@@ -489,6 +525,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "The dirty status value to be passed to the compound micro frontend.\nIt's used to indicate that there are unsaved changes when navigating away. ",
               "default": "undefined"
             },
             {
@@ -497,6 +534,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The document title value to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -505,6 +543,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "The hasBack value to be passed to the compound micro frontend.\nIt indicates that there is one or more preserved views. Useful when you need to show a back button. ",
               "default": "undefined"
             },
             {
@@ -513,6 +552,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "   The locale to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -521,6 +561,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true, the Luigi compound container webcomponent will not use the shadow DOM for rendering. ",
               "default": "undefined"
             },
             {
@@ -529,6 +570,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The parameters to be passed to the compound micro frontend. Will not be passed to the compound children. ",
               "default": "undefined"
             },
             {
@@ -537,6 +579,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The path parameters to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -545,6 +588,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The search parameters to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -553,6 +597,7 @@
               "type": {
                 "text": "boolean"
               },
+              "description": "If set to true, skips handshake and ready event is fired immediately. ",
               "default": "undefined"
             },
             {
@@ -561,6 +606,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The theme to be passed to the compound microfrontend. ",
               "default": "undefined"
             },
             {
@@ -569,6 +615,7 @@
               "type": {
                 "text": "object"
               },
+              "description": "The user settings to be passed to the compound micro frontend. ",
               "default": "undefined"
             },
             {
@@ -577,6 +624,7 @@
               "type": {
                 "text": "string"
               },
+              "description": "The URL used for the renderer. ",
               "default": "undefined"
             },
             {
@@ -585,6 +633,14 @@
               "type": {
                 "text": "any"
               },
+              "description": "The following properties can be set for the web component object. By default, the web component is set to true. ",
+              "default": "undefined"
+            },
+            {
+              "kind": "field",
+              "name": "descData",
+              "type": {},
+              "description": "No description",
               "default": "undefined"
             },
             {

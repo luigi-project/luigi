@@ -11,9 +11,10 @@ const luigiEventsPath = 'typings/constants/events.d.ts';
 /**
  * Parses a `props` object from the provided file content string.
  * @param {string} fileContent - The content of the file as a string, which should contain a `props` object.
+ * @param {Object} descData - The object with description value for each property.
  * @returns {Object} The parsed `props` object.
  */
-function parseContainerProps(fileContent) {
+function parseContainerProps(fileContent, descData) {
   if (!fileContent || fileContent === '') {
     throw new Error('Cannot parse container props, fileContent is empty in parseContainerProps.');
   }
@@ -41,6 +42,10 @@ function parseContainerProps(fileContent) {
 
   const propsObjectString = fileContent.slice(propsStart, propsEnd + 1);
   const propsObject = eval(`(${propsObjectString})`);
+
+  if (descData) {
+    propsObject.descData = descData;
+  }
 
   return propsObject;
 }
@@ -223,6 +228,7 @@ function generateMembers(props, methods) {
       kind: 'field',
       name: key,
       type: generateMemberType(key, props[key]),
+      description: props.descData[key] || 'No description',
       default: 'undefined'
     };
     members.push(member);
@@ -331,6 +337,40 @@ function parseContainerMethods(fileContent) {
 }
 
 /**
+ * Parses a JavaScript file content and extracts method descriptions from it.
+ *
+ * @param {string} fileContent - The content of the JavaScript file as a string, which should define one or more classes or objects.
+ * @returns {Object} An object with description value for each property.
+ *
+ * This function utilizes a parsed Abstract Syntax Tree (AST) from the file content to identify method definitions.
+ * It iterates through the AST and collects description value for each method defined in class bodies.
+ */
+function parseContainerDescription(fileContent) {
+  if (!fileContent || fileContent === '') {
+    throw new Error('No fileContent in parseContainerDescription');
+  }
+
+  const ast = parse(fileContent, {
+    comment: true,
+    jsDocParsingMode: 'all'
+  });
+  const obj = {};
+
+  ast.body.forEach((stmt) => {
+    stmt.declaration.body.body.forEach((property, index) => {
+      if (property.type === 'PropertyDefinition') {
+        const val = ast.comments[index + 1].value;
+        const desc = val.replaceAll('*\n', '').replaceAll('   * ', '').replaceAll('@description ', '');
+
+        obj[property.key.name] = desc.split('<br><br>')[0];
+      }
+    });
+  });
+
+  return obj;
+}
+
+/**
  * Writes the custom element manifest to a file.
  * @param {Object} cem custom element manifest file in json format
  */
@@ -358,13 +398,15 @@ function main() {
     const eventsFileContent = getFileContent(luigiEventsPath);
 
     const events = parseContainerEvents(eventsFileContent);
+    const containerDesc = parseContainerDescription(luigiContainerTypingsContent);
+    const compoundContainerDesc = parseContainerDescription(luigiCompoundContainerTypingsContent);
     const containersMetaData = [
       {
         containerName: 'LuigiContainer',
         module: 'LuigiContainer.js',
         tagName: 'luigi-container',
         modulePath: 'dist/bundle.js',
-        containerMembers: parseContainerProps(luigiContainerFileContent),
+        containerMembers: parseContainerProps(luigiContainerFileContent, containerDesc),
         containerEvents: events,
         containerFields: parseContainerMethods(luigiContainerTypingsContent)
       },
@@ -373,7 +415,7 @@ function main() {
         module: 'LuigiCompoundContainer.js',
         tagName: 'luigi-compound-container',
         modulePath: 'dist/bundle.js',
-        containerMembers: parseContainerProps(luigiCompoundContainerFileContent),
+        containerMembers: parseContainerProps(luigiCompoundContainerFileContent, compoundContainerDesc),
         containerEvents: events,
         containerFields: parseContainerMethods(luigiCompoundContainerTypingsContent)
       }
