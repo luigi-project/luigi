@@ -24,6 +24,7 @@ class LuigiI18NManager {
       },
       ['settings']
     );
+    document.documentElement.setAttribute('lang', this.defaultLocale);
   }
 
   /**
@@ -45,6 +46,7 @@ class LuigiI18NManager {
   setCurrentLocale(locale) {
     if (locale) {
       sessionStorage.setItem(this.currentLocaleStorageKey, locale);
+      document.documentElement.setAttribute('lang', locale);
       this._notifyLocaleChange(locale);
     }
   }

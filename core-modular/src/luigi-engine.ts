@@ -12,6 +12,7 @@ import { serviceRegistry } from './services/service-registry';
 import { ViewUrlDecoratorSvc } from './services/viewurl-decorator';
 import type { LuigiConnector } from './types/connector';
 import { AuthLayerSvc } from './services/auth-layer.service';
+import { ModalService } from './services/modal.service';
 
 export class LuigiEngine {
   config: any;
@@ -38,6 +39,7 @@ export class LuigiEngine {
       serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());
       serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
       serviceRegistry.register(ViewUrlDecoratorSvc, () => new ViewUrlDecoratorSvc());
+      serviceRegistry.register(ModalService, () => new ModalService(luigi));
       luigi.theming()._init();
       UIModule.init(luigi);
       RoutingModule.init(luigi);

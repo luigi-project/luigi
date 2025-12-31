@@ -27,8 +27,7 @@ describe('Routing Service', () => {
       renderMainLayout: jest.fn(),
       getContainerWrapper: jest.fn(),
       hideLoadingIndicator: jest.fn(),
-      showLoadingIndicator: jest.fn(),
-      closeModals: jest.fn()
+      showLoadingIndicator: jest.fn()
     };
     mockLuigi = {
       config: {},
@@ -608,7 +607,7 @@ describe('Routing Service', () => {
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
-        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%2C%22size%22%3A%22s%22%7D'
+        'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22size%22%3A%22s%22%7D'
       );
     });
   });
