@@ -384,6 +384,18 @@ export default class extends HTMLElement {
       this.LuigiClient.linkManager().openAsModal('openAsModal-wc', {
         title: 'Modal Title',
         size: 'm'
+      })
+      .then(() => {
+        this.LuigiClient.uxManager().showAlert({
+          text: 'LuigiClient.linkManager().openAsModal() - resolved',
+          type: 'info'
+        });
+      })
+      .catch(() => {
+        this.LuigiClient.uxManager().showAlert({
+          text: 'LuigiClient.linkManager().openAsModal - rejected',
+          type: 'warning'
+        });
       });
     });
     this.$updateModalSettingsBtn = this._shadowRoot.querySelector('#updateModalSettingsBtn');

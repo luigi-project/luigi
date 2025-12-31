@@ -219,6 +219,7 @@ describe('Web Container Test', () => {
         .click()
         .then(() => {
           cy.hash().should('eq', '#openAsModal-wc');
+          expect(stub.getCall(0)).to.be.calledWith('LuigiClient.linkManager().openAsModal() - resolved');
         });
     });
 

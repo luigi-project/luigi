@@ -162,7 +162,7 @@ describe('createClientAPI', () => {
         link: '/test/route',
         nodeParams: {}
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it.each([
@@ -205,7 +205,7 @@ describe('createClientAPI', () => {
         nodeParams: {}
       };
 
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager: openAsDrawer', () => {
@@ -231,7 +231,7 @@ describe('createClientAPI', () => {
           size: 's'
         }
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager: openAsModal', () => {
@@ -251,13 +251,18 @@ describe('createClientAPI', () => {
         fromParent: false,
         fromContext: null,
         fromVirtualTreeRoot: false,
-        link: '/test/route',
+        link: route,
         nodeParams: {},
         modal: {
           size: 's'
         }
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        Events.NAVIGATION_REQUEST,
+        expectedPayload,
+        expect.any(Function)
+      );
     });
 
     it('test linkManager: openAsSplitView', () => {
@@ -283,7 +288,7 @@ describe('createClientAPI', () => {
           size: 's'
         }
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager fromClosestContext', () => {
@@ -306,7 +311,7 @@ describe('createClientAPI', () => {
         link: '/test/route',
         nodeParams: {}
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager fromContext', () => {
@@ -329,7 +334,7 @@ describe('createClientAPI', () => {
         link: '/test/route',
         nodeParams: {}
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager fromVirtualTreeRoot', () => {
@@ -352,7 +357,7 @@ describe('createClientAPI', () => {
         link: '/test/route',
         nodeParams: {}
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager currentRoute', () => {
@@ -433,7 +438,7 @@ describe('createClientAPI', () => {
         link: '/test/route',
         nodeParams: { params: 'some params' }
       };
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload);
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, undefined);
     });
 
     it('test linkManager updateModalPathInternalNavigation', () => {
