@@ -258,11 +258,7 @@ describe('createClientAPI', () => {
         }
       };
 
-      expect(dispatchEventSpy).toHaveBeenCalledWith(
-        Events.NAVIGATION_REQUEST,
-        expectedPayload,
-        expect.any(Function)
-      );
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.NAVIGATION_REQUEST, expectedPayload, expect.any(Function));
     });
 
     it('test linkManager: openAsSplitView', () => {

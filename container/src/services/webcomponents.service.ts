@@ -264,17 +264,13 @@ export class WebComponentService {
           },
           openAsModal: (route, modalSettings = {}): Promise<void> => {
             return new Promise((resolve, reject) => {
-              linkManagerInstance.navigate(
-                route,
-                { modal: modalSettings },
-                (closed) => {
-                  if (closed) {
-                    resolve();
-                  } else {
-                    reject();
-                  }
+              linkManagerInstance.navigate(route, { modal: modalSettings }, (closed) => {
+                if (closed) {
+                  resolve();
+                } else {
+                  reject();
                 }
-              );
+              });
             });
           },
           openAsSplitView: (route, splitViewSettings = {}) => {
