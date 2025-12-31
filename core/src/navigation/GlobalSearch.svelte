@@ -1,6 +1,7 @@
 <script>
-  import { beforeUpdate, createEventDispatcher, onMount } from 'svelte';
+  import { beforeUpdate, createEventDispatcher, onMount, getContext } from 'svelte';
   import { GlobalSearchHelperClass } from '../utilities/helpers/global-search-helpers';
+  import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
   export let isSearchFieldVisible;
   export let searchResult = [];
   export let displaySearchResult;
@@ -10,9 +11,12 @@
   export let globalSearchConfig;
   const dispatch = createEventDispatcher();
   let search = {};
+  let submitBtn = TOP_NAV_DEFAULTS.globalSearchSubmitButton;
+  let getTranslation = getContext('getTranslation');
   let globalSearchHelper;
 
   onMount(async () => {
+    submitBtn = search.globalSearchSubmitButton ? search.globalSearchSubmitButton : submitBtn;
     globalSearchHelper.setSearchPlaceholder(inputElem);
     globalSearchHelper.getCustomRenderer();
   });
@@ -137,6 +141,7 @@
       class="fd-button fd-button--transparent fd-shellbar__button"
       aria-haspopup="true"
       aria-expanded={!isSearchFieldVisible}
+      aria-label={$getTranslation(submitBtn)}
       on:click={toggleSearch}
       data-testid="luigi-search-btn-desktop"
     >

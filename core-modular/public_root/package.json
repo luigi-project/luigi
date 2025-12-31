@@ -1,0 +1,22 @@
+{
+  "name": "@luigi-project/core-modular",
+  "description": "Javascript library supporting consumers of the Luigi framework",
+  "license": "Apache-2.0",
+  "main": "luigi.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/SAP/luigi.git"
+  },
+  "publishConfig": {
+    "tag": "luigi"
+  },
+  "keywords": [
+    "luigi",
+    "core",
+    "UI",
+    "extensibility",
+    "micro-frontends",
+    "microfrontends"
+  ],
+  "version": "0.0.1"
+}

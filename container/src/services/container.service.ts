@@ -175,7 +175,20 @@ export class ContainerService {
                 );
                 break;
               case LuigiInternalMessageID.NAVIGATION_REQUEST:
-                this.dispatch(Events.NAVIGATION_REQUEST, targetCnt, event.data.params as NavigationRequestPayload);
+                this.dispatch(
+                  Events.NAVIGATION_REQUEST,
+                  targetCnt,
+                  event.data.params as NavigationRequestPayload,
+                  (val: unknown) => {
+                    target.postMessage(
+                      {
+                        msg: LuigiInternalMessageID.CLOSE_MODAL_ANSWER,
+                        data: val
+                      },
+                      event.origin
+                    );
+                  }
+                );
                 break;
               case LuigiInternalMessageID.ALERT_REQUEST:
                 this.dispatchWithPayload(

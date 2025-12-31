@@ -1,0 +1,34 @@
+on: workflow_dispatch
+name: Publish Headless Release   
+env:
+  NPM_LUI_AUTH_TOKEN: ${{ secrets.NPM_LUI_AUTH_TOKEN }}
+
+jobs:
+  prepare: 
+    uses: ./.github/workflows/prepare.yml
+    secrets: inherit
+    permissions: 
+      actions: write
+    with:
+      buildcache_key: buildcache-headless-${{ github.ref }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: prepare
+    if: github.repository == 'luigi-project/luigi'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/tmp_build
+            ~/cypress-binary-cache
+          key: buildcache-headless-${{ github.ref }}
+      - run: cp -r ~/tmp_build/* .
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_LUI_AUTH_TOKEN" > ~/.npmrc
+      - run: ls ./core-modular/public 
+      - run: bash ./scripts/npmPublish.sh luigi-headless-release
+      - run: echo "" > ~/.npmrc

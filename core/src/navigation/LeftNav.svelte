@@ -656,14 +656,13 @@
   }
 
   function handleEnterSemiCollapseBtn(event) {
-    const code = event.code;
-    if (code === 'Enter' || code === 'Space') {
+    if (event.key === 'Enter' || event.code === 'Space') {
       semiCollapsibleButtonClicked();
     }
   }
 
   function handleExpandCollapseCategories(event, nodes) {
-    if (event.code === 'Enter' || event === 'Space') {
+    if (event.key === 'Enter' || event.code === 'Space') {
       handleIconClick(nodes, event.currentTarget);
     }
   }
@@ -1077,7 +1076,7 @@
                 tabindex="0"
                 on:click={displayMoreButtonMenu}
                 on:keypress={(event) => {
-                  (event.code === 'Enter' || event.code === 'Space') && displayMoreButtonMenu(event);
+                  (event.key === 'Enter' || event.code === 'Space') && displayMoreButtonMenu(event);
                 }}
               >
                 <span class="fd-navigation__icon sap-icon--overflow" role="presentation" aria-hidden="true" />
@@ -1504,7 +1503,6 @@
                             role={!addNavHrefForAnchor ? 'button' : undefined}
                             id="collapsible_listnode_{index}"
                             aria-haspopup="true"
-                            aria-expanded={isExpanded(nodes, expandedCategories)}
                             on:click|preventDefault={() =>
                               setExpandedState(nodes, !isExpanded(nodes, expandedCategories), this)}
                           >
