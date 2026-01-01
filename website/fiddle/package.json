@@ -24,7 +24,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
-    "express": "~4.21.0",
+    "express": "~4.22.1",
     "mini-css-extract-plugin": "^2.7.6",
     "replace-in-file": "^7.0.2",
     "send": "~0.19.0",
