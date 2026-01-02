@@ -8,9 +8,9 @@
     "serve:microfrontend": "cd public && ws --spa mf.html --port 5101"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.22.1",
-    "@luigi-project/core": "^2.22.1",
-    "svelte-tiny-router": "^1.0.5"
+    "@luigi-project/client": "^2.26.0",
+    "@luigi-project/core": "^2.26.0",
+    "svelte-tiny-router": "^1.0.8"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -19,9 +19,9 @@
     "local-web-server": "^5.4.0",
     "mini-css-extract-plugin": "^2.9.0",
     "serve": "^14.2.5",
-    "svelte": "^5.34.9",
+    "svelte": "^5.46.1",
     "svelte-loader": "3.2.4",
-    "webpack": "^5.99.9",
+    "webpack": "^5.104.1",
     "webpack-cli": "^5.1.4"
   }
 }

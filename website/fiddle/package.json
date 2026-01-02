@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@luigi-project/client": "2.26.0",
-    "@luigi-project/container": "1.7.4",
+    "@luigi-project/container": "1.7.6",
     "@luigi-project/core": "2.26.0",
     "@luigi-project/plugin-auth-oauth2": "2.26.0",
     "@luigi-project/plugin-auth-oidc": "2.26.0",
@@ -16,7 +16,7 @@
     "@ui5/webcomponents": "^2.16.2",
     "@ui5/webcomponents-fiori": "^2.16.2",
     "ace-builds": "^1.43.2",
-    "fs-extra": "^11.3.1",
+    "fs-extra": "^11.3.3",
     "fundamental-styles": "0.23.0"
   },
   "devDependencies": {
@@ -24,14 +24,14 @@
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
-    "express": "~4.21.0",
+    "express": "~4.22.1",
     "mini-css-extract-plugin": "^2.7.6",
     "replace-in-file": "^7.0.2",
     "send": "~0.19.0",
     "style-loader": "^3.3.3",
-    "svelte": "^4.2.19",
+    "svelte": "^4.2.20",
     "svelte-loader": "^3.1.9",
-    "webpack": "^5.99.8",
+    "webpack": "^5.104.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.2"
   },
