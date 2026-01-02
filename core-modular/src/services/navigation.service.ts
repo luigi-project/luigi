@@ -1,4 +1,3 @@
-import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
@@ -127,6 +126,7 @@ export interface PageErrorHandler {
 }
 
 export interface Category {
+  altText?: string;
   collabsible?: boolean;
   icon?: string;
   id: string;
@@ -286,6 +286,7 @@ export class NavigationService {
       ) {
         return;
       }
+
       if (node.label) {
         node.label = this.luigi.i18n().getTranslation(node.label);
         node.tooltip = this.resolveTooltipText(node, node.label);
@@ -299,6 +300,7 @@ export class NavigationService {
         if (!catNode) {
           catNode = {
             category: {
+              altText: node.category.altText || '',
               icon: node.category.icon,
               id: catId,
               label: catLabel,
@@ -315,6 +317,7 @@ export class NavigationService {
         items.push({ node, selected: node === selectedNode });
       }
     });
+
     return items;
   }
 
@@ -506,7 +509,6 @@ export class NavigationService {
 
   getTopNavData(path: string, pData?: PathData): TopNavData {
     const cfg = this.luigi.getConfig();
-
     const pathData: PathData = pData ?? this.getPathData(path);
     const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes, cfg.navigation?.globalContext || {});
     const profileItems = cfg.navigation?.profile?.items?.length
@@ -583,10 +585,11 @@ export class NavigationService {
     };
   }
 
-  getParentNode(node: Node | undefined, pathData: PathData) {
+  getParentNode(node: Node | undefined, pathData: PathData): Node | undefined {
     if (node && node === pathData.nodesInPath?.[pathData.nodesInPath.length - 1]) {
       return pathData.nodesInPath[pathData.nodesInPath.length - 2];
     }
+
     return undefined;
   }
 
