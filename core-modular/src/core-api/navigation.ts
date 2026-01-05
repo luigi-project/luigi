@@ -83,17 +83,16 @@ export class Navigation {
   runTimeErrorHandler = (errorObj: object): void => {
     const { path } = RoutingHelpers.getCurrentPath();
     const currentNode: Node = this.navService.getCurrentNode(path);
-    const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue('navigation.defaults.runTimeErrorHandler');
+    const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
+      'navigation.defaults.runTimeErrorHandler'
+    );
 
     if (
       currentNode?.runTimeErrorHandler?.errorFn &&
       GenericHelpers.isFunction(currentNode?.runTimeErrorHandler?.errorFn)
     ) {
       currentNode.runTimeErrorHandler.errorFn(errorObj, currentNode);
-    } else if (
-      defaultRunTimeErrorHandler?.errorFn &&
-      GenericHelpers.isFunction(defaultRunTimeErrorHandler.errorFn)
-    ) {
+    } else if (defaultRunTimeErrorHandler?.errorFn && GenericHelpers.isFunction(defaultRunTimeErrorHandler.errorFn)) {
       defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
     }
   };

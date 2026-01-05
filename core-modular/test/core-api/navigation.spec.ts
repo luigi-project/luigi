@@ -177,7 +177,7 @@ describe('Navigation', () => {
         label: 'Node Label',
         runTimeErrorHandler: {
           errorFn: (obj, node) => {
-            return {obj, node};
+            return { obj, node };
           }
         }
       };
@@ -201,7 +201,7 @@ describe('Navigation', () => {
       const currentNode = { label: 'Node Label' };
       const defaultRunTimeErrorHandler = {
         errorFn: (obj, node) => {
-          return {obj, node};
+          return { obj, node };
         }
       };
       const errorFnSpy = jest.spyOn(defaultRunTimeErrorHandler, 'errorFn');
