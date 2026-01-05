@@ -93,7 +93,6 @@ export interface PathData {
 }
 
 export interface Node {
-  visibleForFeatureToggles?: string[];
   anonymousAccess?: any;
   category?: any;
   children?: Node[];
@@ -107,16 +106,18 @@ export interface Node {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
   onNodeActivation?: (node: Node) => boolean | void;
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
   pathSegment?: string;
+  runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
   tooltip?: string;
   viewUrl?: string;
-  isRootNode?: boolean;
+  visibleForFeatureToggles?: string[];
 }
 
 export interface PageErrorHandler {
@@ -124,6 +125,10 @@ export interface PageErrorHandler {
   viewUrl?: string;
   redirectPath?: string;
   errorFn?: (node?: Node) => void;
+}
+
+export interface RunTimeErrorHandler {
+  errorFn?: (error: object, node?: Node) => void;
 }
 
 export interface Category {
