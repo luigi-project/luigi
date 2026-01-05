@@ -2,6 +2,8 @@ import { Options } from '../luigi-element';
 
 /**
  * Base class for Luigi web component micro frontends.
+ * @augments HTMLElement
+ * @class
  */
 export class LuigiElement extends HTMLElement {
   private deferLuigiClientWCInit: boolean;
@@ -21,7 +23,7 @@ export class LuigiElement extends HTMLElement {
       delegatesFocus: false
     });
     this.__initialized = false;
-    this.deferLuigiClientWCInit = options.deferLuigiClientWCInit || false;
+    this.deferLuigiClientWCInit = options ? options.deferLuigiClientWCInit : false;
   }
 
   /**
@@ -97,8 +99,7 @@ export class LuigiElement extends HTMLElement {
   /**
    * Override to execute logic after initialization of the web component, i.e.
    * after internal rendering and all context data set.
-   *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   afterInit(ctx: Record<string, any>): void {
     return;
@@ -106,8 +107,7 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Override to return the html template string defining the web component view.
-   *
-   * @param {*} ctx The context object passed by luigi core
+   * @param {any} ctx - the context object passed by luigi core
    */
   render(ctx: Record<string, any>): string {
     return '';
@@ -122,8 +122,7 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Override to execute logic when a new context object is set.
-   *
-   * @param {*} ctx The new context object passed by luigi core
+   * @param {any} ctx - the new context object passed by luigi core
    */
   onContextUpdate(ctx: Record<string, any>): void {
     return;
@@ -131,17 +130,14 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Query selector operating on shadow root.
-   *
    * @see ParentNode.querySelector
    */
-  // prettier-ignore
   override querySelector(selector: string): HTMLElement | null {
     return this._shadowRoot.querySelector(selector);
   }
 
   /**
    * Handles changes on the context property.
-   *
    * @private
    */
   set context(ctx: Record<string, any>) {
@@ -159,7 +155,6 @@ export class LuigiElement extends HTMLElement {
 
   /**
    * Handles changes on attributes.
-   *
    * @private
    */
   attributeChangedCallback(name?: string, oldVal?: any, newVal?: any): void {
@@ -170,9 +165,9 @@ export class LuigiElement extends HTMLElement {
 /**
  * Html string processing according to luigi functionality.
  * Also useful in combination with LitElement VS Code plugins.
- *
- * @param {String} literal The literal to process.
- * @returns {String} Returns the processed literal.
+ * @param {string} literal - the literal to process
+ * @param {unknown[]} keys - the array of keys to process
+ * @returns {string} the processed literal
  */
 export function html(literal: TemplateStringsArray, ...keys: unknown[]): string {
   let html: string = '';

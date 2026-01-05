@@ -7,6 +7,10 @@ module.exports = async () => {
     transform: {
       '\\.[jt]sx?$': 'babel-jest'
     },
-    collectCoverageFrom: ['src/**/*.{js,mjs,ts,svelte}', '!**/node_modules/**', '!**/vendor/**', '!**/*.spec.{js,ts}']
+    transformIgnorePatterns: ['/node_modules/(?!(svelte)/)'],
+    collectCoverageFrom: ['src/**/*.{js,mjs,ts,svelte}', '!**/node_modules/**', '!**/vendor/**', '!**/*.spec.{js,ts}'],
+    moduleNameMapper: {
+      '^@luigi-project/container$': '<rootDir>/test/mocks/container.ts'
+    }
   };
 };

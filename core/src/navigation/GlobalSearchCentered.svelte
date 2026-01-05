@@ -11,6 +11,7 @@
   export let globalSearchConfig;
   const dispatch = createEventDispatcher();
   let cancelBtn = TOP_NAV_DEFAULTS.globalSearchCenteredCancelButton;
+  let submitBtn = TOP_NAV_DEFAULTS.globalSearchSubmitButton;
   export let isSearchFieldVisible;
   let search = {};
   let displayClearSearchFieldBtn = false;
@@ -20,6 +21,7 @@
   onMount(async () => {
     search = globalSearchConfig;
     cancelBtn = search.globalSearchCenteredCancelButton ? search.globalSearchCenteredCancelButton : cancelBtn;
+    submitBtn = search.globalSearchSubmitButton ? search.globalSearchSubmitButton : submitBtn;
     globalSearchHelper.setSearchPlaceholder(inputElem);
     globalSearchHelper.getCustomRenderer();
     globalSearchHelper.handleVisibilityGlobalSearch();
@@ -96,6 +98,7 @@
       on:click|stopPropagation={() => {}}
       aria-hidden={!isSearchFieldVisible}
       aria-haspopup="true"
+      role="button"
     >
       <div class="fd-input-group fd-shellbar__input-group luigi-search-input-ctn fd-shellbar__search-field">
         {#if search && search.disableInputHandlers}
@@ -159,12 +162,14 @@
                     class="fd-menu__item luigi-search-result-item__{index}"
                     on:click={(event) => onSearchResultItemSelected(result, event)}
                     on:keyup={(event) => handleKeydown(result, event)}
+                    role="presentation"
                     tabindex="0"
                   >
                     {#if !globalSearchHelper.isCustomSearchResultItemRenderer}
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
+                      <!-- svelte-ignore a11y-interactive-supports-focus -->
                       <!-- svelte-ignore a11y-missing-attribute -->
-                      <a class="fd-menu__link" on:click|preventDefault={() => {}}>
+                      <a class="fd-menu__link" role="button" on:click|preventDefault={() => {}}>
                         <div class="fd-product-switch__text">
                           <div class="fd-product-switch__title">
                             {result.label}
@@ -192,11 +197,12 @@
 {#if !isSearchFieldVisible}
   <div class="lui-global-search-btn">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="fd-shellbar__group" on:click|stopPropagation={() => {}}>
+    <div class="fd-shellbar__group" role="presentation" on:click|stopPropagation={() => {}}>
       <button
         class="fd-button fd-button--transparent fd-shellbar__button"
         aria-haspopup="true"
         aria-expanded={!isSearchFieldVisible}
+        aria-label={$getTranslation(submitBtn)}
         on:click={toggleSearch}
         data-testid="luigi-search-btn-desktop"
       >

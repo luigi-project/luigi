@@ -17,12 +17,12 @@ class Helpers {
         const message: Record<string, any> = this.convertCustomMessageInternalToUser(evt.data);
 
         this.listeners
-          .filter(listener => listener.name === message['id'])
-          .map(listener => listener.eventFn(message, listener.listenerId));
+          .filter((listener) => listener.name === message['id'])
+          .map((listener) => listener.eventFn(message, listener.listenerId));
       } else {
         this.listeners
-          .filter(listener => listener.name === evt.data.msg)
-          .map(listener => listener.eventFn(evt, listener.listenerId));
+          .filter((listener) => listener.name === evt.data.msg)
+          .map((listener) => listener.eventFn(evt, listener.listenerId));
       }
     };
 
@@ -52,8 +52,8 @@ class Helpers {
    * Don't forget to remove the event listener at the end of
    * your eventFn if you do not need it anymore.
    * @private
-   * @param {string} name event name
-   * @param {function} eventFn callback function
+   * @param {string} name - event name
+   * @param {function} eventFn - callback function
    * @returns {string} listener id
    */
   addEventListener(name: string, eventFn: (event: any, listener?: any) => void): string {
@@ -71,7 +71,7 @@ class Helpers {
   /**
    * Removes a post message listener
    * @private
-   * @param {string} id listenerId
+   * @param {string} id - listenerId
    * @returns {boolean}
    */
   removeEventListener(id: string): boolean {
@@ -147,7 +147,7 @@ class Helpers {
 
   /**
    * Checks if given path contains intent navigation special syntax
-   * @param {string} path to check
+   * @param {string} path - path to be checked
    * @returns {boolean}
    */
   hasIntent(path: string): boolean {

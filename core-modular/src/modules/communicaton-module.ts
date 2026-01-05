@@ -2,6 +2,7 @@ import Events from '@luigi-project/container';
 import { UXModule } from './ux-module';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingModule } from './routing-module';
+import { UIModule } from './ui-module';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -10,8 +11,11 @@ export const CommunicationModule = {
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
+    containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
+      UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
+    });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal);
+      luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal, event.callbackFn);
     });
     containerElement.addEventListener(Events.ALERT_REQUEST, (event: any) => {
       UXModule.processAlert(event.payload, true, containerElement);
@@ -23,10 +27,10 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(event.detail.title);
     });
     containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator();
+      CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator();
+      CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.addBackdrop();
@@ -48,6 +52,12 @@ export const CommunicationModule = {
     });
     containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: any) => {
       RoutingModule.addSearchParamsFromClient(event.detail.data, event.detail.keepBrowserHistory, luigi);
+    });
+    containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: any) => {
+      UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
+    });
+    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
     });
   }
 };

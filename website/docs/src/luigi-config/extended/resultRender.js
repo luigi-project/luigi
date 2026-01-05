@@ -1,5 +1,4 @@
 import Hogan from 'hogan.js';
-import { get_current_component } from 'svelte/internal';
 
 const suggestionTemplate = `
        <div class="ds-suggestion" role="option" id="option-27550019" aria-selected="true">
@@ -76,6 +75,7 @@ export default class ResultRender {
     this.results = results;
     this.addKeyEvent();
   }
+
   addKeyEvent() {
     if (eventInit) {
       return;
@@ -84,6 +84,7 @@ export default class ResultRender {
     elem.addEventListener('keyup', handleEvent);
     eventInit = true;
   }
+
   buildDomResults() {
     currentItems = [];
     if (this.query !== lastQuery) {
@@ -99,12 +100,14 @@ export default class ResultRender {
     }
     return container;
   }
+
   cleanResults() {
     let elem = document.querySelector('span.algolia-autocomplete');
     if (elem) {
       elem.remove();
     }
   }
+
   domResults(span) {
     let template = Hogan.compile(suggestionTemplate);
     for (let result of this.results) {
@@ -116,6 +119,7 @@ export default class ResultRender {
       span.appendChild(searchItem);
     }
   }
+
   domEmpty(span) {
     let template = Hogan.compile(empty);
     let data = { query: this.query };
@@ -123,6 +127,7 @@ export default class ResultRender {
     let searchItem = this.htmlToElement(output);
     span.appendChild(searchItem);
   }
+
   shortText(text) {
     let short = text;
     if (short.length > 80) {
@@ -131,6 +136,7 @@ export default class ResultRender {
     }
     return this.highlightKeyword(short);
   }
+
   dataTemplate(result) {
     return {
       label: this.shortText(result.label),
@@ -140,9 +146,11 @@ export default class ResultRender {
       title3: this.shortText(result.title3)
     };
   }
+
   renderResult(template, data) {
     return template.render(data);
   }
+
   highlightKeyword(text) {
     this.perm(this.query).forEach((subQ) => {
       let replace = '<span class="algolia-docsearch-suggestion--highlight">' + subQ + '</span>';
@@ -150,6 +158,7 @@ export default class ResultRender {
     });
     return text;
   }
+
   attachItemEvents(searchItem, result) {
     searchItem.addEventListener('click', (e) => {
       e.preventDefault();
@@ -167,6 +176,7 @@ export default class ResultRender {
       searchItem.classList.remove('ds-cursor');
     });
   }
+
   buildContainer() {
     let span = this.createAttribute('span', {
       class: 'algolia-autocomplete algolia-autocomplete-right',
@@ -195,6 +205,7 @@ export default class ResultRender {
       resultSpan: span_11
     };
   }
+
   createAttribute(type, attributes) {
     let elem = document.createElement(type);
     if (!attributes) {
@@ -203,9 +214,11 @@ export default class ResultRender {
     Object.keys(attributes).forEach((key) => elem.setAttribute(key, attributes[key]));
     return elem;
   }
+
   htmlToElement(html) {
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
   }
+
   perm(str) {
     let results = [];
     let arr = str.split('');

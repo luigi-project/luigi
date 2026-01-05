@@ -27,7 +27,7 @@ class IframeHelpersClass {
 
   hideElementChildren(node) {
     if (node.children) {
-      Array.from(node.children).forEach(child => {
+      Array.from(node.children).forEach((child) => {
         if (child.tagName === 'IFRAME') {
           child.style.display = 'none';
         }
@@ -37,7 +37,7 @@ class IframeHelpersClass {
 
   removeElementChildren(node) {
     const children = [...node.children];
-    children.forEach(child => {
+    children.forEach((child) => {
       if (!child.vg && child.tagName === 'IFRAME') {
         node.removeChild(child);
       }
@@ -46,7 +46,7 @@ class IframeHelpersClass {
 
   removeIframe(iframe, node) {
     const children = Array.from(node.children);
-    children.forEach(child => {
+    children.forEach((child) => {
       if (child === iframe) {
         node.removeChild(child);
       }
@@ -122,7 +122,7 @@ class IframeHelpersClass {
   ]*/
   getMicrofrontendsInDom() {
     return MICROFRONTEND_TYPES.map(({ type, selector }) => {
-      return Array.from(document.querySelectorAll(selector)).map(container => ({
+      return Array.from(document.querySelectorAll(selector)).map((container) => ({
         id: container.luigi.id,
         container,
         active: GenericHelpers.isElementVisible(container),
@@ -132,7 +132,7 @@ class IframeHelpersClass {
   }
 
   getMicrofrontendIframes() {
-    return this.getMicrofrontendsInDom().map(mfObj => mfObj.container);
+    return this.getMicrofrontendsInDom().map((mfObj) => mfObj.container);
   }
 
   getCurrentWebcomponentCtnInDom() {
@@ -148,8 +148,8 @@ class IframeHelpersClass {
 
   getIframesWithType(type) {
     return this.getMicrofrontendsInDom()
-      .filter(mfObj => mfObj.type === type)
-      .map(mfObj => mfObj.container);
+      .filter((mfObj) => mfObj.type === type)
+      .map((mfObj) => mfObj.container);
   }
 
   getMainIframes() {
@@ -162,8 +162,8 @@ class IframeHelpersClass {
 
   getVisibleIframes() {
     return this.getMicrofrontendsInDom()
-      .filter(mfObj => mfObj.active)
-      .map(mfObj => mfObj.container);
+      .filter((mfObj) => mfObj.active)
+      .map((mfObj) => mfObj.container);
   }
 
   sendMessageToIframe(iframe, message) {
@@ -177,11 +177,11 @@ class IframeHelpersClass {
   }
 
   sendMessageToVisibleIframes(message) {
-    this.getVisibleIframes().forEach(iframe => this.sendMessageToIframe(iframe, message));
+    this.getVisibleIframes().forEach((iframe) => this.sendMessageToIframe(iframe, message));
   }
 
   broadcastMessageToAllIframes(message) {
-    IframeHelpers.getMicrofrontendIframes().forEach(iframe => this.sendMessageToIframe(iframe, message));
+    IframeHelpers.getMicrofrontendIframes().forEach((iframe) => this.sendMessageToIframe(iframe, message));
   }
 
   createIframe(viewUrl, viewGroup, currentNode, microFrontendType, componentData) {
@@ -217,6 +217,7 @@ class IframeHelpersClass {
       iframe.allow = allowRules.join(' ');
     }
     iframe.sandbox = activeSandboxRules.join(' ');
+    iframe.title = 'MFE';
     iframe.luigi = {
       viewUrl,
       currentNode,
@@ -250,7 +251,7 @@ class IframeHelpersClass {
       ...IframeHelpers.getMicrofrontendIframes(),
       { contentWindow: window, luigi: { viewUrl: window.location.href } }
     ];
-    const iframe = allMessagesSources.find(iframe => this.isMessageSource(e, iframe));
+    const iframe = allMessagesSources.find((iframe) => this.isMessageSource(e, iframe));
 
     if (!iframe || !iframe.luigi || !iframe.luigi.viewUrl) {
       return undefined;
@@ -270,14 +271,14 @@ class IframeHelpersClass {
   }
 
   getSpecialIframeMessageSource(e, specialIframeProps) {
-    return IframeHelpers.specialIframeTypes.filter(typ =>
+    return IframeHelpers.specialIframeTypes.filter((typ) =>
       IframeHelpers.isMessageSource(e, specialIframeProps[typ.iframeKey])
     );
   }
 
   disableA11yOfInactiveIframe(srcIframe) {
     const nodeList = document.querySelectorAll('*');
-    [...nodeList].forEach(el => {
+    [...nodeList].forEach((el) => {
       if (!el.getAttribute('oldTab')) {
         el.setAttribute('oldTab', el.getAttribute('tabindex'));
       }
@@ -289,7 +290,7 @@ class IframeHelpersClass {
 
   enableA11yOfInactiveIframe() {
     const nodeList = document.querySelectorAll('*');
-    [...nodeList].forEach(el => {
+    [...nodeList].forEach((el) => {
       const restoreVal = el.getAttribute('oldTab');
       if (el.getAttribute('oldTab') === 'null') {
         el.removeAttribute('tabindex');
@@ -304,11 +305,11 @@ class IframeHelpersClass {
   /**
    * Sets tabindex for all elements to -1, except for one element and all its children which needs the focus.
    * Setting tabindex to a negative value removes keyboard acessibility from the specified elements.
-   * @param {string} targetElementClassName the class name/s of the element to be excluded
+   * @param {string} targetElementClassName - the class name/s of the element to be excluded
    */
   disableA11YKeyboardExceptClassName(targetElementClassName) {
     const nodeList = document.querySelectorAll('*');
-    [...nodeList].forEach(element => {
+    [...nodeList].forEach((element) => {
       const isNotAChildOfTargetElement = !element.closest(targetElementClassName);
       const prevTabIndex = element.getAttribute('tabindex');
       // save tabIndex in case one already exists
@@ -326,7 +327,7 @@ class IframeHelpersClass {
    */
   enableA11YKeyboardBackdropExceptClassName(targetElementClassName) {
     const nodeList = document.querySelectorAll('*');
-    [...nodeList].forEach(element => {
+    [...nodeList].forEach((element) => {
       const restoreVal = element.getAttribute('oldtab');
       const isNotAChildOfTargetElement = !element.closest(targetElementClassName);
       isNotAChildOfTargetElement ? element.removeAttribute('tabindex') : '';

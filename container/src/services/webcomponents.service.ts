@@ -344,8 +344,17 @@ export class WebComponentService {
           addBackdrop: () => {
             this.dispatchLuigiEvent(Events.ADD_BACKDROP_REQUEST, {});
           },
+          showLoadingIndicator: () => {
+            this.dispatchLuigiEvent(Events.SHOW_LOADING_INDICATOR_REQUEST, {});
+          },
+          hideLoadingIndicator: () => {
+            this.dispatchLuigiEvent(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
+          },
           hideAppLoadingIndicator: () => {
             this.dispatchLuigiEvent(Events.HIDE_LOADING_INDICATOR_REQUEST, {});
+          },
+          closeCurrentModal: () => {
+            this.dispatchLuigiEvent(Events.CLOSE_CURRENT_MODAL_REQUEST, {});
           }
         };
       },
@@ -520,9 +529,9 @@ export class WebComponentService {
    * Handles the import of self registered web component bundles, i.e. the web component
    * is added to the customElements registry by the bundle code rather than by luigi.
    *
-   * @param {*} node the corresponding navigation node
-   * @param {*} viewUrl the source of the wc bundle
-   * @param {*} onload callback function executed after script attached and loaded
+   * @param {*} node - the corresponding navigation node
+   * @param {*} viewUrl - the source of the wc bundle
+   * @param {*} onload - callback function executed after script attached and loaded
    */
   includeSelfRegisteredWCFromUrl(node: WebComponentNode, viewUrl: string, onload: () => void) {
     if (this.checkWCUrl(viewUrl)) {
@@ -563,7 +572,7 @@ export class WebComponentService {
    * Checks if a url is allowed to be included, based on 'navigation.validWebcomponentUrls' in luigi config.
    * Returns true, if allowed.
    *
-   * @param {*} url the url string to check
+   * @param {*} url - the url string to check
    */
   checkWCUrl(url: string): boolean {
     // if (url.indexOf('://') > 0 || url.trim().indexOf('//') === 0) {
@@ -695,9 +704,9 @@ export class WebComponentService {
    * Responsible for rendering web component compounds based on a renderer or a nesting
    * micro frontend.
    *
-   * @param {*} navNode the navigation node defining the compound
-   * @param {ContainerElement} wc_container the web component container dom element
-   * @param {*} context the luigi node context
+   * @param {*} navNode - the navigation node defining the compound
+   * @param {ContainerElement} wc_container - the web component container dom element
+   * @param {*} context - the luigi node context
    */
   renderWebComponentCompound(
     navNode: WebComponentNode,
@@ -777,8 +786,8 @@ export class WebComponentService {
    * if one exists in the `alertResolvers` object. If the resolver exists, it is invoked with `dismissKey` as its argument,
    * and then the resolver is removed from the `alertResolvers` object to avoid future invocations. If no resolver is found
    * for the provided `id`, a message is logged to the console indicating that no matching promise is in the list.
-   * @param {string} id - The unique identifier for the alert to resolve.
-   * @param {boolean|string} dismissKey - An optional key or value passed to the resolver. Defaults to `true` if not provided.
+   * @param {string} id - the unique identifier for the alert to resolve
+   * @param {boolean|string} dismissKey - an optional key or value passed to the resolver; defaults to `true` if not provided
    *
    * @returns {void}
    *
@@ -795,7 +804,7 @@ export class WebComponentService {
   /**
    * Resolves a confirmation modal by invoking the corresponding resolver function.
    *
-   * @param {boolean} confirmed the result of the modal being closed
+   * @param {boolean} confirmed - the result of the modal being closed
    *
    */
   notifyConfirmationModalClosed(confirmed: boolean) {

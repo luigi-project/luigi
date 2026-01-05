@@ -12,6 +12,7 @@ export const TOP_NAV_DEFAULTS = {
     saveBtn: 'Save',
     dismissBtn: 'Cancel'
   },
+  globalSearchSubmitButton: 'Search',
   globalSearchCenteredCancelButton: 'Cancel'
 };
 

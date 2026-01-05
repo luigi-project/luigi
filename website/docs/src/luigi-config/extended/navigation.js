@@ -10,16 +10,16 @@ const getDocuItems = () => {
       'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
     }
   })
-    .then(function(obj) {
+    .then(function (obj) {
       return obj.json();
     })
-    .then(function(json) {
-      return json.map(child => {
+    .then(function (json) {
+      return json.map((child) => {
         child.viewUrl = child.viewUrl.replace('__BASE_URL__', baseUrl);
         return child;
       });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       console.error(`Error: ${err}`);
     });
 };
@@ -52,11 +52,14 @@ class Navigation {
         }
       },
       {
-        label: 'Twitter',
-        externalLink: {
-          url: 'https://twitter.com/luigiprojectio'
-        },
-        icon: 'twitter'
+        label: 'Theme Switch',
+        pathSegment: 'none',
+        icon: 'theme',
+        viewUrl: 'about:blank',
+        onNodeActivation: () => {
+          window.toggleTheme();
+          return false;
+        }
       },
       {
         label: 'Slack',

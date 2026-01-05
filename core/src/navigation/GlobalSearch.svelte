@@ -1,6 +1,7 @@
 <script>
-  import { beforeUpdate, createEventDispatcher, onMount } from 'svelte';
+  import { beforeUpdate, createEventDispatcher, onMount, getContext } from 'svelte';
   import { GlobalSearchHelperClass } from '../utilities/helpers/global-search-helpers';
+  import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
   export let isSearchFieldVisible;
   export let searchResult = [];
   export let displaySearchResult;
@@ -10,9 +11,12 @@
   export let globalSearchConfig;
   const dispatch = createEventDispatcher();
   let search = {};
+  let submitBtn = TOP_NAV_DEFAULTS.globalSearchSubmitButton;
+  let getTranslation = getContext('getTranslation');
   let globalSearchHelper;
 
   onMount(async () => {
+    submitBtn = search.globalSearchSubmitButton ? search.globalSearchSubmitButton : submitBtn;
     globalSearchHelper.setSearchPlaceholder(inputElem);
     globalSearchHelper.getCustomRenderer();
   });
@@ -54,6 +58,7 @@
       on:click|stopPropagation={() => {}}
       aria-hidden={!isSearchFieldVisible}
       aria-haspopup="true"
+      role="button"
     >
       <div class="fd-input-group fd-shellbar__input-group fd-shellbar__search-field">
         {#if search && search.disableInputHandlers}
@@ -101,8 +106,9 @@
                     {#if !globalSearchHelper.isCustomSearchResultItemRenderer}
                       <!-- svelte-ignore a11y-click-events-have-key-events -->
                       <!-- svelte-ignore a11y-no-static-element-interactions -->
+                      <!-- svelte-ignore a11y-interactive-supports-focus -->
                       <!-- svelte-ignore a11y-missing-attribute -->
-                      <a class="fd-menu__link" on:click|preventDefault={() => {}}>
+                      <a class="fd-menu__link" role="button" on:click|preventDefault={() => {}}>
                         <div class="fd-product-switch__text">
                           <div class="fd-product-switch__title">{result.label}</div>
                           <div class="fd-product-switch__subtitle">{result.description}</div>
@@ -130,11 +136,12 @@
 <div class="fd-shellbar__action fd-shellbar__action--desktop">
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div on:click|stopPropagation={() => {}}>
+  <div role="presentation" on:click|stopPropagation={() => {}}>
     <button
       class="fd-button fd-button--transparent fd-shellbar__button"
       aria-haspopup="true"
       aria-expanded={!isSearchFieldVisible}
+      aria-label={$getTranslation(submitBtn)}
       on:click={toggleSearch}
       data-testid="luigi-search-btn-desktop"
     >

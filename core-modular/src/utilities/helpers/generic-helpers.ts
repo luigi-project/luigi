@@ -40,7 +40,7 @@ export const GenericHelpers = {
    * @param objectToCheck mixed
    * @returns {boolean}
    */
-  isObject(objectToCheck: object | any): boolean {
+  isObject: (objectToCheck: object | any): boolean => {
     return !!(objectToCheck && typeof objectToCheck === 'object' && !Array.isArray(objectToCheck));
   },
 
@@ -63,11 +63,54 @@ export const GenericHelpers = {
   },
 
   /**
+   * Checks if HTML element is visible
+   * @param {Element} element to be checked in DOM
+   * @returns {boolean} `true` if element is visible - otherwise `false`
+   */
+  isElementVisible: (element: Element): boolean => {
+    if (!element) {
+      return false;
+    }
+
+    const cssDisplayValue: string = window.getComputedStyle(element).getPropertyValue('display');
+
+    return cssDisplayValue !== 'none';
+  },
+
+  /**
+   * Gets collection of HTML elements
+   * @param {string} selector to be searched in DOM
+   * @param {boolean} onlyVisible elements should be included
+   * @returns {Array} collection of HTML elements
+   */
+  getNodeList: (selector: string, onlyVisible = false): Element[] => {
+    const items: Element[] = [];
+
+    if (!selector) {
+      return items;
+    }
+
+    const elements: Element[] = Array.from(document.querySelectorAll(selector));
+
+    elements.forEach((item: Element) => {
+      if (onlyVisible) {
+        if (GenericHelpers.isElementVisible(item)) {
+          items.push(item);
+        }
+      } else {
+        items.push(item);
+      }
+    });
+
+    return items;
+  },
+
+  /**
    * Prepend current url to redirect_uri, if it is a relative path
    * @param {path} string full url, relative or absolute path
    * @returns {string} window location origin
    */
-  prependOrigin(path: string): string {
+  prependOrigin: (path: string): string => {
     if (!path || path.startsWith('http')) {
       return path;
     }
@@ -86,7 +129,7 @@ export const GenericHelpers = {
    * @param object mixed
    * @param property name of the given property
    */
-  getConfigValueFromObject(object: Record<string, any>, property: string): any {
+  getConfigValueFromObject: (object: Record<string, any>, property: string): any => {
     let propIndex = 0;
     let nextValue: any = object;
     const propertyPath = property.split('.');
@@ -96,5 +139,26 @@ export const GenericHelpers = {
     }
 
     return nextValue;
+  },
+
+  /**
+   * Gets boolean value of specified property on the given object.
+   * Function returns true if the property value is equal true or 'true'. Otherwise the function returns false.
+   * @param {Object} object mixed
+   * @param {string} property name of the given property
+   * @returns {boolean} boolean value
+   */
+  getConfigBooleanValue: (object: Record<string, any>, property: string): boolean => {
+    const configuredValue = GenericHelpers.getConfigValueFromObject(object, property);
+
+    if (configuredValue === true || configuredValue === 'true') {
+      return true;
+    }
+
+    return false;
+  },
+
+  getUrlParameter: (key: string) => {
+    return new URLSearchParams(window.location.search).get(key);
   }
 };

@@ -20,8 +20,8 @@ export class ContainerService {
    * Checks if the given HTML element is visible in the DOM by considering both
    * its width/height and any client rectangles it may have.
    *
-   * @param {HTMLElement} component - The HTML element to check for visibility.
-   * @returns {boolean} Returns true if the element is visible, otherwise false.
+   * @param {HTMLElement} component - the HTML element to check for visibility
+   * @returns {boolean} `true` if the element is visible, otherwise `false`
    */
   isVisible(component: HTMLElement): boolean {
     return !!(component.offsetWidth || component.offsetHeight || component.getClientRects().length);
@@ -50,11 +50,11 @@ export class ContainerService {
 
   /**
    * Dispatch an event to the given target container with additional payload
-   * @param {string} msg the event message
-   * @param {ContainerElement} targetCnt the targeted HTML element onto which the event is dispatched
-   * @param {Object} data custom data added to the event to be dispatched
-   * @param {Object | string} payload additional data added to the event for internal objectives
-   * @param {Function} callback optional callback function
+   * @param {string} msg - the event message
+   * @param {ContainerElement} targetCnt - the targeted HTML element onto which the event is dispatched
+   * @param {Object} data - custom data added to the event to be dispatched
+   * @param {Object | string} payload - additional data added to the event for internal objectives
+   * @param {Function} callback - optional callback function
    */
   dispatchWithPayload(
     msg: string,
@@ -68,10 +68,10 @@ export class ContainerService {
 
   /**
    * Dispatch an event to the given target container
-   * @param {string} msg the event message
-   * @param {ContainerElement} targetCnt the targeted HTML element onto which the event is dispatched
-   * @param {Object} data custom data added to the event to be dispatched
-   * @param {Function} callback optional callback function
+   * @param {string} msg - the event message
+   * @param {ContainerElement} targetCnt - the targeted HTML element onto which the event is dispatched
+   * @param {Object} data - custom data added to the event to be dispatched
+   * @param {Function} callback - optional callback function
    */
   dispatch(msg: string, targetCnt: ContainerElement, data: object, callback?: (arg?) => void, payload?: object): void {
     const customEvent = new LuigiEvent(msg, data, payload, callback);
@@ -82,7 +82,7 @@ export class ContainerService {
    * Retrieves the target container based on the event source.
    *
    * @param event The event object representing the source of the container.
-   * @returns {ContainerElement | undefined} The target container object or undefined if not found.
+   * @returns {ContainerElement | undefined} the target container object or undefined if not found
    */
   getTargetContainer(event): ContainerElement | undefined {
     let cnt;
@@ -141,7 +141,14 @@ export class ContainerService {
                       },
                       currentTheme: targetCnt.theme,
                       currentLocale: targetCnt.locale,
-                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || []
+                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || [],
+                      cssVariables: targetCnt.cssVariables || {},
+                      anchor: targetCnt.anchor || '',
+                      userSettings: targetCnt.userSettings || null,
+                      drawer: targetCnt.drawer || false,
+                      modal: targetCnt.modal || false,
+                      viewStackSize: targetCnt.viewStackSize || 0,
+                      isNavigateBack: targetCnt.isNavigateBack || false
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
@@ -152,7 +159,20 @@ export class ContainerService {
                 );
                 break;
               case LuigiInternalMessageID.NAVIGATION_REQUEST:
-                this.dispatch(Events.NAVIGATION_REQUEST, targetCnt, event.data.params as NavigationRequestPayload);
+                this.dispatch(
+                  Events.NAVIGATION_REQUEST,
+                  targetCnt,
+                  event.data.params as NavigationRequestPayload,
+                  (val: unknown) => {
+                    target.postMessage(
+                      {
+                        msg: LuigiInternalMessageID.CLOSE_MODAL_ANSWER,
+                        data: val
+                      },
+                      event.origin
+                    );
+                  }
+                );
                 break;
               case LuigiInternalMessageID.ALERT_REQUEST:
                 this.dispatchWithPayload(
@@ -297,6 +317,9 @@ export class ContainerService {
               case LuigiInternalMessageID.REMOVE_BACKDROP_REQUEST:
                 this.dispatch(Events.REMOVE_BACKDROP_REQUEST, targetCnt, event);
                 break;
+              case LuigiInternalMessageID.CLOSE_CURRENT_MODAL_REQUEST:
+                this.dispatch(Events.CLOSE_CURRENT_MODAL_REQUEST, targetCnt, event);
+                break;
             }
           }
         }
@@ -310,7 +333,7 @@ export class ContainerService {
   /**
    * Adds thisComponent's object reference the the __luigi_container_manager container list
    *
-   * @param {HTMLElement} thisComponent - The HTML element that represents the current rendered container (thisComponent)
+   * @param {HTMLElement} thisComponent - HTML element that represents the current rendered container (`thisComponent`)
    */
   registerContainer(thisComponent: HTMLElement): void {
     this.getContainerManager().container.push(thisComponent);

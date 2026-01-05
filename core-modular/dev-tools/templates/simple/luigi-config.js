@@ -45,20 +45,50 @@ window.onload = () => {
         {
           pathSegment: 'home',
           icon: 'home',
-          viewUrl: '/microfrontend.html#home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
+          anonymousAccess: 'exclusive',
+          context: {
+            title: 'You are not signed in'
+          },
+          hideSideNav: true,
+          hideFromNav: true
+        },
+        {
+          pathSegment: 'home2',
+          icon: 'home',
+          viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
               pathSegment: 'c1',
               label: 'MFE1',
               icon: 'group',
               viewUrl: '/microfrontend.html#child1',
-              viewGroup: 'vg1'
+              userSettingsGroup: 'mfeOne',
+              viewGroup: 'vg1',
+              clientPermissions: {
+                changeCurrentLocale: true
+              },
+              children: [
+                {
+                  pathSegment: ':dynamic',
+                  label: 'doesntmatter',
+                  viewUrl: '/microfrontend.html#dyn',
+                  children: [
+                    {
+                      pathSegment: '1',
+                      label: 'dynchild',
+                      viewUrl: '/microfrontend.html#dynchild'
+                    }
+                  ]
+                }
+              ]
             },
             {
               pathSegment: 'c2',
               label: 'MFE2',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child2',
+              userSettingsGroup: 'mfeTwo',
               viewGroup: 'vg1'
             },
             {
@@ -80,10 +110,10 @@ window.onload = () => {
               category: 'cat'
             },
             {
-              pathSegment: 'c3',
+              pathSegment: 'c3s',
               label: 'MFE3',
               icon: 'group',
-              viewUrl: '/microfrontend.html#child3',
+              viewUrl: '/microfrontend.html#child3s',
               category: {
                 id: 'cat::sub',
                 label: 'SubCat',
@@ -95,7 +125,9 @@ window.onload = () => {
         {
           pathSegment: 'help',
           icon: 'sys-help',
-          viewUrl: '/microfrontend.html#help'
+          viewUrl: '/microfrontend.html#help',
+          anonymousAccess: true,
+          hideSideNav: true
         },
         {
           category: { id: 'cat', label: 'notification', icon: 'notification' },
@@ -226,21 +258,23 @@ window.onload = () => {
               sameWindow: false
             }
           }
-        ],
-        staticUserInfoFn: () => {
-          return new Promise((resolve) => {
-            resolve({
-              name: 'Static User',
-              initials: 'LU',
-              email: 'other.luigi.user@example.com',
-              description: 'Luigi Developer'
-            });
-          });
-        }
+        ]
+        // staticUserInfoFn: () => {
+        //   return new Promise((resolve) => {
+        //     resolve({
+        //       name: 'Static User',
+        //       initials: 'LU',
+        //       email: 'other.luigi.user@example.com',
+        //       description: 'Luigi Developer',
+        //       picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
+        //     });
+        //   });
+        // }
       }
     },
     routing: {
       useHashRouting: true
+      //showModalPathInUrl: true
     },
     settings: {
       responsiveNavigation: 'Fiori3',
@@ -248,6 +282,14 @@ window.onload = () => {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
         logo: 'https://fiddle.luigi-project.io/img/luigi.svg'
+      },
+      profileType: 'vega',
+      customTranslationImplementation: () => {
+        return {
+          getTranslation: (key, interpolations, locale) => {
+            return '*' + key + '* ' + (locale || Luigi.i18n().getCurrentLocale());
+          }
+        };
       }
     },
     userSettings: {
@@ -261,15 +303,15 @@ window.onload = () => {
         dismissBtn: 'Cancel'
       },
       userSettingGroups: {
-        privacy: {
-          label: 'Privacy',
+        mfeOne: {
+          label: 'Privacy One',
           title: 'Privacy',
           icon: 'private',
           iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
           settings: {
             policy: {
               type: 'string',
-              label: 'Privacy policy has not been defined.',
+              label: 'Privacy One policy has not been defined.',
               placeholder: '...'
             },
             time: {
@@ -279,6 +321,87 @@ window.onload = () => {
               options: ['12 h', '24 h']
             }
           }
+        },
+        mfeTwo: {
+          label: 'Privacy Two',
+          title: 'Privacy',
+          icon: 'private',
+          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+          settings: {
+            policy: {
+              type: 'string',
+              label: 'Privacy Two policy has not been defined.',
+              placeholder: '...'
+            },
+            time: {
+              type: 'enum',
+              style: 'button',
+              label: 'Time Format',
+              options: ['12 h', '24 h']
+            }
+          }
+        }
+      }
+    },
+
+    lifecycleHooks: {
+      luigiAfterInit: () => {
+        console.log('AFTER INIT');
+      }
+    },
+
+    auth: {
+      use: 'myOIDC',
+      storage: 'none',
+      disableAutoLogin: true,
+      myOAuth2: {
+        idpProvider: window['LuigiPlugin-auth-oauth2'],
+        authorizeUrl: 'http://localhost:3000/auth',
+        logoutUrl: 'http://localhost:3000/session/end',
+        post_logout_redirect_uri: '/auth/logout.html',
+        authorizeMethod: 'GET',
+        oAuthData: {
+          client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
+          redirect_uri: '/auth/callback.html'
+        }
+      },
+      myOIDC: {
+        idpProvider: window['LuigiPlugin-auth-oidc-pkce'],
+        authority: 'http://localhost:3000',
+        logoutUrl: 'http://localhost:3000/session/end',
+        scope: 'openid profile email',
+
+        client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp', // example oidc-mockserver client id
+        response_type: 'code', // for PKCE
+        response_mode: 'fragment', // change between `query` and `fragment`
+        loadUserInfo: true,
+        post_logout_redirect_uri: '/auth/logout.html',
+
+        userInfoFn: (settings, authdata) => {
+          return new Promise((resolve) => {
+            resolve(authdata.profile);
+          });
+        }
+      },
+
+      events: {
+        onAuthSuccessful: (settings, authData) => {
+          console.log('AUTH successful');
+        },
+        onAuthError: (settings, err) => {
+          console.log('AUTH error');
+        },
+        onAuthExpired: (settings) => {
+          console.log('AUTH expired');
+        },
+        onLogout: (settings) => {
+          console.log('AUTH logout');
+        },
+        onAuthExpireSoon: (settings) => {
+          console.log('AUTH expire soon');
+        },
+        onAuthConfigError: (settings, err) => {
+          console.log('AUTH config error');
         }
       }
     }

@@ -41,7 +41,7 @@
         notifyAlertClosed = notInitFn('notifyAlertClosed');
         notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
         attributeChangedCallback(name, oldValue, newValue) {
-          try{
+          try {
             super.attributeChangedCallback(name, oldValue, newValue);
           } catch (e) {
             console.error('Error in super.attributeChangedCallback', e);
@@ -103,10 +103,10 @@
   const iframeHandle: IframeHandle = {};
   let mainComponent: ContainerElement;
   let containerInitialized = false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thisComponent: any;
 
   const webcomponentService = new WebComponentService();
-
 
   // Only needed for get rid of "unused export property" svelte compiler warnings
   export const unwarn = () => {
@@ -144,17 +144,26 @@
           data
         );
       };
-      
+
       thisComponent.updateContext = (contextObj: object, internal?: object) => {
         context = contextObj;
         if (webcomponent) {
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
-          const internalObj = {...internal || {}, ...{
-            activeFeatureToggleList: thisComponent.activeFeatureToggleList,
-            currentLocale: thisComponent.locale,
-            currentTheme: thisComponent.theme
-          }};
+          const internalObj = {
+            ...internal || {}, ...{
+              activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
+              currentLocale: thisComponent.locale,
+              currentTheme: thisComponent.theme,
+              userSettings: thisComponent.userSettings || null,
+              cssVariables: thisComponent.cssVariables || {},
+              anchor: thisComponent.anchor || "",
+              drawer: thisComponent.drawer || false,
+              modal: thisComponent.modal || false,
+              viewStackSize: thisComponent.viewStackSize || 0,
+              isNavigateBack: thisComponent.isNavigateBack || false
+            }
+          };
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
       };
@@ -241,7 +250,6 @@
   };
 
   onMount(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     thisComponent = mainComponent.parentNode;
     thisComponent.iframeHandle = iframeHandle;
     thisComponent.init = () => {
@@ -253,7 +261,7 @@
   });
 
   $: {
-    if(!containerInitialized && viewurl && !deferInit && thisComponent) {
+    if (!containerInitialized && viewurl && !deferInit && thisComponent) {
       initialize(thisComponent);
     }
   }

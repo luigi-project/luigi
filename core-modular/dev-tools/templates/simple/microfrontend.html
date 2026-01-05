@@ -25,12 +25,25 @@
       <button onclick="LuigiClient.linkManager().navigate('/home')">nav to home</button>
       <button onclick="showAlert()">show alert</button>
       <button onclick="showModal()">show MF2 in modal</button>
+      <button onclick="showModal('c3')">show MF3 in modal</button>
+      <button onclick="showModal('c4', 's', true)">show MF4 and keep previous</button>
       <button onclick="showLoadingIndicator()">show loading indicator</button>
       <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
       <button onclick="removeBackdrop()">remove backdrop</button>
       <button onclick="openUserSettings()">open UserSettings</button>
       <button onclick="setDocumentTitle()">set document title</button>
+      <button onclick="updateModalSettings()">update modal Settings</button>
+      <button onclick="updateModalSettings(true)">
+        update modal Settings and history entry
+      </button>
+      <button onclick="updateModalSettings2()">update modal Settings size only</button>
+      <button onclick="closeCurrentModal()">close current modal</button>
+      <button onclick="setCurrentLocale()">set current locale</button>
+      <button onclick="getCurrentLocale()">get current locale</button>
+      <button onclick="getCustomTranslation()">get custom translation</button>
+      <button onclick="getContext()">Get Context</button>
+      <span id="result"></span>
     </div>
     <script>
       function showAlert() {
@@ -62,8 +75,12 @@
         div.innerHTML = location.hash;
       });
 
-      function showModal() {
-        LuigiClient.linkManager().openAsModal('/home/c2', { title: 'MF2', size: 's' });
+      function showModal(mfPath = 'c2', size = 'l', keepPrevious = false) {
+        LuigiClient.linkManager().openAsModal('/home2/' + mfPath, {
+          title: mfPath,
+          size,
+          keepPrevious,
+        });
       }
 
       function showLoadingIndicator() {
@@ -95,6 +112,57 @@
           title: 'my-title',
         });
       }
+
+      function updateModalSettings(addHistoryEntry = false) {
+        const modalSettings = {
+          title: 'Updated MF2 Title',
+          size: 's',
+        };
+        LuigiClient.linkManager().updateModalSettings(modalSettings, addHistoryEntry);
+      }
+
+      function updateModalSettings2(addHistoryEntry = false) {
+        const modalSettings = {
+          size: 'l',
+        };
+        LuigiClient.linkManager().updateModalSettings(modalSettings);
+      }
+
+      function closeCurrentModal() {
+        LuigiClient.uxManager().closeCurrentModal();
+      }
+
+      function setCurrentLocale() {
+        LuigiClient.uxManager().setCurrentLocale('de');
+      }
+
+      function getCurrentLocale() {
+        const currentLocale = LuigiClient.uxManager().getCurrentLocale();
+
+        LuigiClient.uxManager().showAlert({
+          text: 'Current locale equals to: ' + currentLocale,
+          type: 'info',
+        });
+      }
+
+      function getCustomTranslation() {
+        LuigiClient.sendCustomMessage({
+          id: 'customTranslation',
+          customTranslation: true,
+        });
+      }
+      LuigiClient.addInitListener((ctx) => {
+        console.log('Luigi Client initialized', ctx);
+      });
+
+      LuigiClient.addContextUpdateListener((ctx) => {
+        console.log('Luigi Client context updated', ctx);
+      });
+
+      getContext = () => {
+        const ctx = LuigiClient.getContext();
+        document.querySelector('#result').innerHTML = JSON.stringify(ctx);
+      };
     </script>
   </body>
 </html>

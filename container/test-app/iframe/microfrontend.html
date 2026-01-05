@@ -74,7 +74,9 @@
         test showAlert with notifyAlertClosed
       </button>
       <button onclick="goBack()">test goBack()</button>
-      <button onclick="openAsModal()">test openAsModal()</button>
+      <button onclick="openAsModalWithCloseCallback()">
+        openAsModal with close callback
+      </button>
       <button onclick="openAsDrawer()">test openAsDrawer()</button>
       <button onclick="openAsSplitview()">test openAsSplitview()</button>
       <button onclick="updateModalSettings()">test updateModalSettings</button>
@@ -83,6 +85,7 @@
       <button onclick="getActiveFeatureToggleList()">
         get active feature toggle list
       </button>
+      <button onclick="testCloseCurrentModal()">test close current modal</button>
       <br /><br />
       <span id="result"></span>
     </div>
@@ -90,11 +93,16 @@
     <script>
       // List of onclick handlers for client calls
 
-      function openAsModal() {
-        LuigiClient.linkManager().openAsModal('openAsModal-iframe', {
-          title: 'Modal Title',
-          size: 'm',
-        });
+      function openAsModalWithCloseCallback() {
+        LuigiClient.linkManager()
+          .openAsModal('openAsModal-iframe', {
+            title: 'Modal Title',
+            size: 'm',
+          })
+          .then(() => {
+            document.querySelector('#result').innerHTML =
+              'Hello from promise! Modal is closed';
+          });
       }
 
       function updateModalSettings() {
@@ -364,6 +372,10 @@
             document.body.appendChild(span);
             console.log('Callback called on microfrontend', param);
           });
+      }
+
+      function testCloseCurrentModal() {
+        LuigiClient.uxManager().closeCurrentModal();
       }
 
       function updateFn(context) {

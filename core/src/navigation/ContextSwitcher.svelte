@@ -190,7 +190,7 @@
   export function toggleDropdownState() {
     dispatch('toggleDropdownState');
     const ddStates = dropDownStates || {};
-    const isOpened = JSON.parse(ddStates['contextSwitcherPopover']);
+    const isOpened = GenericHelpers.parseJSON(ddStates['contextSwitcherPopover']);
     if (isOpened) {
       fetchOptions();
     }
@@ -203,16 +203,21 @@
     <div class="fd-shellbar__action fd-shellbar__action--desktop">
       <div class="fd-popover fd-popover--right">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+        <div class="fd-popover__control" role="presentation" on:click|stopPropagation={() => {}}>
           {#if addNavHrefForAnchor && selectedOption !== config.defaultLabel}
             <a
               href={selectedOption ? getRouteLink(selectedOption) : undefined}
               class="fd-button fd-button--transparent fd-shellbar__button fd-button--menu fd-shellbar__button--menu lui-ctx-switch-menu"
-              aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
+              tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click|preventDefault={() => {
                 if (renderAsDropdown) toggleDropdownState();
+              }}
+              on:keyup={(event) => {
+                if (renderAsDropdown) {
+                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
+                }
               }}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
@@ -227,11 +232,18 @@
           {:else}
             <button
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
+              aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
+              tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click={() => {
                 if (renderAsDropdown) toggleDropdownState();
+              }}
+              on:keyup={(event) => {
+                if (renderAsDropdown) {
+                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
+                }
               }}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
@@ -273,7 +285,7 @@
   <!-- MOBILE VERSION (fullscreen dialog): -->
   {#if isMobile && dropDownStates.contextSwitcherPopover && renderAsDropdown}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="fd-dialog fd-dialog--active" on:click|stopPropagation={() => {}}>
+    <div class="fd-dialog fd-dialog--active" role="presentation" on:click|stopPropagation={() => {}}>
       <div
         class="fd-dialog__content fd-dialog__content--mobile"
         role="dialog"

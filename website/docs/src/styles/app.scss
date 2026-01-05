@@ -1,27 +1,48 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Quicksand:500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 $primary-color: #2deb8a;
 $secondary-color: #3c4553;
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $powder-blue: #d0d8e2;
-$ice-blue: #edf2f7;
+$ice-blue: color-mix(in srgb, var(--sapBackgroundColor), var(--fg-color) 10%);
 
 $side-nav-width: 320px;
+
+$global-font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+
+
+$fg-color: var(--fg-color);
+$bg-color: var(--sapBackgroundColor);
+$luigi-green: #2deb8a;
+
+
+:root {
+    --sapBackgroundColor: rgb(27, 27, 31);
+    --fg-color: #dfdfd6;
+    color-scheme: dark;
+}
+
+html.lightTheme {
+    --sapBackgroundColor: #f4f4f4;
+    --fg-color: #3c3c43;
+    color-scheme: light;
+}
 
 body * {
     box-sizing: border-box;
 }
 
 body {
-    background-color: white;
+    background-color: $bg-color;
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: $global-font-family;
     font-weight: 400;
     font-size: 16px;
     line-height: 28px;
-    color: $secondary-color;
+    color: $fg-color;
     box-sizing: border-box;
 
     .docu-content {
@@ -51,6 +72,18 @@ body {
 
     .h2Wrapper {
         margin-top: 45px;
+
+        h2 > code {
+            background: transparent;
+            border-radius: 0;
+            display: inline;
+            font-family: unset;
+            font-size: unset;
+            padding: 0;
+        }
+    }
+
+    .h2Wrapper:has(section) {
         padding-top: 40px;
         border-top: 1px solid $powder-blue;
     }
@@ -59,10 +92,15 @@ body {
         margin-top: 45px;
     }
 
+    .summaryWrapper {
+        margin-bottom: 25px;
+    }
+
     p,
     ol,
     ul,
     blockquote,
+    table,
     h1,
     h2,
     h3,
@@ -118,10 +156,27 @@ body {
     &.page-luigi-client-api,
     &.page-luigi-element-api {
         h4 {
-            margin-top: 35px;
             display: inline-block;
             border-left: 4px solid $primary-color;
             padding-left: 10px;
+            margin-top: 35px;
+        }
+    }
+
+    &.page-luigi-core-api,
+    &.page-luigi-client-api {
+        .h3Wrapper > h3[id] {
+            display: inline-block;
+            border-left: 4px solid $primary-color;
+            padding-left: 10px;
+        }
+    }
+
+    &.page-luigi-core-api {
+        h2 + .h3Wrapper > h3[id] {
+            display: block;
+            border: 0;
+            padding: 0;
         }
     }
 
@@ -197,7 +252,6 @@ body {
         li {
             position: relative;
             padding-left: 20px;
-            
             list-style: none;
 
             &:before {
@@ -213,6 +267,14 @@ body {
                 top: 12px;
             }
 
+            code {
+                padding-right: 0;
+            }
+
+            p {
+                display: inline;
+                margin: 0;
+            }
         }
     }
 
@@ -230,7 +292,7 @@ body {
     }
 
     a {
-        color: $secondary-color;
+        color: $fg-color;
 
         &:hover,
         &:active {
@@ -272,7 +334,7 @@ body {
             position: absolute;
             right: 0;
             bottom: -37px;
-            font-family: 'Open Sans', sans-serif;
+            font-family: $global-font-family;
             display: none;
             font-size: 11px;
             line-height: 13px;
@@ -386,7 +448,7 @@ body {
             .popoverCopy {
                 position: absolute;
                 bottom: -36px;
-                font-family: 'Open Sans', sans-serif;
+                font-family: $global-font-family;
                 display: none;
                 font-size: 11px;
                 line-height: 13px;
@@ -579,5 +641,36 @@ body {
             color: rgb(18, 143, 55);
             background-color: rgba(45, 235, 138, 0.08);
         }
+    }
+
+    table {
+        border-collapse: collapse;
+        border-color: transparent;
+        margin-top: 25px;
+        table-layout: fixed;
+    }
+
+    table td, table th {
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 5px 15px;
+        text-align: left;
+    }
+
+    table p {
+        margin: 0;
+    }
+
+    p:has(strong):has(code),
+    p:has(strong):has(code) + p:not(:has(strong)) {
+        display: inline-block;
+    }
+
+    h3 + p:has(strong):has(code),
+    h4 + p:has(strong):has(code) {
+        display: block;
+    }
+
+    p:has(strong):has(code) > code {
+        padding-right: 0;
     }
 }

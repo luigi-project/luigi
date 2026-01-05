@@ -1,4 +1,3 @@
-import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -8,7 +7,7 @@ import { RoutingService } from '../services/routing.service';
 export const RoutingModule = {
   init: (luigi: Luigi) => {
     const routingService = serviceRegistry.get(RoutingService);
-    routingService.handleRouteChange();
+    routingService.enableRouting();
   },
 
   handlePageErrorHandler: (pageErrorHandler: PageErrorHandler, node: Node, luigi: Luigi) => {
@@ -40,6 +39,7 @@ export const RoutingModule = {
       } else {
         const newWindow = window.open(externalLink.url, '_blank', 'noopener noreferrer');
         if (newWindow) {
+          newWindow.opener = null;
           newWindow.focus();
         }
       }

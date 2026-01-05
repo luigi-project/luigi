@@ -11,7 +11,6 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 import prompts from 'prompts';
-import asyncRequest from 'async-request';
 import color from 'cli-color';
 
 /**
@@ -40,22 +39,6 @@ const pkgJsonPaths = {
   client: path.resolve(base, 'client', 'public', 'package.json'),
   authOAuth2: path.resolve(base, 'plugins', 'auth', 'public', 'auth-oauth2', 'package.json'),
   authOIDC: path.resolve(base, 'plugins', 'auth', 'public', 'auth-oidc', 'package.json'),
-  client_support_angular: path.resolve(
-    base,
-    'client-frameworks-support',
-    'client-support-angular',
-    'dist',
-    'client-support-angular',
-    'package.json'
-  ),
-  client_support_angular_src: path.resolve(
-    base,
-    'client-frameworks-support',
-    'client-support-angular',
-    'projects',
-    'client-support-angular',
-    'package.json'
-  ),
   testing_utilities: path.resolve(base, 'client-frameworks-support', 'testing-utilities', 'dist', 'package.json'),
   testing_utilities_src: path.resolve(base, 'client-frameworks-support', 'testing-utilities', 'package.json')
 };
@@ -63,27 +46,38 @@ const installPaths = {
   core: path.resolve(base, 'core'),
   client: path.resolve(base, 'client'),
   plugins: path.resolve(base, 'plugins'),
-  client_support_angular: path.resolve(base, 'client-frameworks-support', 'client-support-angular'),
   testing_utilities: path.resolve(base, 'client-frameworks-support', 'testing-utilities')
 };
 
 if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
   pkgJsonPaths.container = path.resolve(base, 'container', 'public', 'package.json');
   installPaths.container = path.resolve(base, 'container');
+
+  pkgJsonPaths.client_support_angular = path.resolve(
+    base,
+    'client-frameworks-support',
+    'client-support-angular',
+    'dist',
+    'client-support-angular',
+    'package.json'
+  );
+  installPaths.client_support_angular = path.resolve(base, 'client-frameworks-support', 'client-support-angular');
 }
 
 /**
  * FNS
  */
 async function getReleases() {
-  const input = await asyncRequest('https://api.github.com/repos/luigi-project/luigi/releases', {
+  const response = await fetch('https://api.github.com/repos/luigi-project/luigi/releases', {
     headers: {
       'User-Agent': 'Luigi Release CLI'
     }
   });
-  return JSON.parse(input.body)
-    .map((r) => r.tag_name)
-    .filter((t, i) => i <= 8);
+  if (!response?.ok) {
+    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data.map((r) => r.tag_name).filter((_, i) => i <= 8);
 }
 
 function getVersion(pkg) {
@@ -194,13 +188,13 @@ function addToChangelog(versionText, changelog, lastline) {
   for (const name of Object.keys(pkgJsonPaths)) {
     let inputVersion = input.version;
 
-    // handle custom container version for nightly release
-    if (name === 'container' && process.env.NIGHTLY === 'true') {
-      const containerNightlyVersion = getVersion('container');
+    // handle custom pkg version for nightly release
+    if (process.env.NIGHTLY === 'true' && (name === 'container' || name === 'client_support_angular')) {
+      const pkgNightlyVersion = getVersion(name);
       const versionSuffix = getVersionSuffix();
 
-      inputVersion = containerNightlyVersion + versionSuffix;
-      logHeadline('\nContainer updated to v' + inputVersion + ':');
+      inputVersion = pkgNightlyVersion + versionSuffix;
+      logHeadline('\n' + name + ' updated to v' + inputVersion + ':');
     }
 
     writeVersion(pkgJsonPaths[name], inputVersion);

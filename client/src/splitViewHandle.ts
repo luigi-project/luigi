@@ -3,15 +3,12 @@ import { LuigiClientBase } from './baseClass';
 import { helpers } from './helpers';
 
 /**
- * Split view allows to open a micro frontend in a split screen in the lower part of the content area.
-  Open it by calling `const splitViewHandle = LuigiClient.linkManager().openAsSplitView`.
-  At a given time, you can open only one split view. It closes automatically when you navigate to a different route.
-  When you call `handle.collapse()`, the split view gets destroyed. It recreates when you use `handle.expand()`.
-  `openAsSplitView` returns an instance of the split view handle.
-  The functions, actions, and event handlers listed below allow you to control and manage the split view.
-  * @name splitViewHandle
-  * @since 0.6.0
-  */
+ * @summary Split view allows to open a micro frontend in a split screen in the lower part of the content area. Open it by calling `const splitViewHandle = LuigiClient.linkManager().openAsSplitView`. At a given time, you can open only one split view. It closes automatically when you navigate to a different route. When you call `handle.collapse()`, the split view gets destroyed. It recreates when you use `handle.expand()`. `openAsSplitView` returns an instance of the split view handle. The functions, actions, and event handlers listed below allow you to control and manage the split view.
+ * @augments LuigiClientBase
+ * @name splitView
+ * @since 0.6.0
+ * @class
+ */
 export class splitViewHandle extends LuigiClientBase {
   private splitView: Record<string, any>;
   private validSplitViewEvents: SplitViewEvents[] = ['close', 'collapse', 'expand', 'resize'];
@@ -79,8 +76,8 @@ export class splitViewHandle extends LuigiClientBase {
 
   /**
    * Sets the height of the split view
-   * @memberof splitViewHandle
-   * @param {number} value lower height in percent
+   * @memberof splitView
+   * @param {number} value - lower height in percent
    * @since 0.6.0
    * @example
    * splitViewHandle.setSize(60);
@@ -91,10 +88,10 @@ export class splitViewHandle extends LuigiClientBase {
 
   /**
    * Registers a listener for split view events
-   * @memberof splitViewHandle
-   * @param {('expand'|'collapse'|'resize'|'close')} name event name
-   * @param {function} callback gets called when this event gets triggered by Luigi
-   * @returns {string} listener id
+   * @memberof splitView
+   * @param {('expand'|'collapse'|'resize'|'close')} name - event name
+   * @param {function} callback - gets called when this event gets triggered by Luigi
+   * @returns {boolean|string} listener id
    * @since 0.6.0
    * @example
    * const listenerId = splitViewHandle.on('expand', () => {});
@@ -121,8 +118,8 @@ export class splitViewHandle extends LuigiClientBase {
 
   /**
    * Unregisters a split view listener
-   * @memberof splitViewHandle
-   * @param {string} id listener id
+   * @memberof splitView
+   * @param {string} id - listener id
    * @returns {boolean}
    * @since 0.6.0
    * @example

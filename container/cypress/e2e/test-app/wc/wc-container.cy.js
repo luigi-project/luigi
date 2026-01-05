@@ -414,7 +414,7 @@ describe('Web Container Test', () => {
         'LuigiClient.uxManager().closeUserSettings()',
         'LuigiClient.uxManager().removeBackdrop()',
         'LuigiClient.uxManager().collapseLeftSideNav()',
-        'LuigiClient.uxManager().hideAppLoadingIndicator()',
+        'LuigiClient.uxManager() -> Hide Loading Indicator Request',
         'LuigiClient.uxManager().getDocumentTitle()=my-title'
       ];
 
@@ -428,6 +428,42 @@ describe('Web Container Test', () => {
           alertMessages.forEach((msg, index) => {
             expect(stub.getCall(index)).to.be.calledWith(msg);
           });
+        });
+    });
+
+    it('LuigiClient API uxManager showLoadingIndicator', () => {
+      cy.on('window:alert', stub);
+
+      cy.get(containerSelector)
+        .shadow()
+        .contains('uxManager.showLoadingIndicator()')
+        .click()
+        .then(() => {
+          expect(stub.getCall(0)).to.be.calledWith('LuigiClient.uxManager() -> Show Loading Indicator Request');
+        });
+    });
+
+    it('LuigiClient API uxManager hideLoadingIndicator', () => {
+      cy.on('window:alert', stub);
+
+      cy.get(containerSelector)
+        .shadow()
+        .contains('uxManager.hideLoadingIndicator()')
+        .click()
+        .then(() => {
+          expect(stub.getCall(0)).to.be.calledWith('LuigiClient.uxManager() -> Hide Loading Indicator Request');
+        });
+    });
+
+    it('closeCurrentModal', () => {
+      cy.on('window:alert', stub);
+
+      cy.get(containerSelector)
+        .shadow()
+        .get('#closeCurrentModalBtn')
+        .click()
+        .then(() => {
+          expect(stub.getCall(0)).to.be.calledWith('LuigiClient.uxManager().closeCurrentModal()');
         });
     });
   });

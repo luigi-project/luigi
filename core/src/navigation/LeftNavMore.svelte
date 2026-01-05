@@ -11,7 +11,7 @@
 {#if collapsedMode}
   <li class="lui-spacer" role="presentation" aria-hidden="true" />
 {/if}
-<li class="fd-navigation-list__item fd-popover lui-more" role="none" style="display: none">
+<li class="fd-navigation-list__item fd-popover lui-more" role="presentation" style="display: none">
   <!-- svelte-ignore a11y-missing-attribute -->
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <a
@@ -24,7 +24,7 @@
     aria-haspopup="menu"
     on:click|preventDefault|stopPropagation={moreclick}
     on:keyup={(event) => {
-      (event.code === 'Enter' || event.code === 'Space') && moreclick();
+      (event.key === 'Enter' || event.code === 'Space') && moreclick();
     }}
   >
     <div class="fd-navigation-list__content-container">

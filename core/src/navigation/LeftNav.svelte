@@ -139,6 +139,7 @@
   export let semiCollapsible;
   export let semiCollapsibleButton;
   export let semiCollapsibleButtonStyle;
+  export let displayFooterWhenCollapsed;
   export let pathData;
   export let pathParams;
   export let virtualGroupPrefix = NavigationHelpers.virtualGroupPrefix;
@@ -199,6 +200,7 @@
     hideNavComponent = LuigiConfig.getConfigBooleanValue('settings.hideNavigation');
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
+    displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.sideNav.displayFooterWhenCollapsed');
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
@@ -654,14 +656,13 @@
   }
 
   function handleEnterSemiCollapseBtn(event) {
-    const code = event.code;
-    if (code === 'Enter' || code === 'Space') {
+    if (event.key === 'Enter' || event.code === 'Space') {
       semiCollapsibleButtonClicked();
     }
   }
 
   function handleExpandCollapseCategories(event, nodes) {
-    if (event.code === 'Enter' || event === 'Space') {
+    if (event.key === 'Enter' || event.code === 'Space') {
       handleIconClick(nodes, event.currentTarget);
     }
   }
@@ -859,6 +860,7 @@
                     data-testid={getTestIdForCat(nodes.metaInfo, key)}
                   >
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-interactive-supports-focus -->
                     <div
                       class="fd-navigation__item {isSemiCollapsed ? 'fd-popover__control' : ''}"
                       role="treeitem"
@@ -1074,7 +1076,7 @@
                 tabindex="0"
                 on:click={displayMoreButtonMenu}
                 on:keypress={(event) => {
-                  (event.code === 'Enter' || event.code === 'Space') && displayMoreButtonMenu(event);
+                  (event.key === 'Enter' || event.code === 'Space') && displayMoreButtonMenu(event);
                 }}
               >
                 <span class="fd-navigation__icon sap-icon--overflow" role="presentation" aria-hidden="true" />
@@ -1142,9 +1144,9 @@
         aria-roledescription="Main Navigation"
         bind:this={vegaNavCnt}
       >
-        {#if children && pathData.length > 1}
-          <div class="fd-side-nav__container fd-side-nav__container--top">
-            <ul class="fd-navigation-list level-1" role="tree" aria-roledescription="Navigation List Tree">
+        <div class="fd-side-nav__container fd-side-nav__container--top">
+          <ul class="fd-navigation-list level-1" role="tree" aria-roledescription="Navigation List Tree">
+            {#if children && pathData.length > 1}
               {#each sortedVerticalNavGroups as group}
                 <LeftNavGroup
                   navGroup={group}
@@ -1160,7 +1162,7 @@
                             <li
                               is-in-group={!group.isSingleEntry}
                               class="fd-navigation-list__item lui-nav-entry"
-                              role="none"
+                              role="presentation"
                             >
                               <!-- svelte-ignore a11y-role-has-required-aria-props -->
                               <a
@@ -1294,7 +1296,7 @@
                               {#each nodes as node}
                                 {#if !node.hideFromNav}
                                   {#if node.label}
-                                    <li class="fd-navigation-list__item" role="none">
+                                    <li class="fd-navigation-list__item" role="presentation">
                                       <!-- svelte-ignore a11y-role-has-required-aria-props -->
                                       <a
                                         class="fd-navigation-list__content {node === selectedNode ? 'is-selected' : ''}"
@@ -1352,12 +1354,22 @@
                   {/each}
                 </LeftNavGroup>
               {/each}
+            {/if}
 
-              <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
-            </ul>
+            <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
+          </ul>
+        </div>
+        <!-- Vega footer -->
+        {#if displayFooterWhenCollapsed && footerText}
+          <div class="fd-side-nav__utility">
+            <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
+              <span
+                class="lui-side-nav__footer--text-visible fd-has-type-minus-1"
+                data-testid="lui-side-nav__footer--text-visible">{footerText ? footerText : ''}</span
+              >
+            </span>
           </div>
-        {/if}
-        {#if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
+        {:else if (footerText || semiCollapsibleButton) && !isSemiCollapsed}
           <div class="fd-side-nav__utility">
             <span class="lui-side-nav__footer" data-testid="lui-side-nav__footer">
               <span class="lui-side-nav__footer--text fd-has-type-minus-1" data-testid="lui-side-nav__footer--text"
@@ -1491,7 +1503,6 @@
                             role={!addNavHrefForAnchor ? 'button' : undefined}
                             id="collapsible_listnode_{index}"
                             aria-haspopup="true"
-                            aria-expanded={isExpanded(nodes, expandedCategories)}
                             on:click|preventDefault={() =>
                               setExpandedState(nodes, !isExpanded(nodes, expandedCategories), this)}
                           >
@@ -1987,7 +1998,8 @@
     align-items: center;
     border-top: var(--sapList_BorderWidth, 0.0625rem) solid var(--sapList_BorderColor, #e4e4e4);
 
-    &--text {
+    &--text,
+    &--text-visible {
       color: #32363a;
       color: var(--sapTextColor, #32363a);
       white-space: nowrap;

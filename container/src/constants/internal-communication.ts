@@ -108,6 +108,11 @@ export namespace LuigiInternalMessageID {
   export const NAVIGATION_COMPLETED_REPORT = 'luigi.navigate.ok';
 
   /**
+   * A message sent to the microfronted from parent that the modal has been closed
+   */
+  export const CLOSE_MODAL_ANSWER = 'luigi.navigation.modal.close';
+
+  /**
    * A message emmitted from the Microfrontend when a request to update the modal path parameters is sent
    */
   export const UPDATE_MODAL_PATH_DATA_REQUEST = 'luigi.navigation.updateModalDataPath';
@@ -151,4 +156,9 @@ export namespace LuigiInternalMessageID {
    * A message emmitted from the Microfrontend when a request to set the viewgroup data is sent
    */
   export const SET_VIEW_GROUP_DATA_REQUEST = 'luigi.setVGData';
+
+  /**
+   * A message emmitted from the Microfrontend when a request to close the current modal is sent
+   */
+  export const CLOSE_CURRENT_MODAL_REQUEST = 'luigi.close-modal';
 }

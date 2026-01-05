@@ -138,7 +138,7 @@ class GenericHelpersClass {
 
   /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {path} string full url, relative or absolute path
+   * @param {path} string - full url, relative or absolute path
    */
   prependOrigin(path) {
     if (!path || path.startsWith('http')) {
@@ -153,7 +153,7 @@ class GenericHelpersClass {
 
   /**
    * Adds a leading slash to a string if it has none
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string with a leading slash
    */
   addLeadingSlash(str) {
@@ -162,7 +162,7 @@ class GenericHelpersClass {
 
   /**
    * Adds a trailing slash to a string if it has none
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string with a trailing slash
    */
   addTrailingSlash(str) {
@@ -174,7 +174,7 @@ class GenericHelpersClass {
 
   /**
    * Removes leading slash of a string
-   * @param {str} string
+   * @param {string} string
    * @returns {string} string without leading slash
    */
   trimLeadingSlash(str) {
@@ -183,7 +183,7 @@ class GenericHelpersClass {
 
   /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {str} string from which any number of trailing slashes should be removed
+   * @param  string - from which any number of trailing slashes should be removed
    * @returns string string without any trailing slash
    */
   trimTrailingSlash(str) {
@@ -198,7 +198,7 @@ class GenericHelpersClass {
   /**
    * Returns a path that starts and end with one (and only one) slash,
    * regardless of the slashes being already present in the path given as input
-   * @param {str} string path to normalize
+   * @param {string} string - path to normalize
    * @returns string path that starts and ends with a slash
    */
 
@@ -234,7 +234,7 @@ class GenericHelpersClass {
     let processedString = inputString;
     if (params) {
       if (parenthesis) {
-        processedString = replace(processedString, /{([\s\S]+?)}/g, val => {
+        processedString = replace(processedString, /{([\s\S]+?)}/g, (val) => {
           let repl = val.slice(1, -1).trim();
           if (repl.indexOf(prefix) === 0) {
             repl = repl.substring(prefix.length);
@@ -242,7 +242,7 @@ class GenericHelpersClass {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach(entry => {
+        Object.entries(params).forEach((entry) => {
           processedString = processedString.replace(
             new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
             encodeURIComponent(entry[1])
@@ -297,7 +297,7 @@ class GenericHelpersClass {
     return (
       (input &&
         Object.keys(input)
-          .filter(key => !key.startsWith('_'))
+          .filter((key) => !key.startsWith('_'))
           .reduce((obj, key) => {
             obj[key] = input[key];
             return obj;
@@ -312,23 +312,23 @@ class GenericHelpersClass {
    * References still stay.
    * Allows wildcard ending keys
    *
-   * @param {Object} input any given object
-   * @param {Array} of keys, allows also wildcards at the end, like: _*
+   * @param {Object} input - any given object
+   * @param {Array} keys - allows also wildcards at the end, like: _*
    */
   removeProperties(input, keys) {
     const res = {};
-    if (!keys instanceof Array || !keys.length) {
+    if ((!keys) instanceof Array || !keys.length) {
       console.error('[ERROR] removeProperties requires second parameter: array of keys to remove from object.');
       return input;
     }
     for (const key in input) {
       if (input.hasOwnProperty(key)) {
-        const noFullMatch = keys.filter(k => key.includes(k)).length === 0;
+        const noFullMatch = keys.filter((k) => key.includes(k)).length === 0;
         const noPartialMatch =
           keys
-            .filter(k => k.endsWith('*'))
-            .map(k => k.slice(0, -1))
-            .filter(k => key.startsWith(k)).length === 0;
+            .filter((k) => k.endsWith('*'))
+            .map((k) => k.slice(0, -1))
+            .filter((k) => key.startsWith(k)).length === 0;
         if (noFullMatch && noPartialMatch) {
           res[key] = input[key];
         }
@@ -341,8 +341,8 @@ class GenericHelpersClass {
    * Compares two semver versions and returns 1, 0 or -1
    * Can be used as sort function.
    * Limited to full number comparisons, ignores dev, rc, next versions.
-   * @param {string} a source
-   * @param {string} b target
+   * @param {string} a - source
+   * @param {string} b - target
    * @example
    * semverCompare('1.0.0', '0.7.7')
    * ['1.3', '1.2', '1.4', '1.1'].sort(semverCompare)
@@ -364,8 +364,8 @@ class GenericHelpersClass {
   /**
    * Checks, if an experimental feature is enabled under settings.experminental
    *
-   * @param {*} expFeatureName the feature name to check for
-   * @param {*} showWarn if true, prints a warning on js console that feature is not enabled
+   * @param {*} expFeatureName - the feature name to check for
+   * @param {*} showWarn - if true, prints a warning on js console that feature is not enabled
    *
    * @returns true, if feature enabled, false otherwise.
    */
@@ -383,8 +383,8 @@ class GenericHelpersClass {
    */
   createRemotePromise() {
     let res, rej;
-    const prom = new Promise(resolve => {
-      res = value => {
+    const prom = new Promise((resolve) => {
+      res = (value) => {
         resolve(value || true);
       };
       rej = () => {
@@ -403,7 +403,7 @@ class GenericHelpersClass {
     prom.id = luiRP.counter++;
     luiRP.promises[prom.id] = prom;
 
-    prom.doResolve = value => {
+    prom.doResolve = (value) => {
       delete luiRP.promises[prom.id];
       res(value);
     };
@@ -421,6 +421,36 @@ class GenericHelpersClass {
 
   isString(value) {
     return typeof value === 'string' || value instanceof String;
+  }
+
+  parseJSON(value) {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      console.error(error);
+    }
+    return undefined;
+  }
+
+  calcMFELocation(element) {
+    if (!element || !element.tagName) {
+      return undefined;
+    }
+
+    if (element.closest('.drawer')) {
+      return 'drawer';
+    } else if (element.closest('.iframeModalCtn')) {
+      return 'modal';
+    } else if (element.closest('.iframeSplitViewCnt')) {
+      return 'splitView';
+    } else if (
+      element.hasAttribute('lui_web_component') &&
+      !element?.parentElement?.classList?.contains('wcContainer')
+    ) {
+      return undefined;
+    }
+
+    return 'main';
   }
 }
 

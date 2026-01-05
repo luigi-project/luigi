@@ -1,9 +1,15 @@
 body {
+  --bg-color: #f4f4f4;
+  --fg-color: #3c3c43;
+  --header-border-color: lightgray;
+  --color-secondary: #3c4553;
   counter-reset: subTitle;
 
   &.has-dark-bg {
-    background: $secondary-color;
-    color: white;
+    --bg-color: rgb(27, 27, 31);
+    --fg-color: #dfdfd6;
+    --header-border-color: black;
+    --color-secondary: rgb(172, 191, 175);
   }
 
   @include breakpoint(large) {
@@ -66,6 +72,23 @@ ul {
   @include breakpoint(xxlarge) {
     font-size: 52px;
   }
+
+  &.green {
+    font-size: 70px;
+
+    background: linear-gradient( -45deg, $luigi-green 30%, $body-font-color);
+    background-clip: text;
+    line-height: 94px;
+    display: inline;
+    color: transparent;
+
+    img {
+      display: none;
+      width: 124px;
+      margin-right: 19px;
+      margin-bottom: 19px;
+    }
+  }
 }
 
 .title-2 {
@@ -110,65 +133,6 @@ section,
   }
 }
 
-.s-gradient {
-  position: relative;
-  z-index: 1;
-  padding: 50px 0;
-
-  &:before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    transform: skewY(3deg);
-    background-color: $ice-blue;
-    z-index: -1;
-  }
-
-  &--right-left {
-    &:before {
-      transform: skewY(-3deg);
-    }
-  }
-
-  .main-content & {
-    &:last-child {
-      margin-bottom: -100px;
-      padding-bottom: calc(100px + 50px);
-
-      @include breakpoint(large) {
-        margin-bottom: -150px;
-        padding-bottom: calc(150px + 50px);
-      }
-
-      @include breakpoint(xxlarge) {
-        margin-bottom: -200px;
-        padding-bottom: calc(200px + 100px);
-      }
-
-      &.has-big-bottom-margin {
-        margin-bottom: -300px;
-        padding-bottom: 350px;
-
-        @include breakpoint(xxlarge) {
-          margin-bottom: -500px;
-          padding-bottom: calc(500px + 100px);
-        }
-      }
-    }
-  }
-
-  @include breakpoint(large) {
-    padding: 60px 0;
-  }
-
-  @include breakpoint(xxlarge) {
-    padding: 150px 0;
-  }
-}
 
 .btn-primary,
 .btn-secondary {
@@ -255,11 +219,138 @@ p {
 }
 
 .main-content {
+  >  .s-stage {
+    padding-top: 30px;
+    padding-bottom: 50px;
+    color: $body-font-color;
+
+    > .row {
+      align-items: center;
+    }
+
+    .content {
+      @include breakpoint(medium down) {
+        margin-bottom: 50px;
+      }
+
+      @include breakpoint(large) {
+        height: 350px;
+        padding-top: 30px;
+
+        a {
+          margin-right: 10px;
+        }
+      }
+
+      @include breakpoint(xxlarge) {
+        height: 650px;
+      }
+    }
+
+    .sub-title {
+      font-family: $extra-font-family;
+      font-weight: 500;
+
+      @include breakpoint(xxlarge) {
+        font-size: 20px;
+      }
+    }
+
+    .image {
+      background-image: url('../img/running_app_2x.png');
+      background-position: 50% 0;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      .play-button {
+        display: block;
+        width: 88px;
+        height: 88px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background: rgba($powder-blue,0.51) url('../img/play_icon.svg') 60% 50% no-repeat;
+        background-size: 22px 28px;
+        border-radius: 50%;
+        border: 8px solid rgba($ice-blue,0.46);
+        background-clip: padding-box;
+      }
+
+      @include breakpoint(medium down) {
+        padding-top: 52%;
+        position: relative;
+      }
+
+      @include breakpoint(large) {
+        background: none;
+      }
+    }
+
+    @include breakpoint(large) {
+      position: relative;
+      overflow: hidden;
+
+      padding-top: 55px;
+      padding-bottom: 60px;
+      padding-left: 80px;
+
+      > .row {
+        position: relative;
+
+        &:before {
+          position: absolute;
+          display: block;
+          height: 50%;
+          width: 50%;
+          top: 80px;
+          left: 60%!important;
+          content: '';
+          background-image: linear-gradient(-45deg, $luigi-green 50%, $luigi-green 0);
+          background-position: 0 0;
+          background-repeat: no-repeat;
+          background-size: auto 100%;
+          filter: blur(68px);
+        }
+
+        &:after {
+          position: absolute;
+          display: block;
+          height: 78%;
+          width: 100%;
+          top: 36px;
+          left: 50%;
+          content: '';
+          background-image: url('../img/running_app_2x.png');
+          background-position: 0 0;
+          background-repeat: no-repeat;
+          background-size: auto 100%;
+        }
+      }
+    }
+
+    @include breakpoint(large down) {
+      > .row {
+        &::before {
+          background-size: 30vw 100%;
+        }
+      }
+    }
+
+    @include breakpoint(xxlarge) {
+      > .row {
+        &:before {
+          left: 36%;
+        }
+      }
+    }
+  }
+
   > section {
     padding: 50px 0;
   
     @include breakpoint(large) {
-      padding: 100px 0;
+      padding: 50px 0;
 
       &.has-big-padding {
         padding: 150px 0;
@@ -280,4 +371,90 @@ p {
       }
     }
   }
+}
+
+
+.theme-menu {
+  &:before, &:after {
+    margin-left: 8px;
+    width: 1px;
+    height: 24px;
+    background-color: $header-border-color;
+    content: "";
+  }
+
+  &::before {
+    transform: translate(10px, 0);
+  }
+  &::after {
+    transform: translate(10px, 0);
+  }
+}
+.theme-switch {
+    position: relative;
+    border-radius: 11px;
+    display: block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+    border: 1px solid var(--fg-color);
+    background-color: var(--bg-color);
+    transition: border-color .25s!important;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.check {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color:color-mix(in srgb, $body-font-color, #ffffff 30%);
+    box-shadow: var(--vp-shadow-1);
+    border: 1px solid var(--fg-color);
+}
+
+.vpi-sun {
+    --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41'/%3E%3C/svg%3E")
+}
+
+.vpi-moon {
+    --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3E%3C/svg%3E")
+}
+
+.icon {
+  .sun, .moon {
+    mask: var(--icon) no-repeat;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    color: var(--fg-color);
+    background-color: var(--bg-color);
+  }
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.moon {
+  opacity: 0
+}
+.sun {
+  opacity: 1
+}
+.has-dark-bg .moon {
+    opacity: 1
+}
+.has-dark-bg .sun {
+    opacity: 0
+}
+
+.has-dark-bg .theme-switch .check {
+    transform: translate(18px)
 }

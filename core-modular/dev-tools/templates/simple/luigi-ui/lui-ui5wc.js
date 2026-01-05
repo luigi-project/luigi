@@ -53,6 +53,7 @@ function addShellbarItem(shellbar, item) {
     itemEl.setAttribute('icon', item.category.icon);
     itemEl.setAttribute('text', item.category.label);
     itemEl.setAttribute('category-uid', item.category.id);
+    itemEl.setAttribute('tooltip', item.category.tooltip);
     shellbar.appendChild(itemEl);
     renderCategoryPopover(item.category);
     itemEl.addEventListener('click', createCategoryClickHandler(item.category.id));
@@ -64,6 +65,11 @@ function setDialogSize(dialog, settings) {
   if (settings.width && settings.width.match(regex) && settings.height && settings.height.match(regex)) {
     dialog.style.cssText += `width:${settings.width};height:${settings.height};`;
   } else {
+    dialog.classList.forEach((classListEntry) => {
+      if (classListEntry.startsWith('lui-dialog--')) {
+        dialog.classList.remove(classListEntry);
+      }
+    });
     switch (settings.size) {
       case 'fullscreen':
         dialog.classList.add('lui-dialog--fullscreen');
@@ -185,10 +191,12 @@ function createCategoryClickHandler(id) {
   };
 }
 
-function renderProfilePopover(profileObj) {
+function renderProfilePopover(profileObj, avatar) {
   const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
   const profilePopover = document.createElement('ui5-popover');
   const profileList = document.createElement('ui5-list');
+  const uInfoWrapper = document.createElement('div');
+  uInfoWrapper.classList.add('lui-user-info');
 
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
@@ -222,8 +230,38 @@ function renderProfilePopover(profileObj) {
     profileList.appendChild(profileLi);
   }
 
+  if (profileObj.logout) {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', profileObj.logout.altText);
+    profileLi.innerText = profileObj.logout.label;
+
+    profileLi.addEventListener('click', () => {
+      profileObj.logout.doLogout();
+    });
+
+    profileList.appendChild(profileLi);
+  }
+
+  profilePopover.appendChild(uInfoWrapper);
   profilePopover.appendChild(profileList);
   document.querySelector('ui5-navigation-layout').appendChild(profilePopover);
+
+  profileObj.onUserInfoUpdate((userInfo) => {
+    uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
+    uInfoWrapper.innerHTML += /*html*/ `      
+      <div>${userInfo.name}</div>
+      <div>${userInfo.email}</div>
+      <div>${userInfo.description}</div>
+    `;
+    if (userInfo.picture) {
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');
+      avatar.innerHTML = `<img src="${userInfo.picture}"/>`;
+    } else {
+      avatar.setAttribute('initials', userInfo.initials);
+      avatar.setAttribute('data-testid', 'luigi-topnav-profile-initials');
+    }
+  });
 }
 
 function onProfileClick(event) {
@@ -258,35 +296,48 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 };
 
 function renderNodeOrCategory(item, leftNavData) {
-  let html = '';
+  const frag = document.createDocumentFragment();
+
   if (item.node) {
-    html += `<ui5-side-navigation-item
-                            text="${item.node.label}"
-                            icon="${item.node.icon}"
-                            luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                            ${item.selected ? 'selected' : ''}
-                            ></ui5-side-navigation-item>`;
+    const el = document.createElement('ui5-side-navigation-item');
+    el.setAttribute('text', item.node.label);
+    el.setAttribute('tooltip', item.node.tooltip);
+    if (item.node.icon) el.setAttribute('icon', item.node.icon);
+    el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+    el.addEventListener('click', (ev) => {
+      leftNavData.navClick(item.node);
+    });
+    if (item.selected) el.setAttribute('selected', '');
+    frag.appendChild(el);
   } else if (item.category) {
     if (item.category?.nodes?.length > 0) {
-      html += `<ui5-side-navigation-item
-                                text="${item.category.label}"
-                                icon="${item.category.icon}"
-                                category-uid="${leftNavData.basePath + ':' + item.category.id}"
-                                ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+      const el = document.createElement('ui5-side-navigation-item');
+      el.setAttribute('text', item.category.label);
+      el.setAttribute('tooltip', item.category.tooltip);
+      if (item.category.icon) el.setAttribute('icon', item.category.icon);
+      el.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
+      if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
+        el.setAttribute('expanded', '');
+      }
 
-      item.category.nodes.forEach((item) => {
-        html += `<ui5-side-navigation-sub-item
-                                text="${item.node.label}"
-                                icon="${item.node.icon}"
-                                luigi-route="${leftNavData.basePath + '/' + item.node.pathSegment}"
-                                ${item.selected ? 'selected' : ''}
-                                ></ui5-side-navigation-sub-item>`;
+      item.category.nodes.forEach((nodeWrapper) => {
+        const sub = document.createElement('ui5-side-navigation-sub-item');
+        sub.setAttribute('text', nodeWrapper.node.label);
+        sub.setAttribute('tooltip', nodeWrapper.node.tooltip);
+        if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.node.icon);
+        sub.addEventListener('click', (ev) => {
+          leftNavData.navClick(nodeWrapper.node);
+        });
+        sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+        if (nodeWrapper.selected) sub.setAttribute('selected', '');
+        el.appendChild(sub);
       });
 
-      html += '</ui5-side-navigation-item>';
+      frag.appendChild(el);
     }
   }
-  return html;
+
+  return frag;
 }
 
 /** @type {LuigiConnector} */
@@ -364,17 +415,30 @@ const connector = {
         };
         shellbar.addEventListener('logo-click', shellbar._logoEL);
       }
+
+      shellbar.innerHTML = html;
+
       if (topNavData.profile) {
-        if (topNavData.profile.staticUserInfoFn) {
-          topNavData.profile.staticUserInfoFn().then((value) => {
-            shellbar._userInfo = value;
+        console.log(topNavData.profile);
+        if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
+          const ava = document.createElement('ui5-avatar');
+          ava.setAttribute('slot', 'profile');
+          ava.setAttribute('shape', 'Circle');
+          ava.setAttribute('size', 'M');
+          ava.setAttribute('color-scheme', 'Accent7');
+          renderProfilePopover(topNavData.profile, ava);
+          shellbar.appendChild(ava);
+          shellbar.addEventListener('profile-click', onProfileClick);
+        } else {
+          const loginBtn = document.createElement('div');
+          loginBtn.innerHTML = 'Sign In';
+          loginBtn.setAttribute('slot', 'profile');
+          shellbar.appendChild(loginBtn);
+          shellbar.addEventListener('profile-click', () => {
+            globalThis.Luigi.auth().login();
           });
         }
-        html += `<ui5-avatar slot="profile" shape="Circle" size="M" initials="LU" color-scheme="Accent7"></ui5-avatar>`;
-        renderProfilePopover(topNavData.profile);
-        shellbar.addEventListener('profile-click', onProfileClick);
       }
-      shellbar.innerHTML = html;
 
       (topNavData.topNodes || []).forEach((item) => {
         addShellbarItem(shellbar, item);
@@ -425,6 +489,7 @@ const connector = {
   renderLeftNav: (leftNavData) => {
     const sidenav = document.querySelector('ui5-side-navigation');
     const burger = document.getElementById('toggle');
+
     if (sidenav && burger) {
       if (!burger._clickListener) {
         burger._clickListener = () => {
@@ -432,34 +497,39 @@ const connector = {
         };
         burger.addEventListener('click', burger._clickListener);
       }
-
-      let html = '';
+      sidenav.innerHTML = '';
+      if (leftNavData?.selectedNode?.hideSideNav) {
+        sidenav.setAttribute('style', 'display: none');
+        burger.setAttribute('style', 'display: none');
+      } else {
+        sidenav.removeAttribute('style');
+        burger.removeAttribute('style');
+      }
+      const containerFrag = document.createDocumentFragment();
       if (leftNavData.items) {
         leftNavData.items.forEach((item) => {
           if (item.node || (item.category && !item.category.isGroup)) {
-            html += renderNodeOrCategory(item, leftNavData);
+            containerFrag.appendChild(renderNodeOrCategory(item, leftNavData));
           } else if (item.category && item.category.isGroup) {
-            html += `<ui5-side-navigation-group text="${item.category.label}" category-uid="${leftNavData.basePath + ':' + item.category.id}"
-            ${readExpandedState(leftNavData.basePath + ':' + item.category.id) ? 'expanded' : ''}>`;
+            const group = document.createElement('ui5-side-navigation-group');
+            group.setAttribute('text', item.category.label);
+            group.setAttribute('tooltip', item.category.tooltip);
+            group.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
+            if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
+              group.setAttribute('expanded', '');
+            }
+
             item.category.nodes.forEach((subitem) => {
-              html += renderNodeOrCategory(subitem, leftNavData);
+              group.appendChild(renderNodeOrCategory(subitem, leftNavData));
             });
-            html += `</ui5-side-navigation-group>`;
+
+            containerFrag.appendChild(group);
           }
         });
       }
 
       document.body.classList.toggle('left-nav-hidden', !(leftNavData.items?.length > 0));
-      sidenav.innerHTML = html;
-
-      const items = sidenav.querySelectorAll('[luigi-route]');
-      if (items) {
-        items.forEach((item) => {
-          item.addEventListener('click', () => {
-            globalThis.Luigi.navigation().navigate(item.getAttribute('luigi-route'));
-          });
-        });
-      }
+      sidenav.appendChild(containerFrag);
 
       if (!sidenav._observer) {
         sidenav._observer = new MutationObserver((mutations) => {
@@ -496,37 +566,51 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
-  renderModal: (lc, modalSettings, onCloseCallback) => {
+  renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
+    dialog.classList.add('lui-modal');
     dialog.setAttribute('header-text', modalSettings?.title);
     setDialogSize(dialog, modalSettings);
     dialog.appendChild(lc);
 
     const bar = document.createElement('ui5-bar');
     bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
+    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
     dialog.appendChild(bar);
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopImmediatePropagation();
+      e.preventDefault();
       dialog.open = false;
       if (onCloseCallback) {
         onCloseCallback();
       }
+      document.body.removeChild(dialog);
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);
 
     document.body.appendChild(dialog);
-    dialog.addEventListener('close', () => {
-      console.log('close');
-      if (onCloseCallback) {
-        onCloseCallback();
-      }
-      //document.body.removeChild(dialog);
+    onCloseRequest().then(() => {
+      dialog.open = false;
+      document.body.removeChild(dialog);
     });
+
     dialog.open = true;
+  },
+
+  updateModalSettings: (modalSettings) => {
+    console.log('modalSettings', modalSettings);
+    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
+    if (!dialogs) return;
+    dialogs.forEach((dialog) => {
+      if (modalSettings?.title) {
+        dialog.querySelector('.lui-modal-title').innerText = modalSettings.title;
+      }
+      setDialogSize(dialog, modalSettings);
+    });
   },
 
   renderTabNav: (tabNavData) => {
@@ -608,17 +692,7 @@ const connector = {
       error: 'Critical',
       success: 'Positive'
     };
-    'None' | 'Positive' | 'Critical' | 'Negative' | 'Information';
 
-    if (!settings || settings == {})
-      settings = {
-        icon: 'question-mark',
-        header: 'Confirmation',
-        body: 'Are you sure you want to do this?',
-        buttonDismiss: 'No',
-        buttonConfirm: 'Yes',
-        type: 'confirmation'
-      };
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-confirmation-modal');
     dialog.setAttribute('header-text', settings?.header);
@@ -649,18 +723,38 @@ const connector = {
     dialog.open = true;
   },
 
-  openUserSettings: (settings) => {
+  openUserSettings: async (settings) => {
     if (!settings) {
       settings = {
         title: 'User Settings'
       };
     }
 
+    const storedUserSettings = {};
+    const previousUserSettings = await globalThis.Luigi.readUserSettings();
     const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
     const dialog = document.createElement('ui5-dialog');
     const lc = document.createElement('div');
     const bar = document.createElement('ui5-bar');
-    const btn = document.createElement('ui5-button');
+    const toolbar = document.createElement('ui5-toolbar');
+    const cancelBtn = document.createElement('ui5-toolbar-button');
+    const saveBtn = document.createElement('ui5-toolbar-button');
+    const containerWrapper = globalThis.Luigi.getEngine()._connector?.getContainerWrapper();
+    let userSettingsGroup;
+
+    if (containerWrapper) {
+      let viewGroupContainer;
+
+      [...containerWrapper.childNodes].forEach((element) => {
+        if (element.tagName?.indexOf('LUIGI-') === 0) {
+          viewGroupContainer = element;
+        }
+      });
+
+      if (viewGroupContainer) {
+        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+      }
+    }
 
     dialog.classList.add('lui-dialog');
     dialog.setAttribute('header-text', settings?.title);
@@ -670,18 +764,62 @@ const connector = {
     bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.title}</ui5-title>`;
     dialog.appendChild(bar);
 
-    btn.innerHTML = 'X';
-    btn.onclick = () => {
-      dialog.open = false;
+    toolbar.setAttribute('slot', 'footer');
+    dialog.appendChild(toolbar);
+
+    cancelBtn.onclick = () => {
+      connector.closeUserSettings();
     };
-    btn.setAttribute('slot', 'endContent');
-    bar.appendChild(btn);
+    cancelBtn.setAttribute('text', 'Cancel');
+    toolbar.appendChild(cancelBtn);
+
+    saveBtn.onclick = async () => {
+      const select = document.querySelector('#timeFormatSelector');
+
+      if (select) {
+        storedUserSettings.time = `${select.value} h`;
+
+        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings).then(() => {
+          connector.closeUserSettings();
+          globalThis.Luigi.ux().showAlert({
+            text: 'User settings are stored successfully!',
+            type: 'success'
+          });
+        });
+      } else {
+        connector.closeUserSettings();
+        globalThis.Luigi.ux().showAlert({
+          text: 'There are no user settings to store :(',
+          type: 'info'
+        });
+      }
+    };
+    saveBtn.setAttribute('design', 'Positive');
+    saveBtn.setAttribute('text', 'Save');
+    toolbar.appendChild(saveBtn);
 
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
+      const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
+      const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
+      const timeFormat =
+        previousUserSettings && previousUserSettings[userSettingsGroup]
+          ? previousUserSettings[userSettingsGroup].time
+          : userSettingsObj?.settings?.time?.options[0];
+
+      storedUserSettings.privacy = null;
+      storedUserSettings.time = timeFormat;
+
       lc.innerHTML = `
-        <ui5-title level="H3">${userSettingData[0].privacy.label}</ui5-title>
-        <p>${userSettingData[0].privacy.settings.policy.label}</p>
-        <p>${userSettingData[0].privacy.settings.time.label} - ${userSettingData[0].privacy.settings.time.options[0]}</p>
+        <ui5-title level="H3">${userSettingsObj?.label || 'No settings in config'}</ui5-title>
+        <p>${userSettingsObj?.settings?.policy?.label || ''}</p>
+        <p>${userSettingsObj?.settings?.time?.label || ''} - ${timeFormat || ''}</p>
+        <form>
+          <label for="timeFormatSelector">Switch time format:</label><br>
+          <select id="timeFormatSelector" name="timeFormatSelector">
+            <option value="12" ${timeFormat === '12 h' ? 'selected' : ''}>12 h</option>
+            <option value="24" ${timeFormat === '24 h' ? 'selected' : ''}>24 h</option>
+          </select>
+        </form>
       `;
     } else {
       lc.innerHTML = `
@@ -743,6 +881,35 @@ const connector = {
         type: 'error'
       });
     }
+  },
+
+  setCurrentLocale: (locale) => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale has been set to: ' + locale,
+      type: 'success'
+    });
+  },
+
+  getCurrentLocale: () => {
+    globalThis.Luigi.ux().showAlert({
+      text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
+      type: 'info'
+    });
+  },
+
+  showFatalError: (errorMsg) => {
+    var errorTextNode = document.createTextNode(errorMsg);
+    var fd_ui = document.createElement('div');
+    fd_ui.setAttribute('class', 'fd-ui');
+    fd_ui.setAttribute('style', 'text-align: center;');
+
+    var errorDiv = document.createElement('div');
+    errorDiv.setAttribute('class', 'fd-message-strip fd-message-strip--error');
+    errorDiv.setAttribute('style', 'max-width: 800px; display: inline-block; margin-top: 40px;');
+    errorDiv.appendChild(errorTextNode);
+
+    fd_ui.appendChild(errorDiv);
+    document.getElementById('app').appendChild(fd_ui);
   }
 };
 
@@ -766,6 +933,13 @@ window.addEventListener(
 
     if (event?.data?.data?.title) {
       globalThis.Luigi.ux().setDocumentTitle(event?.data?.data?.title);
+    }
+
+    if (event?.data?.data?.customTranslation) {
+      globalThis.Luigi.ux().showAlert({
+        text: globalThis.Luigi.i18n().getTranslation('luigi.confirmationModal.header'),
+        type: 'info'
+      });
     }
   },
   false
