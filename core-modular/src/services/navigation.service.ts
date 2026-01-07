@@ -92,7 +92,7 @@ export interface PathData {
 }
 
 export interface Node {
-  visibleForFeatureToggles?: string[];
+  altText?: string;
   anonymousAccess?: any;
   category?: any;
   children?: Node[];
@@ -106,6 +106,7 @@ export interface Node {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
   onNodeActivation?: (node: Node) => boolean | void;
@@ -115,7 +116,7 @@ export interface Node {
   tabNav?: boolean;
   tooltip?: string;
   viewUrl?: string;
-  isRootNode?: boolean;
+  visibleForFeatureToggles?: string[];
 }
 
 export interface PageErrorHandler {
