@@ -1,4 +1,3 @@
-import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { NavigationService, type Node } from '../../src/services/navigation.service';
 
 describe('NavigationService', () => {
@@ -51,6 +50,79 @@ describe('NavigationService', () => {
 
       expect(warnSpy).toHaveBeenCalledWith('nodeChangeHook is not a function!');
       warnSpy.mockRestore();
+    });
+  });
+
+  describe('NavigationService.shouldPreventNavigation', () => {
+    it('should prevent navigation if node has activation handler defined', async () => {
+      const node: Node = {
+        label: 'test',
+        onNodeActivation: jest.fn().mockReturnValue(false)
+      };
+
+      expect(await navigationService.shouldPreventNavigation(node)).toEqual(true);
+    });
+
+    it('should not prevent navigation if node has activation handler undefined', async () => {
+      const node: Node = {
+        label: 'test',
+        onNodeActivation: undefined
+      };
+
+      expect(await navigationService.shouldPreventNavigation(node)).toEqual(false);
+    });
+  });
+
+  describe('NavigationService.shouldPreventNavigationForPath', () => {
+    it('should prevent navigation for path if navigation is prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.extractDataFromPath = jest.fn().mockReturnValue({ nodeObject: {}, pathData: {} });
+      navigationService.shouldPreventNavigation = jest.fn().mockReturnValue(true);
+
+      expect(await navigationService.shouldPreventNavigationForPath(nodepath)).toEqual(true);
+    });
+
+    it('should not prevent navigation for path if navigation is not prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.extractDataFromPath = jest.fn().mockReturnValue({ nodeObject: {}, pathData: {} });
+      navigationService.shouldPreventNavigation = jest.fn().mockReturnValue(false);
+
+      expect(await navigationService.shouldPreventNavigationForPath(nodepath)).toEqual(false);
+    });
+  });
+
+  describe('NavigationService.openViewInNewTab', () => {
+    let windowOpenSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      (window as any).open = jest.fn();
+      windowOpenSpy = jest.spyOn(window as any, 'open');
+    });
+
+    afterEach(() => {
+      windowOpenSpy.mockRestore();
+    });
+
+    it('should open view in new tab if navigation is not prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
+
+      await navigationService.openViewInNewTab(nodepath);
+
+      expect(windowOpenSpy).toHaveBeenCalledWith(nodepath, '_blank', 'noopener,noreferrer');
+    });
+
+    it('should not open view in new tab if navigation is prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(true);
+
+      await navigationService.openViewInNewTab(nodepath);
+
+      expect(windowOpenSpy).not.toHaveBeenCalled();
     });
   });
 
