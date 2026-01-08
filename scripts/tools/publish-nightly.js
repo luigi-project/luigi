@@ -52,9 +52,11 @@ const publishPaths = {
 };
 
 if (!process.env.NIGHTLY_VERSION) {
-  logHeadline('Added container path to publish nightly release steps');
+  logHeadline('Added container and headless path to publish nightly release steps');
   packagePaths.container = ['container'];
   publishPaths.container = ['container', 'public'];
+  packagePaths.headless = ['core-modular'];
+  publishPaths.headless = ['core-modular', 'public'];
 }
 
 function execTrim(cmd) {
