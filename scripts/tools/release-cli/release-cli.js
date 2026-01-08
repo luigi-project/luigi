@@ -192,7 +192,10 @@ function addToChangelog(versionText, changelog, lastline) {
     let inputVersion = input.version;
 
     // handle custom pkg version for nightly release
-    if (process.env.NIGHTLY === 'true' && (name === 'container' || name === 'client_support_angular' || name === 'headless')) {
+    if (
+      process.env.NIGHTLY === 'true' &&
+      (name === 'container' || name === 'client_support_angular' || name === 'headless')
+    ) {
       const pkgNightlyVersion = getVersion(name);
       const versionSuffix = getVersionSuffix();
 
