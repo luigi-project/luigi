@@ -1,6 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { addInitListener, removeInitListener } from '@luigi-project/client';
-import { LuigiContextService } from '@luigi-project/client-support-angular';
+import { Component, DestroyRef, inject, OnInit, OnDestroy, ChangeDetectorRef, Signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
+import { IContextMessage, LuigiContextService } from '@luigi-project/client-support-angular';
+import { first } from 'rxjs/operators';
+
 @Component({
   selector: 'app-developers',
   templateUrl: './developers.component.html',
@@ -8,8 +11,11 @@ import { LuigiContextService } from '@luigi-project/client-support-angular';
   standalone: false
 })
 export class DevelopersComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef);
   private initListener;
   contextAsync;
+  contextObservable;
+  contextSignal;
   visitors = 0;
 
   constructor(
@@ -29,9 +35,27 @@ export class DevelopersComponent implements OnInit, OnDestroy {
   }
 
   getContextAsync() {
-    this.luigiContextService.getContextAsync().then((ctx) => {
+    this.luigiContextService.getContextAsync().then((ctx: Context) => {
       this.contextAsync = ctx.currentProject;
     });
+  }
+
+  getContextObservable() {
+    this.luigiContextService.contextObservable()
+      .pipe(first(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: IContextMessage) => {
+        const ctx: Context = data.context;
+
+        this.contextObservable = ctx.currentProject;
+      });
+  }
+
+  getContextSignal() {
+    const source: Signal<IContextMessage> = this.luigiContextService.contextSignal();
+    const data: IContextMessage = source();
+    const ctx: Context = data.context;
+
+    this.contextSignal = ctx.currentProject;
   }
 
   ngOnDestroy() {

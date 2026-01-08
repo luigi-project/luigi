@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, NgZone, Signal, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, NgZone, Signal, signal, WritableSignal } from '@angular/core';
 import { Context, addInitListener, addContextUpdateListener } from '@luigi-project/client';
 import { ReplaySubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';

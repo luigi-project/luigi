@@ -11,5 +11,29 @@ describe('Client-support-angular-lib', () => {
           .contains('pr1');
       });
     });
+
+    it('contextObservable', () => {
+      cy.visitLoggedIn('/projects/pr1/developers');
+      cy.getIframeBody().then($iframeBody => {
+        cy.wrap($iframeBody)
+          .find('.contextObservableBtn')
+          .click();
+        cy.wrap($iframeBody)
+          .find('.contextObservable')
+          .contains('pr1');
+      });
+    });
+
+    it('contextSignal', () => {
+      cy.visitLoggedIn('/projects/pr1/developers');
+      cy.getIframeBody().then($iframeBody => {
+        cy.wrap($iframeBody)
+          .find('.contextSignalBtn')
+          .click();
+        cy.wrap($iframeBody)
+          .find('.contextSignal')
+          .contains('pr1');
+      });
+    });
   });
 });

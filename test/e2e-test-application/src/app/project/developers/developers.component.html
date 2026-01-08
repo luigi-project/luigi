@@ -13,12 +13,27 @@
       >
       <br />
       <br />
-      <button class="contextAsyncBtn" (click)="getContextAsync()">
-        get async context
-      </button>
-      <br />
-      <br />
-      <span class="contextAsync">{{contextAsync}}</span>
+      <p>
+        <button class="contextAsyncBtn" (click)="getContextAsync()">
+          get async context
+        </button>
+        <br />
+        <span class="contextAsync">{{contextAsync}}</span>
+      </p>
+      <p>
+        <button class="contextObservableBtn" (click)="getContextObservable()">
+          get context observable
+        </button>
+        <br />
+        <span class="contextObservable">{{contextObservable}}</span>
+      </p>
+      <p>
+        <button class="contextSignalBtn" (click)="getContextSignal()">
+          get context signal
+        </button>
+        <br />
+        <span class="contextSignal">{{contextSignal}}</span>
+      </p>
     </div>
   </div>
 </section>

@@ -10,8 +10,7 @@ import {
   storageManager
 } from '@luigi-project/client';
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
-import { Subscription } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, Subscription } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 @Component({
@@ -367,7 +366,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   executeWithTimeout(promise, timeout, alertType, successFullyMessage) {
     this.startStorageOperation();
-    fromPromise(promise)
+    from(promise)
       .pipe(delay(timeout))
       .subscribe(
         (result) => {
