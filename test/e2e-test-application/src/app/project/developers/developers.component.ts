@@ -41,7 +41,8 @@ export class DevelopersComponent implements OnInit, OnDestroy {
   }
 
   getContextObservable() {
-    this.luigiContextService.contextObservable()
+    this.luigiContextService
+      .contextObservable()
       .pipe(first(), takeUntilDestroyed(this.destroyRef))
       .subscribe((data: IContextMessage) => {
         const ctx: Context = data.context;
