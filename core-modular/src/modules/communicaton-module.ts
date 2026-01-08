@@ -15,7 +15,9 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal, event.callbackFn);
+      const { link, preserveView, modal, withoutSync } = event.detail;
+
+      luigi.navigation().navigate(link, preserveView, modal, withoutSync, event.callbackFn);
     });
     containerElement.addEventListener(Events.ALERT_REQUEST, (event: any) => {
       UXModule.processAlert(event.payload, true, containerElement);

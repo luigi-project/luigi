@@ -24,11 +24,12 @@ export class Navigation {
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
+    withoutSync?: boolean,
     callbackFn?: (val?: unknown) => void
   ) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = true; //TODO just added for popState eventDetails
+    const navSync = !!withoutSync;
 
     if (modalSettings) {
       this.openAsModal(path, modalSettings, callbackFn);

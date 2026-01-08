@@ -73,7 +73,13 @@ export class RoutingService {
     }
   }
 
-  async handleRouteChange(routeInfo: { path: string; query: string }): Promise<void> {
+  /**
+   * Deal with route changing scenario.
+   * @param {Object} routeInfo - the information about path and query
+   * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
+   * @returns {Promise<void>} A promise that resolves when route change is complete.
+   */
+  async handleRouteChange(routeInfo: { path: string; query: string }, withoutSync = false): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
