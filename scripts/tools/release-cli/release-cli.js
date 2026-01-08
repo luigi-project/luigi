@@ -53,6 +53,9 @@ if (process.env.NIGHTLY === 'true' && !process.env.NIGHTLY_VERSION) {
   pkgJsonPaths.container = path.resolve(base, 'container', 'public', 'package.json');
   installPaths.container = path.resolve(base, 'container');
 
+  pkgJsonPaths.headless = path.resolve(base, 'core-modular', 'public', 'package.json');
+  installPaths.headless = path.resolve(base, 'core-modular');
+
   pkgJsonPaths.client_support_angular = path.resolve(
     base,
     'client-frameworks-support',
@@ -189,7 +192,10 @@ function addToChangelog(versionText, changelog, lastline) {
     let inputVersion = input.version;
 
     // handle custom pkg version for nightly release
-    if (process.env.NIGHTLY === 'true' && (name === 'container' || name === 'client_support_angular')) {
+    if (
+      process.env.NIGHTLY === 'true' &&
+      (name === 'container' || name === 'client_support_angular' || name === 'headless')
+    ) {
       const pkgNightlyVersion = getVersion(name);
       const versionSuffix = getVersionSuffix();
 
