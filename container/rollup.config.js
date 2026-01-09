@@ -1,12 +1,14 @@
-import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import typescript from '@rollup/plugin-typescript';
-import livereload from 'rollup-plugin-livereload';
 import terser from '@rollup/plugin-terser';
-import autoPreprocess from 'svelte-preprocess';
+import typescript from '@rollup/plugin-typescript';
 import copy from 'rollup-plugin-copy';
+import livereload from 'rollup-plugin-livereload';
+import svelte from 'rollup-plugin-svelte';
 
+import svelteConfig from './svelte.config.js';
+
+const coverage = process.env.COVERAGE === 'true';
 const production = !process.env.ROLLUP_WATCH;
 let inputPath = 'src/main.ts';
 
@@ -14,7 +16,7 @@ if (production) {
   console.log('Production BUILD');
 }
 
-if (process.env.COVERAGE === 'true') {
+if (coverage) {
   inputPath = 'instrumented/main.ts';
 }
 
@@ -28,6 +30,7 @@ function serve() {
   return {
     writeBundle() {
       if (server) return;
+
       server = require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
         stdio: ['ignore', 'inherit', 'inherit'],
         shell: true
@@ -48,19 +51,12 @@ export default [
       file: 'public/bundle.js'
     },
     plugins: [
-      svelte({
-        compilerOptions: {
-          customElement: true,
-          // enable run-time checks when not in production
-          dev: !production
-        },
-        preprocess: autoPreprocess({
-          sourceMap: true
-        })
-      }),
+      svelte(svelteConfig),
       typescript({
-        sourceMap: true,
-        inlineSources: true
+        compilerOptions: { noEmitOnError: !coverage },
+        exclude: !coverage ? 'instrumented/**/*' : null,
+        inlineSources: true,
+        sourceMap: true
       }),
       copy({
         targets: [{ src: 'typings/**/*', dest: 'public' }],
@@ -72,11 +68,13 @@ export default [
           resolveDynamicImport(specifier, importer) {
             const moduleInfo = this.getModuleInfo(importer);
             let index;
+
             for (index = specifier.start; index >= 0; index--) {
               if (moduleInfo.code.charAt(index) === '(') {
                 break;
               }
             }
+
             if (
               moduleInfo.code
                 .substr(index, specifier.end - index)
@@ -88,6 +86,7 @@ export default [
                 moduleInfo.code.substr(specifier.start, specifier.end - specifier.start)
               );
             }
+
             return null;
           },
           renderDynamicImport({ customResolution }) {
@@ -97,6 +96,7 @@ export default [
                 right: ')'
               };
             }
+
             return null;
           }
         };
