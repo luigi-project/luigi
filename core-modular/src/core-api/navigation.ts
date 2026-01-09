@@ -20,10 +20,11 @@ export class Navigation {
     this.modalService = serviceRegistry.get(ModalService);
   }
 
-  navigate = (
+  navigate = async (
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
+    newTab?: boolean,
     callbackFn?: (val?: unknown) => void
   ) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
@@ -34,6 +35,12 @@ export class Navigation {
       this.openAsModal(path, modalSettings, callbackFn);
     } else {
       this.modalService.closeModals();
+
+      if (newTab) {
+        await this.navService.openViewInNewTab(path);
+        return;
+      }
+
       if (this.hashRouting) {
         location.hash = normalizedPath;
       } else {

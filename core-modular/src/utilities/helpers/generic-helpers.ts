@@ -27,6 +27,15 @@ export const GenericHelpers = {
   },
 
   /**
+   * Checks if input is an async function.
+   * @param functionToCheck mixed
+   * @returns {boolean}
+   */
+  isAsyncFunction: (functionToCheck: any): boolean => {
+    return functionToCheck && {}.toString.call(functionToCheck) === '[object AsyncFunction]';
+  },
+
+  /**
    * Checks if input is a string.
    * @param stringToCheck mixed
    * @returns {boolean}
