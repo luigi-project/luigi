@@ -5,7 +5,7 @@
  * Similar to {@link luigi-client-api.md#sendCustomMessage sendCustomMessage} but for WebComponent based microfrontends only.
  *
  * @param {CustomEvent} event Custom event to be published
- * @memberof Lifecycle
+ * @memberof lifecycleManager
  *
  * @example
  * // case 1: publish an event from a WC based microfrontend
@@ -59,4 +59,4 @@
  *   }
  *
  */
-export function publishEvent(event) {}
+export function publishEvent(event: CustomEvent): void {}

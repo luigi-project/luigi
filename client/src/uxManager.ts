@@ -1,6 +1,7 @@
+import { AlertSettings, ConfirmationModalSettings } from '../luigi-client';
 import { LuigiClientBase } from './baseClass';
-import { lifecycleManager } from './lifecycleManager';
 import { helpers } from './helpers';
+import _lifecycleManager from './lifecycleManager';
 
 /**
  * @summary Use the UX Manager to manage the appearance features in Luigi.
@@ -12,10 +13,11 @@ class UxManager extends LuigiClientBase {
   /** @private */
   constructor() {
     super();
-    helpers.addEventListener('luigi.current-locale-changed', (e) => {
-      if (e.data.currentLocale && lifecycleManager.currentContext?.internal) {
-        lifecycleManager.currentContext.internal.currentLocale = e.data.currentLocale;
-        lifecycleManager._notifyUpdate();
+
+    helpers.addEventListener('luigi.current-locale-changed', (event: any) => {
+      if (event.data.currentLocale && _lifecycleManager.currentContext?.internal) {
+        (_lifecycleManager.currentContext.internal as Record<string, any>)['currentLocale'] = event.data.currentLocale;
+        _lifecycleManager._notifyUpdate();
       }
     });
   }
@@ -24,7 +26,7 @@ class UxManager extends LuigiClientBase {
    * Adds a backdrop with a loading indicator for the micro frontend frame. This overrides the {@link navigation-parameters-reference.md#node-parameters loadingIndicator.enabled} setting.
    * @memberof uxManager
    */
-  showLoadingIndicator() {
+  showLoadingIndicator(): void {
     helpers.sendPostMessageToLuigiCore({ msg: 'luigi.show-loading-indicator' });
   }
 
@@ -32,7 +34,7 @@ class UxManager extends LuigiClientBase {
    * Removes the loading indicator. Use it after calling {@link #showLoadingIndicator showLoadingIndicator()} or to hide the indicator when you use the {@link navigation-parameters-reference.md#node-parameters loadingIndicator.hideAutomatically: false} node configuration.
    * @memberof uxManager
    */
-  hideLoadingIndicator() {
+  hideLoadingIndicator(): void {
     helpers.sendPostMessageToLuigiCore({ msg: 'luigi.hide-loading-indicator' });
   }
 
@@ -40,7 +42,7 @@ class UxManager extends LuigiClientBase {
    * Closes the currently opened micro frontend modal.
    * @memberof uxManager
    */
-  closeCurrentModal() {
+  closeCurrentModal(): void {
     helpers.sendPostMessageToLuigiCore({ msg: 'luigi.close-modal' });
   }
 
@@ -48,7 +50,7 @@ class UxManager extends LuigiClientBase {
    * Adds a backdrop to block the top and side navigation. It is based on the Fundamental UI Modal, which you can use in your micro frontend to achieve the same behavior.
    * @memberof uxManager
    */
-  addBackdrop() {
+  addBackdrop(): void {
     helpers.sendPostMessageToLuigiCore({ msg: 'luigi.add-backdrop' });
   }
 
@@ -56,7 +58,7 @@ class UxManager extends LuigiClientBase {
    * Removes the backdrop.
    * @memberof uxManager
    */
-  removeBackdrop() {
+  removeBackdrop(): void {
     helpers.sendPostMessageToLuigiCore({ msg: 'luigi.remove-backdrop' });
   }
 
@@ -65,7 +67,7 @@ class UxManager extends LuigiClientBase {
    * @param {boolean} isDirty - indicates if there are any unsaved changes on the current page or in the component
    * @memberof uxManager
    */
-  setDirtyStatus(isDirty) {
+  setDirtyStatus(isDirty: boolean): void {
     helpers.sendPostMessageToLuigiCore({
       msg: 'luigi.set-page-dirty',
       dirty: isDirty
@@ -98,9 +100,9 @@ class UxManager extends LuigiClientBase {
    *     // Logic to execute when the confirmation modal is dismissed
    *  });
    */
-  showConfirmationModal(settings) {
-    helpers.addEventListener('luigi.ux.confirmationModal.hide', (e, listenerId) => {
-      this.hideConfirmationModal(e.data.data);
+  showConfirmationModal(settings: ConfirmationModalSettings): Promise<void> {
+    helpers.addEventListener('luigi.ux.confirmationModal.hide', (event: any, listenerId: string) => {
+      this.hideConfirmationModal(event.data.data);
       helpers.removeEventListener(listenerId);
     });
     helpers.sendPostMessageToLuigiCore({
@@ -108,13 +110,15 @@ class UxManager extends LuigiClientBase {
       data: { settings }
     });
 
-    const confirmationModalPromise = {};
-    confirmationModalPromise.promise = new Promise((resolve, reject) => {
-      confirmationModalPromise.resolveFn = resolve;
-      confirmationModalPromise.rejectFn = reject;
+    const confirmationModalPromise: Record<string, any> = {};
+
+    confirmationModalPromise['promise'] = new Promise((resolve, reject) => {
+      confirmationModalPromise['resolveFn'] = resolve;
+      confirmationModalPromise['rejectFn'] = reject;
     });
     this.setPromise('confirmationModal', confirmationModalPromise);
-    return confirmationModalPromise.promise;
+
+    return confirmationModalPromise['promise'];
   }
 
   /**
@@ -122,10 +126,11 @@ class UxManager extends LuigiClientBase {
    * @memberof uxManager
    * @param {Object} modal - confirmed boolean value if ok or cancel has been pressed
    */
-  hideConfirmationModal(modal) {
+  hideConfirmationModal(modal: Record<string, any>): void {
     const promise = this.getPromise('confirmationModal');
+
     if (promise) {
-      modal.confirmed ? promise.resolveFn() : promise.rejectFn();
+      modal['confirmed'] ? promise.resolveFn() : promise.rejectFn();
       this.setPromise('confirmationModal', undefined);
     }
   }
@@ -163,32 +168,39 @@ class UxManager extends LuigiClientBase {
    *     // Logic to execute when the alert is dismissed
    *  });
    */
-  showAlert(settings) {
-    //generate random ID
-    settings.id = helpers.getRandomId();
+  showAlert(config: AlertSettings): Promise<Object> {
+    const settings: AlertSettings & { id: string } = {
+      ...config
+    } as AlertSettings & { id: string };
 
-    helpers.addEventListener('luigi.ux.alert.hide', (e, listenerId) => {
-      if (e.data.id === settings.id) {
-        this.hideAlert(e.data);
+    // generate random ID
+    settings.id = helpers.getRandomId().toString();
+
+    helpers.addEventListener('luigi.ux.alert.hide', (event: any, listenerId: string) => {
+      if (event.data.id === settings.id) {
+        this.hideAlert(event.data);
         helpers.removeEventListener(listenerId);
       }
     });
 
-    if (settings?.closeAfter < 100) {
+    if (settings?.closeAfter && settings?.closeAfter < 100) {
       console.warn(`Message with id='${settings.id}' has too small 'closeAfter' value. It needs to be at least 100ms.`);
       settings.closeAfter = undefined;
     }
+
     helpers.sendPostMessageToLuigiCore({
       msg: 'luigi.ux.alert.show',
       data: { settings }
     });
 
     const alertPromises = this.getPromise('alerts') || {};
+
     alertPromises[settings.id] = {};
     alertPromises[settings.id].promise = new Promise((resolve) => {
       alertPromises[settings.id].resolveFn = resolve;
     });
     this.setPromise('alerts', alertPromises);
+
     return alertPromises[settings.id].promise;
   }
 
@@ -199,8 +211,9 @@ class UxManager extends LuigiClientBase {
    * @param {string} alertObj.id - alert id
    * @param {string} alertObj.dismissKey - key of the link
    */
-  hideAlert({ id, dismissKey }) {
+  hideAlert({ id, dismissKey }: Record<string, string>): void {
     const alerts = this.getPromise('alerts');
+
     if (id && alerts[id]) {
       alerts[id].resolveFn(dismissKey ? dismissKey : id);
       delete alerts[id];
@@ -213,8 +226,8 @@ class UxManager extends LuigiClientBase {
    * @returns {string} current locale
    * @memberof uxManager
    */
-  getCurrentLocale() {
-    return lifecycleManager.currentContext?.internal?.currentLocale;
+  getCurrentLocale(): string {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['currentLocale'];
   }
 
   /**
@@ -226,7 +239,7 @@ class UxManager extends LuigiClientBase {
    * @param {string} locale - locale to be set as the current locale
    * @memberof uxManager
    */
-  setCurrentLocale(locale) {
+  setCurrentLocale(locale: string): void {
     if (locale) {
       helpers.sendPostMessageToLuigiCore({
         msg: 'luigi.ux.set-current-locale',
@@ -244,8 +257,8 @@ class UxManager extends LuigiClientBase {
    * @memberof uxManager
    * @since 0.6.0
    */
-  isSplitView() {
-    return lifecycleManager.currentContext?.internal?.splitView;
+  isSplitView(): boolean {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['splitView'];
   }
 
   /**
@@ -255,8 +268,8 @@ class UxManager extends LuigiClientBase {
    * @memberof uxManager
    * @since 0.6.0
    */
-  isModal() {
-    return lifecycleManager.currentContext?.internal?.modal;
+  isModal(): boolean {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['modal'];
   }
 
   /**
@@ -266,8 +279,8 @@ class UxManager extends LuigiClientBase {
    * @memberof uxManager
    * @since 1.26.0
    */
-  isDrawer() {
-    return lifecycleManager.currentContext?.internal?.drawer;
+  isDrawer(): boolean {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['drawer'];
   }
 
   /**
@@ -275,8 +288,8 @@ class UxManager extends LuigiClientBase {
    * @returns {*} current themeObj
    * @memberof uxManager
    */
-  getCurrentTheme() {
-    return lifecycleManager.currentContext?.internal?.currentTheme;
+  getCurrentTheme(): any {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['currentTheme'];
   }
 
   /**
@@ -287,8 +300,8 @@ class UxManager extends LuigiClientBase {
    * @since 2.3.0
    * @example LuigiClient.uxManager().getCSSVariables();
    */
-  getCSSVariables() {
-    return lifecycleManager.currentContext?.internal?.cssVariables || {};
+  getCSSVariables(): Object {
+    return (_lifecycleManager.currentContext?.internal as Record<string, any>)['cssVariables'] || {};
   }
 
   /**
@@ -298,23 +311,32 @@ class UxManager extends LuigiClientBase {
    * @since 2.3.0
    * @example LuigiClient.uxManager().applyCSS();
    */
-  applyCSS() {
+  applyCSS(): void {
     document.querySelectorAll('head style[luigi-injected]').forEach((luigiInjectedStyleTag) => {
       luigiInjectedStyleTag.remove();
     });
-    const vars = lifecycleManager.currentContext?.internal?.cssVariables;
+
+    const vars = (_lifecycleManager.currentContext?.internal as Record<string, any>)['cssVariables'];
+
     if (vars) {
       let cssString = ':root {\n';
+
       Object.keys(vars).forEach((key) => {
         const val = vars[key];
+
         cssString += (key.startsWith('--') ? '' : '--') + key + ':' + val + ';\n';
       });
       cssString += '}';
-      const themeStyle = document.createElement('style');
-      themeStyle.setAttribute('luigi-injected', true);
+
+      const themeStyle: HTMLStyleElement = document.createElement('style');
+
+      themeStyle.setAttribute('luigi-injected', 'true');
       themeStyle.innerHTML = cssString;
       document.head.appendChild(themeStyle);
     }
   }
 }
-export const uxManager = new UxManager();
+
+const _uxManager = new UxManager();
+
+export default _uxManager;

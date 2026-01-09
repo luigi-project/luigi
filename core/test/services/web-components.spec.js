@@ -1,4 +1,4 @@
-import { LuigiElement } from '../../../client/src/luigi-element';
+import { LuigiElement } from '../../../client/public/luigi-element';
 import { LuigiConfig, LuigiI18N, LuigiUX } from '../../src/core-api';
 import { WebComponentService } from '../../src/services/web-components';
 import { DefaultCompoundRenderer } from '../../src/utilities/helpers/web-component-helpers';

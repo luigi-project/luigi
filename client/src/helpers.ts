@@ -1,41 +1,46 @@
-/** @private */
+/**
+ * @name Helpers
+ * @private
+ */
 class Helpers {
+  listeners: any[] = [];
+  origin: string = '';
+
   /** @private */
   constructor() {
-    this.listeners = [];
-    this.origin = '';
-
-    const helperListener = function (evt) {
+    const helperListener = (evt: MessageEvent<any>): void => {
       if (!evt.data.msg) {
         return;
       }
+
       if (evt.data.msg === 'custom') {
-        const message = this.convertCustomMessageInternalToUser(evt.data);
+        const message: Record<string, any> = this.convertCustomMessageInternalToUser(evt.data);
+
         this.listeners
-          .filter((listener) => listener.name === message.id)
+          .filter((listener) => listener.name === message['id'])
           .map((listener) => listener.eventFn(message, listener.listenerId));
       } else {
         this.listeners
           .filter((listener) => listener.name === evt.data.msg)
           .map((listener) => listener.eventFn(evt, listener.listenerId));
       }
-    }.bind(this);
+    };
 
     window.addEventListener('message', helperListener);
   }
 
-  convertCustomMessageInternalToUser(internalMessage) {
-    return internalMessage.data;
+  convertCustomMessageInternalToUser(internalMessage: Record<string, any>): Record<string, any> {
+    return internalMessage['data'] as Record<string, any>;
   }
 
-  convertCustomMessageUserToInternal(message) {
+  convertCustomMessageUserToInternal(message: Record<string, any>): Record<string, any> {
     return {
       msg: 'custom',
       data: message
     };
   }
 
-  convertStorageMessageToInternal(message) {
+  convertStorageMessageToInternal(message: Record<string, any>): Record<string, any> {
     return {
       msg: 'storage',
       data: message
@@ -51,74 +56,81 @@ class Helpers {
    * @param {function} eventFn - callback function
    * @returns {string} listener id
    */
-  addEventListener(name, eventFn) {
-    const listenerId = this.getRandomId();
+  addEventListener(name: string, eventFn: (event: any, listener?: any) => void): string {
+    const listenerId: number = this.getRandomId();
+
     this.listeners.push({
       name,
       eventFn,
       listenerId
     });
-    return listenerId;
+
+    return `${listenerId}`;
   }
 
   /**
    * Removes a post message listener
    * @private
    * @param {string} id - listenerId
+   * @returns {boolean}
    */
-  removeEventListener(id) {
-    const listenerExists = Boolean(this.listeners.find((l) => l.listenerId === id));
+  removeEventListener(id: string): boolean {
+    const listenerExists: boolean = this.listeners.find(listener => listener.listenerId === id);
+
     if (listenerExists) {
-      this.listeners = this.listeners.filter((l) => l.listenerId !== id);
+      this.listeners = this.listeners.filter(listener => listener.listenerId !== id);
+
       return true;
     }
+
     return false;
   }
 
   /**
-   * Creates a random Id
+   * Creates a random ID
    * @private
+   * @returns {number}
    */
-  getRandomId() {
+  getRandomId(): number {
     return window.crypto.getRandomValues(new Uint32Array(1))[0];
   }
 
   /**
-   * Simple function check.
+   * Simple function check
    * @private
    * @param {function} item
    * @returns {boolean}
    */
-  isFunction(item) {
+  isFunction(item: any): boolean {
     return typeof item === 'function';
   }
 
   /**
-   * Simple object check.
+   * Simple object check
    * @private
    * @param {Object} item
    * @returns {boolean}
    */
-  isObject(item) {
+  isObject(item: any): boolean {
     return Object.prototype.toString.call(item) === '[object Object]';
   }
 
-  getLuigiCoreDomain() {
+  getLuigiCoreDomain(): string {
     return this.origin;
   }
 
-  setLuigiCoreDomain(origin) {
+  setLuigiCoreDomain(origin: string): void {
     // protect against "null" string set by at least Chrome browser when file protocol used
     if (origin && origin !== 'null') {
       this.origin = origin;
     }
   }
 
-  setTargetOrigin(origin) {
+  setTargetOrigin(origin: string): void {
     this.setLuigiCoreDomain(origin);
   }
 
-  sendPostMessageToLuigiCore(msg) {
+  sendPostMessageToLuigiCore(msg: any): void {
     if (this.origin) {
       // protect against potential postMessage problems, since origin value may be set incorrectly
       try {
@@ -136,19 +148,21 @@ class Helpers {
   /**
    * Checks if given path contains intent navigation special syntax
    * @param {string} path - path to be checked
+   * @returns {boolean}
    */
-  hasIntent(path) {
+  hasIntent(path: string): boolean {
     return !!path && path.toLowerCase().includes('#?intent=');
   }
 
-  deSanitizeParamsMap(paramsMap) {
-    return Object.entries(paramsMap).reduce((sanitizedMap, paramPair) => {
-      sanitizedMap[this.deSanitizeParam(paramPair[0])] = this.deSanitizeParam(paramPair[1]);
+  deSanitizeParamsMap(paramsMap: Record<string, any>) {
+    return Object.entries(paramsMap).reduce<any>((sanitizedMap, paramPair) => {
+      sanitizedMap[this.deSanitizeParam(paramPair[0] as string)] = this.deSanitizeParam(paramPair[1] as string);
+
       return sanitizedMap;
     }, {});
   }
 
-  deSanitizeParam(param = '') {
+  deSanitizeParam(param = ''): string {
     return String(param)
       .replaceAll('&lt;', '<')
       .replaceAll('&gt;', '>')
@@ -158,4 +172,4 @@ class Helpers {
   }
 }
 
-export const helpers = new Helpers();
+export const helpers: Helpers = new Helpers();

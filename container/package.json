@@ -20,7 +20,7 @@
     "dev": "rollup -c -w",
     "copyBundle": "cp public/bundle.js public/bundle.js.map test-app/ && cp public/bundle.js public/bundle.js.map examples/ || COPY public\\* test-app\\",
     "copyLuigiClient": "cp ../client/public/luigi-client.js test-app/iframe",
-    "copyLuigiElement": "cp ../client/src/luigi-element.js test-app/compound",
+    "copyLuigiElement": "cp ../client/public/luigi-element.js test-app/compound",
     "serve": "npm run build && npm run copyLuigiClient && npm run copyLuigiElement && npm run copyBundle && sirv -D -c test-app --no-clear",
     "serve-test": "npm run buildWithCoverage && npm run copyLuigiClient && npm run copyLuigiElement && npm run copyBundle && sirv -D -c test-app --no-clear",
     "bundle:watch": "chokidar \"src/**/*.*\" -c \"npm run build && npm run copyBundle\"",
