@@ -25,7 +25,8 @@ describe('Navigation', () => {
     };
 
     mockNavService = {
-      getCurrentNode: jest.fn()
+      getCurrentNode: jest.fn(),
+      openViewInNewTab: jest.fn()
     };
 
     modalServiceMock = {
@@ -58,11 +59,23 @@ describe('Navigation', () => {
       const pushStateSpy = jest.spyOn(window.history, 'pushState');
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
-      navigation.navigate('/test/path');
+      navigation.navigate('/test/path', undefined, undefined, false);
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/test/path' }, '', '/test/path');
       expect(dispatchEventSpy).toHaveBeenCalled();
     });
+
+    it('should navigate to a path in new browser tab', () => {
+      const pushStateSpy = jest.spyOn(window.history, 'pushState');
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+
+      navigation.navigate('/test/path', undefined, undefined, true);
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockNavService.openViewInNewTab).toHaveBeenCalledWith('/test/path');
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(dispatchEventSpy).not.toHaveBeenCalled();
+    });
+
     it('should open a path as modal', async () => {
       // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
