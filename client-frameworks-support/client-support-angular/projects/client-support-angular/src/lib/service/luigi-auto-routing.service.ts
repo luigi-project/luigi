@@ -1,42 +1,30 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  NavigationEnd,
-  ParamMap,
-  Router,
-  RouterEvent,
-  convertToParamMap
-} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRouteSnapshot, Event, NavigationEnd, ParamMap, Router, convertToParamMap } from '@angular/router';
 import { linkManager, uxManager, isLuigiClientInitialized } from '@luigi-project/client';
-import { OperatorFunction, Subscription } from 'rxjs';
+import { OperatorFunction } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { LuigiActivatedRouteSnapshotHelper } from '../route/luigi-activated-route-snapshot-helper';
-import { LuigiContextService } from './luigi-context-service';
+import { LuigiContextService } from './luigi-context.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LuigiAutoRoutingService implements OnDestroy {
-  private subscription: Subscription = new Subscription();
-
+export class LuigiAutoRoutingService {
   constructor(
     private router: Router,
     private luigiContextService: LuigiContextService
   ) {
-    this.subscription.add(
-      this.router.events.pipe(this.doFilter() as any).subscribe(this.doSubscription.bind(this) as () => void)
-    );
+    this.router.events
+      .pipe(this.doFilter(), takeUntilDestroyed())
+      .subscribe((event: NavigationEnd) => this.doSubscription(event));
   }
 
-  doFilter(): OperatorFunction<unknown, RouterEvent> {
-    return filter((event): event is RouterEvent => {
-      return !!(
-        event instanceof NavigationEnd &&
-        event.url &&
-        event.url.length > 0 &&
-        !(history.state && history.state.luigiInduced)
-      );
-    });
+  doFilter(): OperatorFunction<Event, NavigationEnd> {
+    return filter(
+      (event: Event): event is NavigationEnd =>
+        !!(event instanceof NavigationEnd && event?.url?.length && !history?.state?.luigiInduced)
+    );
   }
 
   /**
@@ -55,15 +43,17 @@ export class LuigiAutoRoutingService implements OnDestroy {
 
     if (!current) {
       current = this.router.routerState.root.snapshot;
-      while (current?.children?.length > 0) {
+
+      while (current?.children?.length) {
         // handle multiple children
         let primary: ActivatedRouteSnapshot | null = null;
 
-        current?.children.forEach((childSnapshot) => {
-          if (childSnapshot.outlet === 'primary') {
+        current.children.forEach((childSnapshot: ActivatedRouteSnapshot) => {
+          if (childSnapshot?.outlet === 'primary') {
             primary = childSnapshot;
           }
         });
+
         if (primary) {
           current = primary;
         } else if (current.firstChild) {
@@ -73,18 +63,21 @@ export class LuigiAutoRoutingService implements OnDestroy {
         }
       }
     }
-    if (current?.data && isLuigiClientInitialized()) {
+
+    if (current?.data && this.isClientInitialized()) {
       const ux = uxManager();
       let lm = linkManager().withoutSync();
       let route: string | undefined;
 
       if (current.data.luigiRoute) {
         route = this.getResolvedLuigiRoute(current);
+
         if (current.data.fromContext) {
           if (!this.luigiContextService.getContext()) {
             console.debug('Ignoring auto navigation request, luigi context not set');
             return;
           }
+
           if (current.data.fromContext === true) {
             lm = lm.fromClosestContext();
           } else {
@@ -94,14 +87,17 @@ export class LuigiAutoRoutingService implements OnDestroy {
       } else if (current.data.fromVirtualTreeRoot) {
         let url = event.url;
         const truncate = current.data.fromVirtualTreeRoot.truncate;
+
         if (truncate) {
           if (truncate.indexOf('*') === 0) {
-            const index = url.indexOf(truncate.substr(1));
-            url = url.substr(index + truncate.length - 1);
+            const index = url.indexOf(truncate.substring(1));
+
+            url = url.substring(index + truncate.length - 1);
           } else if (url.indexOf(truncate) === 0) {
-            url = url.substr(truncate.length);
+            url = url.substring(truncate.length);
           }
         }
+
         route = url;
         console.debug('Calling fromVirtualTreeRoot for url ==> ' + route);
         lm = lm.fromVirtualTreeRoot();
@@ -127,8 +123,8 @@ export class LuigiAutoRoutingService implements OnDestroy {
 
     const pmap: ParamMap = convertToParamMap(allParams);
 
-    pmap.keys.forEach((key) => {
-      pmap.getAll(key).forEach((param) => {
+    pmap.keys.forEach((key: string) => {
+      pmap.getAll(key).forEach((param: string) => {
         route = route?.replace(':' + key, param);
       });
     });
@@ -144,13 +140,14 @@ export class LuigiAutoRoutingService implements OnDestroy {
       if (currentToCheck.params) {
         allParams = { ...allParams, ...currentToCheck.params };
       }
+
       currentToCheck = currentToCheck.parent;
     }
 
     return allParams;
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+  private isClientInitialized(): boolean {
+    return isLuigiClientInitialized();
   }
 }

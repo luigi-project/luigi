@@ -1,7 +1,14 @@
+import { Signal } from '@angular/core';
 import { Context } from '@luigi-project/client';
 import { Observable } from 'rxjs';
+import { IContextMessage } from './luigi-context.model';
 
 export abstract class LuigiContextService {
+  /**
+   * Get a signal that emits when context is set.
+   */
+  abstract contextSignal(): Signal<IContextMessage | undefined>;
+
   /**
    * Listen to context changes
    * Receives current value, even if the event was already dispatched earlier.
@@ -17,14 +24,4 @@ export abstract class LuigiContextService {
    * Get a promise that resolves when context is set.
    */
   abstract getContextAsync(): Promise<Context>;
-}
-
-export enum ILuigiContextTypes {
-  INIT,
-  UPDATE
-}
-
-export interface IContextMessage {
-  contextType: ILuigiContextTypes; // will be init or update
-  context: Context;
 }
