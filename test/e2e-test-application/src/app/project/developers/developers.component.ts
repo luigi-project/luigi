@@ -1,4 +1,15 @@
-import { Component, DestroyRef, effect, inject, OnInit, OnDestroy, ChangeDetectorRef, Signal, signal, computed } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  Signal,
+  signal,
+  computed
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
 import { IContextMessage, LuigiContextService } from '@luigi-project/client-support-angular';
