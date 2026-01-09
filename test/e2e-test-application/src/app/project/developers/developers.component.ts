@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, OnDestroy, ChangeDetectorRef, Signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit, OnDestroy, ChangeDetectorRef, Signal, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
 import { IContextMessage, LuigiContextService } from '@luigi-project/client-support-angular';
@@ -13,6 +13,8 @@ import { first } from 'rxjs/operators';
 export class DevelopersComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private initListener;
+  currentProject = signal<string | null>(null);
+  computedProject = computed(() => this.currentProject() + '1');
   contextAsync;
   contextObservable;
   contextSignal;
@@ -21,7 +23,15 @@ export class DevelopersComponent implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private luigiContextService: LuigiContextService
-  ) {}
+  ) {
+    effect(() => {
+      const data: IContextMessage = luigiContextService.contextSignal()();
+
+      if (data) {
+        this.currentProject.set(data.context.currentProject + '1');
+      }
+    });
+  }
 
   ngOnInit() {
     this.initListener = addInitListener((context, origin) => {

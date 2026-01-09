@@ -31,6 +31,12 @@
         </button>
         <br />
         <span class="contextSignal">{{contextSignal}}</span>
+        @if (contextSignal) {
+          <br />
+          effect: <span class="contextSignalEffect">{{currentProject()}}</span>
+          <br />
+          computed: <span class="contextSignalComputed">{{computedProject()}}</span>
+        }
       </p>
     </div>
   </div>

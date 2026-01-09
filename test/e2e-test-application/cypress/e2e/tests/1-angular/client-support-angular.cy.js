@@ -21,6 +21,8 @@ describe('Client-support-angular-lib', () => {
       cy.getIframeBody().then(($iframeBody) => {
         cy.wrap($iframeBody).find('.contextSignalBtn').click();
         cy.wrap($iframeBody).find('.contextSignal').contains('pr1');
+        cy.wrap($iframeBody).find('.contextSignalEffect').contains('pr11');
+        cy.wrap($iframeBody).find('.contextSignalComputed').contains('pr111');
       });
     });
   });

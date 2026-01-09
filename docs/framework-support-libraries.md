@@ -71,6 +71,31 @@ You can inject this service inside your Angular items in order to:
 * Get the current (latest) [context](navigation-parameters-reference.md#context) that we received from Luigi Core
 * Provide an `Observable<IContextMessage>` and `Signal<IContextMessage>` where through subscribing, you can get any context change
 
+```javascript
+contextSignal = signal<Context | undefined>(undefined);
+
+constructor(private luigiContextService: LuigiContextService) {
+  // check context data via Observable
+  luigiContextService.contextObservable()
+    .pipe(takeUntilDestroyed())
+    .subscribe((data: IContextMessage) => {
+      if (data) {
+        this.contextSignal.set(data.context || {});
+      }
+    });
+
+  // check context data via Signal
+  effect(() => {
+    const data: IContextMessage = luigiContextService.contextSignal()();
+
+    if (data) {
+      this.contextSignal.set(data.context || {});
+    }
+  });
+}
+
+```
+
 **LuigiContextService** is an abstract class. Its implementation is in the **LuigiContextServiceImpl** class.
 If you need to change or extend the implementation, you can easily create a new class extending **LuigiContextServiceImpl**:
 

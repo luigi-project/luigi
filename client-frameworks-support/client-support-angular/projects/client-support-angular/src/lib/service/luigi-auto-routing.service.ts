@@ -1,4 +1,4 @@
-import { Injectable, DestroyRef, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, Event, NavigationEnd, ParamMap, Router, convertToParamMap } from '@angular/router';
 import { linkManager, uxManager, isLuigiClientInitialized } from '@luigi-project/client';
@@ -11,14 +11,12 @@ import { LuigiContextService } from './luigi-context.service';
   providedIn: 'root'
 })
 export class LuigiAutoRoutingService {
-  private destroyRef = inject(DestroyRef);
-
   constructor(
     private router: Router,
     private luigiContextService: LuigiContextService
   ) {
     this.router.events
-      .pipe(this.doFilter(), takeUntilDestroyed(this.destroyRef))
+      .pipe(this.doFilter(), takeUntilDestroyed())
       .subscribe((event: NavigationEnd) => this.doSubscription(event));
   }
 

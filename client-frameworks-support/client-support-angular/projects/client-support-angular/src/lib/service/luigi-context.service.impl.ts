@@ -9,7 +9,7 @@ import { LuigiContextService } from './luigi-context.service';
   providedIn: 'root'
 })
 export class LuigiContextServiceImpl implements LuigiContextService {
-  private signalContext: WritableSignal<IContextMessage> = signal<IContextMessage>(null as unknown as IContextMessage);
+  private signalContext: WritableSignal<IContextMessage | undefined> = signal<IContextMessage | undefined>(undefined);
   private subject: ReplaySubject<IContextMessage> = new ReplaySubject<IContextMessage>(1);
   private currentContext!: IContextMessage;
   private ngZone = inject(NgZone);
@@ -33,8 +33,8 @@ export class LuigiContextServiceImpl implements LuigiContextService {
   /**
    * Get a signal that emits when context is set.
    */
-  public contextSignal(): Signal<IContextMessage> {
-    return signal(this.signalContext()).asReadonly();
+  public contextSignal(): Signal<IContextMessage | undefined> {
+    return this.signalContext.asReadonly();
   }
 
   /**

@@ -7,7 +7,7 @@ export abstract class LuigiContextService {
   /**
    * Get a signal that emits when context is set.
    */
-  abstract contextSignal(): Signal<IContextMessage>;
+  abstract contextSignal(): Signal<IContextMessage | undefined>;
 
   /**
    * Listen to context changes
