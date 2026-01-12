@@ -1,16 +1,17 @@
 import type { LuigiEngine } from '../luigi-engine';
+import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LifecycleHooks } from '../utilities/lifecycle-hooks';
+import { LuigiStore, writable } from '../utilities/store';
+import { LuigiAuth, LuigiAuthClass } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
-import { LuigiAuth, LuigiAuthClass } from './auth';
-import { LuigiStore, writable } from '../utilities/store';
 
 export class Luigi {
   config: any;
@@ -35,16 +36,18 @@ export class Luigi {
   }
 
   // NOTE: using arrow style functions to have "code completion" in browser dev tools
-  setConfig = async (cfg: any) => {
+  setConfig = (cfg: any) => {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
-    this.engine.init();
+    AuthLayerSvc.init().then(async () => {
+      this.engine.init();
 
-    if (!this.initialized) {
-      this.initialized = true;
-      LifecycleHooks.luigiAfterInit(this);
-      await ConfigHelpers.executeConfigFnAsync('lifecycleHooks.luigiAfterInit');
-    }
+      if (!this.initialized) {
+        this.initialized = true;
+        LifecycleHooks.luigiAfterInit(this);
+        await ConfigHelpers.executeConfigFnAsync('lifecycleHooks.luigiAfterInit');
+      }
+    });
   };
 
   getConfig = (): any => {
