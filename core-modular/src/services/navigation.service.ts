@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
@@ -94,6 +95,10 @@ export interface PathData {
 export interface Node {
   altText?: string;
   anonymousAccess?: any;
+  badgeCounter?: {
+    count?: () => number | Promise<number>;
+    label?: string;
+  };
   category?: any;
   children?: Node[];
   clientPermissions?: {
@@ -697,22 +702,14 @@ export class NavigationService {
   }
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
-    const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
+    const rootNodes = cloneDeep(navNodes) || [];
+
     if (!rootNodes.length) {
       return rootNodes;
     }
+
     rootNodes.forEach((rootNode: Node) => {
       rootNode.isRootNode = true;
-    });
-
-    navNodes.forEach((node: any) => {
-      if (node?.badgeCounter?.count) {
-        const badgeItem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
-
-        if (badgeItem) {
-          badgeItem.badgeCounter.count = node.badgeCounter.count;
-        }
-      }
     });
 
     return this.getAccessibleNodes(undefined, rootNodes, context);
