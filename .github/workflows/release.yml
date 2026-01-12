@@ -38,3 +38,4 @@ jobs:
       - run: cp -r ~/tmp_build/* .
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_LUI_AUTH_TOKEN" > ~/.npmrc
       - run: bash ./scripts/npmPublish.sh
+      - run: echo "" > ~/.npmrc

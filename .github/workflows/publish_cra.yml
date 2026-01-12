@@ -14,3 +14,4 @@ jobs:
           node-version: '20.19.0'
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_LUI_AUTH_TOKEN" > ~/.npmrc
       - run: bash ./scripts/npmPublish.sh cra-release
+      - run: echo "" > ~/.npmrc
