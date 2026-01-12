@@ -81,7 +81,7 @@ export class Navigation {
   };
 
   runTimeErrorHandler = (errorObj: object): void => {
-    const { path } = RoutingHelpers.getCurrentPath();
+    const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
     const currentNode: Node = this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
