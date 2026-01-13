@@ -262,7 +262,11 @@ export class WebComponentService {
           openAsDrawer: (route, drawerSettings = {}) => {
             linkManagerInstance.navigate(route, { drawer: drawerSettings });
           },
-          openAsModal: (route, modalSettings = {}, callbackFn?: (value?: unknown) => void): Promise<{ goBackValue: unknown }> => {
+          openAsModal: (
+            route,
+            modalSettings = {},
+            callbackFn?: (value?: unknown) => void
+          ): Promise<{ goBackValue: unknown }> => {
             return new Promise((resolve) => {
               linkManagerInstance.navigate(route, { modal: modalSettings }, (value: unknown) => {
                 resolve({ goBackValue: value });
