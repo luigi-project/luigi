@@ -3,7 +3,7 @@
 This library provides several features which make it easier to run your Angular application inside the Luigi micro frontend framework.
 If you want to know more about Luigi, please have a look at the [Luigi homepage](https://luigi-project.io/).
 
-> **NOTE:** Starting from v20 and on this package will only be released alongside Angular versions. So, `@luigi-project/client-support-angular@v20.0.0` will support Angular `v20.0.0` and so on. 
+> **NOTE:** Starting with version 20, this package will be aligned with Angular's major versioning. For example, '@luigi-project/client-support-angular@^20' will support '@angular/core@^20', and so on. 
 
 ## How to use the library
 
@@ -43,7 +43,32 @@ These are the features provided by the library:
 
 You can inject this service inside your Angular items in order to:
 * Get the current (latest) [context](https://docs.luigi-project.io/docs/navigation-advanced?section=contexts) that we received from Luigi Core
-* Provide an `Observable<Context>` where through subscribing, you can get any context change
+* Provide an `Observable<IContextMessage>` and `Signal<IContextMessage>` where through subscribing, you can get any context change
+
+```javascript
+contextSignal = signal<Context | undefined>(undefined);
+
+constructor(private luigiContextService: LuigiContextService) {
+  // check context data via Observable
+  luigiContextService.contextObservable()
+    .pipe(takeUntilDestroyed())
+    .subscribe((data: IContextMessage) => {
+      if (data) {
+        this.contextSignal.set(data.context || {});
+      }
+    });
+
+  // check context data via Signal
+  effect(() => {
+    const data: IContextMessage = luigiContextService.contextSignal()();
+
+    if (data) {
+      this.contextSignal.set(data.context || {});
+    }
+  });
+}
+
+```
 
 **LuigiContextService** is an abstract class. Its implementation is in the **LuigiContextServiceImpl** class.
 If you need to change or extend the implementation, you can easily create a new class extending **LuigiContextServiceImpl**:
