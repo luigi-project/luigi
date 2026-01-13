@@ -8,20 +8,6 @@ BASE_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
 
 source $BASE_DIR/shared/bashHelpers.sh
 
-# @luigi-project npm token
-function setLuigiNpmToken {
-  if [ "$TRAVIS" = "true" ]; then
-    if [ "$NPM_LUI_AUTH_TOKEN" = "" ]; then
-     echoe "NPM_LUI_AUTH_TOKEN is not set, skipping publishing."
-     exit 0
-    fi
-
-    # setup token when running in travis
-    echo "setLuigiNpmToken"
-    echo "//registry.npmjs.org/:_authToken=$NPM_LUI_AUTH_TOKEN" > ~/.npmrc
-    npm whoami
-  fi
-}
 
 function prepublishChecks {
   cd $BASE_DIR/../client/public
@@ -93,12 +79,6 @@ function publishPackage {
   fi # end NPM_GREP
 }
 
-function removeNpmToken {
-  if [ "$TRAVIS" = "true" ]; then
-    # setup token when running in travis
-    echo "" > ~/.npmrc
-  fi
-}
 
 function checkRequiredFiles {
   args=("$@")
@@ -111,12 +91,6 @@ function checkRequiredFiles {
     fi
   done
 }
-
-
-
-
-setLuigiNpmToken
-
 
 if [ "$1" = "cra-release" ]; then
   echo "$PWD"
@@ -171,6 +145,3 @@ else
   checkRequiredFiles "client/public" "luigi-client.d.ts" "luigi-client.js" "README.md"
   publishPackage "client" "client/public"
 fi
-
-
-removeNpmToken
