@@ -262,13 +262,13 @@ export class WebComponentService {
           openAsDrawer: (route, drawerSettings = {}) => {
             linkManagerInstance.navigate(route, { drawer: drawerSettings });
           },
-          openAsModal: (route, modalSettings = {}): Promise<void> => {
-            return new Promise((resolve, reject) => {
-              linkManagerInstance.navigate(route, { modal: modalSettings }, (closed) => {
-                if (closed) {
-                  resolve();
-                } else {
-                  reject();
+          openAsModal: (route, modalSettings = {}, callbackFn?: (value?: unknown) => void): Promise<{ goBackValue: unknown }> => {
+            return new Promise((resolve) => {
+              linkManagerInstance.navigate(route, { modal: modalSettings }, (value: unknown) => {
+                resolve({ goBackValue: value });
+
+                if (callbackFn && typeof callbackFn === 'function') {
+                  callbackFn(value);
                 }
               });
             });
