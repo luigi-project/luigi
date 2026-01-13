@@ -3,7 +3,7 @@
 This library provides several features which make it easier to run your Angular application inside the Luigi micro frontend framework.
 If you want to know more about Luigi, please have a look at the [Luigi homepage](https://luigi-project.io/).
 
-> **NOTE:** Starting from v20 and on this package will only be released alongside Angular versions. So, `@luigi-project/client-support-angular@v20.0.0` will support Angular `v20.0.0` and so on. 
+> **NOTE:** Starting with version 20, this package will be aligned with Angular's major versioning. For example, '@luigi-project/client-support-angular@^20' will support '@angular/core@^20', and so on. 
 
 ## How to use the library
 
