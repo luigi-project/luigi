@@ -224,7 +224,7 @@
                   <i role="presentation" class="fd-list__icon sap-icon">
                     <img
                       class="fd-top-nav__icon nav-icon"
-                      src="{profileItem.icon}"
+                      src={profileItem.icon}
                       alt={profileItem.altText ? profileItem.altText : ''}
                     />
                   </i>
