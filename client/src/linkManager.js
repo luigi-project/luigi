@@ -178,7 +178,7 @@ export class linkManager extends LuigiClientBase {
     helpers.addEventListener('luigi.navigation.modal.close', (e, listenerId) => {
       const promise = this.getPromise('modal');
       if (promise) {
-        promise.resolveFn(e.data);
+        promise.resolveFn({ ...e.data, goBackValue: e.data?.data });
         this.setPromise('modal', undefined);
       }
       helpers.removeEventListener(listenerId);
