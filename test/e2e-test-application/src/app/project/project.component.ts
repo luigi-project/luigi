@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, signal } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { merge, Observable, Subscription, timer } from 'rxjs';
 import {
   linkManager,
   uxManager,
@@ -10,9 +10,8 @@ import {
   storageManager
 } from '@luigi-project/client';
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
-import { NgForm } from '@angular/forms';
-import { fromPromise } from 'rxjs/internal-compatibility';
-import { delay, timeout } from 'rxjs/operators';
+import { from, Subscription } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-project',
@@ -28,12 +27,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public projectId: string;
   public modalActive = false;
   public preservedViewCallbackContext: any;
-  private lcSubscription: Subscription;
+  private lcSubscription: Subscription = new Subscription();
   private cudListener: string;
   public pathExists: { formValue: string; result: boolean | null };
-  public confirmationModalResult: '' | 'confirmed' | 'dismissed';
-  public alertDismissed;
-  public alertDismissKey;
+  public confirmationModalResult = signal<'' | 'confirmed' | 'dismissed'>('');
+  public alertDismissed = signal<boolean | undefined>(false);
+  public alertDismissKey = signal<boolean | undefined>(false);
   public alertTypes = ['success', 'info', 'warning', 'error'];
   public isDirty = false;
   public splitViewHandle;
@@ -88,19 +87,21 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     // We suggest to use a centralized approach of LuigiClient.addContextUpdateListener
     // Take a look at ngOnInit in this component and app.component.ts where we set the listeners.
-    this.lcSubscription = this.luigiService.contextObservable().subscribe((ctx: IContextMessage) => {
-      this.projectId = ctx.context.currentProject;
-      this.preservedViewCallbackContext = ctx.context.goBackContext;
-      this.currentLocale = uxManager().getCurrentLocale();
-      this.canChangeLocale = getClientPermissions().changeCurrentLocale;
-      // Since Luigi runs outside of Zone.js, changes need
-      // to be updated manually
-      // Be sure to check for destroyed ChangeDetectorRef,
-      // else you get runtime Errors
-      if (!this.cdr['destroyed']) {
-        this.cdr.detectChanges();
-      }
-    });
+    this.lcSubscription.add(
+      this.luigiService.contextObservable().subscribe((ctx: IContextMessage) => {
+        this.projectId = ctx.context.currentProject;
+        this.preservedViewCallbackContext = ctx.context.goBackContext;
+        this.currentLocale = uxManager().getCurrentLocale();
+        this.canChangeLocale = getClientPermissions().changeCurrentLocale;
+        // Since Luigi runs outside of Zone.js, changes need
+        // to be updated manually
+        // Be sure to check for destroyed ChangeDetectorRef,
+        // else you get runtime Errors
+        if (!this.cdr['destroyed']) {
+          this.cdr.detectChanges();
+        }
+      })
+    );
 
     this.activatedRoute.params.subscribe((params: Params) => {
       this.projectId = params['projectId'];
@@ -141,7 +142,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   showConfirmationModal() {
-    this.confirmationModalResult = '';
+    this.confirmationModalResult.set('');
+
     const settings = {
       // header: 'Modal Header - Luigi modal',
       type: 'confirmation',
@@ -156,16 +158,17 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showConfirmationModal(settings)
       .then(
         () => {
-          this.confirmationModalResult = 'confirmed';
+          this.confirmationModalResult.set('confirmed');
         },
         () => {
-          this.confirmationModalResult = 'dismissed';
+          this.confirmationModalResult.set('dismissed');
         }
       );
   }
 
   showWarningModal() {
-    this.confirmationModalResult = '';
+    this.confirmationModalResult.set('');
+
     const settings = {
       header: 'Warning',
       type: 'warning',
@@ -180,18 +183,19 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showConfirmationModal(settings)
       .then(
         () => {
-          this.confirmationModalResult = 'confirmed';
+          this.confirmationModalResult.set('confirmed');
         },
         () => {
-          this.confirmationModalResult = 'dismissed';
+          this.confirmationModalResult.set('dismissed');
         }
       );
   }
 
   showAlert() {
     const { type, links, text, closeAfter } = this.luigiAlertForm.value;
-    this.alertDismissed = text ? false : undefined;
-    this.alertDismissKey = text ? false : undefined;
+
+    this.alertDismissed.set(text ? false : undefined);
+    this.alertDismissKey.set(text ? false : undefined);
 
     const texts = {
       withoutLink: `<b onmouseover=alert('Wufff!')>click me!</b> Ut enim ad minim veniam,
@@ -222,9 +226,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showAlert(settings)
       .then((data) => {
         if (typeof data === 'string' && data.includes('neverShowItAgain')) {
-          this.alertDismissKey = true;
+          this.alertDismissKey.set(true);
         }
-        this.alertDismissed = true;
+        this.alertDismissed.set(true);
       });
   }
 
@@ -362,7 +366,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   executeWithTimeout(promise, timeout, alertType, successFullyMessage) {
     this.startStorageOperation();
-    fromPromise(promise)
+    from(promise)
       .pipe(delay(timeout))
       .subscribe(
         (result) => {
