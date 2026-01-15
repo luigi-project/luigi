@@ -1,23 +1,12 @@
 (function () {
   setTimeout(function () {
     try {
-      let aPrivacyPolicy = document.createElement('a');
-      const linkTextPrivacyPolicy = document.createTextNode('Privacy Policy');
-      aPrivacyPolicy.appendChild(linkTextPrivacyPolicy);
-      aPrivacyPolicy.href = 'https://www.sap.com/about/legal/privacy.html';
-      aPrivacyPolicy.rel = 'noopener noreferrer';
-      aPrivacyPolicy.target = '_blank';
-      const parent = document.getElementsByClassName('lui-side-nav__footer--text')[0];
-      const child = document.getElementsByClassName('lui-side-nav__footer--text')[0].firstChild;
-      parent.removeChild(child);
-      document.getElementsByClassName('lui-side-nav__footer--text')[0].appendChild(aPrivacyPolicy);
-      let aLegal = document.createElement('a');
-      const linkTextLegal = document.createTextNode('Legal');
-      aLegal.appendChild(linkTextLegal);
-      aLegal.href = 'https://www.sap.com/about/legal/impressum.html';
-      aLegal.rel = 'noopener noreferrer';
-      aLegal.target = '_blank';
-      document.getElementsByClassName('lui-side-nav__footer--text')[0].appendChild(aLegal);
+      let cr = document.createElement('div');
+      cr.appendChild(document.createTextNode('Copyright © The Linux Foundation Europe.'));
+      document.querySelector('.lui-side-nav__footer--text').appendChild(cr);
+      let pol = document.createElement('div');
+      pol.appendChild(document.createTextNode('For web site terms of use, trademark policy and other project policies please see https://linuxfoundation.eu/en/policies.'));
+      document.querySelector('.lui-side-nav__footer--text').appendChild(pol);
     } catch (e) {
       console.error('Something went wrong!', e);
     }
