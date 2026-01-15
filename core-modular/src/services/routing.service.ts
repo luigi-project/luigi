@@ -62,12 +62,16 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath());
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
@@ -96,6 +100,7 @@ export class RoutingService {
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
+
     const pathData = this.getNavigationService().getPathData(path);
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
     const redirect = this.getNavigationService().shouldRedirect(path, pathData);
@@ -125,7 +130,10 @@ export class RoutingService {
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi);
+
+      if (!withoutSync) {
+        UIModule.updateMainContent(currentNode, this.luigi);
+      }
     }
   }
 

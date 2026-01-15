@@ -29,24 +29,32 @@ export class Navigation {
   ) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = !!withoutSync;
 
     if (modalSettings) {
       this.openAsModal(path, modalSettings, callbackFn);
     } else {
+      const eventDetail = {
+        detail: {
+          preventContextUpdate,
+          withoutSync: !!withoutSync
+        }
+      };
+
       this.modalService.closeModals();
+
       if (this.hashRouting) {
-        location.hash = normalizedPath;
+        if (!withoutSync) {
+          location.hash = normalizedPath;
+        } else {
+          const event = new CustomEvent('hashchange', eventDetail);
+
+          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.dispatchEvent(event);
+        }
       } else {
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        const eventDetail = {
-          detail: {
-            preventContextUpdate,
-            withoutSync: !navSync
-          }
-        };
         const event = new CustomEvent('popstate', eventDetail);
 
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
         window.dispatchEvent(event);
       }
     }
