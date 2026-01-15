@@ -1,8 +1,9 @@
 import type { Luigi } from '../core-api/luigi';
+import { ConfigHelpers } from './helpers/config-helpers';
 import { GenericHelpers } from './helpers/generic-helpers';
 
 export const LifecycleHooks = {
-  luigiAfterInit: (luigi: Luigi): void => {
+  luigiAfterInit: async (luigi: Luigi): Promise<void> => {
     const shouldHideAppLoadingIndicator: boolean = GenericHelpers.getConfigBooleanValue(
       luigi.getConfig(),
       'settings.appLoadingIndicator.hideAutomatically'
@@ -14,5 +15,7 @@ export const LifecycleHooks = {
         luigi.ux().hideAppLoadingIndicator();
       }, 0);
     }
+
+    await ConfigHelpers.executeConfigFnAsync('lifecycleHooks.luigiAfterInit');
   }
 };

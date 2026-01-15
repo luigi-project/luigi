@@ -2,7 +2,6 @@ import type { LuigiEngine } from '../luigi-engine';
 import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
-import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LifecycleHooks } from '../utilities/lifecycle-hooks';
 import { LuigiStore, writable } from '../utilities/store';
@@ -39,13 +38,12 @@ export class Luigi {
   setConfig = (cfg: any) => {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
-    AuthLayerSvc.init().then(async () => {
+    AuthLayerSvc.init().then(() => {
       this.engine.init();
 
       if (!this.initialized) {
         this.initialized = true;
         LifecycleHooks.luigiAfterInit(this);
-        await ConfigHelpers.executeConfigFnAsync('lifecycleHooks.luigiAfterInit');
       }
     });
   };
