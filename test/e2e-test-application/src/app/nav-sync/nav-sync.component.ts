@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { linkManager } from '@luigi-project/client';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class NavSyncComponent implements OnInit, OnDestroy {
   segments: String[] = ['one', 'two', 'three', 'four'];
-  currentSegment: String;
+  currentSegment = signal<string>('');
   nextSegment: String;
   subs: Subscription = new Subscription();
   linkManager = linkManager;
@@ -26,8 +26,8 @@ export class NavSyncComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.route.url.subscribe(
         (segments) => {
-          this.currentSegment = segments[segments.length - 1].path;
-          const nextIndex = this.segments.indexOf(this.currentSegment) + 1;
+          this.currentSegment.set(segments[segments.length - 1].path);
+          const nextIndex = this.segments.indexOf(this.currentSegment()) + 1;
           this.nextSegment = this.segments[nextIndex] ? this.segments[nextIndex] : this.segments[0];
         },
         (err) => {}

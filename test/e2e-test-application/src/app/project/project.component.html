@@ -63,18 +63,19 @@
             data="uxManager().showConfirmationModal(content)"
           ></app-code-snippet>
         </p>
-        <p
-          class="fd-has-font-style-italic"
-          data-testid="luigi-confirmation-modal-result"
-          ngClass="{{
-            confirmationModalResult === 'confirmed'
-              ? 'fd-has-color-status-1'
-              : 'fd-has-color-status-2'
-          }}"
-          *ngIf="confirmationModalResult"
-        >
-          Luigi confirmation modal has been {{ confirmationModalResult }}
-        </p>
+        @if (confirmationModalResult(); as modalResult) {
+          <p
+            class="fd-has-font-style-italic"
+            data-testid="luigi-confirmation-modal-result"
+            ngClass="{{
+              modalResult === 'confirmed'
+                ? 'fd-has-color-status-1'
+                : 'fd-has-color-status-2'
+            }}"
+          >
+            Luigi confirmation modal has been {{ modalResult }}
+          </p>
+        }
       </div>
     </div>
 
@@ -172,20 +173,22 @@
         <p>
           <app-code-snippet data="uxManager().showAlert(settings)"></app-code-snippet>
         </p>
-        <p
-          *ngIf="alertDismissed"
-          class="fd-has-font-style-italic fd-has-color-status-1"
-          data-testid="luigi-alert-result"
-        >
-          Luigi alert has been dismissed
-        </p>
-        <p
-          *ngIf="alertDismissKey"
-          class="fd-has-font-style-italic fd-has-color-status-1"
-          data-testid="luigi-dismissKey-result"
-        >
-          Luigi alert dismissKey has been returned
-        </p>
+        @if (alertDismissed()) {
+          <p
+            class="fd-has-font-style-italic fd-has-color-status-1"
+            data-testid="luigi-alert-result"
+          >
+            Luigi alert has been dismissed
+          </p>
+        }
+        @if (alertDismissKey()) {
+          <p
+            class="fd-has-font-style-italic fd-has-color-status-1"
+            data-testid="luigi-dismissKey-result"
+          >
+            Luigi alert dismissKey has been returned
+          </p>
+        }
       </div>
     </div>
 
