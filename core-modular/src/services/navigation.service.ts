@@ -536,7 +536,7 @@ export class NavigationService {
           window.location.href = item.externalLink.url;
         } else {
           const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
-          if(newWindow) {
+          if (newWindow) {
             newWindow.opener = null;
             newWindow.focus();
           }
