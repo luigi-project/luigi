@@ -535,7 +535,11 @@ export class NavigationService {
         if (item.externalLink.sameWindow) {
           window.location.href = item.externalLink.url;
         } else {
-          window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          if (newWindow) {
+            newWindow.opener = null;
+            newWindow.focus();
+          }
         }
       }
     };
