@@ -276,23 +276,12 @@
             </span>
           </button>
         </span>
-        <span>
-          <a
-            class="fd-link"
-            href="https://www.sap.com/about/legal/privacy.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Privacy Policy &nbsp&nbsp
-          </a>
-          <a
-            class="fd-link"
-            href="https://www.sap.com/about/legal/impressum.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Legal
-          </a>
+        <span class="lui-mobile-hide">
+          <div class="cr-footer">
+            Copyright © The Linux Foundation Europe. <br>For web site terms of use, trademark policy and other project policies
+            please see
+            <a href="https://linuxfoundation.eu/en/policies" target="_blank"> https://linuxfoundation.eu/en/policies </a>.
+          </div>
         </span>
       </div>
 
@@ -370,6 +359,7 @@
 
   .fiddle-toolbar .title-wrapper {
     flex-grow: 1;
+    position: relative;
   }
 
   .fiddle-toolbar .fd-link {
@@ -548,5 +538,17 @@
   .fiddle-toolbar .fd-button {
     position: relative;
     overflow: visible;
+  }
+
+  .fiddle-toolbar .cr-footer {
+    position: absolute;
+    left: 40%;
+    color: lightgrey;
+    text-align: center;
+    top: 0;
+  }
+
+  .fiddle-toolbar .cr-footer a {
+    color: #2deb8a;
   }
 </style>
