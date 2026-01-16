@@ -278,9 +278,11 @@
         </span>
         <span class="lui-mobile-hide">
           <div class="cr-footer">
-            Copyright © The Linux Foundation Europe. <br>For web site terms of use, trademark policy and other project policies
-            please see
-            <a href="https://linuxfoundation.eu/en/policies" target="_blank"> https://linuxfoundation.eu/en/policies </a>.
+            Copyright © The Linux Foundation Europe. <br />For web site terms of use, trademark policy and other
+            project policies please see
+            <a href="https://linuxfoundation.eu/en/policies" target="_blank">
+              https://linuxfoundation.eu/en/policies
+            </a>.
           </div>
         </span>
       </div>
@@ -545,7 +547,7 @@
     left: 40%;
     color: lightgrey;
     text-align: center;
-    top: 0;
+    top: -2px;
   }
 
   .fiddle-toolbar .cr-footer a {
