@@ -63,19 +63,18 @@
             data="uxManager().showConfirmationModal(content)"
           ></app-code-snippet>
         </p>
-        @if (confirmationModalResult(); as modalResult) {
-          <p
-            class="fd-has-font-style-italic"
-            data-testid="luigi-confirmation-modal-result"
-            ngClass="{{
-              modalResult === 'confirmed'
-                ? 'fd-has-color-status-1'
-                : 'fd-has-color-status-2'
-            }}"
-          >
-            Luigi confirmation modal has been {{ modalResult }}
-          </p>
-        }
+        <p
+          class="fd-has-font-style-italic"
+          data-testid="luigi-confirmation-modal-result"
+          ngClass="{{
+            confirmationModalResult === 'confirmed'
+              ? 'fd-has-color-status-1'
+              : 'fd-has-color-status-2'
+          }}"
+          *ngIf="confirmationModalResult"
+        >
+          Luigi confirmation modal has been {{ confirmationModalResult }}
+        </p>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-project/client';
 
 @Component({
@@ -8,15 +8,19 @@ import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-pro
   standalone: false
 })
 export class Miscellaneous2Component implements OnInit {
-  consoleText = signal<string>('InitListener called');
+  consoleText: string = 'InitListener called';
 
   ngOnInit() {
     addInitListener((context) => {
-      this.consoleText.set('InitListener called');
+      this.consoleText = 'InitListener called';
     });
     addContextUpdateListener((context) => {
-      this.consoleText.set('ContextUpdateListener called');
+      this.consoleText = 'ContextUpdateListener called';
     });
+  }
+
+  showConsoleText() {
+    return this.consoleText;
   }
 
   openConfirmationModal() {
