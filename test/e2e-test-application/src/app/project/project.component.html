@@ -168,21 +168,20 @@
         <p>
           <app-code-snippet data="uxManager().showAlert(settings)"></app-code-snippet>
         </p>
-        @if (alertDismissed()) {
         <p
+          *ngIf="alertDismissed"
           class="fd-has-font-style-italic fd-has-color-status-1"
           data-testid="luigi-alert-result"
         >
           Luigi alert has been dismissed
         </p>
-        } @if (alertDismissKey()) {
         <p
+          *ngIf="alertDismissKey"
           class="fd-has-font-style-italic fd-has-color-status-1"
           data-testid="luigi-dismissKey-result"
         >
           Luigi alert dismissKey has been returned
         </p>
-        }
       </div>
     </div>
 
