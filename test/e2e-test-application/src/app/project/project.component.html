@@ -81,9 +81,7 @@
     <div class="fd-layout-panel luigi__margin-bottom--small">
       <div class="fd-layout-panel__header">
         <div class="fd-layout-panel__head">
-          <h3 class="fd-layout-panel__title">
-            Confirmation modal with warning type
-          </h3>
+          <h3 class="fd-layout-panel__title">Confirmation modal with warning type</h3>
         </div>
       </div>
       <div class="fd-layout-panel__body">
@@ -120,9 +118,7 @@
                 name="type"
                 data-testid="luigi-alert-type"
               >
-                <option [value]="type" *ngFor="let type of alertTypes">
-                  {{ type }}
-                </option>
+                <option [value]="type" *ngFor="let type of alertTypes">{{ type }}</option>
               </select>
             </div>
             <div class="fd-form-item">
@@ -173,20 +169,19 @@
           <app-code-snippet data="uxManager().showAlert(settings)"></app-code-snippet>
         </p>
         @if (alertDismissed()) {
-          <p
-            class="fd-has-font-style-italic fd-has-color-status-1"
-            data-testid="luigi-alert-result"
-          >
-            Luigi alert has been dismissed
-          </p>
-        }
-        @if (alertDismissKey()) {
-          <p
-            class="fd-has-font-style-italic fd-has-color-status-1"
-            data-testid="luigi-dismissKey-result"
-          >
-            Luigi alert dismissKey has been returned
-          </p>
+        <p
+          class="fd-has-font-style-italic fd-has-color-status-1"
+          data-testid="luigi-alert-result"
+        >
+          Luigi alert has been dismissed
+        </p>
+        } @if (alertDismissKey()) {
+        <p
+          class="fd-has-font-style-italic fd-has-color-status-1"
+          data-testid="luigi-dismissKey-result"
+        >
+          Luigi alert dismissKey has been returned
+        </p>
         }
       </div>
     </div>
@@ -788,9 +783,7 @@
             />
           </div>
           <div class="fd-col fd-col--8 luigi__input-button--margin">
-            <button class="fd-button" (click)="checkIfPathExists()">
-              Check
-            </button>
+            <button class="fd-button" (click)="checkIfPathExists()">Check</button>
           </div>
         </div>
         <p class="check-path-result">
@@ -848,9 +841,7 @@
     <div class="fd-layout-panel luigi__margin-bottom--small">
       <div class="fd-layout-panel__header">
         <div class="fd-layout-panel__head">
-          <h3 class="fd-layout-panel__title">
-            LuigiClient - withoutSync()
-          </h3>
+          <h3 class="fd-layout-panel__title">LuigiClient - withoutSync()</h3>
         </div>
       </div>
       <div class="fd-layout-panel__body">
@@ -909,9 +900,7 @@
     <div class="fd-layout-panel luigi__margin-bottom--small">
       <div class="fd-layout-panel__header">
         <div class="fd-layout-panel__head">
-          <h3 class="fd-layout-panel__title">
-            LuigiClient - withOptions()
-          </h3>
+          <h3 class="fd-layout-panel__title">LuigiClient - withOptions()</h3>
         </div>
       </div>
       <div class="fd-layout-panel__body">
@@ -1147,7 +1136,7 @@
 
           <div
             class="fd-container fd-container--fluid"
-            style="padding-top: 5px;"
+            style="padding-top: 5px"
             *ngIf="!storageDemoOperation"
           >
             <div class="fd-col fd-col--2">
@@ -1169,14 +1158,10 @@
 
           <div class="fd-container fd-container--fluid" *ngIf="!storageDemoOperation">
             <div class="fd-col fd-col--2">
-              <button class="fd-button w100per" (click)="storage_clear()">
-                clear
-              </button>
+              <button class="fd-button w100per" (click)="storage_clear()">clear</button>
             </div>
             <div class="fd-col fd-col--2">
-              <button class="fd-button w100per" (click)="storage_has()">
-                has
-              </button>
+              <button class="fd-button w100per" (click)="storage_has()">has</button>
             </div>
             <div class="fd-col fd-col--2">
               <button class="fd-button w100per" (click)="storage_getAllKeys()">
