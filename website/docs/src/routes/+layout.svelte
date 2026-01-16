@@ -55,3 +55,10 @@
 <div class="docu-content">
 	{@render children?.()}
 </div>
+<div class="footer">
+	Copyright © The Linux Foundation Europe. For web site terms of use, 
+	trademark policy and other project policies please see 
+	<a href="https://linuxfoundation.eu/en/policies" target="_blank">
+		https://linuxfoundation.eu/en/policies
+	</a>.
+</div>
