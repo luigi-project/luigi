@@ -1,6 +1,15 @@
 window.onload = () => {
   window.Luigi.setConfig({
     navigation: {
+      defaults: {
+        runTimeErrorHandler: {
+          errorFn: (obj, node) => {
+            console.log('runTimeErrorHandler - default:');
+            console.log(obj?.message);
+            return { obj, node };
+          }
+        }
+      },
       appSwitcher: {
         showMainAppEntry: true,
         items: [
@@ -100,6 +109,13 @@ window.onload = () => {
                 id: 'cat',
                 label: 'Cat',
                 icon: 'group'
+              },
+              runTimeErrorHandler: {
+                errorFn: (obj, node) => {
+                  console.log('runTimeErrorHandler - node:');
+                  console.log(obj?.message);
+                  return { obj, node };
+                }
               }
             },
             {
