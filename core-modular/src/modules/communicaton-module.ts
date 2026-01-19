@@ -17,6 +17,9 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       luigi.navigation().navigate(event.detail.link, event.detail.preserveView, event.detail.modal, event.callbackFn);
     });
+    containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
+      luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});
+    });
     containerElement.addEventListener(Events.ALERT_REQUEST, (event: any) => {
       UXModule.processAlert(event.payload, true, containerElement);
     });
