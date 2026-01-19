@@ -349,7 +349,7 @@ export class NavigationService {
   async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
     const pathData = pData ?? (await this.getPathData(path));
     if (path == '') {
-      if(NavigationHelpers.isRootNodeWithViewUrl(pathData)){
+      if (NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
         return undefined;
       }
       // poor mans implementation, full path resolution TBD
@@ -362,7 +362,7 @@ export class NavigationService {
 
   async getCurrentNode(path: string): Promise<any> {
     const pathData = await this.getPathData(path);
-    if(path == '' && NavigationHelpers.isRootNodeWithViewUrl(pathData)){  
+    if (path == '' && NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
       return pathData?.nodesInPath?.[0];
     }
     const node = pathData.selectedNode;
@@ -482,7 +482,7 @@ export class NavigationService {
 
   async getLeftNavData(path: string, pData?: PathData): Promise<LeftNavData> {
     const pathData = pData ?? (await this.getPathData(path));
-    if(path==='' && NavigationHelpers.isRootNodeWithViewUrl(pathData)){
+    if (path === '' && NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
       return {
         selectedNode: pathData?.nodesInPath?.[0],
         items: [],

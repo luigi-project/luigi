@@ -56,7 +56,11 @@ export const RoutingModule = {
    * @param keepBrowserHistory - If `true`, the browser history will be preserved when updating the URL.
    * @param luigi - The Luigi core instance used to interact with the routing API.
    */
-  async addSearchParamsFromClient(searchParams: Record<string, any>, keepBrowserHistory: boolean, luigi: Luigi): Promise<void> {
+  async addSearchParamsFromClient(
+    searchParams: Record<string, any>,
+    keepBrowserHistory: boolean,
+    luigi: Luigi
+  ): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const pathObj = RoutingHelpers.getCurrentPath();
     const currentNode = await navService.getCurrentNode(pathObj.path);
