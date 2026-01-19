@@ -90,9 +90,9 @@ export class RoutingService {
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
-    const pathData = this.getNavigationService().getPathData(path);
+    const pathData = await this.getNavigationService().getPathData(path);
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const redirect = this.getNavigationService().shouldRedirect(path, pathData);
+    const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
 
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
@@ -105,16 +105,16 @@ export class RoutingService {
       nodeParams
     };
 
-    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
 
-    const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
+    const currentNode = (await pathData)?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
 
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData?.pathParams || {};
+      currentNode.pathParams = (await pathData)?.pathParams || {};
       currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);

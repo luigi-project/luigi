@@ -171,5 +171,9 @@ export const NavigationHelpers = {
       }
     });
     return result;
+  },
+
+  isRootNodeWithViewUrl(pathData: PathData): boolean {
+    return pathData?.nodesInPath?.length === 1 && !!pathData.nodesInPath[0].viewUrl;
   }
 };

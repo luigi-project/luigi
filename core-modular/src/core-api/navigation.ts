@@ -56,7 +56,7 @@ export class Navigation {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = this.navService.getCurrentNode(normalizedPath);
+    const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node.label;
@@ -68,9 +68,9 @@ export class Navigation {
     this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
   };
 
-  openAsDrawer = (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = this.navService.getCurrentNode(normalizedPath);
+    const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node.label;
