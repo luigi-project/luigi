@@ -1,4 +1,4 @@
-import { NgModule, provideZonelessChangeDetection } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { LuigiPreloadComponent } from './component/luigi.preload.component';
 import { LuigiRouteStrategy } from './route/luigi-route-strategy';
@@ -36,7 +36,6 @@ export const staticRoutes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(staticRoutes)],
   providers: [
-    provideZonelessChangeDetection(),
     {
       provide: LuigiContextService,
       useClass: LuigiContextServiceImpl
