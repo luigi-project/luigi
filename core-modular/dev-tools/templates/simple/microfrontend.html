@@ -42,6 +42,7 @@
       <button onclick="setCurrentLocale()">set current locale</button>
       <button onclick="getCurrentLocale()">get current locale</button>
       <button onclick="getCustomTranslation()">get custom translation</button>
+      <button onclick="triggerRuntimeError()">trigger runtime error</button>
       <button onclick="getContext()">Get Context</button>
       <span id="result"></span>
     </div>
@@ -151,6 +152,11 @@
           customTranslation: true,
         });
       }
+
+      function triggerRuntimeError() {
+        LuigiClient.sendCustomMessage(x);
+      }
+
       LuigiClient.addInitListener((ctx) => {
         console.log('Luigi Client initialized', ctx);
       });

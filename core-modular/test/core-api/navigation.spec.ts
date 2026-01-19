@@ -170,4 +170,53 @@ describe('Navigation', () => {
       );
     });
   });
+
+  describe('runTimeErrorHandler', () => {
+    it('should trigger runtime error handler when it is set for current node', () => {
+      const currentNode = {
+        label: 'Node Label',
+        runTimeErrorHandler: {
+          errorFn: (obj, node) => {
+            return { obj, node };
+          }
+        }
+      };
+      const defaultRunTimeErrorHandler = undefined;
+      const errorFnSpy = jest.spyOn(currentNode.runTimeErrorHandler, 'errorFn');
+      const errorObj = { msg: 'error' };
+
+      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
+        return null;
+      });
+
+      navigation.runTimeErrorHandler(errorObj);
+
+      expect(errorFnSpy).toHaveBeenCalled();
+      expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error' }, currentNode);
+    });
+
+    it('should trigger runtime error handler when it is not set for current node, but config fallback exists', () => {
+      const currentNode = { label: 'Node Label' };
+      const defaultRunTimeErrorHandler = {
+        errorFn: (obj, node) => {
+          return { obj, node };
+        }
+      };
+      const errorFnSpy = jest.spyOn(defaultRunTimeErrorHandler, 'errorFn');
+      const errorObj = { msg: 'error2' };
+
+      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
+        return null;
+      });
+
+      navigation.runTimeErrorHandler(errorObj);
+
+      expect(errorFnSpy).toHaveBeenCalled();
+      expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error2' }, currentNode);
+    });
+  });
 });
