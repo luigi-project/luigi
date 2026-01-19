@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -98,6 +99,10 @@ export interface Node {
   node?: Node;
   altText?: string;
   anonymousAccess?: any;
+  badgeCounter?: {
+    count?: () => number | Promise<number>;
+    label?: string;
+  };
   category?: any;
   children?: Node[];
   clientPermissions?: {
@@ -117,6 +122,7 @@ export interface Node {
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
   pathSegment?: string;
+  runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
   tooltip?: string;
   viewUrl?: string;
@@ -129,6 +135,10 @@ export interface PageErrorHandler {
   viewUrl?: string;
   redirectPath?: string;
   errorFn?: (node?: Node) => void;
+}
+
+export interface RunTimeErrorHandler {
+  errorFn?: (error: object, node?: Node) => void;
 }
 
 export interface Category {
@@ -572,7 +582,11 @@ export class NavigationService {
         if (item.externalLink.sameWindow) {
           window.location.href = item.externalLink.url;
         } else {
-          window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          if (newWindow) {
+            newWindow.opener = null;
+            newWindow.focus();
+          }
         }
       }
     };
@@ -728,22 +742,14 @@ export class NavigationService {
   }
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
-    const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
+    const rootNodes = cloneDeep(navNodes) || [];
+
     if (!rootNodes.length) {
       return rootNodes;
     }
+
     rootNodes.forEach((rootNode: Node) => {
       rootNode.isRootNode = true;
-    });
-
-    navNodes.forEach((node: any) => {
-      if (node?.badgeCounter?.count) {
-        const badgeItem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
-
-        if (badgeItem) {
-          badgeItem.badgeCounter.count = node.badgeCounter.count;
-        }
-      }
     });
 
     return this.getAccessibleNodes(undefined, rootNodes, context);
