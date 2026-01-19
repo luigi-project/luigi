@@ -43,7 +43,7 @@
     "@playwright/test": "^1.56.1",
     "@rollup/plugin-json": "^6.0.0",
     "@sveltejs/adapter-static": "^3.0.10",
-    "@sveltejs/kit": "^2.49.0",
+    "@sveltejs/kit": "^2.50.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@types/lodash.orderby": "^4.6.7",
     "algoliasearch": "^4.17.0",
