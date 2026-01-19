@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
@@ -30,9 +30,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private lcSubscription: Subscription = new Subscription();
   private cudListener: string;
   public pathExists: { formValue: string; result: boolean | null };
-  public confirmationModalResult = signal<'' | 'confirmed' | 'dismissed'>('');
-  public alertDismissed = signal<boolean | undefined>(false);
-  public alertDismissKey = signal<boolean | undefined>(false);
+  public confirmationModalResult: '' | 'confirmed' | 'dismissed';
+  public alertDismissed;
+  public alertDismissKey;
   public alertTypes = ['success', 'info', 'warning', 'error'];
   public isDirty = false;
   public splitViewHandle;
@@ -142,7 +142,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   showConfirmationModal() {
-    this.confirmationModalResult.set('');
+    this.confirmationModalResult = '';
 
     const settings = {
       // header: 'Modal Header - Luigi modal',
@@ -158,16 +158,16 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showConfirmationModal(settings)
       .then(
         () => {
-          this.confirmationModalResult.set('confirmed');
+          this.confirmationModalResult = 'confirmed';
         },
         () => {
-          this.confirmationModalResult.set('dismissed');
+          this.confirmationModalResult = 'dismissed';
         }
       );
   }
 
   showWarningModal() {
-    this.confirmationModalResult.set('');
+    this.confirmationModalResult = '';
 
     const settings = {
       header: 'Warning',
@@ -183,10 +183,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showConfirmationModal(settings)
       .then(
         () => {
-          this.confirmationModalResult.set('confirmed');
+          this.confirmationModalResult = 'confirmed';
         },
         () => {
-          this.confirmationModalResult.set('dismissed');
+          this.confirmationModalResult = 'dismissed';
         }
       );
   }
@@ -194,8 +194,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
   showAlert() {
     const { type, links, text, closeAfter } = this.luigiAlertForm.value;
 
-    this.alertDismissed.set(text ? false : undefined);
-    this.alertDismissKey.set(text ? false : undefined);
+    this.alertDismissed = text ? false : undefined;
+    this.alertDismissKey = text ? false : undefined;
 
     const texts = {
       withoutLink: `<b onmouseover=alert('Wufff!')>click me!</b> Ut enim ad minim veniam,
@@ -226,9 +226,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
       .showAlert(settings)
       .then((data) => {
         if (typeof data === 'string' && data.includes('neverShowItAgain')) {
-          this.alertDismissKey.set(true);
+          this.alertDismissKey = true;
         }
-        this.alertDismissed.set(true);
+        this.alertDismissed = true;
       });
   }
 
