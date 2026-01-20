@@ -1,4 +1,3 @@
-
 import { NavigationService, type Node } from '../../src/services/navigation.service';
 
 describe('NavigationService', () => {
@@ -198,7 +197,7 @@ describe('NavigationService', () => {
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', async() => {
+    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -266,7 +265,7 @@ describe('NavigationService', () => {
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('inhert context from globalContext', async() => {
+    it('inhert context from globalContext', async () => {
       const cfg = {
         navigation: {
           nodes: [

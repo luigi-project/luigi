@@ -159,9 +159,9 @@ describe('Routing Service', () => {
 
   it('should handle hashchange event and call navigation methods', async () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
-    (await mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+    ((await mockNavService.shouldRedirect) as jest.Mock).mockReturnValue(undefined);
     const fakeNode = { nodeParams: {}, searchParams: {} };
-    (await mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+    ((await mockNavService.getCurrentNode) as jest.Mock).mockReturnValue(fakeNode);
 
     routingService.enableRouting();
 
