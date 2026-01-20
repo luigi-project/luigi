@@ -80,9 +80,9 @@ export class Navigation {
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
   };
 
-  runTimeErrorHandler = (errorObj: object): void => {
+  runTimeErrorHandler = async (errorObj: object): Promise<void> => {
     const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
-    const currentNode: Node = this.navService.getCurrentNode(path);
+    const currentNode: Node = await this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
     );
