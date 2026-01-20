@@ -1,14 +1,16 @@
 import type { LuigiEngine } from '../luigi-engine';
+import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { LifecycleHooks } from '../utilities/lifecycle-hooks';
+import { LuigiStore, writable } from '../utilities/store';
+import { LuigiAuth, LuigiAuthClass } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
-import { LuigiAuth, LuigiAuthClass } from './auth';
-import { LuigiStore, writable } from '../utilities/store';
 
 export class Luigi {
   config: any;
@@ -36,9 +38,14 @@ export class Luigi {
   setConfig = (cfg: any) => {
     this.config = cfg;
     this.setConfigCallback(this.getConfigReadyCallback());
-    this.engine.init();
-    this.initialized = true;
-    this.luigiAfterInit();
+    AuthLayerSvc.init().then(() => {
+      this.engine.init();
+
+      if (!this.initialized) {
+        this.initialized = true;
+        LifecycleHooks.luigiAfterInit(this);
+      }
+    });
   };
 
   getConfig = (): any => {
@@ -64,7 +71,6 @@ export class Luigi {
    * Gets value of the given property on the Luigi config object.
    * If the value is a Function it is called (with the given parameters) and the result of that call is the value.
    * If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
-   * @memberof Configuration
    * @param {string} property the object traversal path
    * @param {*} parameters optional parameters that are used if the target is a function
    * @example
@@ -165,20 +171,6 @@ export class Luigi {
   auth = (): LuigiAuthClass => {
     return LuigiAuth;
   };
-
-  private luigiAfterInit(): void {
-    const shouldHideAppLoadingIndicator: boolean = GenericHelpers.getConfigBooleanValue(
-      this.getConfig(),
-      'settings.appLoadingIndicator.hideAutomatically'
-    );
-
-    if (shouldHideAppLoadingIndicator) {
-      // Timeout needed, otherwise loading indicator might not be present yet and when displayed will not be hidden
-      setTimeout(() => {
-        this.ux().hideAppLoadingIndicator();
-      }, 0);
-    }
-  }
 
   private createConfigStore(): any {
     const luigiStore: LuigiStore = writable({});
