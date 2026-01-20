@@ -487,8 +487,6 @@ export const RoutingHelpers = {
    * @param {*} pathParams
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
-    return this.isDynamicNode(node) && node.pathSegment
-      ? pathParams[node.pathSegment.substring(1)]
-      : undefined;
+    return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
   }
 };

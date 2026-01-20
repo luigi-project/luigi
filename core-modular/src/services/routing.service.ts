@@ -382,7 +382,7 @@ export class RoutingService {
   }
 
   checkInvalidateCache(previousPathData: any, newPath: any) {
-    if (!previousPathData) return
+    if (!previousPathData) return;
     const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     let newPathArray = newPath.split('/');
     if (previousPathData.nodesInPath && previousPathData.nodesInPath.length > 0) {
