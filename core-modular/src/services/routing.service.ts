@@ -3,10 +3,11 @@ import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { ModalSettings, Node } from './navigation.service';
+import type { ModalSettings, Node, PathData } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { NodeDataManagementService } from './node-data-management.service';
 
 export interface Route {
   raw: string;
@@ -20,6 +21,7 @@ export class RoutingService {
   previousNode: Node | undefined;
   currentRoute?: Route;
   modalSettings?: ModalSettings;
+  previousPathData?: PathData;
 
   constructor(private luigi: Luigi) {}
 
@@ -90,7 +92,10 @@ export class RoutingService {
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
+    this.checkInvalidateCache(this.previousPathData, path);
+
     const pathData = await this.getNavigationService().getPathData(path);
+    this.previousPathData = pathData;
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
     const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
 
@@ -373,6 +378,38 @@ export class RoutingService {
       history.replaceState((window as any).state, '', url.href);
     } else {
       history.pushState((window as any).state, '', url.href);
+    }
+  }
+
+  checkInvalidateCache(previousPathData: any, newPath: any) {
+    if (!previousPathData) return
+    const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
+    let newPathArray = newPath.split('/');
+    if (previousPathData.nodesInPath && previousPathData.nodesInPath.length > 0) {
+      let previousNavPathWithoutRoot = previousPathData.nodesInPath.slice(1);
+
+      let isSamePath = true;
+      for (let i = 0; i < previousNavPathWithoutRoot.length; i++) {
+        let newPathSegment = newPathArray.length > i ? newPathArray[i] : undefined;
+        let previousPathNode = previousNavPathWithoutRoot[i];
+
+        if (newPathSegment !== previousPathNode.pathSegment || !isSamePath) {
+          if (RoutingHelpers.isDynamicNode(previousPathNode)) {
+            if (
+              !isSamePath ||
+              newPathSegment !== RoutingHelpers.getDynamicNodeValue(previousPathNode, previousPathData.pathParams)
+            ) {
+              nodeDataManagementService.deleteNodesRecursively(previousPathNode);
+              break;
+            }
+          } else {
+            isSamePath = false;
+          }
+        }
+      }
+    } else {
+      // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
+      nodeDataManagementService.deleteCache();
     }
   }
 }

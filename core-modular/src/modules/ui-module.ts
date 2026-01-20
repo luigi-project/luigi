@@ -6,6 +6,7 @@ import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
+import { NodeDataManagementService } from '../services/node-data-management.service';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -157,6 +158,7 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
     }
@@ -167,6 +169,7 @@ export const UIModule = {
       scopes.includes('navigation.viewgroupdata') ||
       scopes.includes('settings.theming')
     ) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
