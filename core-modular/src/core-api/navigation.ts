@@ -1,8 +1,10 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings } from '../services/navigation.service';
+import type { ModalSettings, Node, RunTimeErrorHandler } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
 
 export class Navigation {
@@ -83,5 +85,22 @@ export class Navigation {
       settings.title = node.label;
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
+  };
+
+  runTimeErrorHandler = (errorObj: object): void => {
+    const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
+    const currentNode: Node = this.navService.getCurrentNode(path);
+    const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
+      'navigation.defaults.runTimeErrorHandler'
+    );
+
+    if (
+      currentNode?.runTimeErrorHandler?.errorFn &&
+      GenericHelpers.isFunction(currentNode?.runTimeErrorHandler?.errorFn)
+    ) {
+      currentNode.runTimeErrorHandler.errorFn(errorObj, currentNode);
+    } else if (defaultRunTimeErrorHandler?.errorFn && GenericHelpers.isFunction(defaultRunTimeErrorHandler.errorFn)) {
+      defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
+    }
   };
 }
