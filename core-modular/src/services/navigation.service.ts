@@ -7,6 +7,8 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
+import { serviceRegistry } from './service-registry';
+import { ModalService } from './modal.service';
 
 export interface TopNavData {
   appTitle: string;
@@ -723,5 +725,36 @@ export class NavigationService {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
+  }
+
+  async handleNavigationRequest(
+    path: string,
+    preserveView?: string,
+    modalSettings?: any,
+    callbackFn?: any
+  ): Promise<void> {
+    const normalizedPath = path.replace(/\/\/+/g, '/');
+    const preventContextUpdate = false; //TODO just added for popState eventDetails
+    const navSync = true; //TODO just added for popState eventDetails
+
+    if (modalSettings) {
+      this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
+    } else {
+      await serviceRegistry.get(ModalService).closeModals();
+      if (this.luigi.getConfig().routing?.useHashRouting) {
+        location.hash = normalizedPath;
+      } else {
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        const eventDetail = {
+          detail: {
+            preventContextUpdate,
+            withoutSync: !navSync
+          }
+        };
+        const event = new CustomEvent('popstate', eventDetail);
+
+        window.dispatchEvent(event);
+      }
+    }
   }
 }
