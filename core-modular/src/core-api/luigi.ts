@@ -1,6 +1,8 @@
 import type { LuigiEngine } from '../luigi-engine';
 import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
+import { NodeDataManagementService } from '../services/node-data-management.service';
+import { serviceRegistry } from '../services/service-registry';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LifecycleHooks } from '../utilities/lifecycle-hooks';
@@ -129,6 +131,11 @@ export class Luigi {
       localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
     }
     this.configChanged();
+  }
+
+  clearNavigationCache() {
+    serviceRegistry.get(NodeDataManagementService).deleteCache();
+    //TODO clear title resolver cache
   }
 
   i18n = (): i18nService => {

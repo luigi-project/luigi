@@ -141,12 +141,11 @@ describe('Navigation', () => {
     });
   });
   describe('openAsDrawer', () => {
-    it('should set drawer title from node label if not provided', () => {
+    it('should set drawer title from node label if not provided', async () => {
       const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
 
-      navigation.openAsDrawer('/drawer/path', {});
-
+      await navigation.openAsDrawer('/drawer/path', {});
       expect(openDrawerSpy).toHaveBeenCalled();
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
@@ -155,12 +154,12 @@ describe('Navigation', () => {
         undefined
       );
     });
-    it('should open drawer with provided settings', () => {
+    it('should open drawer with provided settings', async () => {
       const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
+      await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
       const drawerSettings = { title: 'Custom Drawer Title' };
 
-      navigation.openAsDrawer('/drawer/path', drawerSettings);
+      await navigation.openAsDrawer('/drawer/path', drawerSettings);
       expect(openDrawerSpy).toHaveBeenCalled();
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
@@ -172,11 +171,11 @@ describe('Navigation', () => {
   });
 
   describe('runTimeErrorHandler', () => {
-    it('should trigger runtime error handler when it is set for current node', () => {
+    it('should trigger runtime error handler when it is set for current node', async () => {
       const currentNode = {
         label: 'Node Label',
         runTimeErrorHandler: {
-          errorFn: (obj, node) => {
+          errorFn: (obj: any, node: any) => {
             return { obj, node };
           }
         }
@@ -185,35 +184,35 @@ describe('Navigation', () => {
       const errorFnSpy = jest.spyOn(currentNode.runTimeErrorHandler, 'errorFn');
       const errorObj = { msg: 'error' };
 
-      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      await mockNavService.getCurrentNode.mockReturnValue(currentNode);
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
         return null;
       });
 
-      navigation.runTimeErrorHandler(errorObj);
+      await navigation.runTimeErrorHandler(errorObj);
 
       expect(errorFnSpy).toHaveBeenCalled();
       expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error' }, currentNode);
     });
 
-    it('should trigger runtime error handler when it is not set for current node, but config fallback exists', () => {
+    it('should trigger runtime error handler when it is not set for current node, but config fallback exists', async () => {
       const currentNode = { label: 'Node Label' };
       const defaultRunTimeErrorHandler = {
-        errorFn: (obj, node) => {
+        errorFn: (obj: any, node: any) => {
           return { obj, node };
         }
       };
       const errorFnSpy = jest.spyOn(defaultRunTimeErrorHandler, 'errorFn');
       const errorObj = { msg: 'error2' };
 
-      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      await mockNavService.getCurrentNode.mockReturnValue(currentNode);
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
         return null;
       });
 
-      navigation.runTimeErrorHandler(errorObj);
+      await navigation.runTimeErrorHandler(errorObj);
 
       expect(errorFnSpy).toHaveBeenCalled();
       expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error2' }, currentNode);

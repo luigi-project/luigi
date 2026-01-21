@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
+import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
@@ -7,6 +8,8 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
+import { NodeDataManagementService } from './node-data-management.service';
+import { serviceRegistry } from './service-registry';
 
 export interface TopNavData {
   appTitle: string;
@@ -93,6 +96,7 @@ export interface PathData {
 }
 
 export interface Node {
+  node?: Node;
   altText?: string;
   anonymousAccess?: any;
   badgeCounter?: {
@@ -123,6 +127,7 @@ export interface Node {
   tooltip?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
+  parent?: Node;
 }
 
 export interface PageErrorHandler {
@@ -195,9 +200,17 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) {}
+  nodeDataManagementService?: NodeDataManagementService;
+  constructor(private luigi: Luigi) { }
+  
+  private getNodeDataManagementService(): NodeDataManagementService {
+    if (!this.nodeDataManagementService) {
+      this.nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
+    }
+    return this.nodeDataManagementService;
+  }
 
-  getPathData(path: string): PathData {
+  async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
     let pathSegments = path.split('/');
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
@@ -206,13 +219,30 @@ export class NavigationService {
 
     let globalContext = cfg.navigation.globalContext || {};
     let currentContext = globalContext;
+    let rootNode;
+    if (this.getNodeDataManagementService().hasRootNode()) {
+      rootNode = this.getNodeDataManagementService().getRootNode().node;
+    } else {
+      let nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+      if (typeof nodesFromConfig === 'object' && !Array.isArray(nodesFromConfig)) {
+        rootNode = nodesFromConfig;
+        if (rootNode.pathSegment) {
+          rootNode.pathSegment = '';
+          console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
+        }
+      } else {
+        rootNode = { children: nodesFromConfig };
+      }
+      rootNode.children = await this.getChildren(rootNode, currentContext);
+      rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
+      this.getNodeDataManagementService().setRootNode(rootNode);
+    }
 
-    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes, currentContext);
     let pathParams: Record<string, any> = {};
     const pathData: PathData = {
-      selectedNodeChildren: rootNodes,
-      nodesInPath: [{ children: rootNodes }],
-      rootNodes,
+      selectedNodeChildren: rootNode.children,
+      nodesInPath: [rootNode],
+      rootNodes: rootNode.children,
       pathParams
     };
     pathSegments.forEach((segment) => {
@@ -285,8 +315,9 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
-
-    nodes?.forEach((node) => {
+     // shallow copy to avoid mutations of original array
+    const copyOfNodes = nodes.map((n) => ({ ...n }));
+    copyOfNodes?.forEach((node) => {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
@@ -332,9 +363,12 @@ export class NavigationService {
     return items;
   }
 
-  shouldRedirect(path: string, pData?: PathData): string | undefined {
-    const pathData = pData ?? this.getPathData(path);
+  async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
+    const pathData = pData ?? (await this.getPathData(path));
     if (path == '') {
+      if (NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
+        return undefined;
+      }
       // poor mans implementation, full path resolution TBD
       return pathData.rootNodes[0].pathSegment;
     } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
@@ -343,8 +377,11 @@ export class NavigationService {
     return undefined;
   }
 
-  getCurrentNode(path: string): any {
-    const pathData = this.getPathData(path);
+  async getCurrentNode(path: string): Promise<any> {
+    const pathData = await this.getPathData(path);
+    if (path == '' && NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
+      return pathData?.nodesInPath?.[0];
+    }
     const node = pathData.selectedNode;
     if (
       !node ||
@@ -360,8 +397,8 @@ export class NavigationService {
     return node;
   }
 
-  getPathParams(path: string): Record<string, any> {
-    return this.getPathData(path).pathParams;
+  async getPathParams(path: string): Promise<Record<string, any>> {
+    return (await this.getPathData(path)).pathParams;
   }
 
   /**
@@ -372,7 +409,7 @@ export class NavigationService {
    * @param array children
    * @returns array children
    */
-  getTruncatedChildren(children: any): any[] {
+  getTruncatedChildren(children: Array<Node>): Array<Node> {
     let childToKeepFound = false;
     let tabNavUnset = false;
     let res: any = [];
@@ -460,8 +497,16 @@ export class NavigationService {
     });
   }
 
-  getLeftNavData(path: string, pData?: PathData): LeftNavData {
-    const pathData = pData ?? this.getPathData(path);
+  async getLeftNavData(path: string, pData?: PathData): Promise<LeftNavData> {
+    const pathData = pData ?? (await this.getPathData(path));
+    if (path === '' && NavigationHelpers.isRootNodeWithViewUrl(pathData)) {
+      return {
+        selectedNode: pathData?.nodesInPath?.[0],
+        items: [],
+        basePath: '',
+        sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText
+      };
+    }
     let navItems: NavItem[] = [];
     const pathToLeftNavParent: Node[] = [];
     let basePath = '';
@@ -474,7 +519,7 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
+    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath || []);
     let lastElement = [...pathDataTruncatedChildren].pop();
     let selectedNode = pathData.selectedNode;
     if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
@@ -518,10 +563,9 @@ export class NavigationService {
     this.luigi.navigation().navigate(fullPath);
   }
 
-  getTopNavData(path: string, pData?: PathData): TopNavData {
+  async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
     const cfg = this.luigi.getConfig();
-    const pathData: PathData = pData ?? this.getPathData(path);
-    const rootNodes = this.prepareRootNodes(cfg.navigation?.nodes, cfg.navigation?.globalContext || {});
+    const pathData: PathData = pData ?? (await this.getPathData(path));
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
       : [];
@@ -585,11 +629,10 @@ export class NavigationService {
         }
       }
     };
-
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(rootNodes, undefined, pathData) as [any],
+      topNodes: this.buildNavItems(pathData.rootNodes, undefined, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: profileSettings,
       appSwitcher:
@@ -634,8 +677,8 @@ export class NavigationService {
     return appSwitcher;
   }
 
-  getTabNavData(path: string, pData?: PathData): TabNavData {
-    const pathData = pData ?? this.getPathData(path);
+  async getTabNavData(path: string, pData?: PathData): Promise<TabNavData> {
+    const pathData = pData ?? (await this.getPathData(path));
     const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     if (!selectedNode) return {};
@@ -651,8 +694,8 @@ export class NavigationService {
     });
 
     const pathDataTruncatedChildren = parentNode
-      ? this.getTruncatedChildren(parentNode.children)
-      : this.getTruncatedChildren(selectedNode.children);
+      ? this.getTruncatedChildren(parentNode.children || [])
+      : this.getTruncatedChildren(selectedNode.children || []);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
     const parentPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
@@ -696,7 +739,7 @@ export class NavigationService {
    *   - `pathData`: The structured data representation of the path.
    */
   async extractDataFromPath(path: string): Promise<{ nodeObject: Node; pathData: PathData }> {
-    const pathData = this.getPathData(path);
+    const pathData = await this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
   }
@@ -706,22 +749,86 @@ export class NavigationService {
   }
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
-    const rootNodes = cloneDeep(navNodes) || [];
+    const topNavNodes = navNodes.map(node => ({ ...node }));
 
-    if (!rootNodes.length) {
-      return rootNodes;
+    if (!topNavNodes.length) {
+      return topNavNodes;
     }
 
-    rootNodes.forEach((rootNode: Node) => {
+    topNavNodes.forEach((rootNode: Node) => {
       rootNode.isRootNode = true;
     });
 
-    return this.getAccessibleNodes(undefined, rootNodes, context);
+    //TODO check if accessibleNodes needs to be called because it is also done in getChildren
+    // return this.getAccessibleNodes(undefined, rootNodes, context);
+    return topNavNodes;
   }
 
   private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
+  }
+
+  //TODO check context default object as param
+  async getChildren(node: Node | undefined, context: Record<string, any> = {}) {
+    const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
+    if (!node) {
+      return [];
+    }
+    let children = [];
+    if (!nodeDataManagementService.hasChildren(node)) {
+      try {
+        children = await AsyncHelpers.getConfigValueFromObjectAsync(node, 'children', context || node.context);
+        if (children === undefined || children === null) {
+          children = [];
+        }
+        children =
+          children
+            .map((n: Node) => this.getExpandStructuralPathSegment(n))
+            .map((n: Node) => this.bindChildToParent(n, node)) || [];
+      } catch (err) {
+        console.error('Could not lazy-load children for node', err);
+      }
+    } else {
+      let data = nodeDataManagementService.getChildren(node);
+      if (data) children = data.children;
+    }
+    let filteredChildren = this.getAccessibleNodes(node, children, context);
+    nodeDataManagementService.setChildren(node, { children, filteredChildren });
+    return filteredChildren;
+  }
+
+  getExpandStructuralPathSegment(node: Node): Node {
+    // Checking for pathSegment to exclude virtual root node
+    if (node && node.pathSegment && node.pathSegment.indexOf('/') !== -1) {
+      const segs = node.pathSegment.split('/');
+      const clonedNode = { ...node };
+      const buildStructuralNode = (segs: string[], node: Node) => {
+        const seg = segs.shift();
+        let child: Node = {};
+        if (segs.length) {
+          child.pathSegment = seg;
+          if (node.hideFromNav) child.hideFromNav = node.hideFromNav;
+          child.children = [buildStructuralNode(segs, node)];
+        } else {
+          // set original data to last child
+          child = clonedNode;
+          child.pathSegment = seg;
+        }
+        return child;
+      };
+      return buildStructuralNode(segs, node);
+    }
+    return node;
+  }
+
+  bindChildToParent(child: Node, node: Node) {
+    // Checking for pathSegment to exclude virtual root node
+    // node.pathSegment check is also required for virtual nodes like categories
+    if (node && node.pathSegment) {
+      child.parent = node;
+    }
+    return child;
   }
 }
