@@ -1,4 +1,5 @@
-import { FeatureToggles } from '../../src/core-api/feature-toggles';
+import { ModalService } from '../../src/services/modal.service';
+import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService, type Node } from '../../src/services/navigation.service';
 
 describe('NavigationService', () => {
@@ -434,6 +435,50 @@ describe('NavigationService', () => {
       navigationService.navItemClick(node, 'parent');
 
       expect(navigateSpy).toHaveBeenCalledWith('/parent/home');
+    });
+  });
+  describe('NavigationService.handleNavigationRequest', () => {
+    let modalServiceMock: { closeModals: jest.Mock };
+    beforeEach(() => {
+      modalServiceMock = {
+        closeModals: jest.fn()
+      };
+      jest.spyOn(serviceRegistry, 'get').mockReturnValue(modalServiceMock);
+      navigationService = new NavigationService(luigiMock);
+    });
+
+    it('should call openAsModal if modalSettings are provided', async () => {
+      const openAsModalMock = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
+
+      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, jest.fn());
+
+      expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
+    });
+
+    it('should close modals and update history if no modalSettings and not using hash routing', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+
+      await navigationService.handleNavigationRequest('/normal/path');
+
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
+
+    it('should set location.hash if useHashRouting is true', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+      const originalHash = window.location.hash;
+      await navigationService.handleNavigationRequest('/hash/path');
+
+      expect(window.location.hash).toBe('#/hash/path');
+
+      window.location.hash = originalHash;
     });
   });
 });

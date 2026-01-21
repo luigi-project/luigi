@@ -26,31 +26,10 @@ export class Navigation {
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
-    callbackFn?: (val?: unknown) => void
+    splitViewSettings?: any,
+    drawerSettings?: any
   ) => {
-    const normalizedPath = path.replace(/\/\/+/g, '/');
-    const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = true; //TODO just added for popState eventDetails
-
-    if (modalSettings) {
-      this.openAsModal(path, modalSettings, callbackFn);
-    } else {
-      this.modalService.closeModals();
-      if (this.hashRouting) {
-        location.hash = normalizedPath;
-      } else {
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        const eventDetail = {
-          detail: {
-            preventContextUpdate,
-            withoutSync: !navSync
-          }
-        };
-        const event = new CustomEvent('popstate', eventDetail);
-
-        window.dispatchEvent(event);
-      }
-    }
+    this.navService.handleNavigationRequest(path, preserveView, modalSettings, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
