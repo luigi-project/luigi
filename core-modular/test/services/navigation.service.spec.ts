@@ -481,4 +481,68 @@ describe('NavigationService', () => {
       window.location.hash = originalHash;
     });
   });
+  describe('NavigationService.buildNavItems', () => {
+    it('should return empty array if nodes is empty', () => {
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [],
+        nodesInPath: [],
+        rootNodes: [],
+        pathParams: {}
+      };
+      const items = navigationService.buildNavItems([], undefined, pathData);
+      expect(items).toEqual([]);
+    });
+
+    it('should mark selected node as selected', () => {
+      const node1: Node = { pathSegment: 'node1', label: 'Node 1', children: [] };
+      const node2: Node = { pathSegment: 'node2', label: 'Node 2', children: [] };
+      const selectedNode: Node = node2;
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData = {
+        selectedNode,
+        selectedNodeChildren: [node1, node2],
+        nodesInPath: [],
+        rootNodes: [node1, node2],
+        pathParams: {}
+      };
+      const items = navigationService.buildNavItems([node1, node2], selectedNode, pathData);
+      expect(items).toEqual([
+        {
+          altText: undefined,
+          icon: undefined,
+          label: 'Node 1',
+          node: node1,
+          selected: false,
+          tooltip: 'Node 1'
+        },
+        {
+          altText: undefined,
+          icon: undefined,
+          label: 'Node 2',
+          node: node2,
+          selected: true,
+          tooltip: 'Node 2'
+        }
+      ]);
+    });
+
+    it('should group nodes by category', () => {
+      const category = { id: 'cat1', label: 'Category 1' };
+      const node1: Node = { pathSegment: 'node1', label: 'Node 1', category, children: [] };
+      const node2: Node = { pathSegment: 'node2', label: 'Node 2', category, children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1, node2],
+        nodesInPath: [],
+        rootNodes: [node1, node2],
+        pathParams: {}
+      };
+      const items = navigationService.buildNavItems([node1, node2], undefined, pathData);
+      expect(items.length).toBe(1);
+      expect(items[0].category?.id).toBe('cat1');
+      expect(items[0].category?.nodes?.length).toBe(2);
+    });
+  });
 });
