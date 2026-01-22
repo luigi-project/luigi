@@ -201,7 +201,7 @@ export interface ExternalLink {
 }
 
 export class NavigationService {
-  constructor(private luigi: Luigi) { }
+  constructor(private luigi: Luigi) {}
 
   getPathData(path: string): PathData {
     const cfg = this.luigi.getConfig();
