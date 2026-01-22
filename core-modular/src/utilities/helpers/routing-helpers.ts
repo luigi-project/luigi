@@ -1,6 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { ConfigNode, Node, PathData } from '../../services/navigation.service';
+import type { Node, PathData } from '../../services/navigation.service';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
@@ -125,7 +125,7 @@ export const RoutingHelpers = {
    * @param luigi - The Luigi instance providing access to routing and search parameters.
    * @returns An object containing only the permitted search parameters for the client.
    */
-  prepareSearchParamsForClient(currentNode: ConfigNode, luigi: Luigi): {} {
+  prepareSearchParamsForClient(currentNode: Node, luigi: Luigi): {} {
     const filteredObj: Record<string, any> = {};
     if (currentNode && currentNode.clientPermissions && currentNode.clientPermissions.urlParameters) {
       Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {

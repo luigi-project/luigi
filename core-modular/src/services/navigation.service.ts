@@ -95,44 +95,36 @@ export interface PathData {
 }
 
 export interface Node {
-  category?: any;
-  drawer?: ModalSettings;
-  hideFromNav?: boolean;
-  hideSideNav?: boolean;
-  icon?: string;
-  label?: string;
-  pathSegment?: string;
-  tabNav?: boolean;
-  viewUrl?: string;
-  children?: Node[];
   altText?: string;
+  anonymousAccess?: any;
   badgeCounter?: {
     count?: () => number | Promise<number>;
     label?: string;
   };
-  tooltip?: string;
-  context?: Record<string, any>;
-}
-
-export interface ConfigNode extends Node {
-  anonymousAccess?: any;
+  category?: any;
+  children?: Node[];
   clientPermissions?: {
     changeCurrentLocale?: boolean;
     urlParameters?: Record<string, any>;
   };
+  context?: Record<string, any>;
+  drawer?: ModalSettings;
   externalLink?: ExternalLink;
+  hideFromNav?: boolean;
+  hideSideNav?: boolean;
+  icon?: string;
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
+  label?: string;
   onNodeActivation?: (node: Node) => boolean | void;
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
+  pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
+  tabNav?: boolean;
+  tooltip?: string;
+  viewUrl?: string;
   visibleForFeatureToggles?: string[];
-}
-
-export interface ViewNode extends Node {
-  node?: ConfigNode;
-  selected?: boolean;
 }
 
 export interface PageErrorHandler {
@@ -158,7 +150,7 @@ export interface Category {
 }
 
 export interface NavItem {
-  node?: ViewNode;
+  node?: Node;
   category?: Category;
   selected?: boolean;
 }
@@ -221,7 +213,7 @@ export class NavigationService {
     let pathParams: Record<string, any> = {};
     const pathData: PathData = {
       selectedNodeChildren: rootNodes,
-      nodesInPath: [{ children: rootNodes } as Node],
+      nodesInPath: [{ children: rootNodes }],
       rootNodes,
       pathParams
     };
@@ -254,7 +246,7 @@ export class NavigationService {
     return pathData;
   }
 
-  findMatchingNode(urlPathElement: string, nodes: Node[]): ConfigNode | undefined {
+  findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {
     let result: Node | undefined = undefined;
     const segmentsLength = nodes.filter((n) => !!n.pathSegment).length;
     const dynamicSegmentsLength = nodes.filter((n) => n.pathSegment && n.pathSegment.startsWith(':')).length;
@@ -295,11 +287,12 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
-    nodes?.forEach((node: ConfigNode) => {
+
+    nodes?.forEach((node) => {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
-          this.getParentNode(pathData.selectedNode, pathData),
+          this.getParentNode(pathData.selectedNode, pathData) as Node,
           pathData?.selectedNode?.context || {},
           this.luigi
         )
@@ -307,7 +300,10 @@ export class NavigationService {
         return;
       }
 
-      const viewNode = this.buildViewNode(node, pathData?.selectedNode);
+      if (node.label) {
+        node.label = this.luigi.i18n().getTranslation(node.label);
+        node.tooltip = this.resolveTooltipText(node, node.label);
+      }
 
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
@@ -329,25 +325,13 @@ export class NavigationService {
           items.push(catNode);
         }
 
-        catNode.category?.nodes?.push({ node: viewNode, selected: node === selectedNode });
+        catNode.category?.nodes?.push({ node, selected: node === selectedNode });
       } else {
-        items.push({ node: viewNode, selected: node === selectedNode });
+        items.push({ node, selected: node === selectedNode });
       }
     });
 
     return items;
-  }
-
-  private buildViewNode(node: ConfigNode, selectedNode: Node | undefined): ViewNode {
-    const viewNode: ViewNode = {
-      label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-      tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
-      icon: node.icon,
-      pathSegment: node.pathSegment,
-      selected: node === selectedNode
-    };
-
-    return viewNode;
   }
 
   shouldRedirect(path: string, pData?: PathData): string | undefined {
@@ -368,7 +352,7 @@ export class NavigationService {
       !node ||
       !NavigationHelpers.isNodeAccessPermitted(
         node,
-        this.getParentNode(pathData.selectedNode, pathData),
+        this.getParentNode(pathData.selectedNode, pathData) as Node,
         pathData?.selectedNode?.context || {},
         this.luigi
       )
@@ -520,7 +504,7 @@ export class NavigationService {
     };
   }
 
-  navItemClick(item: ConfigNode, parentPath: string): void {
+  navItemClick(item: Node, parentPath: string): void {
     if (!item.pathSegment) {
       console.error('Navigation error: pathSegment is not defined for the node.');
       return;
@@ -713,7 +697,7 @@ export class NavigationService {
    *   - `nodeObject`: The last node object in the navigation path.
    *   - `pathData`: The structured data representation of the path.
    */
-  async extractDataFromPath(path: string): Promise<{ nodeObject: ConfigNode; pathData: PathData }> {
+  async extractDataFromPath(path: string): Promise<{ nodeObject: Node; pathData: PathData }> {
     const pathData = this.getPathData(path);
     const nodeObject: any = RoutingHelpers.getLastNodeObject(pathData);
     return { nodeObject, pathData };
@@ -724,13 +708,13 @@ export class NavigationService {
   }
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
-    const rootNodes = navNodes;
+    const rootNodes = cloneDeep(navNodes) || [];
 
     if (!rootNodes.length) {
       return rootNodes;
     }
 
-    rootNodes.forEach((rootNode: ConfigNode) => {
+    rootNodes.forEach((rootNode: Node) => {
       rootNode.isRootNode = true;
     });
 
