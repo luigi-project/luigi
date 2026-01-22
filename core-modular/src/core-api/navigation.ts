@@ -1,5 +1,5 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings, Node, RunTimeErrorHandler } from '../services/navigation.service';
+import type { ConfigNode, ModalSettings, Node, RunTimeErrorHandler } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
@@ -61,7 +61,7 @@ export class Navigation {
 
   runTimeErrorHandler = (errorObj: object): void => {
     const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
-    const currentNode: Node = this.navService.getCurrentNode(path);
+    const currentNode: ConfigNode = this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
     );
