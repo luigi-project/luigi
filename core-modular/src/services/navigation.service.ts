@@ -140,7 +140,7 @@ export interface RunTimeErrorHandler {
 
 export interface Category {
   altText?: string;
-  collabsible?: boolean;
+  collapsible?: boolean;
   icon?: string;
   id: string;
   isGroup?: boolean;
@@ -324,7 +324,14 @@ export class NavigationService {
           items.push(catNode);
         }
 
-        catNode.category?.nodes?.push({ node, selected: node === selectedNode });
+        catNode.category?.nodes?.push({
+          node,
+          selected: node === selectedNode,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          altText: node.altText,
+          icon: node.icon
+        });
       } else {
         items.push({
           altText: node.altText,
