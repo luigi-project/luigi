@@ -297,12 +297,11 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
-
   if (item.node) {
     const el = document.createElement('ui5-side-navigation-item');
-    el.setAttribute('text', item.node.label);
-    el.setAttribute('tooltip', item.node.tooltip);
-    if (item.node.icon) el.setAttribute('icon', item.node.icon);
+    el.setAttribute('text', item.label);
+    el.setAttribute('tooltip', item.tooltip);
+    if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
     el.addEventListener('click', (ev) => {
       leftNavData.navClick(item.node);
@@ -322,9 +321,9 @@ function renderNodeOrCategory(item, leftNavData) {
 
       item.category.nodes.forEach((nodeWrapper) => {
         const sub = document.createElement('ui5-side-navigation-sub-item');
-        sub.setAttribute('text', nodeWrapper.node.label);
-        sub.setAttribute('tooltip', nodeWrapper.node.tooltip);
-        if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.node.icon);
+        sub.setAttribute('text', nodeWrapper.label);
+        sub.setAttribute('tooltip', nodeWrapper.tooltip);
+        if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub.addEventListener('click', (ev) => {
           leftNavData.navClick(nodeWrapper.node);
         });

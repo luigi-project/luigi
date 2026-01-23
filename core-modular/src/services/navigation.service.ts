@@ -291,7 +291,6 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
-    console.log('pathData', pathData);
 
     nodes?.forEach((node) => {
       if (
