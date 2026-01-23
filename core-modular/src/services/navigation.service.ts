@@ -122,7 +122,7 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
-  tooltip?: string;
+  tooltipText?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
 }
@@ -140,7 +140,7 @@ export interface RunTimeErrorHandler {
 
 export interface Category {
   altText?: string;
-  collabsible?: boolean;
+  collapsible?: boolean;
   icon?: string;
   id: string;
   isGroup?: boolean;
@@ -150,9 +150,13 @@ export interface Category {
 }
 
 export interface NavItem {
-  node?: Node;
+  altText?: string;
   category?: Category;
+  icon?: string;
+  node?: Node;
+  label?: string;
   selected?: boolean;
+  tooltip?: string;
 }
 
 export interface TabNavData {
@@ -300,11 +304,6 @@ export class NavigationService {
         return;
       }
 
-      if (node.label) {
-        node.label = this.luigi.i18n().getTranslation(node.label);
-        node.tooltip = this.resolveTooltipText(node, node.label);
-      }
-
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
@@ -325,9 +324,23 @@ export class NavigationService {
           items.push(catNode);
         }
 
-        catNode.category?.nodes?.push({ node, selected: node === selectedNode });
+        catNode.category?.nodes?.push({
+          node,
+          selected: node === selectedNode,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          altText: node.altText,
+          icon: node.icon
+        });
       } else {
-        items.push({ node, selected: node === selectedNode });
+        items.push({
+          altText: node.altText,
+          icon: node.icon,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          node,
+          selected: node === selectedNode
+        });
       }
     });
 
