@@ -41,7 +41,7 @@ function addShellbarItem(shellbar, item) {
       });
     }
     itemEl.setAttribute('icon', item.node.icon);
-    itemEl.setAttribute('text', item.node.label);
+    itemEl.setAttribute('text', item.label);
     itemEl.setAttribute('luigi-route', item.node.pathSegment);
     itemEl.addEventListener('click', () => {
       globalThis.Luigi.navigation().navigate(itemEl.getAttribute('luigi-route'));
@@ -165,10 +165,10 @@ function renderCategoryPopover(catObj) {
   const catList = document.createElement('ui5-list');
   catObj.nodes?.forEach((item) => {
     const catLi = document.createElement('ui5-li');
-    catLi.setAttribute('icon', item.node.icon);
+    catLi.setAttribute('icon', item.icon);
     catLi.setAttribute('luigi-route', item.node.pathSegment);
-    catLi.setAttribute('text', item.node.label);
-    catLi.innerText = item.node.label;
+    catLi.setAttribute('text', item.label);
+    catLi.innerText = item.label;
     catLi.addEventListener('click', () => {
       globalThis.Luigi.navigation().navigate(catLi.getAttribute('luigi-route'));
     });
@@ -297,12 +297,11 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
-
   if (item.node) {
     const el = document.createElement('ui5-side-navigation-item');
-    el.setAttribute('text', item.node.label);
-    el.setAttribute('tooltip', item.node.tooltip);
-    if (item.node.icon) el.setAttribute('icon', item.node.icon);
+    el.setAttribute('text', item.label);
+    el.setAttribute('tooltip', item.tooltip);
+    if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
     el.addEventListener('click', (ev) => {
       leftNavData.navClick(item.node);
@@ -322,9 +321,9 @@ function renderNodeOrCategory(item, leftNavData) {
 
       item.category.nodes.forEach((nodeWrapper) => {
         const sub = document.createElement('ui5-side-navigation-sub-item');
-        sub.setAttribute('text', nodeWrapper.node.label);
-        sub.setAttribute('tooltip', nodeWrapper.node.tooltip);
-        if (nodeWrapper.node.icon) sub.setAttribute('icon', nodeWrapper.node.icon);
+        sub.setAttribute('text', nodeWrapper.label);
+        sub.setAttribute('tooltip', nodeWrapper.tooltip);
+        if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub.addEventListener('click', (ev) => {
           leftNavData.navClick(nodeWrapper.node);
         });
@@ -631,7 +630,7 @@ const connector = {
     tabNavData.items.forEach((item) => {
       const tab = document.createElement('ui5-tab');
       if (item.node) {
-        tab.setAttribute('text', `${item.node.label}`);
+        tab.setAttribute('text', `${item.label}`);
         tab.setAttribute('luigi-route', tabNavData.basePath + '/' + item.node.pathSegment);
         item.selected ? item.selected && tab.setAttribute('selected', '') : '';
       } else if (item.category) {
@@ -639,7 +638,7 @@ const connector = {
         item.category.nodes?.forEach((subItem) => {
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
-          subTab.setAttribute('text', subItem.node?.label || subItem.node?.pathSegment || '');
+          subTab.setAttribute('text', subItem.label || subItem.node?.pathSegment || '');
           subItem.selected ? subItem.selected && subTab.setAttribute('selected', '') : '';
           subTab.setAttribute('luigi-route', tabNavData.basePath + '/' + subItem.node?.pathSegment);
           tab.appendChild(subTab);
