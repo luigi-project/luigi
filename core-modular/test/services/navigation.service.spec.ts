@@ -544,5 +544,36 @@ describe('NavigationService', () => {
       expect(items[0].category?.id).toBe('cat1');
       expect(items[0].category?.nodes?.length).toBe(2);
     });
+
+    it('test translated category label', () => {
+      const category = { id: 'cat1', label: 'Category 1' };
+      const node1: Node = { pathSegment: 'node1', label: 'Node 1', category, children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => 'Translated ' + key });
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1],
+        nodesInPath: [],
+        rootNodes: [node1],
+        pathParams: {}
+      };
+      const items = navigationService.buildNavItems([node1], undefined, pathData);
+      expect(items.length).toBe(1);
+      expect(items[0].category?.label).toBe('Translated Category 1');
+    });
+    it('translated node label and tooltip', () => {
+      const node1: Node = { pathSegment: 'node1', label: 'Node 1', tooltipText: 'Tooltip 1', children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => 'Translated ' + key });
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1],
+        nodesInPath: [],
+        rootNodes: [node1],
+        pathParams: {}
+      };
+      const items = navigationService.buildNavItems([node1], undefined, pathData);
+      expect(items.length).toBe(1);
+      expect(items[0].label).toBe('Translated Node 1');
+      expect(items[0].tooltip).toBe('Translated Tooltip 1');
+    });
   });
 });

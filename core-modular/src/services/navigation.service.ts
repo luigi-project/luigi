@@ -122,7 +122,7 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
-  tooltip?: string;
+  tooltipText?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
 }
@@ -291,6 +291,7 @@ export class NavigationService {
   buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
+    console.log('pathData', pathData);
 
     nodes?.forEach((node) => {
       if (
