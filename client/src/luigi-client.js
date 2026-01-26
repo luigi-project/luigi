@@ -133,3 +133,4 @@ class LuigiClient {
   }
 }
 export default LuigiClient = new LuigiClient();
+window.LuigiClient = LuigiClient;

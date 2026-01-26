@@ -7,7 +7,8 @@
     "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "scripts": {
-    "bundle": "npm run bundle-evergreen",
+    "bundle-vite": "vite build",
+    "bundle": "npm run bundle-vite",
     "bundle-evergreen": "webpack --mode=production",
     "bundle-develop": "npm run bundle-develop-evergreen",
     "bundle-develop-evergreen": "npm run bundle-evergreen -- -d --watch",
@@ -28,8 +29,10 @@
     "diff": ">=3.5.0",
     "lodash": ">=4.17.23",
     "mixin-deep": ">=1.3.2",
+    "rollup-plugin-copy": "^3.5.0",
     "serialize-javascript": ">=6.0.2",
     "set-value": ">=4.1.0",
+    "vite": "^7.3.1",
     "webpack": "^5.98.0",
     "webpack-cli": "^5.1.4"
   },
