@@ -1,7 +1,5 @@
 import { UserSettingsHelper } from '../../../src/utilities/helpers/usersetting-dialog-helpers';
 
-const chai = require('chai');
-const assert = chai.assert;
 const sinon = require('sinon');
 
 describe('UserSettings-helpers', () => {
@@ -72,8 +70,8 @@ describe('UserSettings-helpers', () => {
 
   it('prepare user settings data from schema', () => {
     let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups(userSettingsSchema, null);
-    assert.equal(processedUserSettingGroups.length, 4);
-    assert.deepEqual(processedUserSettingGroups[0], {
+    expect(processedUserSettingGroups.length).toEqual(4);
+    expect(processedUserSettingGroups[0]).toEqual({
       userAccount: {
         label: 'User Account',
         sublabel: 'username',
@@ -90,7 +88,7 @@ describe('UserSettings-helpers', () => {
 
   it('return empty array if no schema defined', () => {
     let processedUserSettingGroups = UserSettingsHelper.processUserSettingGroups({}, null);
-    assert.equal(processedUserSettingGroups.length, 0);
+    expect(processedUserSettingGroups.length).toEqual(0);
   });
 
   it('getUserSettingsIframesInDom', () => {
@@ -105,7 +103,7 @@ describe('UserSettings-helpers', () => {
       ]
     });
     const iframeCtn = UserSettingsHelper.getUserSettingsIframesInDom();
-    assert.equal(iframeCtn.length, 2);
+    expect(iframeCtn.length).toEqual(2);
   });
 
   it('hideUserSettingsIframe', () => {
@@ -113,8 +111,8 @@ describe('UserSettings-helpers', () => {
     sinon.stub(UserSettingsHelper, 'getUserSettingsIframesInDom');
     UserSettingsHelper.getUserSettingsIframesInDom.returns(iframes);
     UserSettingsHelper.hideUserSettingsIframe();
-    assert.equal(iframes[0].style.display, 'none');
-    assert.equal(iframes[1].style.display, 'none');
+    expect(iframes[0].style.display).toEqual('none');
+    expect(iframes[1].style.display).toEqual('none');
   });
 
   it('findActiveCustomUserSettingsIframe', () => {
@@ -122,9 +120,9 @@ describe('UserSettings-helpers', () => {
     let iframes = [{ contentWindow: { contentWindow1: 'contentWindow1' } }, { contentWindow: eventSource }];
     document.querySelectorAll.returns(iframes);
     let activeCustomUserSettingsIframe = UserSettingsHelper.findActiveCustomUserSettingsIframe(eventSource);
-    assert.equal(activeCustomUserSettingsIframe.contentWindow, eventSource);
+    expect(activeCustomUserSettingsIframe.contentWindow).toEqual(eventSource);
     const eventSource2 = { contentWindow3: 'contentWindow3' };
     activeCustomUserSettingsIframe = UserSettingsHelper.findActiveCustomUserSettingsIframe(eventSource2);
-    assert.deepEqual(activeCustomUserSettingsIframe, null);
+    expect(activeCustomUserSettingsIframe).toEqual(null);
   });
 });

@@ -2,8 +2,6 @@ import { AsyncHelpers } from './../../../src/utilities/helpers/async-helpers';
 import { GenericHelpers } from './../../../src/utilities/helpers/generic-helpers';
 
 const sinon = require('sinon');
-const chai = require('chai');
-const assert = chai.assert;
 
 describe('Async-helpers', () => {
   let clock: any;
@@ -27,8 +25,8 @@ describe('Async-helpers', () => {
       const value = 'my value';
       const prom = AsyncHelpers.wrapAsPromise(value);
 
-      assert.isTrue(GenericHelpers.isPromise(prom), 'is a promise');
-      assert.equal(await prom, value, 'value is equal');
+      expect(GenericHelpers.isPromise(prom)).toBe(true);
+      expect(await prom).toEqual(value);
     });
   });
 
@@ -40,8 +38,8 @@ describe('Async-helpers', () => {
       const thirdParam = 'hello';
       const prom = AsyncHelpers.applyFunctionPromisified(plainFunc, [undefined, undefined, thirdParam]);
 
-      assert.isTrue(GenericHelpers.isPromise(prom), 'is a promise');
-      assert.equal(await prom, thirdParam, 'value is equal');
+      expect(GenericHelpers.isPromise(prom)).toBe(true);
+      expect(await prom).toEqual(thirdParam);
     });
 
     it('executes an async function and returns its promise', async () => {
@@ -53,8 +51,8 @@ describe('Async-helpers', () => {
       const thirdParam = 'hello';
       const prom = AsyncHelpers.applyFunctionPromisified(promiseFunc, [undefined, undefined, thirdParam]);
 
-      assert.isTrue(GenericHelpers.isPromise(prom), 'is a promise');
-      assert.equal(await prom, thirdParam, 'value is equal');
+      expect(GenericHelpers.isPromise(prom)).toBe(true);
+      expect(await prom).toEqual(thirdParam);
     });
   });
 });

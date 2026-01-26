@@ -2,7 +2,6 @@ import { NodeDataManagementService } from '../../src/services/node-data-manageme
 
 const chai = require('chai');
 const expect = chai.expect;
-const assert = chai.assert;
 
 describe('NodeDataManagementService', function () {
   const getNodeMock = () => ({

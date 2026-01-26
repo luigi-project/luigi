@@ -1,4 +1,3 @@
-import { assert } from 'chai';
 import { EventListenerHelpers } from '../../../src/utilities/helpers/event-listener-helpers';
 
 describe('EventListenerHelpers', () => {
@@ -10,7 +9,7 @@ describe('EventListenerHelpers', () => {
     const listenerFn = () => {};
     EventListenerHelpers.addEventListener('click', listenerFn);
 
-    assert.deepEqual(EventListenerHelpers.listeners, [{ type: 'click', listenerFn: listenerFn }]);
+    expect(EventListenerHelpers.listeners).toEqual([{ type: 'click', listenerFn: listenerFn }]);
   });
 
   it('add and then remove an event listener', () => {
@@ -18,7 +17,7 @@ describe('EventListenerHelpers', () => {
     EventListenerHelpers.addEventListener('click', listenerFn);
     EventListenerHelpers.removeEventListener('click', listenerFn);
 
-    assert.deepEqual(EventListenerHelpers.listeners, []);
+    expect(EventListenerHelpers.listeners).toEqual([]);
   });
 
   it('add and remove all event listeners', () => {
@@ -29,6 +28,6 @@ describe('EventListenerHelpers', () => {
 
     EventListenerHelpers.removeAllEventListeners();
 
-    assert.deepEqual(EventListenerHelpers.listeners, []);
+    expect(EventListenerHelpers.listeners).toEqual([]);
   });
 });
