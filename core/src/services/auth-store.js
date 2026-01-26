@@ -17,7 +17,7 @@ class AuthStoreSvcClass {
     if (!LuigiConfig.initialized) {
       console.warn(
         'Luigi Core is not initialized yet. Consider moving your code to the luigiAfterInit lifecycle hook. ' +
-        'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
+          'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
       );
     } else {
       if (!this._storageType) {
