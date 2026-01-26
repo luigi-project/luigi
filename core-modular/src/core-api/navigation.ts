@@ -26,40 +26,10 @@ export class Navigation {
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
-    withoutSync?: boolean,
-    callbackFn?: (val?: unknown) => void
+    splitViewSettings?: any,
+    drawerSettings?: any
   ) => {
-    const normalizedPath = path.replace(/\/\/+/g, '/');
-    const preventContextUpdate = false; //TODO just added for popState eventDetails
-
-    if (modalSettings) {
-      this.openAsModal(path, modalSettings, callbackFn);
-    } else {
-      const eventDetail = {
-        detail: {
-          preventContextUpdate,
-          withoutSync: !!withoutSync
-        }
-      };
-
-      this.modalService.closeModals();
-
-      if (this.hashRouting) {
-        if (!withoutSync) {
-          location.hash = normalizedPath;
-        } else {
-          const event = new CustomEvent('hashchange', eventDetail);
-
-          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
-          window.dispatchEvent(event);
-        }
-      } else {
-        const event = new CustomEvent('popstate', eventDetail);
-
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        window.dispatchEvent(event);
-      }
-    }
+    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {

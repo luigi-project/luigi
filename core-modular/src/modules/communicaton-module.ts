@@ -1,8 +1,10 @@
 import Events from '@luigi-project/container';
-import { UXModule } from './ux-module';
 import type { Luigi } from '../core-api/luigi';
+import { NavigationService } from '../services/navigation.service';
 import { RoutingModule } from './routing-module';
+import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
+import { UXModule } from './ux-module';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -17,7 +19,9 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       const { link, preserveView, modal, withoutSync } = event.detail;
 
-      luigi.navigation().navigate(link, preserveView, modal, withoutSync, event.callbackFn);
+      serviceRegistry
+        .get(NavigationService)
+        .handleNavigationRequest(link, preserveView, modal, withoutSync, event.callbackFn);
     });
     containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
       luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});

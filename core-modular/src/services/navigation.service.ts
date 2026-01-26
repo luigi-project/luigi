@@ -7,6 +7,8 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
+import { serviceRegistry } from './service-registry';
+import { ModalService } from './modal.service';
 
 export interface TopNavData {
   appTitle: string;
@@ -120,7 +122,7 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
-  tooltip?: string;
+  tooltipText?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
 }
@@ -138,7 +140,7 @@ export interface RunTimeErrorHandler {
 
 export interface Category {
   altText?: string;
-  collabsible?: boolean;
+  collapsible?: boolean;
   icon?: string;
   id: string;
   isGroup?: boolean;
@@ -148,9 +150,13 @@ export interface Category {
 }
 
 export interface NavItem {
-  node?: Node;
+  altText?: string;
   category?: Category;
+  icon?: string;
+  node?: Node;
+  label?: string;
   selected?: boolean;
+  tooltip?: string;
 }
 
 export interface TabNavData {
@@ -298,11 +304,6 @@ export class NavigationService {
         return;
       }
 
-      if (node.label) {
-        node.label = this.luigi.i18n().getTranslation(node.label);
-        node.tooltip = this.resolveTooltipText(node, node.label);
-      }
-
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
@@ -323,9 +324,23 @@ export class NavigationService {
           items.push(catNode);
         }
 
-        catNode.category?.nodes?.push({ node, selected: node === selectedNode });
+        catNode.category?.nodes?.push({
+          node,
+          selected: node === selectedNode,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          altText: node.altText,
+          icon: node.icon
+        });
       } else {
-        items.push({ node, selected: node === selectedNode });
+        items.push({
+          altText: node.altText,
+          icon: node.icon,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          node,
+          selected: node === selectedNode
+        });
       }
     });
 
@@ -723,5 +738,45 @@ export class NavigationService {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
+  }
+
+  async handleNavigationRequest(
+    path: string,
+    preserveView?: string,
+    modalSettings?: any,
+    withoutSync?: boolean,
+    callbackFn?: any
+  ): Promise<void> {
+    const normalizedPath = path.replace(/\/\/+/g, '/');
+    const preventContextUpdate = false; //TODO just added for popState eventDetails
+
+    if (modalSettings) {
+      this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
+    } else {
+      const eventDetail = {
+        detail: {
+          preventContextUpdate,
+          withoutSync: !!withoutSync
+        }
+      };
+
+      await serviceRegistry.get(ModalService).closeModals();
+
+      if (this.luigi.getConfig().routing?.useHashRouting) {
+        if (!withoutSync) {
+          location.hash = normalizedPath;
+        } else {
+          const event = new CustomEvent('hashchange', eventDetail);
+
+          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.dispatchEvent(event);
+        }
+      } else {
+        const event = new CustomEvent('popstate', eventDetail);
+
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        window.dispatchEvent(event);
+      }
+    }
   }
 }
