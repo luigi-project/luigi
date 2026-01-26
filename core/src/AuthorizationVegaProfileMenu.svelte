@@ -246,6 +246,19 @@
                     NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event);
                   }}
                 >
+                  {#if profileItem.icon}
+                    <span class="fd-menu__addon-before">
+                      {#if hasOpenUIicon(profileItem)}
+                        <i class="fd-top-nav__icon {getSapIconStr(profileItem.icon)}" />
+                      {:else}
+                        <img
+                          class="fd-top-nav__icon nav-icon"
+                          src={profileItem.icon}
+                          alt={profileItem.altText ? profileItem.altText : ''}
+                        />
+                      {/if}
+                    </span>
+                  {/if}
                   <span class="fd-menu__title">{$getTranslation(profileItem.label)}</span>
                 </a>
               </li>
