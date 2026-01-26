@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
@@ -6,6 +7,8 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
+import { serviceRegistry } from './service-registry';
+import { ModalService } from './modal.service';
 
 export interface TopNavData {
   appTitle: string;
@@ -94,6 +97,10 @@ export interface PathData {
 export interface Node {
   altText?: string;
   anonymousAccess?: any;
+  badgeCounter?: {
+    count?: () => number | Promise<number>;
+    label?: string;
+  };
   category?: any;
   children?: Node[];
   clientPermissions?: {
@@ -113,8 +120,9 @@ export interface Node {
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
   pathSegment?: string;
+  runTimeErrorHandler?: RunTimeErrorHandler;
   tabNav?: boolean;
-  tooltip?: string;
+  tooltipText?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
 }
@@ -126,9 +134,13 @@ export interface PageErrorHandler {
   errorFn?: (node?: Node) => void;
 }
 
+export interface RunTimeErrorHandler {
+  errorFn?: (error: object, node?: Node) => void;
+}
+
 export interface Category {
   altText?: string;
-  collabsible?: boolean;
+  collapsible?: boolean;
   icon?: string;
   id: string;
   isGroup?: boolean;
@@ -138,9 +150,13 @@ export interface Category {
 }
 
 export interface NavItem {
-  node?: Node;
+  altText?: string;
   category?: Category;
+  icon?: string;
+  node?: Node;
+  label?: string;
   selected?: boolean;
+  tooltip?: string;
 }
 
 export interface TabNavData {
@@ -288,11 +304,6 @@ export class NavigationService {
         return;
       }
 
-      if (node.label) {
-        node.label = this.luigi.i18n().getTranslation(node.label);
-        node.tooltip = this.resolveTooltipText(node, node.label);
-      }
-
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
@@ -313,9 +324,23 @@ export class NavigationService {
           items.push(catNode);
         }
 
-        catNode.category?.nodes?.push({ node, selected: node === selectedNode });
+        catNode.category?.nodes?.push({
+          node,
+          selected: node === selectedNode,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          altText: node.altText,
+          icon: node.icon
+        });
       } else {
-        items.push({ node, selected: node === selectedNode });
+        items.push({
+          altText: node.altText,
+          icon: node.icon,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          node,
+          selected: node === selectedNode
+        });
       }
     });
 
@@ -535,7 +560,11 @@ export class NavigationService {
         if (item.externalLink.sameWindow) {
           window.location.href = item.externalLink.url;
         } else {
-          window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
+          if (newWindow) {
+            newWindow.opener = null;
+            newWindow.focus();
+          }
         }
       }
     };
@@ -692,22 +721,14 @@ export class NavigationService {
   }
 
   private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
-    const rootNodes = JSON.parse(JSON.stringify(navNodes)) || [];
+    const rootNodes = cloneDeep(navNodes) || [];
+
     if (!rootNodes.length) {
       return rootNodes;
     }
+
     rootNodes.forEach((rootNode: Node) => {
       rootNode.isRootNode = true;
-    });
-
-    navNodes.forEach((node: any) => {
-      if (node?.badgeCounter?.count) {
-        const badgeItem = rootNodes.find((item: any) => item.badgeCounter && item.viewUrl === node.viewUrl);
-
-        if (badgeItem) {
-          badgeItem.badgeCounter.count = node.badgeCounter.count;
-        }
-      }
     });
 
     return this.getAccessibleNodes(undefined, rootNodes, context);
@@ -717,5 +738,36 @@ export class NavigationService {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
+  }
+
+  async handleNavigationRequest(
+    path: string,
+    preserveView?: string,
+    modalSettings?: any,
+    callbackFn?: any
+  ): Promise<void> {
+    const normalizedPath = path.replace(/\/\/+/g, '/');
+    const preventContextUpdate = false; //TODO just added for popState eventDetails
+    const navSync = true; //TODO just added for popState eventDetails
+
+    if (modalSettings) {
+      this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
+    } else {
+      await serviceRegistry.get(ModalService).closeModals();
+      if (this.luigi.getConfig().routing?.useHashRouting) {
+        location.hash = normalizedPath;
+      } else {
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        const eventDetail = {
+          detail: {
+            preventContextUpdate,
+            withoutSync: !navSync
+          }
+        };
+        const event = new CustomEvent('popstate', eventDetail);
+
+        window.dispatchEvent(event);
+      }
+    }
   }
 }

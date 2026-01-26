@@ -488,9 +488,13 @@ body.lightTheme {
     .lui-side-nav__footer--text {
       width: 100%;
       color: var(--fg-color);
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: normal;
       padding: 20px 40px;
+
+      div {
+        width: 100%;
+      }
     }
   }
 
