@@ -219,6 +219,7 @@ describe('Navigation', () => {
         '/test/path',
         'preserveViewValue',
         { title: 'Modal Title' },
+        false,
         undefined
       );
     });
