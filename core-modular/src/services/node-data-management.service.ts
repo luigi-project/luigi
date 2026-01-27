@@ -1,4 +1,4 @@
-import type { Node } from './navigation.service';
+import type { Node, RootNode } from './navigation.service';
 
 export class NodeDataManagementService {
   dataManagement: Map<any, any>;
@@ -50,7 +50,7 @@ export class NodeDataManagementService {
    * Returns the root node
    * @returns {Node} root node
    */
-  getRootNode(): Node {
+  getRootNode(): RootNode {
     return this.dataManagement.get('_luigiRootNode');
   }
 

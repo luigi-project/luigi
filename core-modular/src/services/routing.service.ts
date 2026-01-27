@@ -3,8 +3,9 @@ import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { ModalSettings, Node } from './navigation.service';
+import type { ModalSettings, Node, PathData } from './navigation.service';
 import { NavigationService } from './navigation.service';
+import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 
@@ -20,6 +21,7 @@ export class RoutingService {
   previousNode: Node | undefined;
   currentRoute?: Route;
   modalSettings?: ModalSettings;
+  previousPathData?: PathData;
 
   constructor(private luigi: Luigi) {}
 
@@ -90,9 +92,11 @@ export class RoutingService {
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
-    const pathData = this.getNavigationService().getPathData(path);
+    this.checkInvalidateCache(this.previousPathData, path);
+    const pathData = await this.getNavigationService().getPathData(path);
+    this.previousPathData = pathData;
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const redirect = this.getNavigationService().shouldRedirect(path, pathData);
+    const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
 
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
@@ -105,12 +109,11 @@ export class RoutingService {
       nodeParams
     };
 
-    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
 
-    const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
-
+    const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
@@ -373,6 +376,38 @@ export class RoutingService {
       history.replaceState((window as any).state, '', url.href);
     } else {
       history.pushState((window as any).state, '', url.href);
+    }
+  }
+
+  checkInvalidateCache(previousPathData: any, newPath: any) {
+    if (!previousPathData) return;
+    const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
+    let newPathArray = newPath.split('/');
+    if (previousPathData.nodesInPath && previousPathData.nodesInPath.length > 0) {
+      let previousNavPathWithoutRoot = previousPathData.nodesInPath.slice(1);
+
+      let isSamePath = true;
+      for (let i = 0; i < previousNavPathWithoutRoot.length; i++) {
+        let newPathSegment = newPathArray.length > i ? newPathArray[i] : undefined;
+        let previousPathNode = previousNavPathWithoutRoot[i];
+
+        if (newPathSegment !== previousPathNode.pathSegment || !isSamePath) {
+          if (RoutingHelpers.isDynamicNode(previousPathNode)) {
+            if (
+              !isSamePath ||
+              newPathSegment !== RoutingHelpers.getDynamicNodeValue(previousPathNode, previousPathData.pathParams)
+            ) {
+              nodeDataManagementService.deleteNodesRecursively(previousPathNode);
+              break;
+            }
+          } else {
+            isSamePath = false;
+          }
+        }
+      }
+    } else {
+      // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
+      nodeDataManagementService.deleteCache();
     }
   }
 }
