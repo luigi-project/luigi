@@ -674,7 +674,6 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
-      
     };
   }
 
