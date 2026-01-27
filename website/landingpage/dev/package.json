@@ -47,7 +47,7 @@
     "serialize-javascript": "^6.0.1",
     "slugify": "^1.4.0",
     "socket.io-adapter": "~2.5.5",
-    "tar": "^7.5.3",
+    "tar": "^7.5.4",
     "trim-newlines": "^4.0.2",
     "vinyl-named": "^1.1.0",
     "webpack": "^5.94.0",
