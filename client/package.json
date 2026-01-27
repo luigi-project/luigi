@@ -8,7 +8,7 @@
   },
   "scripts": {
     "bundle-vite": "vite build",
-    "bundle": "npm run bundle-vite",
+    "bundle": "npm run bundle-evergreen",
     "bundle-evergreen": "webpack --mode=production",
     "bundle-develop": "npm run bundle-develop-evergreen",
     "bundle-develop-evergreen": "npm run bundle-evergreen -- -d --watch",
