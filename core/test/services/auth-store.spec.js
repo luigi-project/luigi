@@ -1,4 +1,3 @@
-import { GenericHelpers } from '../../src/utilities/helpers';
 import { LuigiConfig } from '../../src/core-api';
 
 const chai = require('chai');
@@ -124,6 +123,7 @@ describe('AuthStore', () => {
       beforeEach(() => {
         AuthStoreSvc._storageType = undefined;
         sinon.stub(LuigiConfig, 'getConfigValue');
+        sinon.stub(LuigiConfig, 'initialized').value(true);
       });
       it('no config', () => {
         assert.equal(AuthStoreSvc.getStorageType(), 'localStorage');
