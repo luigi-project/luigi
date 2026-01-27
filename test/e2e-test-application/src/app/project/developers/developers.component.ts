@@ -36,7 +36,7 @@ export class DevelopersComponent implements OnInit, OnDestroy {
     private luigiContextService: LuigiContextService
   ) {
     effect(() => {
-      const data: IContextMessage = luigiContextService.contextSignal()();
+      const data: IContextMessage = luigiContextService.contextSignal();
 
       if (data) {
         this.currentProject.set(data.context.currentProject + '1');
@@ -73,8 +73,7 @@ export class DevelopersComponent implements OnInit, OnDestroy {
   }
 
   getContextSignal() {
-    const source: Signal<IContextMessage> = this.luigiContextService.contextSignal();
-    const data: IContextMessage = source();
+    const data: IContextMessage = this.luigiContextService.contextSignal();
     const ctx: Context = data.context;
 
     this.contextSignal = ctx.currentProject;

@@ -17,7 +17,7 @@ export class LuigiContextServiceImpl implements LuigiContextService {
   /**
    * Get a signal that emits when context is set.
    */
-  public contextSignal = this.signalContext.asReadonly();
+  public contextSignal: Signal<IContextMessage | undefined> = this.signalContext.asReadonly();
 
   constructor() {
     addInitListener((initContext: Context) => {
