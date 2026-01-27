@@ -7,8 +7,9 @@
     "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "scripts": {
+    "bundle-rollup": "rollup --config",
     "bundle-vite": "vite build",
-    "bundle": "npm run bundle-vite",
+    "bundle": "npm run bundle-rollup",
     "bundle-evergreen": "webpack --mode=production",
     "bundle-develop": "npm run bundle-develop-evergreen",
     "bundle-develop-evergreen": "npm run bundle-evergreen -- -d --watch",
@@ -23,7 +24,9 @@
     "@babel/preset-env": "^7.26.9",
     "@babel/runtime": "^7.26.9",
     "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
     "acorn": "^8.14.0",
     "babel-loader": "^8.4.1",
     "copy-webpack-plugin": "^12.0.2",
