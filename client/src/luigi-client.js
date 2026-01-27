@@ -8,7 +8,7 @@ import { helpers } from './helpers';
  * @name LuigiClient
  * @private
  */
-class LuigiClient {
+class LuigiClientClass {
   constructor() {
     if (window !== window.top) {
       if (window.document.head.getAttribute('disable-luigi-history-handling') !== 'true') {
@@ -132,5 +132,7 @@ class LuigiClient {
     return storageManager;
   }
 }
-export default LuigiClient = new LuigiClient();
+
+export const LuigiClient = new LuigiClientClass();
 window.LuigiClient = LuigiClient;
+export default LuigiClient;

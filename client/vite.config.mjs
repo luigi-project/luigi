@@ -1,4 +1,6 @@
 import copy from 'rollup-plugin-copy';
+import resolve from '@rollup/plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -11,27 +13,37 @@ export default defineConfig({
       output: [{
         entryFileNames: 'luigi-client.js',
         format: 'umd',
+        name: 'LuigiClient',
+        esModule: false,
+        exports: 'named',
       }, {
-        entryFileNames: 'luigi-client-esm.js',
-        format: 'es',
+        entryFileNames: 'luigi-client.mjs',
+        format: 'esm',
+        dir: './public/esm',
+        exports: 'named',
       }],
-      plugins: [copy({
-        hook: 'writeBundle',
-        targets: [
-          {
-            src: './luigi-client.d.ts',
-            dest: './public',
-          },
-          {
-            src: './luigi-element.d.ts',
-            dest: './public',
-          },
-          {
-            src: 'src/luigi-element.js',
-            dest: 'public',
-          },
-        ],
-      })],
+      plugins: [
+        resolve(),
+        babel({
+          babelHelpers: 'bundled',
+        }),
+        copy({
+          hook: 'writeBundle',
+          targets: [
+            {
+              src: './luigi-client.d.ts',
+              dest: './public',
+            },
+            {
+              src: './luigi-element.d.ts',
+              dest: './public',
+            },
+            {
+              src: 'src/luigi-element.js',
+              dest: 'public',
+            },
+          ],
+        })],
     },
     outDir: 'public',
   },
