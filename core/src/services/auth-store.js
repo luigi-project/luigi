@@ -14,8 +14,15 @@ class AuthStoreSvcClass {
   }
 
   getStorageType() {
-    if (!this._storageType) {
-      this._storageType = LuigiConfig.getConfigValue('auth.storage') || this._defaultStorage;
+    if (!LuigiConfig.initialized) {
+      console.warn(
+        'Luigi Core is not initialized yet. Consider moving your code to the luigiAfterInit lifecycle hook. ' +
+          'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
+      );
+    } else {
+      if (!this._storageType) {
+        this._storageType = LuigiConfig.getConfigValue('auth.storage') || this._defaultStorage;
+      }
     }
     return this._storageType;
   }
