@@ -5,7 +5,7 @@ import { NavigationService, type Node } from '../../src/services/navigation.serv
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
-    let mockNodeDataManagementService: any;
+  let mockNodeDataManagementService: any;
 
   beforeEach(() => {
     luigiMock = {
