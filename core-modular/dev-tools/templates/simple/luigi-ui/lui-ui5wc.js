@@ -304,7 +304,7 @@ function renderNodeOrCategory(item, leftNavData) {
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
     el.addEventListener('click', (ev) => {
-      leftNavData.navClick(item.node);
+      leftNavData.navClick(item);
     });
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
@@ -325,7 +325,7 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub.addEventListener('click', (ev) => {
-          leftNavData.navClick(nodeWrapper.node);
+          leftNavData.navClick(nodeWrapper);
         });
         sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
         if (nodeWrapper.selected) sub.setAttribute('selected', '');

@@ -8,6 +8,8 @@ import { LuigiStore, writable } from '../utilities/store';
 import { LuigiAuth, LuigiAuthClass } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
+import { NodeDataManagementService } from '../services/node-data-management.service';
+import { serviceRegistry } from '../services/service-registry';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
@@ -80,6 +82,16 @@ export class Luigi {
    */
   getConfigValueAsync(property: string, ...parameters: any[]): Promise<any> {
     return AsyncHelpers.getConfigValueFromObjectAsync(this.getConfig(), property, parameters);
+  }
+
+  /**
+   * Clears the navigation cache.
+   * @example
+   * Luigi.clearNavigationCache();
+   */
+  clearNavigationCache() {
+    serviceRegistry.get(NodeDataManagementService).deleteCache();
+    //TODO clear title resolver cache
   }
 
   /**
