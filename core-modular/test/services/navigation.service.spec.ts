@@ -5,11 +5,14 @@ import { NavigationService, type Node } from '../../src/services/navigation.serv
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
+    let mockNodeDataManagementService: any;
 
   beforeEach(() => {
     luigiMock = {
       getConfigValue: jest.fn(),
       getConfig: jest.fn(),
+      getAsyncConfigValue: jest.fn(),
+      getConfigValueAsync: jest.fn(),
       auth: jest.fn().mockReturnValue({
         isAuthorizationEnabled: jest.fn()
       }),
@@ -18,6 +21,15 @@ describe('NavigationService', () => {
       })
     };
     navigationService = new NavigationService(luigiMock);
+    mockNodeDataManagementService = {
+      setChildren: jest.fn(),
+      getChildren: jest.fn(),
+      hasChildren: jest.fn(),
+      setRootNode: jest.fn(),
+      getRootNode: jest.fn(),
+      hasRootNode: jest.fn()
+    };
+    jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNodeDataManagementService);
   });
 
   describe('NavigationService.onNodeChange', () => {
@@ -111,7 +123,7 @@ describe('NavigationService', () => {
     });
   });
   describe('NavigationService.getPathData', () => {
-    it('should return path data with pathParams included', () => {
+    it('should return path data with pathParams included', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -129,13 +141,15 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/123';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
+      console.log(' pathData:', pathData);
 
       expect(pathData.pathParams).toEqual({ id: '123' });
     });
-    it('should return path data with empty pathParams if no dynamic segments', () => {
+    it('should return path data with empty pathParams if no dynamic segments', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -150,11 +164,11 @@ describe('NavigationService', () => {
       luigiMock.getConfig.mockReturnValue(cfg);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.pathParams).toEqual({});
     });
-    it('should return path data with empty pathParams if no matching nodes', () => {
+    it('should return path data with empty pathParams if no matching nodes', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -169,11 +183,11 @@ describe('NavigationService', () => {
       luigiMock.getConfig.mockReturnValue(cfg);
 
       const path = 'unknown/path';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.pathParams).toEqual({});
     });
-    it('should return path data with correct selectedNode and selectedNodeChildren', () => {
+    it('should return path data with correct selectedNode and selectedNodeChildren', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -191,15 +205,16 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
       const expectedNode = cfg.navigation.nodes[0].children[0];
       (expectedNode as any).context = {};
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', () => {
+    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -213,14 +228,15 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'unknown/path';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode).toBeUndefined();
       expect(pathData.selectedNodeChildren).toEqual(cfg.navigation.nodes);
     });
-    it('should return path data with rootNodes as selectedNodeChildren for root path', () => {
+    it('should return path data with rootNodes as selectedNodeChildren for root path', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -234,14 +250,15 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = '';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode).toBeUndefined();
       expect(pathData.selectedNodeChildren).toEqual(cfg.navigation.nodes);
     });
-    it('should handle trailing slashes in path correctly', () => {
+    it('should handle trailing slashes in path correctly', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -259,15 +276,16 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard/';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
       let expectedNode = cfg.navigation.nodes[0].children[0];
       (expectedNode as any).context = {};
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('inhert context from globalContext', () => {
+    it('inhert context from globalContext', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -283,13 +301,14 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual(cfg.navigation.globalContext);
     });
-    it('should return empty context if no globalContext is defined', () => {
+    it('should return empty context if no globalContext is defined', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -302,13 +321,14 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({});
     });
-    it('should merge globalContext with node context, node context takes precedence', () => {
+    it('should merge globalContext with node context, node context takes precedence', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -325,16 +345,17 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
         theme: 'light'
       });
     });
-    it('inhert context from parent nodes', () => {
+    it('inhert context from parent nodes', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -354,9 +375,10 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
