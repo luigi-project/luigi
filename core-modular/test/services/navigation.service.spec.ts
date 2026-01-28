@@ -451,7 +451,7 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, jest.fn());
+      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });

@@ -29,7 +29,7 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
-    this.navService.handleNavigationRequest(path, preserveView, modalSettings, undefined);
+    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
