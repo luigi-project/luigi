@@ -41,6 +41,10 @@ export default [{
           src: 'src/luigi-element.js',
           dest: 'public',
         },
+        {
+          src: 'public_root/*',
+          dest: 'public',
+        },
       ],
     })],
 }, {
