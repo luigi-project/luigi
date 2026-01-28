@@ -379,7 +379,7 @@ export class RoutingService {
     }
   }
 
-  checkInvalidateCache(previousPathData: any, newPath: any) {
+  checkInvalidateCache(previousPathData: PathData | undefined, newPath: string): void {
     if (!previousPathData) return;
     const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     let newPathArray = newPath.split('/');

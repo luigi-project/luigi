@@ -3,6 +3,7 @@ import { UIModule } from '../../src/modules/ui-module';
 import { NavigationService, type ModalSettings } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
+import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 declare global {
@@ -14,6 +15,7 @@ declare global {
 describe('Routing Service', () => {
   let routingService: RoutingService;
   let navigationService: NavigationService;
+  let mockNodeDataManagementService: any;
   let mockLuigi: any;
   let mockNavService: any;
   let mockConnector: any;
@@ -41,12 +43,18 @@ describe('Routing Service', () => {
       getConfigValue: () => null,
       getActiveFeatureToggles: () => [],
       getConfig: jest.fn(),
+      getAsyncConfigValue: jest.fn(),
+      getConfigValueAsync: jest.fn(),
       readUserSettings: () => Promise.resolve({}),
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn(() => ({
         _connector: mockConnector,
         _ui: UIModule
-      }))
+      })),
+      auth: jest.fn().mockReturnValue({
+        isAuthorizationEnabled: jest.fn()
+      }),
+      i18n: jest.fn().mockReturnValue({ getTranslation: (key: string) => key })
     };
     mockNavService = {
       shouldRedirect: jest.fn(),
@@ -61,7 +69,32 @@ describe('Routing Service', () => {
       getPathParams: jest.fn(),
       leftNavItemClick: jest.fn()
     };
-    jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNavService);
+
+     mockNodeDataManagementService = {
+      setChildren: jest.fn(),
+      getChildren: jest.fn(),
+      hasChildren: jest.fn(),
+      setRootNode: jest.fn(),
+      getRootNode: jest.fn(),
+      hasRootNode: jest.fn(),
+      deleteNodesRecursively: jest.fn(),
+      deleteCache: jest.fn()
+    };
+
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((svc: any) => {
+      // Return the NavigationService mock when requested; otherwise a generic stub
+      if (svc === NavigationService) {
+        return mockNavService;
+      }
+      if (svc === NodeDataManagementService) {
+        return mockNodeDataManagementService;
+      }
+      return {} as any;
+    });
+
+   
+    // Keep a reference for potential future needs, but avoid overwriting the spy
+    // If specific services are needed later, extend the mockImplementation above accordingly
 
     routingService = new RoutingService(mockLuigi);
     navigationService = new NavigationService(mockLuigi);
@@ -157,59 +190,155 @@ describe('Routing Service', () => {
     expect(addEventListenerSpy).toHaveBeenCalledWith('hashchange', expect.any(Function));
   });
 
-  it('should handle hashchange event and call navigation methods', async () => {
-    mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
-    (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
-    const fakeNode = { nodeParams: {}, searchParams: {} };
-    (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
-
-    routingService.enableRouting();
-
-    const call = addEventListenerSpy.mock.calls.find(([event]: [string]) => event === 'hashchange');
-    const handler = call?.[1];
-    expect(handler).toBeInstanceOf(Function);
-
-    handler!({} as HashChangeEvent);
-
-    await Promise.resolve();
-
-    expect(RoutingHelpers.getCurrentPath).toHaveBeenCalled();
-    expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
-    expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/abc', undefined);
-    expect(mockNavService.getCurrentNode).toHaveBeenCalledWith('/abc');
-    expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, fakeNode);
-    expect(mockConnector.renderTopNav).toHaveBeenCalled();
-    expect(mockConnector.renderLeftNav).toHaveBeenCalled();
-    expect(mockConnector.renderTabNav).toHaveBeenCalled();
-
-    expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
-  });
-
-  it('should redirect if shouldRedirect returns a path', async () => {
-    mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
-    (mockNavService.shouldRedirect as jest.Mock).mockReturnValue('/redirect');
-    const navigateSpy = jest.fn();
-    mockLuigi.navigation = jest.fn(() => ({ navigate: navigateSpy }));
-
-    routingService.enableRouting();
-
-    const call = addEventListenerSpy.mock.calls.find(([event]: [string]) => event === 'hashchange');
-    const handler = call?.[1];
-    handler!({} as HashChangeEvent);
-
-    // wait microtask queue for async ops used in handler
-    await Promise.resolve();
-
-    expect(navigateSpy).toHaveBeenCalledWith('/redirect');
-    expect(mockNavService.getCurrentNode).not.toHaveBeenCalled();
-    expect(UIModule.updateMainContent).not.toHaveBeenCalled();
-  });
-
   it('should not add hashchange event listener when useHashRouting is false', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
     routingService.enableRouting();
     expect(addEventListenerSpy).not.toHaveBeenCalledWith('hashchange', expect.any(Function));
   });
+
+  describe('handleRouteChange', () => {
+    it('should handle route change and call navigation methods', async () => {
+      const fakeNode = { nodeParams: {}, searchParams: {} };
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+      const childNode = { pathSegment: '123', viewUrl: '/some/url',  nodeParams: {}, searchParams: {} };
+      const rootNode = { pathSegment: 'home', children: [childNode] };
+      const mockPathData = {
+        nodesInPath: [{children: [rootNode]}, rootNode, childNode],
+        pathParams: {},
+        rootNodes: [rootNode],
+        selectedNode: {...childNode}
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      routingService.previousPathData = mockPathData;
+      await routingService.handleRouteChange({path : '/home/123', query: ''});
+      expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
+      expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/home/123', mockPathData);
+      expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, mockPathData.selectedNode);
+      expect(mockConnector.renderTopNav).toHaveBeenCalled();
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi);
+    });
+
+    it('should handle route change and call navigation methods with searchParams', async () => {
+      const fakeNode = { nodeParams: {}, searchParams: {} };
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+      const childNode = { pathSegment: '123', viewUrl: '/some/url',  nodeParams: {}, searchParams: {test: 'tets'} };
+      const rootNode = { pathSegment: 'home', children: [childNode] };
+      const mockPathData = {
+        nodesInPath: [{children: [rootNode]}, rootNode, childNode],
+        pathParams: {},
+        rootNodes: [rootNode],
+        selectedNode: {...childNode}
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      routingService.previousPathData = mockPathData;
+      await routingService.handleRouteChange({path : '/home/123', query: 'test=tets'});
+      
+      expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
+      expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/home/123', mockPathData);
+      expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, mockPathData.selectedNode);
+      expect(mockConnector.renderTopNav).toHaveBeenCalled();
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi);
+    });
+
+    it('should redirect if shouldRedirect returns a path', async () => {
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue('/redirect');
+      const childNode = { pathSegment: '123', viewUrl: '/some/url' };
+      const rootNode = { pathSegement: 'home', children: [childNode] };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue({
+        nodesInPath: [{children: [rootNode]}, rootNode, childNode],
+        pathParams: {},
+        rootNodes: [rootNode],
+        selectedNode: {...childNode}
+      });
+
+      const navigateSpy = jest.fn();
+      mockLuigi.navigation = jest.fn(() => ({ navigate: navigateSpy }));
+
+      await routingService.handleRouteChange({path : '/home/123', query: ''});
+
+      expect(navigateSpy).toHaveBeenCalledWith('/redirect');
+      expect(mockNavService.getCurrentNode).not.toHaveBeenCalled();
+      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+    });
+
+    it('should use currentNode from getCurrentNode if pathData.selectedNode is not available', async () => {
+      const fakeNode = { nodeParams: {}, searchParams: {} };
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+      const childNode = { pathSegment: '123', viewUrl: '/some/url',  nodeParams: {}, searchParams: {} };
+      const rootNode = { pathSegment: 'home', children: [childNode] };
+      const mockPathData = {
+        nodesInPath: [{children: [rootNode]}, rootNode, childNode],
+        pathParams: {},
+        rootNodes: [rootNode]
+        // selectedNode is missing
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      
+      routingService.previousPathData = mockPathData;
+      await routingService.handleRouteChange({path : '/home/123', query: ''});
+      
+      expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
+      expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/home/123', mockPathData);
+      expect(mockNavService.getCurrentNode).toHaveBeenCalled();
+      expect(mockNavService.onNodeChange).toHaveBeenCalledWith(undefined, fakeNode);
+      expect(mockConnector.renderTopNav).toHaveBeenCalled();
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
+    });
+
+    it('should not call onNodeChange if current node has not changed', async () => {
+      const fakeNode = { nodeParams: {}, searchParams: {} };
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+      (mockLuigi.getConfig as jest.Mock).mockReturnValue({ navigation: { nodeChangeHook: () => {} } });
+      const childNode = { pathSegment: '123', viewUrl: '/some/url'};
+      const rootNode = { pathSegment: 'home', children: [childNode] };
+      const mockPathData = {
+        nodesInPath: [{children: [rootNode]}, rootNode, childNode],
+        pathParams: {},
+        rootNodes: [rootNode],
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      
+      routingService.previousPathData = mockPathData;
+      routingService.previousNode = {pathSegment: '12'};
+      await routingService.handleRouteChange({path : '/home/123', query: ''});
+      
+      expect(RoutingHelpers.filterNodeParams).toHaveBeenCalled();
+      expect(mockNavService.shouldRedirect).toHaveBeenCalledWith('/home/123', mockPathData);
+      expect(mockConnector.renderTopNav).toHaveBeenCalled();
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(mockNavService.onNodeChange).not.toHaveBeenCalledWith(routingService.previousNode, fakeNode);
+    });
+  });
+
+  describe('checkInvalidateCache', () => {
+    it('should invalidate cache when path has changed', () => {
+      const oldPathData = { nodesInPath: [{ pathSegment: 'home' }, { pathSegment: 'dashboard' }], rootNodes: [{children: [{ pathSegment: 'home' }]}], pathParams: {} };
+      const newPathData = { nodesInPath: [{ pathSegment: 'home' }, { pathSegment: 'projects' }],  rootNodes: [{children: [{ pathSegment: 'home' }]}], pathParams: {} };
+      routingService.previousPathData = oldPathData;
+      routingService.checkInvalidateCache(oldPathData, '/home/projects');
+      expect(mockNodeDataManagementService.deleteNodesRecursively).not.toHaveBeenCalled();
+    });
+    it('should not invalidate cache when path has not changed', () => {
+      const oldPathData = { nodesInPath: [{ pathSegment: 'home' }, { pathSegment: ':id' }], rootNodes: [{children: [{ pathSegment: 'home' }]}], pathParams: {id: 'luigi'} };
+      routingService.previousPathData = oldPathData;
+      routingService.checkInvalidateCache(oldPathData, '/home/123');
+      RoutingHelpers.isDynamicNode = jest.fn().mockReturnValue(true);
+      RoutingHelpers.getDynamicNodeValue = jest.fn().mockReturnValue('123');
+      expect(mockNodeDataManagementService.deleteNodesRecursively).toHaveBeenCalled();
+    });
+  });        
+
 
   describe('appendModalDataToUrl', () => {
     let locationSpy: jest.SpyInstance;

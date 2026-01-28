@@ -226,7 +226,7 @@ export class NavigationService {
       pathSegments = pathSegments.slice(1);
     }
 
-    let globalContext = cfg.navigation.globalContext || {};
+    let globalContext = cfg.navigation?.globalContext || {};
     let currentContext = globalContext;
     let rootNode;
 
