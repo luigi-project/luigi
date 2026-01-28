@@ -132,5 +132,4 @@ class LuigiClient {
     return storageManager;
   }
 }
-
 export default LuigiClient = new LuigiClient();
