@@ -17,9 +17,9 @@ export default [{
     resolve(),
     json(),
     terser(),
-    // babel({
-    //   babelHelpers: 'bundled',
-    // }),
+    babel({
+      babelHelpers: 'bundled',
+    }),
     copy({
       hook: 'writeBundle',
       verbose: true,
