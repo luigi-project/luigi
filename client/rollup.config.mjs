@@ -29,6 +29,11 @@ export default [{
           dest: './public',
         },
         {
+          src: './luigi-client.d.ts',
+          rename: './luigi-client.d.mts',
+          dest: './public/esm',
+        },
+        {
           src: './luigi-element.d.ts',
           dest: './public',
         },
@@ -39,7 +44,7 @@ export default [{
       ],
     })],
 }, {
-  input: ['./src/luigi-client.js'],
+  input: ['./src/esm.js'],
   output: {
     entryFileNames: 'luigi-client.mjs',
     format: 'esm',
