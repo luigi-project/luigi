@@ -17,9 +17,9 @@ export default [{
     resolve(),
     json(),
     terser(),
-    babel({
-      babelHelpers: 'bundled',
-    }),
+    // babel({
+    //   babelHelpers: 'bundled',
+    // }),
     copy({
       hook: 'writeBundle',
       verbose: true,
@@ -38,7 +38,7 @@ export default [{
         },
       ],
     })],
-}, /*{
+}, {
   input: ['./src/luigi-client.js'],
   output: {
     entryFileNames: 'luigi-client.mjs',
@@ -50,4 +50,4 @@ export default [{
     resolve(),
     json()
   ]
-}*/]
+}];
