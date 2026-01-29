@@ -98,9 +98,7 @@ describe('View Decorator Service', () => {
 
     expect(
       viewUrlDecoratorService.applyDecorators('http://luigi-project.io?someURL=http://some.url/foo/bar', false)
-    ).toEqual(
-      'http://luigi-project.io/?someURL=http%3A%2F%2Fsome.url%2Ffoo%2Fbar&viewUrlAAA=one'
-    );
+    ).toEqual('http://luigi-project.io/?someURL=http%3A%2F%2Fsome.url%2Ffoo%2Fbar&viewUrlAAA=one');
 
     expect(
       viewUrlDecoratorService.applyDecorators('http://luigi-project.io?someURL=http://some.url/foo/bar', true)

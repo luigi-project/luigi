@@ -118,9 +118,12 @@ describe('Routing-helpers', () => {
   });
 
   it('prepareSearchParamsForClient should filter search params based on client permissions', () => {
-    jest.spyOn(luigi, 'routing').mockClear().mockReturnValue({
-      getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
-    });
+    jest
+      .spyOn(luigi, 'routing')
+      .mockClear()
+      .mockReturnValue({
+        getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
+      });
     const currentNode = {
       children: [],
       clientPermissions: {
@@ -135,9 +138,12 @@ describe('Routing-helpers', () => {
   });
 
   it('prepareSearchParamsForClient should return an empty object if no client permissions are defined', () => {
-    jest.spyOn(luigi, 'routing').mockClear().mockReturnValue({
-      getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
-    });
+    jest
+      .spyOn(luigi, 'routing')
+      .mockClear()
+      .mockReturnValue({
+        getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
+      });
     const currentNode = {
       children: []
     };
@@ -154,23 +160,15 @@ describe('Routing-helpers', () => {
     });
 
     it('check permission and denial for urls based on config', () => {
-      jest.spyOn(luigi, 'getConfigValue').mockClear().mockReturnValue([
-        'https://fiddle.luigi-project.io/.?',
-        'https://docs.luigi-project.io/.?'
-      ]);
+      jest
+        .spyOn(luigi, 'getConfigValue')
+        .mockClear()
+        .mockReturnValue(['https://fiddle.luigi-project.io/.?', 'https://docs.luigi-project.io/.?']);
 
-      expect(
-        RoutingHelpers.checkWCUrl('https://fiddle.luigi-project.io/folder/sth.js', luigi)
-      ).toEqual(true);
-      expect(
-        RoutingHelpers.checkWCUrl('https://docs.luigi-project.io/folder/sth.js', luigi)
-      ).toEqual(true);
-      expect(
-        RoutingHelpers.checkWCUrl('http://fiddle.luigi-project.io/folder/sth.js', luigi)
-      ).toEqual(false);
-      expect(
-        RoutingHelpers.checkWCUrl('https://slack.luigi-project.io/folder/sth.js', luigi)
-      ).toEqual(false);
+      expect(RoutingHelpers.checkWCUrl('https://fiddle.luigi-project.io/folder/sth.js', luigi)).toEqual(true);
+      expect(RoutingHelpers.checkWCUrl('https://docs.luigi-project.io/folder/sth.js', luigi)).toEqual(true);
+      expect(RoutingHelpers.checkWCUrl('http://fiddle.luigi-project.io/folder/sth.js', luigi)).toEqual(false);
+      expect(RoutingHelpers.checkWCUrl('https://slack.luigi-project.io/folder/sth.js', luigi)).toEqual(false);
     });
   });
 
@@ -247,7 +245,9 @@ describe('Routing-helpers', () => {
     let getLocationStub: any;
 
     beforeEach(() => {
-      getModalViewParamNameStub = jest.spyOn(RoutingHelpers, 'getModalViewParamName').mockReturnValue(modalViewParamName);
+      getModalViewParamNameStub = jest
+        .spyOn(RoutingHelpers, 'getModalViewParamName')
+        .mockReturnValue(modalViewParamName);
       getLocationStub = jest.spyOn(RoutingHelpers, 'getLocation').mockReturnValue(mockLocation);
     });
     afterEach(() => {

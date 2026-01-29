@@ -182,12 +182,10 @@ describe('I18N Service', function () {
         }
       };
       LuigiI18N.translationTable = translationTable;
-      expect(
-        LuigiI18N.findTranslation('luigi.luigiModal.body.success', LuigiI18N.translationTable)
-      ).toEqual('Luigi is happy!');
-      expect(
-        LuigiI18N.findTranslation('luigi.button.confirm', LuigiI18N.translationTable)
-      ).toEqual('yes');
+      expect(LuigiI18N.findTranslation('luigi.luigiModal.body.success', LuigiI18N.translationTable)).toEqual(
+        'Luigi is happy!'
+      );
+      expect(LuigiI18N.findTranslation('luigi.button.confirm', LuigiI18N.translationTable)).toEqual('yes');
     });
 
     it('custom translation test', () => {
