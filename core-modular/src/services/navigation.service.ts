@@ -534,25 +534,23 @@ export class NavigationService {
       lastElement = [...pathDataTruncatedChildren].pop();
     }
 
-    let children;
-
-    if (selectedNode) {
-      if (pathData.rootNodes.includes(selectedNode)) {
-        children = await this.getChildren(selectedNode, selectedNode.context || {});
-        navItems = this.buildNavItems(children || [], undefined, pathData);
-      } else if (selectedNode.tabNav) {
-        children = await this.getChildren(lastElement, lastElement?.context || {});
-        navItems = this.buildNavItems(children || [], selectedNode, pathData);
-      } else {
-        const parent = [...pathToLeftNavParent].pop();
-        children = await this.getChildren(parent, parent?.context || {});
-        navItems = this.buildNavItems(children || [], selectedNode, pathData);
-      }
+    let parentNode: Node | undefined;
+    let activeNode: Node | undefined = selectedNode;
+    if (!selectedNode) {
+      parentNode = [...pathToLeftNavParent].pop();
+      activeNode = undefined;
+    } else if (pathData.rootNodes.includes(selectedNode)) {
+      parentNode = selectedNode;
+      activeNode = undefined;
+    } else if (selectedNode.tabNav) {
+      parentNode = lastElement;
     } else {
-      const parent = [...pathToLeftNavParent].pop();
-      children = await this.getChildren(parent, parent?.context || {});
-      navItems = this.buildNavItems(children || [], undefined, pathData);
+      parentNode = [...pathToLeftNavParent].pop();
     }
+
+    let children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
+    navItems = this.buildNavItems(children, activeNode, pathData);
+
     const parentPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
     navItems = this.applyNavGroups(navItems);

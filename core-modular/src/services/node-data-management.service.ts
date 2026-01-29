@@ -44,6 +44,7 @@ export class NodeDataManagementService {
    */
   setRootNode(node: Node): void {
     this.dataManagement.set('_luigiRootNode', { node });
+    console.log('this.dataManagement', this.dataManagement.get('_luigiRootNode'));
   }
 
   /**
