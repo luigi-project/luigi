@@ -259,7 +259,8 @@ export class NavigationService {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
         if (!node) {
-          console.log('No matching node found for segment:', segment, 'in children:', pathData.selectedNodeChildren);
+          // No matching node found; avoid logging full children to prevent circular JSON errors in tests
+          console.warn('No matching node found for segment:', segment);
           break;
         }
         const nodeContext = node.context || {};
@@ -850,7 +851,6 @@ export class NavigationService {
     }
     let filteredChildren = this.getAccessibleNodes(node, children, context);
     nodeDataManagementService.setChildren(node, { children, filteredChildren });
-    // console.log('nodeDataManagementService.dataManagement', nodeDataManagementService.dataManagement);
     return filteredChildren;
   }
 

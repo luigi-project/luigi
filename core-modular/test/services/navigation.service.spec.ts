@@ -1,6 +1,7 @@
-import { ModalService } from '../../src/services/modal.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService, type Node } from '../../src/services/navigation.service';
+import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -21,15 +22,24 @@ describe('NavigationService', () => {
       })
     };
     navigationService = new NavigationService(luigiMock);
+
     mockNodeDataManagementService = {
       setChildren: jest.fn(),
       getChildren: jest.fn(),
       hasChildren: jest.fn(),
       setRootNode: jest.fn(),
       getRootNode: jest.fn(),
-      hasRootNode: jest.fn()
+      hasRootNode: jest.fn(),
+      deleteNodesRecursively: jest.fn(),
+      deleteCache: jest.fn(),
+      dataManagement: {} as any,
+      navPath: '' as any
     };
-    jest.spyOn(serviceRegistry, 'get').mockReturnValue(mockNodeDataManagementService);
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((serviceName: any) => {
+      if (serviceName === NodeDataManagementService) {
+        return mockNodeDataManagementService;
+      }
+    });
   });
 
   describe('NavigationService.onNodeChange', () => {
@@ -145,7 +155,6 @@ describe('NavigationService', () => {
 
       const path = 'home/123';
       const pathData = await navigationService.getPathData(path);
-      console.log(' pathData:', pathData);
 
       expect(pathData.pathParams).toEqual({ id: '123' });
     });
@@ -596,6 +605,122 @@ describe('NavigationService', () => {
       expect(items.length).toBe(1);
       expect(items[0].label).toBe('Translated Node 1');
       expect(items[0].tooltip).toBe('Translated Tooltip 1');
+    });
+  });
+
+  describe('NavigationService.getChildren', () => {
+    let getAccessibleNodesSpy: jest.SpyInstance;
+    beforeEach(() => {
+      navigationService = new NavigationService(luigiMock);
+      getAccessibleNodesSpy = jest.spyOn(navigationService as any, 'getAccessibleNodes');
+    });
+    it('should return children from NodeDataManagementService if available', async () => {
+      const node: Node = { pathSegment: 'parent', label: 'Parent', children: [] };
+      const children: Node[] = [
+        { pathSegment: 'child1', label: 'Child 1', children: [] },
+        { pathSegment: 'child2', label: 'Child 2', children: [] }
+      ];
+
+      mockNodeDataManagementService.hasChildren.mockReturnValue(true);
+      mockNodeDataManagementService.getChildren.mockReturnValue({ children });
+      getAccessibleNodesSpy.mockReturnValue(children);
+
+      const result = await navigationService.getChildren(node);
+
+      expect(getAccessibleNodesSpy).toHaveBeenCalledWith(node, children, {});
+      expect(mockNodeDataManagementService.getChildren).toHaveBeenCalledWith(node);
+      expect(result).toBe(children);
+    });
+
+    it('should return empty array if no children in NodeDataManagementService and no static children', async () => {
+      const node: Node = { pathSegment: 'parent', label: 'Parent', children: [] };
+      mockNodeDataManagementService.getChildren.mockResolvedValue(undefined);
+      mockNodeDataManagementService.hasChildren.mockReturnValue(true);
+
+      const result = await navigationService.getChildren(node);
+
+      expect(mockNodeDataManagementService.getChildren).toHaveBeenCalledWith(node);
+      expect(result).toEqual([]);
+    });
+
+    it('should return static children if no children in NodeDataManagementService', async () => {
+      const staticChildren: Node[] = [
+        { pathSegment: 'child1', label: 'Child 1', children: [] },
+        { pathSegment: 'child2', label: 'Child 2', children: [] }
+      ];
+      const topNodes: Node[] = [
+        { pathSegment: 'top1', label: 'Top 1', children: staticChildren },
+        { pathSegment: 'top2', label: 'Top 2', children: staticChildren }
+      ];
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockResolvedValue(staticChildren);
+      const expandSpy = jest.spyOn(navigationService, 'getExpandStructuralPathSegment');
+      const bindChildToParent = jest.spyOn(navigationService, 'bindChildToParent');
+      mockNodeDataManagementService.hasChildren.mockReturnValue(false);
+      mockNodeDataManagementService.getChildren.mockResolvedValue(undefined);
+
+      const result = await navigationService.getChildren({ children: topNodes }, {});
+
+      expect(expandSpy).toHaveBeenCalledTimes(staticChildren.length);
+      expect(bindChildToParent).toHaveBeenCalledTimes(staticChildren.length);
+
+      expect(mockNodeDataManagementService.setChildren).toHaveBeenCalled();
+      expect(result[0].pathSegment).toBe(staticChildren[0].pathSegment);
+    });
+  });
+
+  describe('Navigation.getExpandStructuralPathSegment', () => {
+    it('should expand structural path segment', async () => {
+      const node: Node = {
+        pathSegment: 'node',
+        label: 'Node',
+        children: []
+      };
+      const result = await navigationService.getExpandStructuralPathSegment(node);
+      expect(result).toBe(node);
+    });
+    it('should expand structural when node is a virtual tree', async () => {
+      const node: Node = {
+        pathSegment: 'path/to/virtualNode',
+        label: 'Virtual Node',
+        children: [],
+        viewUrl: 'virtual.html'
+      };
+      const result = await navigationService.getExpandStructuralPathSegment(node);
+      expect(result.children?.[0]?.pathSegment).toBe('to');
+      expect(result.children?.[0]?.children?.[0]?.pathSegment).toBe('virtualNode');
+    });
+  });
+
+  describe('Navigation.bindChildToParent', () => {
+    it('should bind child to parent node', () => {
+      const childNode: Node = {
+        pathSegment: 'child',
+        label: 'Child Node',
+        children: []
+      };
+      const parentNode: Node = {
+        pathSegment: 'parent',
+        label: 'Parent Node',
+        children: [childNode]
+      };
+
+      navigationService.bindChildToParent(childNode, parentNode);
+
+      expect(childNode['parent']).toBe(parentNode);
+    });
+    it('should not fail if parent node has no children', () => {
+      const childNode: Node = {
+        label: 'Child Node',
+        pathSegment: 'child'
+      };
+      const parentNode: Node = {
+        label: 'Parent Node'
+      };
+
+      navigationService.bindChildToParent(childNode, parentNode);
+
+      expect(childNode.parent).toBeUndefined();
+      expect(childNode).toBe(childNode);
     });
   });
 });
