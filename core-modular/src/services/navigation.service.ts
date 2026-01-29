@@ -780,15 +780,22 @@ export class NavigationService {
     preserveView?: string,
     modalSettings?: any,
     newTab?: boolean,
+    withoutSync?: boolean,
     callbackFn?: any
   ): Promise<void> {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = true; //TODO just added for popState eventDetails
 
     if (modalSettings) {
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
     } else {
+      const eventDetail = {
+        detail: {
+          preventContextUpdate,
+          withoutSync: !!withoutSync
+        }
+      };
+
       await serviceRegistry.get(ModalService).closeModals();
 
       if (newTab) {
@@ -797,17 +804,18 @@ export class NavigationService {
       }
 
       if (this.luigi.getConfig().routing?.useHashRouting) {
-        location.hash = normalizedPath;
+        if (!withoutSync) {
+          location.hash = normalizedPath;
+        } else {
+          const event = new CustomEvent('hashchange', eventDetail);
+
+          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.dispatchEvent(event);
+        }
       } else {
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        const eventDetail = {
-          detail: {
-            preventContextUpdate,
-            withoutSync: !navSync
-          }
-        };
         const event = new CustomEvent('popstate', eventDetail);
 
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
         window.dispatchEvent(event);
       }
     }

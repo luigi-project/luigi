@@ -524,7 +524,7 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, jest.fn());
+      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
@@ -568,7 +568,31 @@ describe('NavigationService', () => {
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
     });
+
+    it('should close modals and update history if no modalSettings and using withoutSync', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+
+      await navigationService.handleNavigationRequest('/normal/path', undefined, undefined, false, true);
+
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent<{
+        preventContextUpdate: boolean;
+        withoutSync: boolean;
+      }>));
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('popstate');
+      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, withoutSync: true });
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
   });
+
   describe('NavigationService.buildNavItems', () => {
     it('should return empty array if nodes is empty', () => {
       const pathData = {
