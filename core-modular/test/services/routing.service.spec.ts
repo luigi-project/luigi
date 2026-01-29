@@ -750,4 +750,32 @@ describe('Routing Service', () => {
       );
     });
   });
+
+  describe('handleRouteChange', () => {
+    it('should handle route change and update main content', async () => {
+      const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+
+      routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
+
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, false);
+
+      expect(featureToggleSpy).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalled();
+    });
+
+    it('should handle route change without sync and not update main content', async () => {
+      const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+
+      routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
+
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true);
+
+      expect(featureToggleSpy).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+    });
+  });
 });

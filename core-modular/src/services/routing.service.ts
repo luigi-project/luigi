@@ -64,18 +64,28 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath());
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
   }
 
-  async handleRouteChange(routeInfo: { path: string; query: string }): Promise<void> {
+  /**
+   * Deal with route changing scenario.
+   * @param {Object} routeInfo - the information about path and query
+   * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
+   * @returns {Promise<void>} A promise that resolves when route change is complete.
+   */
+  async handleRouteChange(routeInfo: { path: string; query: string }, withoutSync = false): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
@@ -122,7 +132,10 @@ export class RoutingService {
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi);
+
+      if (!withoutSync) {
+        UIModule.updateMainContent(currentNode, this.luigi);
+      }
     }
   }
 

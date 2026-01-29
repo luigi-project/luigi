@@ -654,11 +654,7 @@ export class NavigationService {
       profile: profileSettings,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => {
-        if (item.node) {
-          this.navItemClick(item.node, '');
-        }
-      }
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
     };
   }
 
@@ -722,11 +718,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => {
-        if (item.node) {
-          this.navItemClick(item.node, parentPath);
-        }
-      }
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
     };
   }
 
@@ -767,6 +759,43 @@ export class NavigationService {
     return { nodeObject, pathData };
   }
 
+  async shouldPreventNavigation(node: Node): Promise<boolean> {
+    if (
+      node?.onNodeActivation &&
+      (GenericHelpers.isFunction(node.onNodeActivation) || GenericHelpers.isAsyncFunction(node.onNodeActivation)) &&
+      (await node.onNodeActivation(node)) === false
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async shouldPreventNavigationForPath(nodepath: string): Promise<boolean> {
+    const { nodeObject } = await this.extractDataFromPath(nodepath);
+
+    if (await this.shouldPreventNavigation(nodeObject)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async openViewInNewTab(nodepath: string): Promise<void> {
+    if (await this.shouldPreventNavigationForPath(nodepath)) {
+      return;
+    }
+
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+
+    if (hashRouting) {
+      nodepath = '#' + nodepath;
+    }
+
+    /*'noopener,noreferrer' required to disable XSS injections*/
+    window.open(nodepath, '_blank', 'noopener,noreferrer');
+  }
+
   private resolveTooltipText(node: any, translation: string): string {
     return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
@@ -796,28 +825,43 @@ export class NavigationService {
     path: string,
     preserveView?: string,
     modalSettings?: any,
+    newTab?: boolean,
+    withoutSync?: boolean,
     callbackFn?: any
   ): Promise<void> {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = true; //TODO just added for popState eventDetails
 
     if (modalSettings) {
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
     } else {
+      const eventDetail = {
+        detail: {
+          preventContextUpdate,
+          withoutSync: !!withoutSync
+        }
+      };
+
       await serviceRegistry.get(ModalService).closeModals();
+
+      if (newTab) {
+        await this.openViewInNewTab(path);
+        return;
+      }
+
       if (this.luigi.getConfig().routing?.useHashRouting) {
-        location.hash = normalizedPath;
+        if (!withoutSync) {
+          location.hash = normalizedPath;
+        } else {
+          const event = new CustomEvent('hashchange', eventDetail);
+
+          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.dispatchEvent(event);
+        }
       } else {
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        const eventDetail = {
-          detail: {
-            preventContextUpdate,
-            withoutSync: !navSync
-          }
-        };
         const event = new CustomEvent('popstate', eventDetail);
 
+        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
         window.dispatchEvent(event);
       }
     }
