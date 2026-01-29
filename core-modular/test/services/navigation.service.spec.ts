@@ -609,10 +609,14 @@ describe('NavigationService', () => {
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
-      expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent<{
-        preventContextUpdate: boolean;
-        withoutSync: boolean;
-      }>));
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.any(
+          CustomEvent<{
+            preventContextUpdate: boolean;
+            withoutSync: boolean;
+          }>
+        )
+      );
 
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
