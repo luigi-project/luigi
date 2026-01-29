@@ -513,7 +513,7 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (node: Node) => this.navItemClick(node, parentPath)
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
     };
   }
 
@@ -609,9 +609,7 @@ export class NavigationService {
       profile: profileSettings,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (node: Node) => {
-        this.navItemClick(node, '');
-      }
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
     };
   }
 
@@ -675,7 +673,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (node: Node) => this.navItemClick(node, parentPath)
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
     };
   }
 
