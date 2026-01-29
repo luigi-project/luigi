@@ -26,6 +26,7 @@ describe('Navigation', () => {
 
     mockNavService = {
       getCurrentNode: jest.fn(),
+      openViewInNewTab: jest.fn(),
       handleNavigationRequest: jest.fn()
     };
 
@@ -218,6 +219,7 @@ describe('Navigation', () => {
         '/test/path',
         'preserveViewValue',
         { title: 'Modal Title' },
+        false,
         undefined
       );
     });
