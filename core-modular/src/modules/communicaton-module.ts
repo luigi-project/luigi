@@ -17,9 +17,11 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
+      const { link, preserveView, modal, newTab, withoutSync } = event.detail;
+
       serviceRegistry
         .get(NavigationService)
-        .handleNavigationRequest(event.detail.link, event.detail.preserveView, event.detail.modal, event.callbackFn);
+        .handleNavigationRequest(link, preserveView, modal, newTab, withoutSync, event.callbackFn);
     });
     containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
       luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});
