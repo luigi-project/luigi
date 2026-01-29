@@ -1,23 +1,18 @@
 import { AsyncHelpers } from './../../../src/utilities/helpers/async-helpers';
 import { GenericHelpers } from './../../../src/utilities/helpers/generic-helpers';
 
-const sinon = require('sinon');
-
 describe('Async-helpers', () => {
-  let clock: any;
   let obj: any;
 
   beforeEach(() => {
-    // sinon.stub(LuigiConfig, 'getConfigValue');
     obj = {
       client: 'here'
     };
-    clock = sinon.useFakeTimers();
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    // sinon.restore();
-    clock.restore();
+    jest.useRealTimers();
   });
 
   describe('wrapAsPromise', () => {

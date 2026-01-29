@@ -1,8 +1,5 @@
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { i18nService } from '../../src/services/i18n.service';
-import type { LuigiContainer } from '@luigi-project/container';
-
-const sinon = require('sinon');
 
 describe('I18N Service', function () {
   jest.retryTimes(2);
@@ -14,8 +11,8 @@ describe('I18N Service', function () {
 
   beforeEach(() => {
     const storageMock = {
-      getItem: sinon.stub(),
-      setItem: sinon.stub()
+      getItem: jest.fn(),
+      setItem: jest.fn()
     };
     luigi = {
       config: {},
@@ -37,11 +34,11 @@ describe('I18N Service', function () {
     sessionStorageSpy.mockImplementation(() => {
       return storageMock;
     });
-    sinon.stub(LuigiI18N.luigi, 'configChanged');
+    jest.spyOn(LuigiI18N.luigi, 'configChanged').mockClear().mockImplementation();
   });
 
   afterEach(() => {
-    sinon.restore();
+    jest.restoreAllMocks();
     sessionStorageSpy.mockRestore();
   });
 
@@ -52,56 +49,56 @@ describe('I18N Service', function () {
     });
 
     it('should return previously set locale', () => {
-      global.sessionStorage.getItem.returns('mock-locale');
+      global.sessionStorage.getItem.mockReturnValue('mock-locale');
       const locale = LuigiI18N.getCurrentLocale();
       expect(locale).toEqual('mock-locale');
     });
 
     it('should set locale if client permission is set to true', () => {
-      sinon.stub(LuigiI18N, '_notifyLocaleChange');
+      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
       LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: true } } as any);
-      sinon.assert.calledWithExactly(global.sessionStorage.setItem, 'luigi.currentLocale', 'de');
-      sinon.assert.calledWithExactly((LuigiI18N as any)._notifyLocaleChange, 'de');
+      expect(global.sessionStorage.setItem).toHaveBeenCalledWith('luigi.currentLocale', 'de');
+      expect(notifyLocaleChangeSpy).toHaveBeenCalledWith('de');
     });
 
     it('should not set locale if client permission is set to false', () => {
-      sinon.stub(LuigiI18N, '_notifyLocaleChange');
+      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
       LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: false } } as any);
-      sinon.assert.notCalled(global.sessionStorage.setItem);
-      sinon.assert.notCalled((LuigiI18N as any)._notifyLocaleChange);
+      expect(global.sessionStorage.setItem).not.toHaveBeenCalled();
+      expect(notifyLocaleChangeSpy).not.toHaveBeenCalled();
     });
 
     it('should not set locale if client permission is missing', () => {
-      sinon.stub(LuigiI18N, '_notifyLocaleChange');
+      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
       LuigiI18N.setCurrentLocale('de');
-      sinon.assert.notCalled(global.sessionStorage.setItem);
-      sinon.assert.notCalled((LuigiI18N as any)._notifyLocaleChange);
+      expect(global.sessionStorage.setItem).not.toHaveBeenCalled();
+      expect(notifyLocaleChangeSpy).not.toHaveBeenCalled();
     });
 
     it('should not set empty locale', () => {
-      sinon.stub(LuigiI18N, '_notifyLocaleChange');
+      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
       LuigiI18N.setCurrentLocale('');
-      sinon.assert.notCalled(global.sessionStorage.setItem);
-      sinon.assert.notCalled((LuigiI18N as any)._notifyLocaleChange);
+      expect(global.sessionStorage.setItem).not.toHaveBeenCalled();
+      expect(notifyLocaleChangeSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('current locale listeners', () => {
     it('does not add listener when it is not a function', () => {
-      sinon.stub(GenericHelpers, 'isFunction').returns(false);
+      jest.spyOn(GenericHelpers, 'isFunction').mockClear().mockReturnValue(false);
       const listenerId = LuigiI18N.addCurrentLocaleChangeListener('mock-listener');
-      sinon.assert.calledWithExactly(GenericHelpers.isFunction, 'mock-listener');
+      expect(GenericHelpers.isFunction).toHaveBeenCalledWith('mock-listener');
       expect(Object.getOwnPropertyNames(LuigiI18N.listeners).length).toEqual(0);
-      expect(listenerId).toEqual(undefined);
+      expect(listenerId).toEqual(null);
     });
 
     it('add listener when it is a function', () => {
-      sinon.stub(GenericHelpers, 'isFunction').returns(true);
-      sinon.stub(GenericHelpers, 'getRandomId').returns(123);
+      jest.spyOn(GenericHelpers, 'isFunction').mockClear().mockReturnValue(true);
+      jest.spyOn(GenericHelpers, 'getRandomId').mockClear().mockReturnValue(123);
       const mockListener = () => 'mock-method';
       const listenerId = LuigiI18N.addCurrentLocaleChangeListener(mockListener);
-      sinon.assert.calledWithExactly(GenericHelpers.isFunction, mockListener);
-      sinon.assert.calledWithExactly(GenericHelpers.getRandomId);
+      expect(GenericHelpers.isFunction).toHaveBeenCalledWith(mockListener);
+      expect(GenericHelpers.getRandomId).toHaveBeenCalled();
       expect(LuigiI18N.listeners[123]).toEqual(mockListener);
       expect(listenerId).toEqual(123);
     });
@@ -121,15 +118,15 @@ describe('I18N Service', function () {
 
     it('should be notified by locale change', () => {
       LuigiI18N.listeners = {
-        1: sinon.stub(),
-        2: sinon.stub(),
-        3: sinon.stub()
+        1: jest.fn(),
+        2: jest.fn(),
+        3: jest.fn()
       };
       LuigiI18N._notifyLocaleChange('pl');
-      sinon.assert.calledWithExactly(LuigiI18N.listeners['1'], 'pl');
-      sinon.assert.calledWithExactly(LuigiI18N.listeners['2'], 'pl');
-      sinon.assert.calledWithExactly(LuigiI18N.listeners['3'], 'pl');
-      sinon.assert.called(LuigiI18N.luigi.configChanged);
+      expect(LuigiI18N.listeners['1']).toHaveBeenCalledWith('pl');
+      expect(LuigiI18N.listeners['2']).toHaveBeenCalledWith('pl');
+      expect(LuigiI18N.listeners['3']).toHaveBeenCalledWith('pl');
+      expect(LuigiI18N.luigi.configChanged).toHaveBeenCalled();
     });
   });
 
@@ -162,13 +159,13 @@ describe('I18N Service', function () {
     });
 
     it('_initCustomImplementation: get custom translation from config', () => {
-      sinon.stub(LuigiI18N.luigi, 'getConfigValue').returns(mockConfig);
+      jest.spyOn(LuigiI18N.luigi, 'getConfigValue').mockClear().mockReturnValue(mockConfig);
       LuigiI18N._initCustomImplementation();
       expect(LuigiI18N.translationImpl).toEqual(mockConfig);
     });
 
     it('findTranslation test', () => {
-      sinon.stub(Object, 'hasOwnProperty').returns(true);
+      jest.spyOn(Object, 'hasOwnProperty').mockClear().mockReturnValue(true);
       const translationTable = {
         luigi: {
           luigiModal: {
@@ -202,7 +199,7 @@ describe('I18N Service', function () {
       LuigiI18N.translationTable = luigi;
       expect(LuigiI18N.getTranslation('tets')).toEqual('tets');
       expect(LuigiI18N.getTranslation('luigi.it.da')).toEqual('Toni');
-      // //not matching key
+      // not matching key
       expect(LuigiI18N.getTranslation('luigi.de.project')).toEqual('luigi.de.project');
     });
   });

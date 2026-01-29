@@ -1,7 +1,5 @@
 import { UserSettingsHelper } from '../../../src/utilities/helpers/usersetting-dialog-helpers';
 
-const sinon = require('sinon');
-
 describe('UserSettings-helpers', () => {
   const userSettingsSchema = {
     userSettingGroups: {
@@ -57,15 +55,15 @@ describe('UserSettings-helpers', () => {
   };
 
   beforeEach(() => {
-    sinon.stub(document, 'querySelector');
-    sinon.stub(document, 'querySelectorAll');
+    jest.spyOn(document, 'querySelector').mockClear().mockImplementation();
+    jest.spyOn(document, 'querySelectorAll').mockClear().mockImplementation();
   });
 
   afterEach(() => {
     if (document.querySelector.restore) {
-      document.querySelector.restore();
+      document.querySelector.mockRestore();
     }
-    sinon.restore();
+    jest.restoreAllMocks();
   });
 
   it('prepare user settings data from schema', () => {
@@ -92,7 +90,7 @@ describe('UserSettings-helpers', () => {
   });
 
   it('getUserSettingsIframesInDom', () => {
-    document.querySelector.returns({
+    document.querySelector.mockReturnValue({
       children: [
         {
           frame1: {}
@@ -108,8 +106,8 @@ describe('UserSettings-helpers', () => {
 
   it('hideUserSettingsIframe', () => {
     let iframes = [{ style: { display: 'block' } }, { style: { display: 'block' } }];
-    sinon.stub(UserSettingsHelper, 'getUserSettingsIframesInDom');
-    UserSettingsHelper.getUserSettingsIframesInDom.returns(iframes);
+    jest.spyOn(UserSettingsHelper, 'getUserSettingsIframesInDom').mockClear().mockImplementation();
+    UserSettingsHelper.getUserSettingsIframesInDom.mockReturnValue(iframes);
     UserSettingsHelper.hideUserSettingsIframe();
     expect(iframes[0].style.display).toEqual('none');
     expect(iframes[1].style.display).toEqual('none');
@@ -118,7 +116,7 @@ describe('UserSettings-helpers', () => {
   it('findActiveCustomUserSettingsIframe', () => {
     let eventSource = { contentWindow2: 'contentWindow2' };
     let iframes = [{ contentWindow: { contentWindow1: 'contentWindow1' } }, { contentWindow: eventSource }];
-    document.querySelectorAll.returns(iframes);
+    document.querySelectorAll.mockReturnValue(iframes);
     let activeCustomUserSettingsIframe = UserSettingsHelper.findActiveCustomUserSettingsIframe(eventSource);
     expect(activeCustomUserSettingsIframe.contentWindow).toEqual(eventSource);
     const eventSource2 = { contentWindow3: 'contentWindow3' };

@@ -1,9 +1,6 @@
 import { FeatureToggles } from '../../../src/core-api/feature-toggles';
 import { RoutingHelpers } from '../../../src/utilities/helpers/routing-helpers';
 
-const sinon = require('sinon');
-import type { SinonStub } from 'sinon';
-
 describe('Routing-helpers', () => {
   let featureToggles: FeatureToggles;
   let luigi: any = {};
@@ -31,7 +28,7 @@ describe('Routing-helpers', () => {
   });
 
   afterEach(() => {
-    sinon.restore();
+    jest.restoreAllMocks();
   });
 
   it('addParamsOnHashRouting should add parameters to hash routing', () => {
@@ -65,7 +62,7 @@ describe('Routing-helpers', () => {
     RoutingHelpers.modifySearchParams(params, searchParams);
     expect(searchParams.get('param1')).toEqual('value1');
     expect(searchParams.get('param2')).toEqual('value2');
-    expect(searchParams.get('existingParam')).toEqual(undefined);
+    expect(searchParams.get('existingParam')).toEqual(null);
   });
 
   it('modifySearchParams should modify search parameters with prefex', () => {
@@ -74,7 +71,7 @@ describe('Routing-helpers', () => {
     RoutingHelpers.modifySearchParams(params, searchParams, 'prefix_');
     expect(searchParams.get('prefix_param1')).toEqual('value1');
     expect(searchParams.get('prefix_param2')).toEqual('value2');
-    expect(searchParams.get('prefix_existingParam')).toEqual(undefined);
+    expect(searchParams.get('prefix_existingParam')).toEqual(null);
   });
 
   it('filterNodeParams should filter and sanitize node parameters', () => {
@@ -121,7 +118,7 @@ describe('Routing-helpers', () => {
   });
 
   it('prepareSearchParamsForClient should filter search params based on client permissions', () => {
-    sinon.stub(luigi, 'routing').returns({
+    jest.spyOn(luigi, 'routing').mockClear().mockReturnValue({
       getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
     });
     const currentNode = {
@@ -138,7 +135,7 @@ describe('Routing-helpers', () => {
   });
 
   it('prepareSearchParamsForClient should return an empty object if no client permissions are defined', () => {
-    sinon.stub(luigi, 'routing').returns({
+    jest.spyOn(luigi, 'routing').mockClear().mockReturnValue({
       getSearchParams: () => ({ param1: 'value1', param2: 'value2' })
     });
     const currentNode = {
@@ -149,12 +146,6 @@ describe('Routing-helpers', () => {
   });
 
   describe('check valid wc url', function () {
-    const sb = sinon.createSandbox();
-
-    afterEach(() => {
-      sb.restore();
-    });
-
     it('check permission for relative and absolute urls from same domain', () => {
       expect(RoutingHelpers.checkWCUrl('/folder/sth.js', luigi)).toEqual(true);
       expect(RoutingHelpers.checkWCUrl('folder/sth.js', luigi)).toEqual(true);
@@ -163,7 +154,7 @@ describe('Routing-helpers', () => {
     });
 
     it('check permission and denial for urls based on config', () => {
-      sb.stub(luigi, 'getConfigValue').returns([
+      jest.spyOn(luigi, 'getConfigValue').mockClear().mockReturnValue([
         'https://fiddle.luigi-project.io/.?',
         'https://docs.luigi-project.io/.?'
       ]);
@@ -185,30 +176,31 @@ describe('Routing-helpers', () => {
 
   describe('set feature toggle from url', () => {
     let mockPath = '/projects/pr1/settings?ft=test';
+    let featureTogglesSpy: any;
 
     beforeEach(() => {
-      sinon.stub(featureToggles, 'setFeatureToggle');
+      featureTogglesSpy = jest.spyOn(featureToggles, 'setFeatureToggle');
     });
 
     afterEach(() => {
-      sinon.restore();
+      jest.restoreAllMocks();
     });
 
     it('setFeatureToggle will be called', () => {
       RoutingHelpers.setFeatureToggles('ft', mockPath, featureToggles);
-      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test');
+      expect(featureTogglesSpy).toHaveBeenCalledWith('test', true);
     });
 
     it('setFeatureToggle will be called with two featureToggles', () => {
       mockPath = '/projects/pr1/settings?ft=test,test2';
       RoutingHelpers.setFeatureToggles('ft', mockPath, featureToggles);
-      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test');
-      sinon.assert.calledWith(featureToggles.setFeatureToggle, 'test2');
+      expect(featureTogglesSpy).toHaveBeenCalledWith('test', true);
+      expect(featureTogglesSpy).toHaveBeenCalledWith('test2', true);
     });
 
     it("setFeatureToggle won't be called with wrong queryParam name", () => {
       RoutingHelpers.setFeatureToggles('fft', mockPath, featureToggles);
-      sinon.assert.notCalled(featureToggles.setFeatureToggle);
+      expect(featureTogglesSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -234,16 +226,16 @@ describe('Routing-helpers', () => {
 
   describe('getModalViewParamName', () => {
     beforeEach(() => {
-      sinon.stub(luigi, 'getConfigValue');
+      jest.spyOn(luigi, 'getConfigValue');
     });
     afterEach(() => {
-      sinon.restore();
+      jest.restoreAllMocks();
     });
     it('without config value', () => {
       expect(RoutingHelpers.getModalViewParamName(luigi)).toEqual('modal');
     });
     it('without config value', () => {
-      luigi.getConfigValue.returns('custom');
+      luigi.getConfigValue.mockReturnValue('custom');
       expect(RoutingHelpers.getModalViewParamName(luigi)).toEqual('custom');
     });
   });
@@ -253,27 +245,32 @@ describe('Routing-helpers', () => {
     let modalViewParamName = 'modal';
     let getModalViewParamNameStub: any;
     let getLocationStub: any;
+
     beforeEach(() => {
-      getModalViewParamNameStub = sinon.stub(RoutingHelpers, 'getModalViewParamName').returns(modalViewParamName);
-      getLocationStub = sinon.stub(RoutingHelpers, 'getLocation').returns(mockLocation);
+      getModalViewParamNameStub = jest.spyOn(RoutingHelpers, 'getModalViewParamName').mockReturnValue(modalViewParamName);
+      getLocationStub = jest.spyOn(RoutingHelpers, 'getLocation').mockReturnValue(mockLocation);
     });
     afterEach(() => {
-      sinon.restore();
+      jest.restoreAllMocks();
     });
+
     it('without modal param', () => {
-      expect(RoutingHelpers.getModalPathFromPath(luigi)).toEqual(null);
+      expect(RoutingHelpers.getModalPathFromPath(luigi)).toEqual(undefined);
     });
+
     it('with modal', () => {
       mockLocation.search = '?modal=%2Fhome%2Fchild-2';
       expect(RoutingHelpers.getModalPathFromPath(luigi)).toEqual('/home/child-2');
     });
+
     it('with modal params', () => {
       mockLocation.search = '?modal=%2Fhome%2Fchild-2&modalParams=%7B%22title%22%3A%22Real%20Child%22%7D';
       expect(RoutingHelpers.getModalPathFromPath(luigi)).toEqual('/home/child-2');
       expect(RoutingHelpers.getModalParamsFromPath(luigi)).toEqual({ title: 'Real Child' });
     });
+
     it('with custom modal param name', () => {
-      getModalViewParamNameStub.returns('custom');
+      getModalViewParamNameStub.mockReturnValue('custom');
       mockLocation.search = '?custom=%2Fhome%2Fchild-2&customParams=%7B%22title%22%3A%22Real%20Child%22%7D';
       expect(RoutingHelpers.getModalPathFromPath(luigi)).toEqual('/home/child-2');
       expect(RoutingHelpers.getModalParamsFromPath(luigi)).toEqual({ title: 'Real Child' });
@@ -319,14 +316,14 @@ describe('Routing-helpers', () => {
     let getLocationStub: SinonStub | undefined;
     afterEach(() => {
       if (getLocationStub) {
-        getLocationStub.restore();
+        getLocationStub.mockRestore();
         getLocationStub = undefined;
       }
     });
 
     function stubLocationSearch(searchValue: string): void {
-      if (getLocationStub) getLocationStub.restore();
-      getLocationStub = sinon.stub(RoutingHelpers, 'getLocation').returns({ search: searchValue } as any);
+      if (getLocationStub) getLocationStub.mockRestore();
+      getLocationStub = jest.spyOn(RoutingHelpers, 'getLocation').mockReturnValue({ search: searchValue } as any);
     }
 
     it('returns empty object when no search part', () => {

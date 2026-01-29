@@ -1,19 +1,18 @@
 import { ViewUrlDecoratorSvc } from '../../src/services/viewurl-decorator';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { Luigi } from '../../src/core-api/luigi';
-const sinon = require('sinon');
 
 describe('View Decorator Service', () => {
   let viewUrlDecoratorService: ViewUrlDecoratorSvc;
   beforeEach(() => {
     viewUrlDecoratorService = new ViewUrlDecoratorSvc();
     viewUrlDecoratorService.decorators = [];
-    const prependOriginStub = sinon.stub(GenericHelpers, 'prependOrigin');
-    prependOriginStub.callsFake((url: string) => url);
+    const prependOriginStub = jest.spyOn(GenericHelpers, 'prependOrigin').mockClear().mockImplementation();
+    prependOriginStub.mockImplementation((url: string) => url);
   });
 
   afterEach(() => {
-    sinon.restore();
+    jest.restoreAllMocks();
   });
 
   it('should add and check decorators correctly', () => {
