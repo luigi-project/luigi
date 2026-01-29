@@ -714,6 +714,43 @@ export class NavigationService {
     return { nodeObject, pathData };
   }
 
+  async shouldPreventNavigation(node: Node): Promise<boolean> {
+    if (
+      node?.onNodeActivation &&
+      (GenericHelpers.isFunction(node.onNodeActivation) || GenericHelpers.isAsyncFunction(node.onNodeActivation)) &&
+      (await node.onNodeActivation(node)) === false
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async shouldPreventNavigationForPath(nodepath: string): Promise<boolean> {
+    const { nodeObject } = await this.extractDataFromPath(nodepath);
+
+    if (await this.shouldPreventNavigation(nodeObject)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async openViewInNewTab(nodepath: string): Promise<void> {
+    if (await this.shouldPreventNavigationForPath(nodepath)) {
+      return;
+    }
+
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+
+    if (hashRouting) {
+      nodepath = '#' + nodepath;
+    }
+
+    /*'noopener,noreferrer' required to disable XSS injections*/
+    window.open(nodepath, '_blank', 'noopener,noreferrer');
+  }
+
   private resolveTooltipText(node: any, translation: string): string {
     return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
@@ -742,6 +779,7 @@ export class NavigationService {
     path: string,
     preserveView?: string,
     modalSettings?: any,
+    newTab?: boolean,
     withoutSync?: boolean,
     callbackFn?: any
   ): Promise<void> {
@@ -759,6 +797,11 @@ export class NavigationService {
       };
 
       await serviceRegistry.get(ModalService).closeModals();
+
+      if (newTab) {
+        await this.openViewInNewTab(path);
+        return;
+      }
 
       if (this.luigi.getConfig().routing?.useHashRouting) {
         if (!withoutSync) {

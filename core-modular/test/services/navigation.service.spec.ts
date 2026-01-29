@@ -55,6 +55,79 @@ describe('NavigationService', () => {
     });
   });
 
+  describe('NavigationService.shouldPreventNavigation', () => {
+    it('should prevent navigation if node has activation handler defined', async () => {
+      const node: Node = {
+        label: 'test',
+        onNodeActivation: jest.fn().mockReturnValue(false)
+      };
+
+      expect(await navigationService.shouldPreventNavigation(node)).toEqual(true);
+    });
+
+    it('should not prevent navigation if node has activation handler undefined', async () => {
+      const node: Node = {
+        label: 'test',
+        onNodeActivation: undefined
+      };
+
+      expect(await navigationService.shouldPreventNavigation(node)).toEqual(false);
+    });
+  });
+
+  describe('NavigationService.shouldPreventNavigationForPath', () => {
+    it('should prevent navigation for path if navigation is prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.extractDataFromPath = jest.fn().mockReturnValue({ nodeObject: {}, pathData: {} });
+      navigationService.shouldPreventNavigation = jest.fn().mockReturnValue(true);
+
+      expect(await navigationService.shouldPreventNavigationForPath(nodepath)).toEqual(true);
+    });
+
+    it('should not prevent navigation for path if navigation is not prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.extractDataFromPath = jest.fn().mockReturnValue({ nodeObject: {}, pathData: {} });
+      navigationService.shouldPreventNavigation = jest.fn().mockReturnValue(false);
+
+      expect(await navigationService.shouldPreventNavigationForPath(nodepath)).toEqual(false);
+    });
+  });
+
+  describe('NavigationService.openViewInNewTab', () => {
+    let windowOpenSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      (window as any).open = jest.fn();
+      windowOpenSpy = jest.spyOn(window as any, 'open');
+    });
+
+    afterEach(() => {
+      windowOpenSpy.mockRestore();
+    });
+
+    it('should open view in new tab if navigation is not prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
+
+      await navigationService.openViewInNewTab(nodepath);
+
+      expect(windowOpenSpy).toHaveBeenCalledWith(nodepath, '_blank', 'noopener,noreferrer');
+    });
+
+    it('should not open view in new tab if navigation is prevented', async () => {
+      const nodepath = '/modal/path';
+
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(true);
+
+      await navigationService.openViewInNewTab(nodepath);
+
+      expect(windowOpenSpy).not.toHaveBeenCalled();
+    });
+  });
+
   // describe('NavigationService.getParentNode', () => {
   //   it('should return undefined if selectedNode is undefined', () => {
   //     const parentNode = navigationService.getParentNode(undefined, { nodesInPath: [] });
@@ -451,7 +524,7 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, jest.fn());
+      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
@@ -480,7 +553,46 @@ describe('NavigationService', () => {
 
       window.location.hash = originalHash;
     });
+
+    it('should navigate to a path in new browser tab', async () => {
+      const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      const pushStateSpy = jest.spyOn(window.history, 'pushState');
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
+
+      await navigationService.handleNavigationRequest('/test/path', undefined, undefined, true);
+
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(openViewInNewTabSpy).toHaveBeenCalledWith('/test/path');
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(dispatchEventSpy).not.toHaveBeenCalled();
+    });
+
+    it('should close modals and update history if no modalSettings and using withoutSync', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+
+      await navigationService.handleNavigationRequest('/normal/path', undefined, undefined, false, true);
+
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent<{
+        preventContextUpdate: boolean;
+        withoutSync: boolean;
+      }>));
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('popstate');
+      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, withoutSync: true });
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
   });
+
   describe('NavigationService.buildNavItems', () => {
     it('should return empty array if nodes is empty', () => {
       const pathData = {

@@ -22,14 +22,14 @@ export class Navigation {
     this.modalService = serviceRegistry.get(ModalService);
   }
 
-  navigate = (
+  navigate = async (
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
-    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, undefined);
+    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, false, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
