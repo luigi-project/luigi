@@ -58,6 +58,7 @@ export default defineConfig({
       mangle: {
         reserved: ['$'],
       },
+      enclose: true,
     },
     sourcemap: true,
     chunkSizeWarningLimit: 650,
