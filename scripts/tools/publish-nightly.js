@@ -39,7 +39,6 @@ const packagePaths = {
   client: ['client'],
   oauth2: ['plugins', 'auth', 'src', 'auth-oauth2'],
   oidc: ['plugins', 'auth', 'src', 'auth-oidc'],
-  client_support_angular: ['client-frameworks-support', 'client-support-angular'],
   testing_utilities: ['client-frameworks-support', 'testing-utilities']
 };
 const publishPaths = {
@@ -47,14 +46,15 @@ const publishPaths = {
   client: ['client', 'public'],
   oauth2: ['plugins', 'auth', 'public', 'auth-oauth2'],
   oidc: ['plugins', 'auth', 'public', 'auth-oidc'],
-  client_support_angular: ['client-frameworks-support', 'client-support-angular', 'dist', 'client-support-angular'],
   testing_utilities: ['client-frameworks-support', 'testing-utilities', 'dist']
 };
 
 if (!process.env.NIGHTLY_VERSION) {
-  logHeadline('Added container and headless path to publish nightly release steps');
+  logHeadline('Added container, client_support_angular and headless path to publish nightly release steps');
   packagePaths.container = ['container'];
   publishPaths.container = ['container', 'public'];
+  packagePaths.client_support_angular = ['client-frameworks-support', 'client-support-angular'];
+  publishPaths.client_support_angular = ['client-frameworks-support', 'client-support-angular', 'dist', 'client-support-angular'];
   packagePaths.headless = ['core-modular'];
   publishPaths.headless = ['core-modular', 'public'];
 }
