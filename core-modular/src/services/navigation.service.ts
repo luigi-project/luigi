@@ -67,7 +67,7 @@ export interface ProfileItem {
   icon?: string;
   testId?: string;
   altText?: string;
-  openNodeAsModal?: boolean | ModalSettings;
+  openNodeInModal?: boolean | ModalSettings;
 }
 
 export interface UserInfo {
@@ -554,7 +554,9 @@ export class NavigationService {
     const logoutLabel =
       this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
     const itemClick = (item: ProfileItem) => {
-      if (item.link) {
+      if (item.openNodeInModal && !item.externalLink?.url) {
+        this.luigi.navigation().openAsModal(item.link || '', item.openNodeInModal === true ? {} : item.openNodeInModal);
+      } else if (item.link) {
         this.luigi.navigation().navigate(item.link);
       } else if (item.externalLink?.url) {
         if (item.externalLink.sameWindow) {
