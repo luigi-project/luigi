@@ -1,49 +1,50 @@
 import 'mock-local-storage';
 import { StorageHelpers } from '../../../src/utilities/helpers/storage-helpers';
 
-const chai = require('chai');
-const assert = chai.assert;
-const sinon = require('sinon');
-
 describe('Storage-helpers', () => {
   describe('process', () => {
     const microfrontendId = 'mockMicroId';
     const hostname = 'luigi.core.test';
+    let index = 0;
     let key = 'key_';
     let value = 'value_';
     let id = 'messageId_';
-    let sendBackOperationSpy;
+    let sendBackOperationSpy: any;
     const buildLuigiKey = () => {
       return 'Luigi#' + hostname + '#' + key;
     };
     const assertSendMessage = (status, result) => {
-      assert(sendBackOperationSpy.calledOnce);
-      let args = sendBackOperationSpy.getCalls()[0].args;
-      assert(sendBackOperationSpy.calledOnce);
-      assert.equal(args[0], microfrontendId, 'sendBackOperation argument microfrontendId is different from  expected');
-      assert.equal(args[1], id, 'sendBackOperation argument id is different from  expected');
-      assert.equal(args[2], status, 'sendBackOperation argument status is different from  expected');
+      expect(sendBackOperationSpy).toHaveBeenCalled();
+
+      const args = sendBackOperationSpy.mock.calls[index];
+
+      expect(args[0]).toEqual(microfrontendId);
+      expect(args[1]).toEqual(id);
+      expect(args[2]).toEqual(status);
+
       if (!result) {
-        assert.isTrue(!args[3], 'sendBackOperation argument result shuld be undefined for this operation');
+        expect(!args[3]).toBe(true);
         return;
       }
+
       if (Array.isArray(result)) {
-        assert.deepEqual(args[3], result, 'sendBackOperation argument result is different from  expected');
+        expect(args[3]).toEqual(result);
         return;
       }
-      assert.equal(args[3], result, 'sendBackOperation argument result is different from  expected');
+
+      expect(args[3]).toEqual(result);
     };
 
     beforeEach(() => {
       key = 'key_' + Math.random();
       value = 'value_' + Math.random();
       id = 'messageId_' + Math.random();
-      sendBackOperationSpy = sinon.spy(StorageHelpers, 'sendBackOperation');
+      sendBackOperationSpy = jest.spyOn(StorageHelpers, 'sendBackOperation');
       window.localStorage.clear();
     });
 
     afterEach(() => {
-      sinon.restore();
+      index++;
     });
 
     it('setItem', () => {
@@ -52,7 +53,7 @@ describe('Storage-helpers', () => {
         value
       });
       const luigiKey = buildLuigiKey();
-      assert.equal(window.localStorage.getItem(luigiKey), value, 'Luigi value is different for setItem');
+      expect(window.localStorage.getItem(luigiKey)).toEqual(value);
       assertSendMessage('OK', undefined);
     });
 
@@ -84,7 +85,7 @@ describe('Storage-helpers', () => {
       const luigiKey = buildLuigiKey();
       window.localStorage.setItem(luigiKey, value);
       StorageHelpers.process(microfrontendId, hostname, id, 'clear', {});
-      assert.isTrue(!window.localStorage.getItem(luigiKey), 'After clear, item should not be present');
+      expect(!window.localStorage.getItem(luigiKey)).toBe(true);
       assertSendMessage('OK', undefined);
     });
 
@@ -94,7 +95,7 @@ describe('Storage-helpers', () => {
       StorageHelpers.process(microfrontendId, hostname, id, 'removeItem', {
         key
       });
-      assert.isTrue(!window.localStorage.getItem(luigiKey), 'After removed, item should not be present');
+      expect(!window.localStorage.getItem(luigiKey)).toBe(true);
       assertSendMessage('OK', value);
     });
 
