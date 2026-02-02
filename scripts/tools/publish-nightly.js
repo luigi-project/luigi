@@ -54,7 +54,12 @@ if (!process.env.NIGHTLY_VERSION) {
   packagePaths.container = ['container'];
   publishPaths.container = ['container', 'public'];
   packagePaths.client_support_angular = ['client-frameworks-support', 'client-support-angular'];
-  publishPaths.client_support_angular = ['client-frameworks-support', 'client-support-angular', 'dist', 'client-support-angular'];
+  publishPaths.client_support_angular = [
+    'client-frameworks-support',
+    'client-support-angular',
+    'dist',
+    'client-support-angular'
+  ];
   packagePaths.headless = ['core-modular'];
   publishPaths.headless = ['core-modular', 'public'];
 }
