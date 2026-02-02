@@ -1,8 +1,5 @@
 import { GenericHelpers } from '../../../src/utilities/helpers/generic-helpers';
 
-const chai = require('chai');
-const assert = chai.assert;
-
 describe('Generic-helpers', () => {
   let locationSearchString: string;
 
@@ -26,44 +23,44 @@ describe('Generic-helpers', () => {
   });
 
   it('getRandomId', () => {
-    assert.typeOf(GenericHelpers.getRandomId(), 'number');
+    expect(typeof GenericHelpers.getRandomId()).toBe('number');
   });
 
   it('isFunction', () => {
     const func = () => {};
-    assert.equal(GenericHelpers.isFunction(func), true);
-    assert.equal(GenericHelpers.isFunction('foo'), false);
-    assert.equal(GenericHelpers.isFunction(true), false);
-    assert.equal(GenericHelpers.isFunction(12345), false);
+    expect(GenericHelpers.isFunction(func)).toEqual(true);
+    expect(GenericHelpers.isFunction('foo')).toEqual(false);
+    expect(GenericHelpers.isFunction(true)).toEqual(false);
+    expect(GenericHelpers.isFunction(12345)).toEqual(false);
   });
 
   it('isString', () => {
-    assert.equal(GenericHelpers.isString('foo'), true);
-    assert.equal(GenericHelpers.isString(true), false);
-    assert.equal(GenericHelpers.isString(12345), false);
+    expect(GenericHelpers.isString('foo')).toEqual(true);
+    expect(GenericHelpers.isString(true)).toEqual(false);
+    expect(GenericHelpers.isString(12345)).toEqual(false);
   });
 
   it('isObject', () => {
     const obj = { foo: 'bar' };
     const func = () => {};
-    assert.equal(GenericHelpers.isObject(obj), true);
-    assert.equal(GenericHelpers.isObject(func), false);
-    assert.equal(GenericHelpers.isObject('foo'), false);
-    assert.equal(GenericHelpers.isObject(true), false);
-    assert.equal(GenericHelpers.isObject(12345), false);
+    expect(GenericHelpers.isObject(obj)).toEqual(true);
+    expect(GenericHelpers.isObject(func)).toEqual(false);
+    expect(GenericHelpers.isObject('foo')).toEqual(false);
+    expect(GenericHelpers.isObject(true)).toEqual(false);
+    expect(GenericHelpers.isObject(12345)).toEqual(false);
   });
 
   it('trimLeadingSlash', () => {
-    assert.equal(GenericHelpers.trimLeadingSlash('/luigi'), 'luigi');
+    expect(GenericHelpers.trimLeadingSlash('/luigi')).toEqual('luigi');
   });
 
   it('trimTrailingSlash', () => {
-    assert.equal(GenericHelpers.trimTrailingSlash('luigi/'), 'luigi');
+    expect(GenericHelpers.trimTrailingSlash('luigi/')).toEqual('luigi');
   });
 
   it('getNodeList', () => {
-    assert.equal(GenericHelpers.getNodeList('body').length, 1);
-    assert.equal(GenericHelpers.getNodeList('luigi-container').length, 0);
+    expect(GenericHelpers.getNodeList('body').length).toEqual(1);
+    expect(GenericHelpers.getNodeList('luigi-container').length).toEqual(0);
   });
 
   it('getUrlParameter', () => {
