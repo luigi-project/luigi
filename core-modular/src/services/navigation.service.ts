@@ -587,14 +587,9 @@ export class NavigationService {
       },
       onUserInfoUpdate: (fn) => {
         if (cfg.navigation?.profile?.staticUserInfoFn) {
-          const uifRes = cfg.navigation?.profile?.staticUserInfoFn();
-          if (uifRes instanceof Promise) {
-            uifRes.then((uInfo) => {
-              fn(uInfo);
-            });
-          } else {
-            fn(uifRes);
-          }
+          Promise.resolve(cfg.navigation?.profile?.staticUserInfoFn()).then((uInfo) => {
+            fn(uInfo);
+          });
         } else {
           AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
             fn(uInfo);
