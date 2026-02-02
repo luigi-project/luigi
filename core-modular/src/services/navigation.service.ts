@@ -603,7 +603,7 @@ export class NavigationService {
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(rootNodes, undefined, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
-      profile: (this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile) ? profileSettings : undefined,
+      profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
       navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
