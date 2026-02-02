@@ -48,7 +48,7 @@ export class NodeDataManagementService {
 
   /**
    * Returns the root node
-   * @returns {Node} root node
+   * @returns {RootNode} root node
    */
   getRootNode(): RootNode {
     return this.dataManagement.get('_luigiRootNode');

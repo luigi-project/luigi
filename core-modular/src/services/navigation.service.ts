@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -920,7 +919,7 @@ export class NavigationService {
     return node;
   }
 
-  bindChildToParent(child: Node, node: Node) {
+  bindChildToParent(child: Node, node: Node): Node {
     // Checking for pathSegment to exclude virtual root node
     // node.pathSegment check is also required for virtual nodes like categories
     if (node && node.pathSegment) {
