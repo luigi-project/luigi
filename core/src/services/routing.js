@@ -505,7 +505,7 @@ class RoutingClass {
         tabHeaderCnt.dispatchEvent(new Event('lui_ctx_update'));
       }
 
-      Navigation.onNodeChange(previousCompData.currentNode, currentNode);
+      Navigation.onNodeChange(previousCompData.currentNode, currentNode, { currentContext: ctx });
     } catch (err) {
       console.info('Could not handle route change', err);
     }
