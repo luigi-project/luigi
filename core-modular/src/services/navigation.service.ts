@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash';
 import type { Luigi } from '../core-api/luigi';
+import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
@@ -586,15 +587,15 @@ export class NavigationService {
         }
       },
       onUserInfoUpdate: (fn) => {
-        if (cfg.navigation?.profile?.staticUserInfoFn) {
-          Promise.resolve(cfg.navigation?.profile?.staticUserInfoFn()).then((uInfo) => {
+        this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
+          if (userInfo) {
+            fn(userInfo);
+          }else{
+            AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
             fn(uInfo);
           });
-        } else {
-          AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
-            fn(uInfo);
-          });
-        }
+          }
+        });
       }
     };
 
