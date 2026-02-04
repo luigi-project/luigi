@@ -590,10 +590,10 @@ export class NavigationService {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {
             fn(userInfo);
-          }else{
+          } else {
             AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
-            fn(uInfo);
-          });
+              fn(uInfo);
+            });
           }
         });
       }
