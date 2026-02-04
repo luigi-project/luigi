@@ -67,7 +67,7 @@ export interface ProfileItem {
   icon?: string;
   testId?: string;
   altText?: string;
-  openNodeAsModal?: boolean | ModalSettings;
+  openNodeInModal?: boolean | ModalSettings;
 }
 
 export interface UserInfo {
@@ -554,7 +554,9 @@ export class NavigationService {
     const logoutLabel =
       this.luigi.i18n().getTranslation(cfg.navigation?.profile?.logout?.label) || TOP_NAV_DEFAULTS.logout.label;
     const itemClick = (item: ProfileItem) => {
-      if (item.link) {
+      if (item.openNodeInModal && !item.externalLink?.url) {
+        this.luigi.navigation().openAsModal(item.link || '', item.openNodeInModal === true ? {} : item.openNodeInModal);
+      } else if (item.link) {
         this.luigi.navigation().navigate(item.link);
       } else if (item.externalLink?.url) {
         if (item.externalLink.sameWindow) {
@@ -584,20 +586,15 @@ export class NavigationService {
         }
       },
       onUserInfoUpdate: (fn) => {
-        if (cfg.navigation?.profile?.staticUserInfoFn) {
-          const uifRes = cfg.navigation?.profile?.staticUserInfoFn();
-          if (uifRes instanceof Promise) {
-            uifRes.then((uInfo) => {
+        this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
+          if (userInfo) {
+            fn(userInfo);
+          } else {
+            AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
               fn(uInfo);
             });
-          } else {
-            fn(uifRes);
           }
-        } else {
-          AuthLayerSvc.getUserInfoStore().subscribe((uInfo: UserInfo) => {
-            fn(uInfo);
-          });
-        }
+        });
       }
     };
 
@@ -606,7 +603,7 @@ export class NavigationService {
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(rootNodes, undefined, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
-      profile: profileSettings,
+      profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
       navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
