@@ -620,7 +620,7 @@ describe('Routing Service', () => {
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
 
-      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, false);
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, false, false);
 
       expect(featureToggleSpy).toHaveBeenCalled();
       expect(UIModule.updateMainContent).toHaveBeenCalled();
@@ -633,7 +633,7 @@ describe('Routing Service', () => {
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
 
-      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true);
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, false);
 
       expect(featureToggleSpy).toHaveBeenCalled();
       expect(UIModule.updateMainContent).not.toHaveBeenCalled();
