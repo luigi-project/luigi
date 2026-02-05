@@ -6,6 +6,7 @@ import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
+import { NodeDataManagementService } from '../services/node-data-management.service';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -116,7 +117,7 @@ export const UIModule = {
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
   },
-  update: (scopes?: string[]) => {
+  update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
     if (!croute) {
       return;
@@ -147,7 +148,7 @@ export const UIModule = {
       scopes.includes('navigation.contextSwitcher') ||
       scopes.includes('navigation.productSwitcher')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
     if (
       noScopes ||
@@ -157,8 +158,9 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
-      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
     }
     if (
       noScopes ||
@@ -167,6 +169,7 @@ export const UIModule = {
       scopes.includes('navigation.viewgroupdata') ||
       scopes.includes('settings.theming')
     ) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
