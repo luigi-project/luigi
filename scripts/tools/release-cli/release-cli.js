@@ -329,14 +329,10 @@ function categorizePullRequests(pullRequests, lastRelease) {
     const internalChanges = formatPullRequests(internalPulls);
     const lastline = `[v${input.version}]: https://github.com/luigi-project/luigi/compare/${prevVersion}...v${input.version}`;
     let changelog = `\n\n## [v${input.version}] (${getCurrentDate()})\n\n${
-        breakingChanges ? `#### ":boom: Breaking Change"\n${breakingChanges}\n\n` : ''
-      }${
-        enhancementChanges ? `#### :rocket: Added\n\n${enhancementChanges}\n\n` : ''
-      }${
-        bugChanges ? `#### :bug: Fixed\n\n${bugChanges}\n\n` : ''
-      }${
-        internalChanges ? `#### :house: Internal\n\n${internalChanges}\n\n` : ''
-      }`;
+      breakingChanges ? `#### ":boom: Breaking Change"\n${breakingChanges}\n\n` : ''
+    }${enhancementChanges ? `#### :rocket: Added\n\n${enhancementChanges}\n\n` : ''}${
+      bugChanges ? `#### :bug: Fixed\n\n${bugChanges}\n\n` : ''
+    }${internalChanges ? `#### :house: Internal\n\n${internalChanges}\n\n` : ''}`;
 
     changelog = changelog.replace('## Unreleased', versionText);
 
