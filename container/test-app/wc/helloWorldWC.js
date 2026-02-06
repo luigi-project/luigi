@@ -381,10 +381,17 @@ export default class extends HTMLElement {
 
     this.$openAsModalBtn = this._shadowRoot.querySelector('#openAsModalBtn');
     this.$openAsModalBtn.addEventListener('click', () => {
-      this.LuigiClient.linkManager().openAsModal('openAsModal-wc', {
-        title: 'Modal Title',
-        size: 'm'
-      });
+      this.LuigiClient.linkManager()
+        .openAsModal('openAsModal-wc', {
+          title: 'Modal Title',
+          size: 'm'
+        })
+        .then(() => {
+          this.LuigiClient.uxManager().showAlert({
+            text: 'LuigiClient.linkManager().openAsModal() - resolved',
+            type: 'info'
+          });
+        });
     });
     this.$updateModalSettingsBtn = this._shadowRoot.querySelector('#updateModalSettingsBtn');
     this.$updateModalSettingsBtn.addEventListener('click', () => {

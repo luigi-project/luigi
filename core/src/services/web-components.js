@@ -69,7 +69,7 @@ class WebComponentSvcClass {
         const lm = window.Luigi.navigation();
         return new Proxy(lm, {
           get(target, prop) {
-            if (prop === target.getCurrentRoute.name) {
+            if (target.getCurrentRoute && prop === target.getCurrentRoute.name) {
               return () => {
                 const pm = new Promise((resolve) => {
                   resolve(target.getCurrentRoute());
@@ -78,6 +78,19 @@ class WebComponentSvcClass {
                   return target.getCurrentRoute();
                 };
                 return pm;
+              };
+            }
+            if (target.openAsModal && prop === target.openAsModal.name) {
+              return (path, modalSettings, callbackFn) => {
+                return new Promise((resolve) => {
+                  target.openAsModal(path, modalSettings, (value) => {
+                    resolve({ goBackValue: value });
+
+                    if (callbackFn && typeof callbackFn === 'function') {
+                      callbackFn(value);
+                    }
+                  });
+                });
               };
             }
             return target[prop];
