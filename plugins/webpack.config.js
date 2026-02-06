@@ -8,7 +8,7 @@ const babelSettings = JSON.parse(readFileSync('.babelrc'));
 
 const config = {
   entry: globSync('./auth/src/**/index.js').reduce((acc, path) => {
-    const entry = path.replace('/index.js', '').replace('./auth/src/', '');
+    const entry = path.replace('/index.js', '').replace('\\index.js', '').replace('auth/src/', '').replace('auth\\src\\', '');
     acc[entry] = './' + path;
     return acc;
   }, {}),
@@ -37,7 +37,7 @@ const config = {
 };
 
 // Extend with custom webpack configuration:
-globSync('./auth/src/**/webpack-extra.config.js').forEach(path => {
+globSync('./auth/src/**/webpack-extra.config.js').forEach((path) => {
   merge(config, require('./' + path));
 });
 
