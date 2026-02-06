@@ -12,6 +12,7 @@ export default [{
     format: 'umd',
     name: 'LuigiClient',
     esModule: false,
+    sourcemap: true,
   },
   plugins: [
     resolve(),
@@ -48,12 +49,13 @@ export default [{
       ],
     })],
 }, {
-  input: ['./src/esm.js'],
+  input: ['./src/esm-exports.js'],
   output: {
     entryFileNames: 'luigi-client.mjs',
     format: 'esm',
     dir: './public/esm',
     exports: 'named',
+    sourcemap: true,
   },
   plugins: [
     resolve(),

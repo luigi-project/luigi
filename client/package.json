@@ -8,12 +8,8 @@
   },
   "scripts": {
     "bundle-rollup": "rollup --config",
-    "bundle-vite": "vite build",
     "bundle": "npm run bundle-rollup",
-    "bundle-evergreen": "webpack --mode=production",
-    "bundle-develop": "npm run bundle-develop-evergreen",
-    "bundle-develop-evergreen": "npm run bundle-evergreen -- -d --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "license": "Apache-2.0",
   "devDependencies": {
@@ -29,16 +25,15 @@
     "@rollup/plugin-terser": "^0.4.4",
     "acorn": "^8.14.0",
     "babel-loader": "^8.4.1",
-    "copy-webpack-plugin": "^12.0.2",
     "core-js": "^3.40.0",
     "diff": ">=3.5.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
     "lodash": ">=4.17.23",
     "mixin-deep": ">=1.3.2",
     "rollup-plugin-copy": "^3.5.0",
     "serialize-javascript": ">=6.0.2",
-    "set-value": ">=4.1.0",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^5.1.4"
+    "set-value": ">=4.1.0"
   },
   "engines": {
     "node": ">=20.19.0"
