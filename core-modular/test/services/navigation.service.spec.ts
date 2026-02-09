@@ -1,6 +1,7 @@
 import { serviceRegistry } from '../../src/services/service-registry';
-import { NavigationService, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import type { NavigationRequestParams, Node } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
 describe('NavigationService', () => {
@@ -553,9 +554,19 @@ describe('NavigationService', () => {
 
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: { size: 'l' },
+        newTab: false,
+        path: '/modal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, jest.fn());
+      await navigationService.handleNavigationRequest(navRequestParams, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
@@ -565,7 +576,7 @@ describe('NavigationService', () => {
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
-      await navigationService.handleNavigationRequest('/normal/path');
+      await navigationService.handleNavigationRequest({ path: '/normal/path' });
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
@@ -578,7 +589,7 @@ describe('NavigationService', () => {
     it('should set location.hash if useHashRouting is true', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
       const originalHash = window.location.hash;
-      await navigationService.handleNavigationRequest('/hash/path');
+      await navigationService.handleNavigationRequest({ path: '/hash/path' });
 
       expect(window.location.hash).toBe('#/hash/path');
 
@@ -589,10 +600,19 @@ describe('NavigationService', () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
       const pushStateSpy = jest.spyOn(window.history, 'pushState');
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: true,
+        path: '/test/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
 
       navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
 
-      await navigationService.handleNavigationRequest('/test/path', undefined, undefined, true);
+      await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(openViewInNewTabSpy).toHaveBeenCalledWith('/test/path');
@@ -604,8 +624,17 @@ describe('NavigationService', () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/normal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      };
 
-      await navigationService.handleNavigationRequest('/normal/path', undefined, undefined, false, true);
+      await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
@@ -621,7 +650,7 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, preventHistoryEntry: false, withoutSync: true });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();

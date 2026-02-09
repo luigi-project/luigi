@@ -1,8 +1,8 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings, Node, RunTimeErrorHandler } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import type { ModalSettings, NavigationRequestParams, Node, RunTimeErrorHandler } from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
@@ -29,7 +29,17 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
-    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, false, undefined);
+    const navRequestParams: NavigationRequestParams = {
+      modalSettings,
+      newTab: false,
+      path,
+      preserveView,
+      preventContextUpdate: false,
+      preventHistoryEntry: false,
+      withoutSync: false
+    };
+
+    this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {

@@ -5,6 +5,7 @@ import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
+import type { NavigationRequestParams } from '../types/navigation';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -17,11 +18,26 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      const { link, preserveView, modal, newTab, withoutSync } = event.detail;
+      const {
+        link,
+        modal,
+        newTab,
+        preserveView,
+        preventContextUpdate,
+        preventHistoryEntry,
+        withoutSync
+      } = event.detail;
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: modal,
+        newTab,
+        path: link,
+        preserveView,
+        preventContextUpdate,
+        preventHistoryEntry,
+        withoutSync
+      };
 
-      serviceRegistry
-        .get(NavigationService)
-        .handleNavigationRequest(link, preserveView, modal, newTab, withoutSync, event.callbackFn);
+      serviceRegistry.get(NavigationService).handleNavigationRequest(navRequestParams, event.callbackFn);
     });
     containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
       luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});
