@@ -642,6 +642,7 @@ describe('NavigationService', () => {
         expect.any(
           CustomEvent<{
             preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
             withoutSync: boolean;
           }>
         )
@@ -657,6 +658,50 @@ describe('NavigationService', () => {
       });
 
       pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
+
+    it('should close modals and update history if no modalSettings and using preventHistoryEntry with withoutSync', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/normal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: true
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.any(
+          CustomEvent<{
+            preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
+            withoutSync: boolean;
+          }>
+        )
+      );
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('popstate');
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: true
+      });
+
+      pushStateSpy.mockRestore();
+      replaceStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
     });
   });

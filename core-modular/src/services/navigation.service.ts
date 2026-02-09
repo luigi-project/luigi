@@ -661,6 +661,7 @@ export class NavigationService {
       preventHistoryEntry
     }: NavigationRequestParams = params;
     const normalizedPath = path.replace(/\/\/+/g, '/');
+    const chosenHistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
     if (modalSettings) {
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
@@ -680,19 +681,21 @@ export class NavigationService {
         return;
       }
 
+      const method = this.luigi.getConfigValue('routing.disableBrowserHistory') ? 'replaceState' : chosenHistoryMethod;
+
       if (this.luigi.getConfig().routing?.useHashRouting) {
         if (!withoutSync) {
           location.hash = normalizedPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 
-          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.history[method]({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
           window.dispatchEvent(event);
         }
       } else {
         const event = new CustomEvent<NavigationRequestBase>('popstate', eventDetail);
 
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        window.history[method]({ path: normalizedPath }, '', normalizedPath);
         window.dispatchEvent(event);
       }
     }
