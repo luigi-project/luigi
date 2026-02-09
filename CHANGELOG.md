@@ -2,27 +2,7 @@
 
 > Note: All the versions not mentioned in the changelog file do not contain changes.
 
-<!--
-Generate the changelog using the lerna-changelog tool.
-Run the following command to generate changelog content for pull requests that have been merged since the time when the last git tag was created:
-
-./node_modules/lerna-changelog/bin/cli.js --ignoreCommiters
-
-You can also generate changelog content corresponding to pull requests that were merged in between particular git tags:
-
-./node_modules/lerna-changelog/bin/cli.js --ignoreCommiters --from core-0.3.0 --to core-0.3.1
-
-The lerna-changelog tool detects changes based on PR labels and maps them to sections as per the configuration in the package.json file.
-  "changelog": {
-    "labels": {
-      "breaking": ":boom: Breaking Change",
-      "enhancement": ":rocket: Added",
-      "bug": ":bug: Fixed",
-      "documentation": ":memo: Documentation"
-    }
-    ...
-  }
--->
+<!--Generate the changelog using release cli. -->
 
 
 ## [v2.26.0] (2025-12-01)
