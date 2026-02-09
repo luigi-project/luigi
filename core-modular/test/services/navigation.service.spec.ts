@@ -650,7 +650,11 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, preventHistoryEntry: false, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();

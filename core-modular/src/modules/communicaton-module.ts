@@ -18,15 +18,8 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      const {
-        link,
-        modal,
-        newTab,
-        preserveView,
-        preventContextUpdate,
-        preventHistoryEntry,
-        withoutSync
-      } = event.detail;
+      const { link, modal, newTab, preserveView, preventContextUpdate, preventHistoryEntry, withoutSync } =
+        event.detail;
       const navRequestParams: NavigationRequestParams = {
         modalSettings: modal,
         newTab,
