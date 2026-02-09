@@ -395,7 +395,7 @@ export class NavigationService {
     const pathData = pData ?? (await this.getPathData(path));
     if (path == '') {
       // poor mans implementation, full path resolution TBD
-      return pathData.rootNodes[0].pathSegment;
+      return pathData.rootNodes[0]?.pathSegment;
     } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
       return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
