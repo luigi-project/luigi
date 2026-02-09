@@ -35,7 +35,7 @@
     "serialize-javascript": ">=6.0.2",
     "set-value": ">=2.0.1",
     "ssri": ">=6.0.2",
-    "webpack": "^5.94.0",
+    "webpack": "^5.105.0",
     "webpack-cli": "^5.1.4"
   },
   "engines": {
