@@ -30,7 +30,6 @@
       "eslint-plugin-promise": "^7.2.1",
       "git-changed-files": "^1.0.0",
       "husky": "^4.3.5",
-      "lerna-changelog": "^2.2.0",
       "neostandard": "^0.11.7",
       "prettier": "^3.3.3",
       "prettier-plugin-svelte": "^3.2.7",
@@ -40,16 +39,6 @@
    "prettier": {
       "singleQuote": true,
       "semi": true
-   },
-   "changelog": {
-      "repo": "SAP/luigi",
-      "labels": {
-         "breaking": ":boom: Breaking Change",
-         "enhancement": ":rocket: Added",
-         "bug": ":bug: Fixed",
-         "internal": ":house: Internal"
-      },
-      "cacheDir": ".changelog"
    },
    "husky": {
       "hooks": {
