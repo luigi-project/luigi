@@ -240,7 +240,7 @@ export class NavigationService {
           console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
         }
       } else {
-        rootNode = { children: nodesFromConfig };
+        rootNode = { children: nodesFromConfig } as Node;
       }
       rootNode.children = await this.getChildren(rootNode, currentContext);
       rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
@@ -254,32 +254,38 @@ export class NavigationService {
       rootNodes: rootNode.children,
       pathParams
     };
-    for (const segment of pathSegments) {
-      if (pathData.selectedNodeChildren) {
-        const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
-        if (!node) {
-          // No matching node found; avoid logging full children to prevent circular JSON errors in tests
-          console.warn('No matching node found for segment:', segment);
-          break;
+
+    // console.log('Initial Root Node:#########', rootNode);
+    if (rootNode.viewUrl && pathSegments.length === 0) {
+      pathData.selectedNode = rootNode;
+    } else {
+      for (const segment of pathSegments) {
+        if (pathData.selectedNodeChildren) {
+          const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
+          if (!node) {
+            // No matching node found; avoid logging full children to prevent circular JSON errors in tests
+            console.warn('No matching node found for segment:', segment);
+            break;
+          }
+          const nodeContext = node.context || {};
+          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+          let substitutedContext = mergedContext;
+          pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
+          if (node.pathSegment?.startsWith(':')) {
+            pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
+            substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
+          }
+          currentContext = substitutedContext;
+          node.context = substitutedContext;
+          pathData.selectedNode = node;
+          if (pathData.selectedNode) {
+            pathData.nodesInPath?.push(pathData.selectedNode);
+          }
+          let children = await this.getChildren(node, currentContext);
+          pathData.selectedNodeChildren = children
+            ? this.getAccessibleNodes(pathData.selectedNode, children, currentContext)
+            : undefined;
         }
-        const nodeContext = node.context || {};
-        const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
-        let substitutedContext = mergedContext;
-        pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
-        if (node.pathSegment?.startsWith(':')) {
-          pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
-          substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
-        }
-        currentContext = substitutedContext;
-        node.context = substitutedContext;
-        pathData.selectedNode = node;
-        if (pathData.selectedNode) {
-          pathData.nodesInPath?.push(pathData.selectedNode);
-        }
-        let children = await this.getChildren(node, currentContext);
-        pathData.selectedNodeChildren = children
-          ? this.getAccessibleNodes(pathData.selectedNode, children, currentContext)
-          : undefined;
       }
     }
     return pathData;
@@ -385,6 +391,9 @@ export class NavigationService {
   async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
     const pathData = pData ?? (await this.getPathData(path));
     if (path == '') {
+      if (pathData.nodesInPath?.[0].viewUrl) {
+        return undefined;
+      }
       // poor mans implementation, full path resolution TBD
       return pathData.rootNodes[0]?.pathSegment;
     } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
@@ -512,6 +521,9 @@ export class NavigationService {
 
   async getLeftNavData(path: string, pData?: PathData): Promise<LeftNavData> {
     const pathData = pData ?? (await this.getPathData(path));
+    if (path === '' && pathData?.nodesInPath?.[0].viewUrl) {
+      return { items: [], basePath: '', selectedNode: undefined, navClick: undefined };
+    }
     let navItems: NavItem[] = [];
     const pathToLeftNavParent: Node[] = [];
     let basePath = '';
@@ -558,7 +570,7 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
+      navClick: (item: NavItem) => item && this.navItemClick(item, parentPath)
     };
   }
 
@@ -650,7 +662,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
+      navClick: (item: NavItem) => item && this.navItemClick(item, '')
     };
   }
 
@@ -690,6 +702,9 @@ export class NavigationService {
 
   async getTabNavData(path: string, pData?: PathData): Promise<TabNavData> {
     const pathData = pData ?? (await this.getPathData(path));
+    if (path === '' && pathData?.nodesInPath?.[0].viewUrl) {
+      return {};
+    }
     const selectedNode = pathData?.selectedNode;
     let parentNode: Node | undefined;
     if (!selectedNode) return {};
