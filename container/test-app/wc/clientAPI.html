@@ -132,6 +132,9 @@
         luigiContainer.addEventListener(MFEventID.NAVIGATION_REQUEST, (event) => {
           console.log(event.detail);
           window.location.hash = event.detail.link;
+          if (event.callbackFn && typeof event.callbackFn === 'function') {
+            event.callbackFn(true);
+          }
         });
         luigiContainer.addEventListener(
           MFEventID.UPDATE_MODAL_SETTINGS_REQUEST,
