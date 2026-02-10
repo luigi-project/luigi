@@ -217,7 +217,7 @@ describe('Routing Service', () => {
       expect(mockConnector.renderTopNav).toHaveBeenCalled();
       expect(mockConnector.renderLeftNav).toHaveBeenCalled();
       expect(mockConnector.renderTabNav).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi, false, false);
     });
 
     it('should handle route change and call navigation methods with searchParams', async () => {
@@ -242,7 +242,7 @@ describe('Routing Service', () => {
       expect(mockConnector.renderTopNav).toHaveBeenCalled();
       expect(mockConnector.renderLeftNav).toHaveBeenCalled();
       expect(mockConnector.renderTabNav).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(mockPathData.selectedNode, mockLuigi, false, false);
     });
 
     it('should redirect if shouldRedirect returns a path', async () => {
@@ -290,7 +290,7 @@ describe('Routing Service', () => {
       expect(mockConnector.renderTopNav).toHaveBeenCalled();
       expect(mockConnector.renderLeftNav).toHaveBeenCalled();
       expect(mockConnector.renderTabNav).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, false, false);
     });
 
     it('should not call onNodeChange if current node has not changed', async () => {
@@ -765,17 +765,32 @@ describe('Routing Service', () => {
       expect(UIModule.updateMainContent).toHaveBeenCalled();
     });
 
-    it('should handle route change without sync and not update main content', async () => {
+    it('should handle route change without sync and call UI module', async () => {
       const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+      const fakeNode = { nodeParams: {}, searchParams: {} };
 
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
-      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
 
       await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, false);
 
       expect(featureToggleSpy).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, true, false);
+    });
+
+    it('should handle route change without sync and preventContextUpdate and call UI module', async () => {
+      const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+      const fakeNode = { nodeParams: {}, searchParams: {} };
+
+      routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
+      (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, true);
+
+      expect(featureToggleSpy).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, true, true);
     });
   });
 });
