@@ -184,7 +184,7 @@ Check our [Advanced Scenarios](advanced-scenarios.md) page for an example.
 
 ### nodeChangeHook
 - **type**: function
-- **description**: allows you to invoke and execute a specific function on the global level when a request to navigate to the node occurs. The function receives two node objects as input parameters: the previous node and current node, as described in the configuration.
+- **description**: allows you to invoke and execute a specific function on the global level when a request to navigate to the node occurs. The function receives two node objects as input parameters: the previous node and current node, as described in the configuration. An additional third parameter contains an auxiliary data object with the property `currentContext`, containing the fully resolved context object that has been sent to the micro frontend.
 
 ### nodes
 - **type**: array | object
