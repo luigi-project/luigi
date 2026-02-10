@@ -218,7 +218,7 @@ export const UIModule = {
           setAllowRules(viewGroupContainer, luigi);
         }
 
-        if(!preventContextUpdate) {
+        if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
           viewGroupContainer.updateContext(currentNode.context || {});
         }
