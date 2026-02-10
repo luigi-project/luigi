@@ -255,7 +255,6 @@ export class NavigationService {
       pathParams
     };
 
-    // console.log('Initial Root Node:#########', rootNode);
     if (rootNode.viewUrl && pathSegments.length === 0) {
       pathData.selectedNode = rootNode;
     } else {
