@@ -1,6 +1,6 @@
 import { LuigiClientBase } from './baseClass';
 import { helpers } from './helpers';
-import * as pkg from '../public/package.json';
+import * as pkg from '../public_root/package.json';
 
 /**
  * @summary Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.

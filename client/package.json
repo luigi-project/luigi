@@ -7,7 +7,7 @@
     "url": "ssh://github.com/luigi-project/luigi.git"
   },
   "scripts": {
-    "bundle-rollup": "rollup --config",
+    "bundle-rollup": "rm -rf public/* && rollup --config",
     "bundle": "npm run bundle-rollup",
     "test": "jest"
   },
