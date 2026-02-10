@@ -140,11 +140,7 @@ export class RoutingService {
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
 
-      if (!preventContextUpdate) {
-        if (!withoutSync) {
-          UIModule.updateMainContent(currentNode, this.luigi);
-        }
-      }
+      UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
     }
   }
 
