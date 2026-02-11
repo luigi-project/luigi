@@ -26,6 +26,8 @@ const luigiPlugin = () => {
       const jsFile = bundle['luigi.js'];
       jsFile.code = jsFile.code.replace('__luigi_dyn_import_____________(', 'import(/* webpackIgnore: true */');
 
+      jsFile.code = '(function(){\n' + jsFile.code + '\n})();';
+
       const fdFioriCSS = bundle['fd_fiori.css'];
       const fdHorizonCSS = bundle['fd_horizon.css'];
 
@@ -58,7 +60,6 @@ export default defineConfig({
       mangle: {
         reserved: ['$'],
       },
-      enclose: true,
     },
     sourcemap: true,
     chunkSizeWarningLimit: 650,
