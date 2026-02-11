@@ -573,10 +573,14 @@ describe('NavigationService', () => {
 
     it('should close modals and update history if no modalSettings and not using hash routing', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+
+      const navRequestParams: NavigationRequestParams = {
+        path: '/normal/path'
+      };
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
-      await navigationService.handleNavigationRequest({ path: '/normal/path' });
+      await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
@@ -588,8 +592,13 @@ describe('NavigationService', () => {
 
     it('should set location.hash if useHashRouting is true', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+
+      const navRequestParams: NavigationRequestParams = {
+        path: '/hash/path'
+      };
       const originalHash = window.location.hash;
-      await navigationService.handleNavigationRequest({ path: '/hash/path' });
+
+      await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(window.location.hash).toBe('#/hash/path');
 
@@ -622,6 +631,7 @@ describe('NavigationService', () => {
 
     it('should close modals and update history if no modalSettings and using withoutSync', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {

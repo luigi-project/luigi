@@ -174,7 +174,7 @@ export const UIModule = {
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
-  updateMainContent: async (currentNode: any, luigi: Luigi) => {
+  updateMainContent: async (currentNode: any, luigi: Luigi, withoutSync?: boolean, preventContextUpdate?: boolean) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
       currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
@@ -200,25 +200,29 @@ export const UIModule = {
       });
 
       if (viewGroupContainer) {
-        viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry
-          .get(ViewUrlDecoratorSvc)
-          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
-        viewGroupContainer.nodeParams = currentNode.nodeParams;
-        viewGroupContainer.pathParams = currentNode.pathParams;
-        viewGroupContainer.clientPermissions = currentNode.clientPermissions;
-        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
-        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
-        viewGroupContainer.theme = luigi.theming().getCurrentTheme();
-        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
-        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
-        viewGroupContainer.userSettings = userSettings;
+        if (!withoutSync) {
+          viewGroupContainer.style.display = 'block';
+          viewGroupContainer.viewurl = serviceRegistry
+            .get(ViewUrlDecoratorSvc)
+            .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+          viewGroupContainer.nodeParams = currentNode.nodeParams;
+          viewGroupContainer.pathParams = currentNode.pathParams;
+          viewGroupContainer.clientPermissions = currentNode.clientPermissions;
+          viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+          viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
+          viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+          viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
+          viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
+          viewGroupContainer.userSettings = userSettings;
 
-        setSandboxRules(viewGroupContainer, luigi);
-        setAllowRules(viewGroupContainer, luigi);
+          setSandboxRules(viewGroupContainer, luigi);
+          setAllowRules(viewGroupContainer, luigi);
+        }
 
-        //IMPORTANT!!! This needs to be at the end
-        viewGroupContainer.updateContext(currentNode.context || {});
+        if (!preventContextUpdate) {
+          //IMPORTANT!!! This needs to be at the end
+          viewGroupContainer.updateContext(currentNode.context || {});
+        }
       } else {
         const container = await createContainer(currentNode, luigi);
         containerWrapper?.appendChild(container);

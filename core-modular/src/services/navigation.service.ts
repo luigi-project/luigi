@@ -669,8 +669,8 @@ export class NavigationService {
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
-          preventContextUpdate,
-          preventHistoryEntry,
+          preventContextUpdate: !!preventContextUpdate,
+          preventHistoryEntry: !!preventHistoryEntry,
           withoutSync: !!withoutSync
         }
       };
