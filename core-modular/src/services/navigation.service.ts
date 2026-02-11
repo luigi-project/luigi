@@ -682,7 +682,9 @@ export class NavigationService {
         return;
       }
 
-      const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory') ? 'replaceState' : chosenHistoryMethod;
+      const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
+        ? 'replaceState'
+        : chosenHistoryMethod;
 
       if (this.luigi.getConfig().routing?.useHashRouting) {
         if (!withoutSync && method !== 'replaceState') {
