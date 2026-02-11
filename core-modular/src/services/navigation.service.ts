@@ -2,6 +2,7 @@ import type { Luigi } from '../core-api/luigi';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  HistoryMethod,
   LeftNavData,
   NavigationRequestBase,
   NavigationRequestEvent,
@@ -661,7 +662,7 @@ export class NavigationService {
       preventHistoryEntry
     }: NavigationRequestParams = params;
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const chosenHistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
+    const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
     if (modalSettings) {
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
@@ -681,10 +682,10 @@ export class NavigationService {
         return;
       }
 
-      const method = this.luigi.getConfigValue('routing.disableBrowserHistory') ? 'replaceState' : chosenHistoryMethod;
+      const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory') ? 'replaceState' : chosenHistoryMethod;
 
       if (this.luigi.getConfig().routing?.useHashRouting) {
-        if (!withoutSync) {
+        if (!withoutSync && method !== 'replaceState') {
           location.hash = normalizedPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);

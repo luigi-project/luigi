@@ -661,7 +661,7 @@ describe('NavigationService', () => {
       dispatchEventSpy.mockRestore();
     });
 
-    it('should close modals and update history if no modalSettings and using preventHistoryEntry with withoutSync', async () => {
+    it('should close modals and replace history state if no modalSettings and using preventHistoryEntry', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
@@ -673,7 +673,7 @@ describe('NavigationService', () => {
         preserveView: undefined,
         preventContextUpdate: false,
         preventHistoryEntry: true,
-        withoutSync: true
+        withoutSync: false
       };
 
       await navigationService.handleNavigationRequest(navRequestParams);
@@ -697,7 +697,7 @@ describe('NavigationService', () => {
       expect(dispatchedEvent.detail).toEqual({
         preventContextUpdate: false,
         preventHistoryEntry: true,
-        withoutSync: true
+        withoutSync: false
       });
 
       pushStateSpy.mockRestore();

@@ -210,3 +210,5 @@ export interface NavigationRequestParams extends NavigationRequestBase {
 export interface NavigationRequestEvent {
   detail: NavigationRequestBase;
 }
+
+export type HistoryMethod = 'pushState' | 'replaceState';
