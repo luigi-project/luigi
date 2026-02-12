@@ -1,4 +1,4 @@
-import { Context } from '@luigi-project/client';
+import { Context } from '@luigi-project/client/esm';
 
 export enum ILuigiContextTypes {
   INIT,

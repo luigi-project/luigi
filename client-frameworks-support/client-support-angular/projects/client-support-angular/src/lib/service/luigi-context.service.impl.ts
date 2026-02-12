@@ -1,5 +1,5 @@
 import { inject, Injectable, NgZone, Signal, signal, WritableSignal } from '@angular/core';
-import { Context, addInitListener, addContextUpdateListener } from '@luigi-project/client';
+import { Context, addInitListener, addContextUpdateListener } from '@luigi-project/client/esm';
 import { ReplaySubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { IContextMessage, ILuigiContextTypes } from './luigi-context.model';
