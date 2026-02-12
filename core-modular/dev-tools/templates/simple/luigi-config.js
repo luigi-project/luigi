@@ -82,11 +82,13 @@ window.onload = () => {
                   pathSegment: ':dynamic',
                   label: 'doesntmatter',
                   viewUrl: '/microfrontend.html#dyn',
+                  viewGroup: 'vg1',
                   children: [
                     {
                       pathSegment: '1',
                       label: 'dynchild',
-                      viewUrl: '/microfrontend.html#dynchild'
+                      viewUrl: '/microfrontend.html#dynchild',
+                      viewGroup: 'vg1'
                     }
                   ]
                 }
@@ -366,7 +368,7 @@ window.onload = () => {
       }
     },
 
-    auth: {
+    auth__: {
       use: 'myOIDC',
       storage: 'none',
       disableAutoLogin: true,
