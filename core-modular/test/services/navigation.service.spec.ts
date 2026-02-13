@@ -3,6 +3,52 @@ import { NavigationService, type Node } from '../../src/services/navigation.serv
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
+const sampleNavPromise: Promise<Node[]> = new Promise(function(resolve) {
+  const lazyLoadedChildrenNodesProviderFn = () => {
+    return new Promise(function(resolve) {
+      resolve([
+        {
+          pathSegment: 'b1',
+          context: {
+            lazy: true
+          }
+        }
+      ]);
+    });
+  };
+
+  resolve([
+    {
+      pathSegment: 'aaa',
+      label: 'AAA',
+      viewUrl: '/aaa.html',
+      children: [
+        {
+          pathSegment: 'a1',
+          context: {
+            varA1: 'maskopatol'
+          }
+        },
+        {
+          pathSegment: 'a2'
+        }
+      ],
+      context: {
+        varA: 'tets'
+      }
+    },
+    {
+      pathSegment: 'bbb',
+      label: 'BBB',
+      viewUrl: '/bbb.html',
+      children: lazyLoadedChildrenNodesProviderFn,
+      context: {
+        lazy: false
+      }
+    }
+  ]);
+});
+
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
@@ -555,7 +601,7 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, jest.fn());
+      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, false, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
@@ -784,7 +830,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.getExpandStructuralPathSegment', () => {
+  describe('navigationService.getExpandStructuralPathSegment', () => {
     it('should expand structural path segment', async () => {
       const node: Node = {
         pathSegment: 'node',
@@ -807,7 +853,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.bindChildToParent', () => {
+  describe('navigationService.bindChildToParent', () => {
     it('should bind child to parent node', () => {
       const childNode: Node = {
         pathSegment: 'child',
@@ -837,6 +883,252 @@ describe('NavigationService', () => {
 
       expect(childNode.parent).toBeUndefined();
       expect(childNode).toBe(childNode);
+    });
+  });
+
+  describe('getNavigationPath', () => {
+    it('should not fail for undefined arguments', () => {
+      navigationService.getNavigationPath(undefined, undefined);
+    });
+
+    it('should resolve top level node', async () => {
+      const navPath = await navigationService.getNavigationPath(sampleNavPromise);
+      expect(navPath.navigationPath.length).toEqual(1);
+      const rootNode = navPath.navigationPath[0];
+      expect(rootNode.children.length).toEqual(2);
+      expect(rootNode.children[0].pathSegment).toEqual('child1');
+      const nodeWithLazyLoadedChildren = rootNode.children[1];
+      expect(nodeWithLazyLoadedChildren.pathSegment).toEqual('child2');
+    });
+  });
+
+  describe('buildVirtualViewUrl', () => {
+    it('returns same if virtualTree is not defined', () => {
+      const given = 'https://mf.luigi-project.io';
+      expect(navigationService.buildVirtualViewUrl(given, undefined, undefined)).toEqual(given);
+    });
+
+    it('returns valid substituted string without proper pathParams', () => {
+      const mock = {
+        url: 'https://mf.luigi-project.io#!',
+        pathParams: {
+          otherParam: 'foo'
+        },
+        index: 1
+      };
+      const expected = 'https://mf.luigi-project.io#!/:virtualSegment_1/';
+
+      expect(navigationService.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index)).toEqual(expected);
+    });
+
+    it('returns valid substituted string with pathParams', () => {
+      const mock = {
+        url: 'https://mf.luigi-project.io#!/x',
+        pathParams: {
+          otherParam: 'foo',
+          virtualSegment_1: 'one',
+          virtualSegment_2: 'two'
+        },
+        index: 3
+      };
+
+      // trailing slash is expected, it gets removed later by trimTrailingSlash() before setting viewUrl
+      const expected = 'https://mf.luigi-project.io#!/x/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/';
+
+      expect(navigationService.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index)).toEqual(expected);
+    });
+  });
+
+  describe('buildVirtualTree', () => {
+    it('unchanged node if not a virtual tree root', () => {
+      const given = {
+        label: 'Luigi'
+      };
+      const expected = Object.assign({}, given);
+
+      navigationService.buildVirtualTree(given, undefined, undefined);
+
+      expect(given).toEqual(expected);
+    });
+
+    it('unchanged if directly accessing a node which is defined as virtual tree root', () => {
+      const mockNode = {
+        label: 'Luigi',
+        virtualTree: true,
+        viewUrl: 'foo'
+      };
+      const mockNodeNames = []; // no further child segments
+      const expected = Object.assign({}, mockNode);
+
+      navigationService.buildVirtualTree(mockNode, mockNodeNames, undefined);
+
+      expect(mockNode).toEqual(expected);
+    });
+
+    it('with first virtual tree segment', () => {
+      const mockNode = {
+        label: 'Luigi',
+        virtualTree: true,
+        viewUrl: 'http://mf.luigi-project.io'
+      };
+      const mockNodeNames = ['foo'];
+      const expected = Object.assign({}, mockNode, {
+        keepSelectedForChildren: true,
+        children: [
+          {
+            _virtualTree: true,
+            _virtualPathIndex: 1,
+            label: ':virtualSegment_1',
+            pathSegment: ':virtualSegment_1',
+            viewUrl: 'http://mf.luigi-project.io/:virtualSegment_1',
+            _virtualViewUrl: 'http://mf.luigi-project.io'
+          }
+        ]
+      });
+
+      navigationService.buildVirtualTree(mockNode, mockNodeNames, undefined);
+
+      expect(expected).toEqual(mockNode);
+    });
+
+    it('with a deep nested virtual tree segment', () => {
+      const mockNode = {
+        _virtualTree: true,
+        _virtualPathIndex: 3,
+        label: ':virtualSegment_3',
+        pathSegment: ':virtualSegment_3',
+        viewUrl: 'http://mf.luigi-project.io/:virtualSegment_2/:virtualSegment_3',
+        _virtualViewUrl: 'http://mf.luigi-project.io'
+      };
+      const mockNodeNames = ['foo'];
+      const pathParams = {
+        otherParam: 'foo',
+        virtualSegment_1: 'one',
+        virtualSegment_2: 'two',
+        virtualSegment_3: 'three'
+      };
+      const expected = Object.assign({}, mockNode, {
+        children: [
+          {
+            _virtualTree: true,
+            _virtualPathIndex: 4,
+            label: ':virtualSegment_4',
+            pathSegment: ':virtualSegment_4',
+            viewUrl:
+              'http://mf.luigi-project.io/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/:virtualSegment_4',
+            _virtualViewUrl: 'http://mf.luigi-project.io'
+          }
+        ]
+      });
+
+      navigationService.buildVirtualTree(mockNode, mockNodeNames, pathParams);
+
+      expect(expected).toEqual(mockNode);
+    });
+  });
+
+  describe('buildNode', () => {
+    // need to add more cases
+    const nodeNamesInCurrentPath = ['projects'];
+    const nodesInCurrentPath = [
+      {
+        children: [
+          {
+            pathSegment: 'projects',
+            label: 'Projects',
+            viewUrl: '/projects',
+            children: [
+              {
+                navigationContext: 'project',
+                pathSegment: 'pr1',
+                label: 'Project One',
+                viewUrl: '/projects/pr1',
+                context: {}
+              },
+              {
+                navigationContext: 'project',
+                pathSegment: 'pr2',
+                label: 'Project Two',
+                viewUrl: '/projects/pr2',
+                context: {}
+              }
+            ]
+          },
+          {
+            pathSegment: 'groups',
+            label: 'Groups',
+            viewUrl: '/groups',
+            children: [
+              {
+                navigationContext: 'group',
+                pathSegment: 'gr1',
+                label: 'Group One',
+                viewUrl: '/groups/gr1',
+                context: {}
+              },
+              {
+                navigationContext: 'group',
+                pathSegment: 'gr2',
+                label: 'Group Two',
+                viewUrl: '/groups/gr2',
+                context: {}
+              }
+            ]
+          }
+        ]
+      },
+      {
+        pathSegment: 'projects',
+        label: 'Projects',
+        viewUrl: '/projects',
+        children: [
+          {
+            navigationContext: 'project',
+            pathSegment: 'pr1',
+            label: 'Project One',
+            viewUrl: '/projects/pr1',
+            context: {}
+          },
+          {
+            navigationContext: 'project',
+            pathSegment: 'pr2',
+            label: 'Project Two',
+            viewUrl: '/projects/pr2',
+            context: {}
+          }
+        ]
+      }
+    ];
+    const childrenOfCurrentNode = [
+      {
+        navigationContext: 'project',
+        pathSegment: 'pr1',
+        label: 'Project One',
+        viewUrl: '/projects/pr1',
+        context: {}
+      },
+      {
+        navigationContext: 'project',
+        pathSegment: 'pr2',
+        label: 'Project Two',
+        viewUrl: '/projects/pr2',
+        context: {}
+      }
+    ];
+    const context = {};
+
+    it('should build node', async () => {
+      const result = await navigationService.buildNode(
+        nodeNamesInCurrentPath,
+        nodesInCurrentPath,
+        childrenOfCurrentNode,
+        context
+      );
+
+      expect(result.navigationPath.length).toEqual(2);
+      expect(result.navigationPath[1].children.length).toEqual(2);
+      expect(result.pathParams).toEqual({});
+      expect(result.navigationPath[1].label).toEqual('Projects');
     });
   });
 });

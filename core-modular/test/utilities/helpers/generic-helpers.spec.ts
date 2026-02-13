@@ -58,6 +58,10 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.trimTrailingSlash('luigi/')).toEqual('luigi');
   });
 
+  it('addLeadingSlash', () => {
+    expect(GenericHelpers.addLeadingSlash('luigi')).toEqual('/luigi');
+  });
+
   it('getNodeList', () => {
     expect(GenericHelpers.getNodeList('body').length).toEqual(1);
     expect(GenericHelpers.getNodeList('luigi-container').length).toEqual(0);
@@ -68,5 +72,35 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.getUrlParameter('notThere')).toBeFalsy();
     expect(GenericHelpers.getUrlParameter('qp')).toEqual('val');
     expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');
+  });
+
+  it('hasHash', () => {
+    const path = '#luigi/tets/something';
+    const includingHash = GenericHelpers.hasHash(path);
+
+    expect(includingHash).toBeTruthy();
+  });
+
+  it('getPathWithoutHash', () => {
+    const path = '#/tets';
+
+    expect(GenericHelpers.getPathWithoutHash(path)).toEqual('tets');
+  });
+
+  it('removeProperties', () => {
+    const input = {
+      some: true,
+      value: true,
+      _internal: true,
+      _somefn: () => true,
+      internalOne: true,
+      internalTwo: true
+    };
+    const keys = ['_*', 'value', 'internal*'];
+    const expected = {
+      some: true
+    };
+
+    expect(GenericHelpers.removeProperties(input, keys)).toEqual(expected);
   });
 });

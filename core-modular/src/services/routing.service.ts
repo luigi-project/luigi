@@ -8,6 +8,7 @@ import { NavigationService } from './navigation.service';
 import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 
 export interface Route {
   raw: string;
@@ -103,10 +104,14 @@ export class RoutingService {
       paramsObj[key] = value;
     });
     this.checkInvalidateCache(this.previousPathData, path);
+
     const pathData = await this.getNavigationService().getPathData(path);
+
     this.previousPathData = pathData;
+
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
     const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
+    const pathUrlRaw = GenericHelpers.getPathWithoutHash(path);
 
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
@@ -119,11 +124,21 @@ export class RoutingService {
       nodeParams
     };
 
+    const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
+    const navPathData = await this.getNavigationService().getNavigationPath(
+      await this.luigi.getConfigValueAsync('navigation.nodes'),
+      path
+    );
+    const viewUrl = currentNode?.viewUrl || '';
+
+    if (await this.handlePageNotFound(currentNode, viewUrl, navPathData, path, pathUrlRaw)) {
+      return;
+    }
+
     this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
 
-    const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
@@ -422,5 +437,97 @@ export class RoutingService {
       // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
       nodeDataManagementService.deleteCache();
     }
+  }
+
+  /**
+   * Deal with page not found scenario.
+   * @param {Object} nodeObject - the data of node
+   * @param {string} viewUrl - the url of the current mf view
+   * @param {Object} pathData - the information of current path
+   * @param {string} path - the path of the view to open
+   * @param {string} pathUrlRaw - path url without hash
+   * @returns {Promise<boolean>} A promise that resolves when page not found handling is complete.
+   */
+  async handlePageNotFound(nodeObject: any, viewUrl: string, pathData: any, path: string, pathUrlRaw: string): Promise<boolean> {
+    if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
+      const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {
+        return await this.getNavigationService().getChildren(node, ctx);
+      });
+
+      if (pathData?.isExistingRoute) {
+        // normal navigation can be performed
+        const trimmedPathUrl = GenericHelpers.getTrimmedUrl(path);
+
+        this.getNavigationService().handleNavigationRequest(
+          `${trimmedPathUrl ? `/${trimmedPathUrl}` : ''}/${defaultChildNode}`,
+          undefined,
+          undefined,
+          false,
+          false,
+          true
+        );
+
+        return false;
+      } else {
+        if (defaultChildNode && pathData?.navigationPath?.length > 1) {
+          // last path segment was invalid but a default node could be in its place
+          this.showPageNotFoundError(
+            GenericHelpers.trimTrailingSlash(pathData.matchedPath) + '/' + defaultChildNode,
+            pathUrlRaw,
+            true
+          );
+
+          return true;
+        }
+
+        // ERROR 404
+        // the path is unrecognized at all and cannot be fitted to any known one
+        const rootPathData = await this.getNavigationService().getNavigationPath(
+          await this.luigi.getConfigValueAsync('navigation.nodes'),
+          '/'
+        );
+        const rootPath = await RoutingHelpers.getDefaultChildNode(rootPathData);
+
+        this.showPageNotFoundError(rootPath, pathUrlRaw, false);
+      }
+
+      return true;
+    }
+
+    if (!pathData?.isExistingRoute) {
+      this.showPageNotFoundError(pathData.matchedPath, pathUrlRaw, true);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  async showPageNotFoundError(pathToRedirect: string, notFoundPath: string, isAnyPathMatched = false): Promise<void> {
+    const redirectResult: any = RoutingHelpers.getPageNotFoundRedirectResult(notFoundPath, isAnyPathMatched, this.luigi);
+
+    if (redirectResult.ignoreLuigiErrorHandling) {
+      return;
+    }
+
+    const redirectPathFromNotFoundHandler = redirectResult.path;
+
+    if (redirectPathFromNotFoundHandler) {
+      if (redirectResult.keepURL) {
+        const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+        const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+
+        currentPath.path = redirectPathFromNotFoundHandler;
+
+        this.handleRouteChange(currentPath);
+      } else {
+        this.getNavigationService().handleNavigationRequest(redirectPathFromNotFoundHandler);
+      }
+
+      return;
+    }
+
+    // TODO RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched);
+    this.getNavigationService().handleNavigationRequest(GenericHelpers.addLeadingSlash(pathToRedirect));
   }
 }

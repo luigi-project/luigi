@@ -285,6 +285,183 @@ export class NavigationService {
     return pathData;
   }
 
+  async getNavigationPath(rootNavProviderPromise: Promise<Node[]>, path = ''): Promise<any> {
+    try {
+      const activePath = GenericHelpers.getTrimmedUrl(path);
+      let rootNode: any;
+
+      if (!rootNavProviderPromise) {
+        console.error('No navigation nodes provided in the configuration.');
+        return [{}];
+      }
+
+      if (this.getNodeDataManagementService().hasRootNode()) {
+        rootNode = this.getNodeDataManagementService().getRootNode().node;
+      }
+
+      if (!rootNode) {
+        const topNavNodes: Node[] = await rootNavProviderPromise;
+
+        if (GenericHelpers.isObject(topNavNodes)) {
+          rootNode = topNavNodes;
+
+          if (rootNode.pathSegment) {
+            rootNode.pathSegment = '';
+            console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
+          }
+        } else {
+          rootNode = { children: topNavNodes };
+        }
+
+        rootNode.children = await this.getChildren(rootNode);
+        this.getNodeDataManagementService().setRootNode(rootNode);
+      }
+
+      const nodeNamesInCurrentPath = activePath.split('/');
+      const globalContext = this.luigi.getConfigValue('navigation.globalContext');
+      const rootContext = { ...(globalContext || {}), ...(rootNode.context || {}) };
+      const navObj: any = await this.buildNode(nodeNamesInCurrentPath, [rootNode], rootNode.children, rootContext);
+      const navPathSegments = navObj.navigationPath.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment);
+
+      navObj.isExistingRoute = !activePath || nodeNamesInCurrentPath.length === navPathSegments.length;
+
+      const pathSegments = activePath.split('/');
+
+      navObj.matchedPath = pathSegments
+        .filter((segment, index) => {
+          return (
+            (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
+          );
+        })
+        .join('/');
+
+      return navObj;
+    } catch (err) {
+      console.error('Failed to load top navigation nodes.', err);
+    }
+  }
+
+  /**
+   * Requires str to include :virtualPath
+   * and pathParams consist of :virtualSegment_N
+   * for deep nested virtual tree building
+   *
+   * @param {string} str
+   * @param {Object} pathParams
+   * @param {number} _virtualPathIndex
+   * @returns {string} virtual view URL
+   */
+  buildVirtualViewUrl(str: string, pathParams: object, _virtualPathIndex: number): string {
+    let newStr = '';
+
+    for (const key in pathParams) {
+      if (key.startsWith('virtualSegment')) {
+        newStr += ':' + key + '/';
+      }
+    }
+
+    if (!_virtualPathIndex) {
+      return str;
+    }
+
+    newStr += ':virtualSegment_' + _virtualPathIndex + '/';
+
+    return str + '/' + newStr;
+  }
+
+  buildVirtualTree(node: any, nodeNamesInCurrentPath: any[], pathParams: any): void {
+    const virtualTreeRoot = node.virtualTree;
+    const virtualTreeChild = node._virtualTree;
+    const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
+
+    if ((virtualTreeRoot || virtualTreeChild) && nodeNamesInCurrentPath[0]) {
+      let _virtualPathIndex = node._virtualPathIndex;
+
+      if (virtualTreeRoot) {
+        _virtualPathIndex = 0;
+        node.keepSelectedForChildren = true;
+      }
+
+      const maxPathDepth = 50;
+
+      if (_virtualPathIndex > maxPathDepth) {
+        return;
+      }
+
+      _virtualPathIndex++;
+
+      const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
+      const newChild = GenericHelpers.removeProperties(node, keysToClean);
+
+      Object.assign(newChild, {
+        pathSegment: ':virtualSegment_' + _virtualPathIndex,
+        label: ':virtualSegment_' + _virtualPathIndex,
+        viewUrl: GenericHelpers.trimTrailingSlash(
+          this.buildVirtualViewUrl(_virtualViewUrl, pathParams, _virtualPathIndex)
+        ),
+        _virtualTree: true,
+        _virtualPathIndex,
+        _virtualViewUrl
+      });
+
+      const isVirtualChildren =
+        Array.isArray(node.children) && node.children.length > 0 ? node.children[0]._virtualTree : false;
+
+      if (node.children && !isVirtualChildren) {
+        console.warn(
+          'Found both virtualTree and children nodes defined on a navigation node. \nChildren nodes are redundant and ignored when virtualTree is enabled. \nPlease refer to documentation'
+        );
+      }
+
+      node.children = [newChild];
+    }
+  }
+
+  async buildNode(nodeNamesInCurrentPath: any[], nodesInCurrentPath: any[], childrenOfCurrentNode: any[], context: any, pathParams = {}): Promise<any> {
+    if (!context.parentNavigationContexts) {
+      context.parentNavigationContexts = [];
+    }
+
+    let result = {
+      navigationPath: nodesInCurrentPath,
+      context: context,
+      pathParams: pathParams
+    };
+
+    if (nodeNamesInCurrentPath.length > 0 && childrenOfCurrentNode && childrenOfCurrentNode.length > 0) {
+      const urlPathElement = nodeNamesInCurrentPath[0];
+      const node: any = this.findMatchingNode(urlPathElement, childrenOfCurrentNode);
+
+      if (node) {
+        nodesInCurrentPath.push(node);
+
+        let newContext = NavigationHelpers.applyContext(context, node.context, node.navigationContext);
+
+        if (node.pathSegment.startsWith(':')) {
+          (pathParams as any)[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(urlPathElement);
+        }
+
+        newContext = RoutingHelpers.substituteDynamicParamsInObject(newContext, pathParams);
+
+        try {
+          /**
+           * If it's a virtual tree, build static children
+           */
+          this.buildVirtualTree(node, nodeNamesInCurrentPath, pathParams);
+
+          const children = await this.getChildren(node, newContext);
+          const newNodeNamesInCurrentPath = nodeNamesInCurrentPath.slice(1);
+
+          result = await this.buildNode(newNodeNamesInCurrentPath, nodesInCurrentPath, children, newContext, pathParams);
+        } catch (err) {
+          console.error('Error getting nodes children', err);
+        }
+      }
+    }
+
+    return result;
+  }
+
   findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {
     let result: Node | undefined = undefined;
     const segmentsLength = nodes.filter((n) => !!n.pathSegment).length;
@@ -823,6 +1000,7 @@ export class NavigationService {
     modalSettings?: any,
     newTab?: boolean,
     withoutSync?: boolean,
+    preventHistoryEntry?: boolean,
     callbackFn?: any
   ): Promise<void> {
     const normalizedPath = path.replace(/\/\/+/g, '/');

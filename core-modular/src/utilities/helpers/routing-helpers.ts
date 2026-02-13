@@ -1,6 +1,7 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../services/navigation.service';
+import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
@@ -488,5 +489,69 @@ export const RoutingHelpers = {
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
     return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
+  },
+
+  /**
+   * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
+   * If the there is no `pageNotFoundHandler` defined we return undefined.
+   * @param {string} notFoundPath - the path to check
+   * @param {boolean} isAnyPathMatched - is any path matched or not
+   * @param {Luigi} luigi - the Luigi instance used to access config value
+   * @param {string} notFoundPath - the path to check
+   * @returns {Object} an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
+   */
+  getPageNotFoundRedirectResult(notFoundPath: string, isAnyPathMatched = false, luigi: Luigi): object {
+    const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
+
+    if (typeof pageNotFoundHandler === 'function') {
+      // custom 404 handler is provided, use it
+      const result = pageNotFoundHandler(notFoundPath, isAnyPathMatched);
+
+      if (result && (result.redirectTo || result.ignoreLuigiErrorHandling)) {
+        return {
+          path: result.redirectTo,
+          keepURL: result.keepURL,
+          ignoreLuigiErrorHandling: result.ignoreLuigiErrorHandling
+        };
+      }
+    }
+
+    return {};
+  },
+
+  async getDefaultChildNode(pathData: any, childrenResolverFn?: (lastElement: object, pathContext: object) => any): Promise<string> {
+    if (!pathData) {
+      return '';
+    }
+
+    const lastElement = pathData.navigationPath[pathData.navigationPath.length - 1];
+    const children = childrenResolverFn
+      ? await childrenResolverFn(lastElement, pathData.context)
+      : await AsyncHelpers.getConfigValueFromObjectAsync(lastElement, 'children', pathData.context);
+    const pathExists = children.find((childNode: Node) => childNode.pathSegment === lastElement.defaultChildNode);
+
+    if (lastElement.defaultChildNode && pathExists) {
+      return lastElement.defaultChildNode;
+    } else if (children && children.length) {
+      const rootPath = pathData.navigationPath.length === 1;
+
+      if (rootPath) {
+        const firstNodeWithPathSegment = children.find((child: Node) => child.pathSegment);
+
+        return (
+          (firstNodeWithPathSegment && firstNodeWithPathSegment.pathSegment) ||
+          console.error('At least one navigation node in the root hierarchy must have a pathSegment.')
+        );
+      }
+
+      const validChild = children.find(
+        (child: any) =>
+          child.pathSegment && (child.viewUrl || child.compound || (child.externalLink && child.externalLink.url))
+      );
+
+      if (validChild) return validChild.pathSegment;
+    }
+
+    return '';
   }
 };
