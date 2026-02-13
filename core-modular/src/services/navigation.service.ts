@@ -831,12 +831,6 @@ export class NavigationService {
   }
 
   private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
-    console.log('############# getAccessibleNodes called with node', node, 'children', children, 'context', context);
-    if (children) {
-      console.log('############# children before filtering', children);
-    } else {
-      console.log('############# no children to filter', children);
-    }
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
