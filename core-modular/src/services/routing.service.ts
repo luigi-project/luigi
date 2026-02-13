@@ -65,16 +65,18 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
+        const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync, preventContextUpdate);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
+        const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync, preventContextUpdate);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
@@ -84,9 +86,14 @@ export class RoutingService {
    * Deal with route changing scenario.
    * @param {Object} routeInfo - the information about path and query
    * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
+   * @param {boolean} preventContextUpdate - make no context update being triggered
    * @returns {Promise<void>} A promise that resolves when route change is complete.
    */
-  async handleRouteChange(routeInfo: { path: string; query: string }, withoutSync = false): Promise<void> {
+  async handleRouteChange(
+    routeInfo: { path: string; query: string },
+    withoutSync = false,
+    preventContextUpdate = false
+  ): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
@@ -148,9 +155,7 @@ export class RoutingService {
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
 
-      if (!withoutSync) {
-        UIModule.updateMainContent(currentNode, this.luigi);
-      }
+      UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
     }
   }
 
@@ -464,14 +469,15 @@ export class RoutingService {
         // normal navigation can be performed
         const trimmedPathUrl = GenericHelpers.getTrimmedUrl(path);
 
-        this.getNavigationService().handleNavigationRequest(
-          `${trimmedPathUrl ? `/${trimmedPathUrl}` : ''}/${defaultChildNode}`,
-          undefined,
-          undefined,
-          false,
-          false,
-          true
-        );
+        this.getNavigationService().handleNavigationRequest({
+          path: `${trimmedPathUrl ? `/${trimmedPathUrl}` : ''}/${defaultChildNode}`,
+          preserveView: undefined,
+          modalSettings: undefined,
+          newTab: false,
+          withoutSync: false,
+          preventContextUpdate: false,
+          preventHistoryEntry: true
+        });
 
         return false;
       } else {
@@ -531,13 +537,13 @@ export class RoutingService {
 
         this.handleRouteChange(currentPath);
       } else {
-        this.getNavigationService().handleNavigationRequest(redirectPathFromNotFoundHandler);
+        this.getNavigationService().handleNavigationRequest({ path: redirectPathFromNotFoundHandler });
       }
 
       return;
     }
 
     // TODO RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched);
-    this.getNavigationService().handleNavigationRequest(GenericHelpers.addLeadingSlash(pathToRedirect));
+    this.getNavigationService().handleNavigationRequest({ path: GenericHelpers.addLeadingSlash(pathToRedirect) });
   }
 }
