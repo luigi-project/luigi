@@ -278,7 +278,6 @@ export class NavigationService {
           const nodeContext = node.context || {};
           const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
           let substitutedContext = mergedContext;
-          pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
           if (node.pathSegment?.startsWith(':')) {
             pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
             substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
@@ -289,10 +288,7 @@ export class NavigationService {
           if (pathData.selectedNode) {
             pathData.nodesInPath?.push(pathData.selectedNode);
           }
-          let children = await this.getChildren(node, currentContext);
-          pathData.selectedNodeChildren = children
-            ? this.getAccessibleNodes(pathData.selectedNode, children, currentContext)
-            : undefined;
+          pathData.selectedNodeChildren = await this.getChildren(node, currentContext);
         }
       }
     }
@@ -835,6 +831,12 @@ export class NavigationService {
   }
 
   private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
+    console.log('############# getAccessibleNodes called with node', node, 'children', children, 'context', context);
+    if (children) {
+      console.log('############# children before filtering', children);
+    } else {
+      console.log('############# no children to filter', children);
+    }
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
