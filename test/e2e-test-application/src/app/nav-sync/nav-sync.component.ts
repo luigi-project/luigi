@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { linkManager } from '@luigi-project/client';
+import { linkManager } from '@luigi-project/client/esm';
 import { Subscription } from 'rxjs';
 
 /**

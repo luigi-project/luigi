@@ -10,7 +10,7 @@ import {
   getActiveFeatureToggles,
   getUserSettings,
   addContextUpdateListener
-} from '@luigi-project/client';
+} from '@luigi-project/client/esm';
 import { Subscription } from 'rxjs';
 
 @Component({

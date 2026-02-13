@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { linkManager, uxManager, sendCustomMessage, addCustomMessageListener } from '@luigi-project/client';
+import { linkManager, uxManager, sendCustomMessage, addCustomMessageListener } from '@luigi-project/client/esm';
 
 @Component({
   selector: 'app-overview',

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { getPathParams, linkManager } from '@luigi-project/client';
+import { getPathParams, linkManager } from '@luigi-project/client/esm';
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
 import { toTitleCase } from '../../../../services/helpers';
 

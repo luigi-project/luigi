@@ -11,7 +11,7 @@ import {
   computed
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
+import { addInitListener, Context, removeInitListener } from '@luigi-project/client/esm';
 import { IContextMessage, LuigiContextService } from '@luigi-project/client-support-angular';
 import { first } from 'rxjs/operators';
 

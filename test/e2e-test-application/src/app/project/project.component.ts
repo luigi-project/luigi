@@ -8,7 +8,7 @@ import {
   addContextUpdateListener,
   removeContextUpdateListener,
   storageManager
-} from '@luigi-project/client';
+} from '@luigi-project/client/esm';
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
 import { from, Subscription } from 'rxjs';
 import { delay } from 'rxjs/operators';

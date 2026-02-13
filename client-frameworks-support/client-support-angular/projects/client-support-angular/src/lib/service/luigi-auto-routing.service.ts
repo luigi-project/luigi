@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRouteSnapshot, Event, NavigationEnd, ParamMap, Router, convertToParamMap } from '@angular/router';
-import { linkManager, uxManager, isLuigiClientInitialized } from '@luigi-project/client';
+import { linkManager, uxManager, isLuigiClientInitialized } from '@luigi-project/client/esm';
 import { OperatorFunction } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { LuigiActivatedRouteSnapshotHelper } from '../route/luigi-activated-route-snapshot-helper';

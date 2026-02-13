@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { addInactiveListener, sendCustomMessage } from '@luigi-project/client';
+import { addInactiveListener, sendCustomMessage } from '@luigi-project/client/esm';
 import { LuigiContextService } from '@luigi-project/client-support-angular';
 
 @Component({
