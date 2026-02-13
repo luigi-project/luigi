@@ -448,7 +448,13 @@ export class RoutingService {
    * @param {string} pathUrlRaw - path url without hash
    * @returns {Promise<boolean>} A promise that resolves when page not found handling is complete.
    */
-  async handlePageNotFound(nodeObject: any, viewUrl: string, pathData: any, path: string, pathUrlRaw: string): Promise<boolean> {
+  async handlePageNotFound(
+    nodeObject: any,
+    viewUrl: string,
+    pathData: any,
+    path: string,
+    pathUrlRaw: string
+  ): Promise<boolean> {
     if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
       const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {
         return await this.getNavigationService().getChildren(node, ctx);
@@ -504,7 +510,11 @@ export class RoutingService {
   }
 
   async showPageNotFoundError(pathToRedirect: string, notFoundPath: string, isAnyPathMatched = false): Promise<void> {
-    const redirectResult: any = RoutingHelpers.getPageNotFoundRedirectResult(notFoundPath, isAnyPathMatched, this.luigi);
+    const redirectResult: any = RoutingHelpers.getPageNotFoundRedirectResult(
+      notFoundPath,
+      isAnyPathMatched,
+      this.luigi
+    );
 
     if (redirectResult.ignoreLuigiErrorHandling) {
       return;

@@ -3,9 +3,9 @@ import { NavigationService, type Node } from '../../src/services/navigation.serv
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
-const sampleNavPromise: Promise<Node[]> = new Promise(function(resolve) {
+const sampleNavPromise: Promise<Node[]> = new Promise(function (resolve) {
   const lazyLoadedChildrenNodesProviderFn = () => {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       resolve([
         {
           pathSegment: 'b1',
@@ -601,7 +601,15 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, false, false, jest.fn());
+      await navigationService.handleNavigationRequest(
+        '/modal/path',
+        undefined,
+        { size: 'l' },
+        false,
+        false,
+        false,
+        jest.fn()
+      );
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });

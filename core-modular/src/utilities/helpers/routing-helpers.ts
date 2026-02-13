@@ -519,7 +519,10 @@ export const RoutingHelpers = {
     return {};
   },
 
-  async getDefaultChildNode(pathData: any, childrenResolverFn?: (lastElement: object, pathContext: object) => any): Promise<string> {
+  async getDefaultChildNode(
+    pathData: any,
+    childrenResolverFn?: (lastElement: object, pathContext: object) => any
+  ): Promise<string> {
     if (!pathData) {
       return '';
     }

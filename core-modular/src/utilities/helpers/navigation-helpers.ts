@@ -115,7 +115,11 @@ export const NavigationHelpers = {
     return permissionCheckerFn(nodeToCheckPermissionFor, parentNode, currentContext);
   },
 
-  applyContext: (context: Record<string, any>, addition: Record<string, any>, navigationContext: any): Record<string, any> => {
+  applyContext: (
+    context: Record<string, any>,
+    addition: Record<string, any>,
+    navigationContext: any
+  ): Record<string, any> => {
     if (addition) {
       for (let p in addition) {
         context[p] = addition[p];

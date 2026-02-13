@@ -417,7 +417,13 @@ export class NavigationService {
     }
   }
 
-  async buildNode(nodeNamesInCurrentPath: any[], nodesInCurrentPath: any[], childrenOfCurrentNode: any[], context: any, pathParams = {}): Promise<any> {
+  async buildNode(
+    nodeNamesInCurrentPath: any[],
+    nodesInCurrentPath: any[],
+    childrenOfCurrentNode: any[],
+    context: any,
+    pathParams = {}
+  ): Promise<any> {
     if (!context.parentNavigationContexts) {
       context.parentNavigationContexts = [];
     }
@@ -452,7 +458,13 @@ export class NavigationService {
           const children = await this.getChildren(node, newContext);
           const newNodeNamesInCurrentPath = nodeNamesInCurrentPath.slice(1);
 
-          result = await this.buildNode(newNodeNamesInCurrentPath, nodesInCurrentPath, children, newContext, pathParams);
+          result = await this.buildNode(
+            newNodeNamesInCurrentPath,
+            nodesInCurrentPath,
+            children,
+            newContext,
+            pathParams
+          );
         } catch (err) {
           console.error('Error getting nodes children', err);
         }
