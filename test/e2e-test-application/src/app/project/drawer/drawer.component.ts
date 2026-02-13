@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { linkManager, uxManager } from '@luigi-project/client';
+import { linkManager, uxManager } from '@luigi-project/client/esm';
 
 @Component({
   selector: 'app-drawer',
