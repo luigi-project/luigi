@@ -651,10 +651,13 @@ export class NavigationService {
       }
     };
 
+    const selectedNode: Node | undefined = pathData.selectedNode;
+    const activeNode: Node | undefined = selectedNode && !pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(pathData.rootNodes, undefined, pathData) as [any],
+      topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
