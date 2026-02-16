@@ -652,7 +652,8 @@ export class NavigationService {
     };
 
     const selectedNode: Node | undefined = pathData.selectedNode;
-    const activeNode: Node | undefined = selectedNode && !pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
+    const activeNode: Node | undefined =
+      selectedNode && !pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
