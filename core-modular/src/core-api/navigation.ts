@@ -13,6 +13,17 @@ export class Navigation {
   navService: NavigationService;
   routingService: RoutingService;
   modalService: ModalService;
+  options: {
+    fromContext?: any;
+    fromClosestContext?: boolean;
+    fromVirtualTreeRoot?: boolean;
+    fromParent?: boolean;
+  } = {
+    fromContext: null,
+    fromClosestContext: false,
+    fromVirtualTreeRoot: false,
+    fromParent: false
+  };
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -29,7 +40,15 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
-    this.navService.handleNavigationRequest(path, preserveView, modalSettings, false, false, undefined);
+    this.navService.handleNavigationRequest(
+      path,
+      preserveView,
+      modalSettings,
+      false,
+      false,
+      this.options.fromVirtualTreeRoot,
+      undefined
+    );
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
@@ -75,4 +94,18 @@ export class Navigation {
       defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
     }
   };
+
+  /**
+   * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
+   * @returns {navigation} navigation instance
+   * @example
+   * Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
+   */
+  fromVirtualTreeRoot(): this {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = false;
+    this.options.fromVirtualTreeRoot = true;
+    this.options.fromParent = false;
+    return this;
+  }
 }

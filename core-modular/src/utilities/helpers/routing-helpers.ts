@@ -488,5 +488,18 @@ export const RoutingHelpers = {
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
     return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
+  },
+
+  /**
+   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
+   * @param node
+   * @param path
+   * @param params
+   * @returns
+   */
+  buildRoute(node: Node, path?: string, params?: string): string {
+    return !node.parent
+      ? path + (params ? '?' + params : '')
+      : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   }
 };

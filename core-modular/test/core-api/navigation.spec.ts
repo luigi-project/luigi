@@ -10,6 +10,12 @@ describe('Navigation', () => {
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
+  let options: {
+    fromContext?: any;
+    fromClosestContext?: boolean;
+    fromVirtualTreeRoot?: boolean;
+    fromParent?: boolean;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -219,6 +225,7 @@ describe('Navigation', () => {
         '/test/path',
         'preserveViewValue',
         { title: 'Modal Title' },
+        false,
         false,
         false,
         undefined
