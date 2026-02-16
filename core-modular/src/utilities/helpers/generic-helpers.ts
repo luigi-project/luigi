@@ -157,42 +157,6 @@ export const GenericHelpers = {
   },
 
   /**
-   * Returns a new Object with the same object,
-   * without the keys that were given.
-   * References still stay.
-   * Allows wildcard ending keys
-   *
-   * @param {Object} input - any given object
-   * @param {Array} keys - allows also wildcards at the end, like: _*
-   * @returns {Object} parsed object
-   */
-  removeProperties: (input: Record<string, any>, keys: string[]): object => {
-    const res: Record<string, any> = {};
-
-    if (!Array.isArray(keys) || !keys?.length) {
-      console.error('[ERROR] removeProperties requires second parameter: array of keys to remove from object.');
-      return input;
-    }
-
-    for (const key in input) {
-      if (Object.prototype.hasOwnProperty.call(input, key)) {
-        const noFullMatch = keys.filter((k) => key.includes(k)).length === 0;
-        const noPartialMatch =
-          keys
-            .filter((k) => k.endsWith('*'))
-            .map((k) => k.slice(0, -1))
-            .filter((k) => key.startsWith(k)).length === 0;
-
-        if (noFullMatch && noPartialMatch) {
-          res[key] = input[key];
-        }
-      }
-    }
-
-    return res;
-  },
-
-  /**
    * Prepend current url to redirect_uri, if it is a relative path
    * @param {path} string full url, relative or absolute path
    * @returns {string} window location origin
