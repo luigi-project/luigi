@@ -351,82 +351,6 @@ export class NavigationService {
     }
   }
 
-  /**
-   * Requires str to include :virtualPath
-   * and pathParams consist of :virtualSegment_N
-   * for deep nested virtual tree building
-   *
-   * @param {string} str
-   * @param {Object} pathParams
-   * @param {number} _virtualPathIndex
-   * @returns {string} virtual view URL
-   */
-  buildVirtualViewUrl(str: string, pathParams: object, _virtualPathIndex: number): string {
-    let newStr = '';
-
-    for (const key in pathParams) {
-      if (key.startsWith('virtualSegment')) {
-        newStr += ':' + key + '/';
-      }
-    }
-
-    if (!_virtualPathIndex) {
-      return str;
-    }
-
-    newStr += ':virtualSegment_' + _virtualPathIndex + '/';
-
-    return str + '/' + newStr;
-  }
-
-  buildVirtualTree(node: any, nodeNamesInCurrentPath: any[], pathParams: any): void {
-    const virtualTreeRoot = node.virtualTree;
-    const virtualTreeChild = node._virtualTree;
-    const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
-
-    if ((virtualTreeRoot || virtualTreeChild) && nodeNamesInCurrentPath[0]) {
-      let _virtualPathIndex = node._virtualPathIndex;
-
-      if (virtualTreeRoot) {
-        _virtualPathIndex = 0;
-        node.keepSelectedForChildren = true;
-      }
-
-      const maxPathDepth = 50;
-
-      if (_virtualPathIndex > maxPathDepth) {
-        return;
-      }
-
-      _virtualPathIndex++;
-
-      const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
-      const newChild = GenericHelpers.removeProperties(node, keysToClean);
-
-      Object.assign(newChild, {
-        pathSegment: ':virtualSegment_' + _virtualPathIndex,
-        label: ':virtualSegment_' + _virtualPathIndex,
-        viewUrl: GenericHelpers.trimTrailingSlash(
-          this.buildVirtualViewUrl(_virtualViewUrl, pathParams, _virtualPathIndex)
-        ),
-        _virtualTree: true,
-        _virtualPathIndex,
-        _virtualViewUrl
-      });
-
-      const isVirtualChildren =
-        Array.isArray(node.children) && node.children.length > 0 ? node.children[0]._virtualTree : false;
-
-      if (node.children && !isVirtualChildren) {
-        console.warn(
-          'Found both virtualTree and children nodes defined on a navigation node. \nChildren nodes are redundant and ignored when virtualTree is enabled. \nPlease refer to documentation'
-        );
-      }
-
-      node.children = [newChild];
-    }
-  }
-
   async buildNode(
     nodeNamesInCurrentPath: any[],
     nodesInCurrentPath: any[],
@@ -463,7 +387,7 @@ export class NavigationService {
           /**
            * If it's a virtual tree, build static children
            */
-          this.buildVirtualTree(node, nodeNamesInCurrentPath, pathParams);
+          // TODO this.buildVirtualTree(node, nodeNamesInCurrentPath, pathParams);
 
           const children = await this.getChildren(node, newContext);
           const newNodeNamesInCurrentPath = nodeNamesInCurrentPath.slice(1);

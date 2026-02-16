@@ -86,21 +86,4 @@ describe('Generic-helpers', () => {
 
     expect(GenericHelpers.getPathWithoutHash(path)).toEqual('tets');
   });
-
-  it('removeProperties', () => {
-    const input = {
-      some: true,
-      value: true,
-      _internal: true,
-      _somefn: () => true,
-      internalOne: true,
-      internalTwo: true
-    };
-    const keys = ['_*', 'value', 'internal*'];
-    const expected = {
-      some: true
-    };
-
-    expect(GenericHelpers.removeProperties(input, keys)).toEqual(expected);
-  });
 });
