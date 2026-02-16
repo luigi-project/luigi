@@ -210,6 +210,23 @@ export interface ExternalLink {
   sameWindow?: boolean;
 }
 
+export interface NavigationOptions {
+  fromContext?: any;
+  fromClosestContext?: boolean;
+  fromVirtualTreeRoot?: boolean;
+  fromParent?: boolean;
+}
+
+export interface NavigationRequestParams {
+  modalSettings?: any;
+  newTab?: boolean;
+  options?: NavigationOptions;
+  path: string;
+  preserveView?: string;
+  preventContextUpdate?: boolean;
+  withoutSync?: boolean;
+}
+
 export class NavigationService {
   nodeDataManagementService?: NodeDataManagementService;
   pathData: PathData = {} as PathData;
@@ -821,25 +838,28 @@ export class NavigationService {
       : [];
   }
 
-  async handleNavigationRequest(
-    incomingPath: string,
-    preserveView?: string,
-    modalSettings?: any,
-    newTab?: boolean,
-    withoutSync?: boolean,
-    fromVirtualTreeRoot?: boolean,
-    callbackFn?: any
-  ): Promise<void> {
-    let path = this.buildPath(incomingPath, fromVirtualTreeRoot);
-    const normalizedPath = path.replace(/\/\/+/g, '/');
-    const preventContextUpdate = false; //TODO just added for popState eventDetails
+  /**
+   * Deal with route changing scenario.
+   * @param {NavigationRequestParams} params - the params to configure navigation request
+   * @param {string} params.path - the path of the view to open
+   * @param {string} params.preserveView - preserve a view by setting it to specific value (optional)
+   * @param {any} params.modalSettings - settings to configure the modal's title and size (optional)
+   * @param {boolean} params.newTab - open a view in new tab by setting it to `true` (optional)
+   * @param {boolean} params.withoutSync - disables the navigation handling for a single navigation request (optional)
+   * @param {boolean} params.preventContextUpdate - make no context update being triggered; default is false (optional)
+   * @param {any} callbackFn - callback to be triggered after opening view as modal (optional)
+   */
+  async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
+    const { path, preserveView, modalSettings, newTab, withoutSync, preventContextUpdate, options } = params;
+    let computedPath = this.buildPath(path, options?.fromVirtualTreeRoot);
+    const normalizedPath = computedPath.replace(/\/\/+/g, '/');
 
     if (modalSettings) {
-      this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
+      this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
     } else {
       const eventDetail = {
         detail: {
-          preventContextUpdate,
+          preventContextUpdate: !!preventContextUpdate,
           withoutSync: !!withoutSync
         }
       };
@@ -847,7 +867,7 @@ export class NavigationService {
       await serviceRegistry.get(ModalService).closeModals();
 
       if (newTab) {
-        await this.openViewInNewTab(path);
+        await this.openViewInNewTab(computedPath);
         return;
       }
 

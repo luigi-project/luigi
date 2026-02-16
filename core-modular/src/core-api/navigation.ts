@@ -1,5 +1,5 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings, Node, RunTimeErrorHandler } from '../services/navigation.service';
+import type { ModalSettings, NavigationOptions, NavigationRequestParams, Node, RunTimeErrorHandler } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
@@ -13,12 +13,7 @@ export class Navigation {
   navService: NavigationService;
   routingService: RoutingService;
   modalService: ModalService;
-  options: {
-    fromContext?: any;
-    fromClosestContext?: boolean;
-    fromVirtualTreeRoot?: boolean;
-    fromParent?: boolean;
-  } = {
+  options: NavigationOptions = {
     fromContext: null,
     fromClosestContext: false,
     fromVirtualTreeRoot: false,
@@ -40,15 +35,17 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
-    this.navService.handleNavigationRequest(
+    const navRequestParams: NavigationRequestParams = {
+      modalSettings,
+      newTab: false,
+      options: this.options,
       path,
       preserveView,
-      modalSettings,
-      false,
-      false,
-      this.options.fromVirtualTreeRoot,
-      undefined
-    );
+      preventContextUpdate: false,
+      withoutSync: false
+    };
+
+    this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {

@@ -1,6 +1,6 @@
 import { Navigation } from '../../src/core-api/navigation';
 import { ModalService } from '../../src/services/modal.service';
-import { NavigationService, type Node } from '../../src/services/navigation.service';
+import { NavigationService, type NavigationRequestParams, type Node } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
@@ -221,15 +221,22 @@ describe('Navigation', () => {
         { drawer: true }
       );
 
-      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(
-        '/test/path',
-        'preserveViewValue',
-        { title: 'Modal Title' },
-        false,
-        false,
-        false,
-        undefined
-      );
+      const expectedRequestParams: NavigationRequestParams = {
+        modalSettings: { title: 'Modal Title' },
+        newTab: false,
+        path: '/test/path',
+        preserveView: 'preserveViewValue',
+        preventContextUpdate: false,
+        withoutSync: false,
+        options: {
+          fromVirtualTreeRoot: false,
+          fromContext: null,
+          fromClosestContext: false,
+          fromParent: false
+        }
+      };
+
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(expectedRequestParams, undefined);
     });
   });
 });
