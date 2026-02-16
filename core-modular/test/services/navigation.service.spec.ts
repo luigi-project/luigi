@@ -1,5 +1,10 @@
 import { serviceRegistry } from '../../src/services/service-registry';
-import { NavigationService, type NavigationRequestParams, type Node, type PathData } from '../../src/services/navigation.service';
+import {
+  NavigationService,
+  type NavigationRequestParams,
+  type Node,
+  type PathData
+} from '../../src/services/navigation.service';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
@@ -543,7 +548,6 @@ describe('NavigationService', () => {
       const openAsModalMock = jest.fn();
 
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
-
 
       await navigationService.handleNavigationRequest(navRequestParams, jest.fn());
 

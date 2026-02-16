@@ -1,5 +1,11 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings, NavigationOptions, NavigationRequestParams, Node, RunTimeErrorHandler } from '../services/navigation.service';
+import type {
+  ModalSettings,
+  NavigationOptions,
+  NavigationRequestParams,
+  Node,
+  RunTimeErrorHandler
+} from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
