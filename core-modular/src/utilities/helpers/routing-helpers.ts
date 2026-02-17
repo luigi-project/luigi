@@ -531,7 +531,11 @@ export const RoutingHelpers = {
    * @param {boolean} isAnyPathMatched - defines if path exists or not
    * @returns {Record<string, any>} an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
    */
-  getPageNotFoundRedirectResult(notFoundPath: string, pageNotFoundHandler: any, isAnyPathMatched = false): Record<string, any> {
+  getPageNotFoundRedirectResult(
+    notFoundPath: string,
+    pageNotFoundHandler: any,
+    isAnyPathMatched = false
+  ): Record<string, any> {
     if (typeof pageNotFoundHandler === 'function') {
       // custom 404 handler is provided, use it
       const result: Record<string, any> = pageNotFoundHandler(notFoundPath, isAnyPathMatched);
@@ -557,7 +561,11 @@ export const RoutingHelpers = {
    * @param {Luigi} luigi - the Luigi instance used to access configuration values
    * @returns {} the path to redirect to or undefined if path doesn't exist and no redirect path is defined
    */
-  async handlePageNotFoundAndRetrieveRedirectPath(path: string, pathExists: boolean, luigi: Luigi): Promise<string | undefined> {
+  async handlePageNotFoundAndRetrieveRedirectPath(
+    path: string,
+    pathExists: boolean,
+    luigi: Luigi
+  ): Promise<string | undefined> {
     if (pathExists) {
       return path;
     }
