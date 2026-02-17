@@ -858,6 +858,13 @@ export class NavigationService {
         return;
       }
 
+      const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
+      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, this.luigi);
+
+      if (!redirectPath) {
+        return;
+      }
+
       if (this.luigi.getConfig().routing?.useHashRouting) {
         if (!withoutSync) {
           location.hash = normalizedPath;
