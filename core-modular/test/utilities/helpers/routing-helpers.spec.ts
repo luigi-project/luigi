@@ -356,4 +356,104 @@ describe('Routing-helpers', () => {
       expect(RoutingHelpers.getLocationSearchQueryParams()).toEqual({ q: 'hello world test' });
     });
   });
+
+  describe('hasIntent', () => {
+    it('checks against correct intent keyword', () => {
+      const path = '#?intent=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeTruthy();
+    });
+
+    it('check against incorrect intent keyword', () => {
+      const path = '#?int=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
+    });
+
+    it('check against undefined intent keyword', () => {
+      const path = undefined;
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
+    });
+  });
+
+  describe('getPageNotFoundRedirectResult', () => {
+    it('with custom pageNotFoundHandler defined redirectTo path', async () => {
+      const customRedirect = 'somecustompath';
+      const pageNotFoundHandler = () => ({
+        redirectTo: customRedirect
+      });
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler).path;
+
+      expect(customRedirect).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined keepURL', async () => {
+      const customKeepURL = true;
+      const somePath = 'somePath';
+      const ignoreLuigiErrorHandling = undefined;
+      const pageNotFoundHandler = () => ({
+        redirectTo: somePath,
+        keepURL: customKeepURL,
+        ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+      });
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('', pageNotFoundHandler);
+
+      expect({
+        path: somePath,
+        keepURL: customKeepURL,
+        ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+      }).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler not defined', async () => {
+      const pageNotFoundHandler = undefined;
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler);
+
+      expect({}).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler not a function', async () => {
+      const pageNotFoundHandler = { thisObject: 'should be function instead' };
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler).path;
+
+      expect(undefined).toEqual(expected);
+    });
+  });
+
+  describe('handlePageNotFoundAndRetrieveRedirectPath', () => {
+    it('when path exists should return path itself', async () => {
+      const path = 'existingpath';
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, true, luigi);
+
+      expect(path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined', async () => {
+      const path = 'somepathtoredirect';
+      const redirectPath = { path };
+      // define pageNotFoundHandler return value with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue(redirectPath);
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(redirectPath.path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler as not defined', async () => {
+      const path = 'notFoundPath';
+      const consoleWarnSpy = jest.spyOn(console, 'warn');
+      // set pageNotFoundHandler as undefined with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not find the requested route: ${path}`);
+      // TODO expect(RoutingHelpers.showRouteNotFoundAlert).toHaveBeenCalled();
+      expect(undefined).toEqual(expected);
+    });
+  });
 });

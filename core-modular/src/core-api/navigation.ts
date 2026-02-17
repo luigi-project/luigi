@@ -84,4 +84,21 @@ export class Navigation {
       defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
     }
   };
+
+  /**
+   * Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
+   * @param {string} path - path which existence you want to check
+   * @returns {Promise<boolean>} A promise which resolves to a boolean variable specifying whether the path exists or not
+   * @example
+   *  let pathExists;
+   *  Luigi
+   *  .navigation()
+   *  .pathExists('projects/pr2')
+   *  .then(
+   *    (pathExists) => {  }
+   *  );
+   */
+  pathExists = async (path: string): Promise<boolean> => {
+    return await RoutingHelpers.pathExists(path, this.luigi);
+  };
 }
