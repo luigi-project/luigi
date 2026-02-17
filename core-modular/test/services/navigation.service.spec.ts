@@ -49,6 +49,10 @@ describe('NavigationService', () => {
     });
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('NavigationService.onNodeChange', () => {
     let prevNode: Node;
     let nextNode: Node;
@@ -898,61 +902,82 @@ describe('NavigationService', () => {
 
   describe('buildPath', () => {
     beforeEach(() => {
-      // pathData wird im Service direkt gesetzt
-      navigationService.pathData = {
-        nodesInPath: []
-      } as any;
+      jest.spyOn((navigationService as any).luigi, 'getConfigValue').mockReturnValue(false);
+
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
     });
 
-    it('should return incomingPath if fromVirtualTreeRoot is false', () => {
-      const result = navigationService.buildPath('/my/path', false);
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return incomingPath if fromVirtualTreeRoot is false', async () => {
+      const result = await navigationService.buildPath('/my/path', false);
 
       expect(result).toBe('/my/path');
     });
 
-    it('should build full path from virtual tree root', () => {
-      navigationService.pathData.nodesInPath = [
-        { pathSegment: '', virtualTree: false },
-        { pathSegment: 'parent', virtualTree: false },
-        { pathSegment: 'child', virtualTree: false }
-      ];
+    it('should build full path from virtual tree root', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { pathSegment: 'parent', virtualTree: false },
+          { pathSegment: 'child', virtualTree: false }
+        ]
+      } as any);
 
-      const result = navigationService.buildPath('details', true);
+      const result = await navigationService.buildPath('details', true);
 
       expect(result).toBe('/parent/child/details');
     });
 
-    it('should stop at last virtualTree node', () => {
-      navigationService.pathData.nodesInPath = [
-        { pathSegment: '', virtualTree: false },
-        { pathSegment: 'level1', virtualTree: false },
-        { pathSegment: 'virtual', virtualTree: true },
-        { pathSegment: 'ignored', virtualTree: false } // darf nicht berücksichtigt werden
-      ];
+    it('should stop at last virtualTree node', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { pathSegment: 'level1', virtualTree: false },
+          { pathSegment: 'virtual', virtualTree: true },
+          { pathSegment: 'ignored', virtualTree: false }
+        ]
+      } as any);
 
-      const result = navigationService.buildPath('next', true);
+      const result = await navigationService.buildPath('next', true);
 
       expect(result).toBe('/level1/virtual/next');
     });
 
-    it('should ignore nodes without pathSegment', () => {
-      navigationService.pathData.nodesInPath = [
-        { pathSegment: '', virtualTree: false },
-        { virtualTree: false }, // kein pathSegment
-        { pathSegment: 'valid', virtualTree: false }
-      ] as any;
+    it('should ignore nodes without pathSegment', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { virtualTree: false },
+          { pathSegment: 'valid', virtualTree: false }
+        ]
+      } as any);
 
-      const result = navigationService.buildPath('end', true);
+      const result = await navigationService.buildPath('end', true);
 
       expect(result).toBe('/valid/end');
     });
 
-    it('should handle empty nodesInPath gracefully', () => {
-      navigationService.pathData.nodesInPath = [];
+    it('should handle empty nodesInPath gracefully', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: []
+      } as any);
 
-      const result = navigationService.buildPath('alone', true);
+      const result = await navigationService.buildPath('alone', true);
 
       expect(result).toBe('/alone');
+    });
+
+    it('should return incomingPath if nodesInPath is undefined', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: undefined
+      } as any);
+
+      const result = await navigationService.buildPath('fallback', true);
+
+      expect(result).toBe('fallback');
     });
   });
 
@@ -1033,9 +1058,9 @@ describe('NavigationService', () => {
 
       const child = node.children[0];
 
-      expect(child.pathSegment).toBe(':virtualSegment_0');
+      expect(child.pathSegment).toBe(':virtualSegment_1');
       expect(child._virtualTree).toBe(true);
-      expect(child._virtualPathIndex).toBe(0);
+      expect(child._virtualPathIndex).toBe(1);
       expect(child.viewUrl).toBe('/virtual/url');
     });
 

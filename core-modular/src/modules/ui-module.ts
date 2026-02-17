@@ -36,6 +36,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
+    (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
@@ -56,6 +57,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    (lc as any).virtualTree = node.virtualTree || node._virtualTree;
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
@@ -192,12 +194,17 @@ export const UIModule = {
             } else {
               element.style.display = 'none';
             }
+          } else if (element.virtualTree) {
+            if (currentNode.virtualTree || currentNode._virtualTree) {
+              viewGroupContainer = element;
+            } else {
+              element.style.display = 'none';
+            }
           } else {
             element.remove();
           }
         }
       });
-
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';

@@ -229,7 +229,7 @@ export interface NavigationRequestParams {
 
 export class NavigationService {
   nodeDataManagementService?: NodeDataManagementService;
-  pathData: PathData = {} as PathData;
+  // pathData: PathData = {} as PathData;
 
   constructor(private luigi: Luigi) {}
 
@@ -270,15 +270,15 @@ export class NavigationService {
     }
 
     let pathParams: Record<string, any> = {};
-    this.pathData = {
+    const pathData: PathData = {
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
       pathParams
     };
     for (const segment of pathSegments) {
-      if (this.pathData.selectedNodeChildren) {
-        const node = this.findMatchingNode(segment, this.pathData.selectedNodeChildren || []);
+      if (pathData.selectedNodeChildren) {
+        const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
         if (!node) {
           // No matching node found; avoid logging full children to prevent circular JSON errors in tests
           console.warn('No matching node found for segment:', segment);
@@ -287,27 +287,23 @@ export class NavigationService {
         const nodeContext = node.context || {};
         const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
         let substitutedContext = mergedContext;
-        this.pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
           substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
         }
         currentContext = substitutedContext;
         node.context = substitutedContext;
-        this.pathData.selectedNode = node;
-        if (this.pathData.selectedNode) {
-          this.pathData.nodesInPath?.push(this.pathData.selectedNode);
+        pathData.selectedNode = node;
+        if (pathData.selectedNode) {
+          pathData.nodesInPath?.push(pathData.selectedNode);
         }
 
-        this.buildVirtualTree(node, this.pathData.nodesInPath, pathParams);
+        this.buildVirtualTree(node, pathData.nodesInPath, pathParams);
 
-        let children = await this.getChildren(node, currentContext);
-        this.pathData.selectedNodeChildren = children
-          ? this.getAccessibleNodes(this.pathData.selectedNode, children, currentContext)
-          : undefined;
+        pathData.selectedNodeChildren = await this.getChildren(node, currentContext);
       }
     }
-    return this.pathData;
+    return pathData;
   }
 
   findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {
@@ -851,7 +847,7 @@ export class NavigationService {
    */
   async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
     const { path, preserveView, modalSettings, newTab, withoutSync, preventContextUpdate, options } = params;
-    let computedPath = this.buildPath(path, options?.fromVirtualTreeRoot);
+    let computedPath = await this.buildPath(path, options?.fromVirtualTreeRoot);
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
 
     if (modalSettings) {
@@ -963,28 +959,31 @@ export class NavigationService {
     const virtualTreeChild = node._virtualTree;
     const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
     if ((virtualTreeRoot || virtualTreeChild) && nodesInPath[0]) {
-      let _virtualPathIndex = node._virtualPathIndex;
+      let currentVirtualPathIndex = typeof node._virtualPathIndex === 'number' ? node._virtualPathIndex : undefined;
       if (virtualTreeRoot) {
-        _virtualPathIndex = 0;
+        currentVirtualPathIndex = undefined;
         node.keepSelectedForChildren = true;
       }
 
       const maxPathDepth = 50;
-      if (_virtualPathIndex && _virtualPathIndex > maxPathDepth) {
+      if (typeof currentVirtualPathIndex === 'number' && currentVirtualPathIndex > maxPathDepth) {
         return;
       }
 
-      _virtualPathIndex && _virtualPathIndex++;
+      const nextVirtualPathIndex = (currentVirtualPathIndex ?? 0) + 1;
+      if (nextVirtualPathIndex > maxPathDepth) {
+        return;
+      }
       const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
       const newChild = GenericHelpers.removeProperties(node, keysToClean);
       Object.assign(newChild, {
-        pathSegment: ':virtualSegment_' + _virtualPathIndex,
-        label: ':virtualSegment_' + _virtualPathIndex,
+        pathSegment: ':virtualSegment_' + nextVirtualPathIndex,
+        label: ':virtualSegment_' + nextVirtualPathIndex,
         viewUrl: GenericHelpers.trimTrailingSlash(
-          this.buildVirtualViewUrl(_virtualViewUrl || '', pathParams, _virtualPathIndex ?? 0)
+          this.buildVirtualViewUrl(_virtualViewUrl || '', pathParams, nextVirtualPathIndex)
         ),
         _virtualTree: true,
-        _virtualPathIndex,
+        _virtualPathIndex: nextVirtualPathIndex,
         _virtualViewUrl
       });
 
@@ -1030,10 +1029,19 @@ export class NavigationService {
    * @param fromVirtualTreeRoot - A boolean indicating whether to build the path from the virtual tree root.
    * @returns The constructed path string.
    */
-  buildPath(incomingPath: string, fromVirtualTreeRoot = false): string {
+  async buildPath(incomingPath: string, fromVirtualTreeRoot = false): Promise<string> {
     let path = '';
     if (fromVirtualTreeRoot) {
-      const nodes = this.pathData.nodesInPath ?? [];
+      //TODO needs to be clarified if we store pahtData somewhere or calculate new
+      // const nodes = this.pathData.nodesInPath ?? [];
+      const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+      const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+      const fullPath = currentPath + (query ? '?' + query : '');
+      const nodes = (await this.getPathData(fullPath)).nodesInPath;
+      if (nodes === undefined) {
+        console.warn('No nodes in path found for current path:', fullPath);
+        return incomingPath;
+      }
 
       const lastVirtualTreeIndex = [...nodes]
         .map((n, i) => (n.virtualTree ? i : -1))

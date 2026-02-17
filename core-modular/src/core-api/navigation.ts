@@ -55,7 +55,7 @@ export class Navigation {
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    if (!modalSettings.keepPrevious) {
+    if (!modalSettings?.keepPrevious) {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');

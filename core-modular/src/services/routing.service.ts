@@ -140,6 +140,8 @@ export class RoutingService {
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
 
+      currentNode.viewUrl = RoutingHelpers.substituteViewUrl(currentNode.viewUrl, pathData!, this.luigi);
+
       UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
     }
   }
