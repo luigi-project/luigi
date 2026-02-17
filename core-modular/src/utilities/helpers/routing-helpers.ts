@@ -493,10 +493,10 @@ export const RoutingHelpers = {
 
   /**
    * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
-   * @param node
-   * @param path
-   * @param params
-   * @returns
+   * @param node - The current node from which to start building the route.
+   * @param path - The accumulated path string (used internally for recursion).
+   * @param params - Optional query parameters to append to the final route.
+   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
    */
   buildRoute(node: Node, path?: string, params?: string): string {
     return !node.parent
