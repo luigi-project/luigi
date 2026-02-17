@@ -1030,8 +1030,11 @@ export class NavigationService {
    * @returns The constructed path string.
    */
   async buildPath(incomingPath: string, fromVirtualTreeRoot = false): Promise<string> {
-    let path = '';
+    if (!fromVirtualTreeRoot) {
+      return incomingPath;
+    }
     if (fromVirtualTreeRoot) {
+      let path = '';
       //TODO needs to be clarified if we store pahtData somewhere or calculate new
       // const nodes = this.pathData.nodesInPath ?? [];
       const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
@@ -1053,10 +1056,8 @@ export class NavigationService {
           path += '/' + nip.pathSegment;
         }
       });
-      path += '/' + incomingPath;
-    } else {
-      path = incomingPath;
+      return (path += '/' + incomingPath);
     }
-    return path;
+    return incomingPath;
   }
 }
