@@ -324,9 +324,7 @@ export class NavigationService {
     pathData.isExistingRoute = !activePath || pathData.nodesInPath?.length === navPathSegments?.length;
     pathData.matchedPath = pathSegments
       .filter((segment, index) => {
-        return (
-          (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
-        );
+        return (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment;
       })
       .join('/');
 
