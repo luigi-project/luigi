@@ -78,7 +78,7 @@
     "lodash": ">=4.17.23",
     "sass": "^1.53.0",
     "serialize-javascript": ">=2.1.1",
-    "tar": ">=7.5.7",
+    "tar": ">=7.5.9",
     "ts-node": "~3.2.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "8.53.0",
