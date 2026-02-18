@@ -54,8 +54,50 @@ export const GenericHelpers = {
   },
 
   /**
+   * Checks if a given input string begins a hash with slash
+   * @param {string} path
+   * @returns {boolean}
+   */
+  hasHash: (path: string): boolean => {
+    return !!(path && path.search(/^[#\/].*$/) === 0);
+  },
+
+  /**
+   * Removes leading hash of a string
+   * @param {string} path
+   * @returns {string}
+   */
+  getPathWithoutHash: (path: string): string => {
+    while (GenericHelpers.hasHash(path)) {
+      path = path.substring(1, path.length);
+    }
+
+    return path;
+  },
+
+  /**
+   * Removes any trailing slash of a string
+   * @param {string} path
+   * @returns {string}
+   */
+  getTrimmedUrl: (path: string): string => {
+    const pathUrl = path.length > 0 ? GenericHelpers.getPathWithoutHash(path) : path;
+
+    return GenericHelpers.trimTrailingSlash(pathUrl.split('?')[0]);
+  },
+
+  /**
+   * Adds a leading slash to a string if it has none
+   * @param {string} str string to be checked
+   * @returns {string} string with a leading slash
+   */
+  addLeadingSlash: (str: string): string => {
+    return (!str.startsWith('/') ? '/' : '') + str;
+  },
+
+  /**
    * Removes leading slash of a string
-   * @param {str} string
+   * @param {string} str string to be checked
    * @returns {string} string without leading slash
    */
   trimLeadingSlash: (str: string): string => {
@@ -64,7 +106,7 @@ export const GenericHelpers = {
 
   /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {str} string from which any number of trailing slashes should be removed
+   * @param {string} str string from which any number of trailing slashes should be removed
    * @returns {string} string without any trailing slash
    */
   trimTrailingSlash: (str: string): string => {
