@@ -1008,7 +1008,7 @@ export class NavigationService {
    * @param _virtualPathIndex - The index of the virtual path segment.
    * @returns The constructed virtual view URL string.
    */
-  buildVirtualViewUrl(str: string, pathParams: any, _virtualPathIndex: number) {
+  buildVirtualViewUrl(str: string, pathParams: any, _virtualPathIndex: number): string {
     let newStr = '';
     for (const key in pathParams) {
       if (key.startsWith('virtualSegment')) {
