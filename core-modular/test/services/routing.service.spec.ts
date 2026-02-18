@@ -63,7 +63,6 @@ describe('Routing Service', () => {
       getTopNavData: jest.fn(),
       getLeftNavData: jest.fn(),
       getTabNavData: jest.fn(),
-      getNavigationPath: jest.fn(),
       handleNavigationRequest: jest.fn(),
       extractDataFromPath: jest.fn(),
       getPathData: jest.fn(),
@@ -211,8 +210,8 @@ describe('Routing Service', () => {
         selectedNode: { ...childNode }
       };
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
       routingService.previousPathData = mockPathData;
@@ -239,8 +238,8 @@ describe('Routing Service', () => {
         selectedNode: { ...childNode }
       };
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
       routingService.previousPathData = mockPathData;
@@ -260,8 +259,8 @@ describe('Routing Service', () => {
       const childNode = { pathSegment: '123', viewUrl: '/some/url' };
       const rootNode = { pathSegement: 'home', children: [childNode] };
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       (mockNavService.getPathData as jest.Mock).mockResolvedValue({
         nodesInPath: [{ children: [rootNode] }, rootNode, childNode],
@@ -283,8 +282,8 @@ describe('Routing Service', () => {
     it('should use currentNode from getCurrentNode if pathData.selectedNode is not available', async () => {
       const fakeNode = { nodeParams: {}, searchParams: {} };
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
@@ -314,8 +313,8 @@ describe('Routing Service', () => {
     it('should not call onNodeChange if current node has not changed', async () => {
       const fakeNode = { nodeParams: {}, searchParams: {} };
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
@@ -345,8 +344,8 @@ describe('Routing Service', () => {
       const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
 
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
@@ -363,8 +362,8 @@ describe('Routing Service', () => {
       const fakeNode = { nodeParams: {}, searchParams: {} };
 
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
@@ -381,8 +380,8 @@ describe('Routing Service', () => {
       const fakeNode = { nodeParams: {}, searchParams: {} };
 
       jest
-        .spyOn(navigationService, 'getNavigationPath')
-        .mockResolvedValue({ isExistingRoute: true, navigationPath: [] });
+        .spyOn(navigationService, 'getPathData')
+        .mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);

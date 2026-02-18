@@ -88,8 +88,11 @@ export interface LeftNavData {
 }
 
 export interface PathData {
+  context?: Record<string, any>;
+  isExistingRoute?: boolean;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
+  matchedPath?: string;
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;
@@ -231,20 +234,23 @@ export class NavigationService {
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
     let pathSegments = path.split('/');
+
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
 
-    let globalContext = cfg.navigation?.globalContext || {};
+    const globalContext = cfg.navigation?.globalContext || {};
     let currentContext = globalContext;
     let rootNode;
 
     if (this.getNodeDataManagementService().hasRootNode()) {
       rootNode = this.getNodeDataManagementService().getRootNode().node;
     } else {
-      let nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+      const nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+
       if (typeof nodesFromConfig === 'object' && !Array.isArray(nodesFromConfig)) {
         rootNode = nodesFromConfig;
+
         if (rootNode.pathSegment) {
           rootNode.pathSegment = '';
           console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
@@ -252,160 +258,79 @@ export class NavigationService {
       } else {
         rootNode = { children: nodesFromConfig };
       }
+
       rootNode.children = await this.getChildren(rootNode, currentContext);
       rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    let pathParams: Record<string, any> = {};
+    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+
+    if (!rootContext.parentNavigationContexts) {
+      rootContext.parentNavigationContexts = [];
+    }
+
+    const pathParams: Record<string, any> = {};
     const pathData: PathData = {
+      context: rootContext,
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
       pathParams
     };
+
     for (const segment of pathSegments) {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
+
         if (!node) {
           // No matching node found; avoid logging full children to prevent circular JSON errors in tests
           console.warn('No matching node found for segment:', segment);
           break;
         }
+
         const nodeContext = node.context || {};
         const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
         let substitutedContext = mergedContext;
+
         pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
+
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
           substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
         }
+
         currentContext = substitutedContext;
         node.context = substitutedContext;
         pathData.selectedNode = node;
+
         if (pathData.selectedNode) {
           pathData.nodesInPath?.push(pathData.selectedNode);
         }
-        let children = await this.getChildren(node, currentContext);
+
+        const children = await this.getChildren(node, currentContext);
+
         pathData.selectedNodeChildren = children
           ? this.getAccessibleNodes(pathData.selectedNode, children, currentContext)
           : undefined;
       }
     }
+
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const navPathSegments: string[] = pathData.nodesInPath?.length
+      ? pathData.nodesInPath?.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment)
+      : [];
+
+    pathData.isExistingRoute = !activePath || pathData.nodesInPath?.length === navPathSegments?.length;
+    pathData.matchedPath = pathSegments
+      .filter((segment, index) => {
+        return (
+          (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
+        );
+      })
+      .join('/');
+
     return pathData;
-  }
-
-  async getNavigationPath(rootNavProviderPromise: Promise<Node[]>, path = ''): Promise<any> {
-    try {
-      const activePath = GenericHelpers.getTrimmedUrl(path);
-      let rootNode: any;
-
-      if (!rootNavProviderPromise) {
-        console.error('No navigation nodes provided in the configuration.');
-        return [{}];
-      }
-
-      if (this.getNodeDataManagementService().hasRootNode()) {
-        rootNode = this.getNodeDataManagementService().getRootNode().node;
-      }
-
-      if (!rootNode) {
-        const topNavNodes: Node[] = await rootNavProviderPromise;
-
-        if (GenericHelpers.isObject(topNavNodes)) {
-          rootNode = topNavNodes;
-
-          if (rootNode.pathSegment) {
-            rootNode.pathSegment = '';
-            console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
-          }
-        } else {
-          rootNode = { children: topNavNodes };
-        }
-
-        rootNode.children = await this.getChildren(rootNode);
-        this.getNodeDataManagementService().setRootNode(rootNode);
-      }
-
-      const nodeNamesInCurrentPath = activePath.split('/');
-      const globalContext = this.luigi.getConfigValue('navigation.globalContext');
-      const rootContext = { ...(globalContext || {}), ...(rootNode.context || {}) };
-      const navObj: any = await this.buildNode(nodeNamesInCurrentPath, [rootNode], rootNode.children, rootContext);
-      const navPathSegments = navObj.navigationPath.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment);
-
-      navObj.isExistingRoute = !activePath || nodeNamesInCurrentPath.length === navPathSegments.length;
-
-      const pathSegments = activePath.split('/');
-
-      navObj.matchedPath = pathSegments
-        .filter((segment, index) => {
-          return (
-            (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
-          );
-        })
-        .join('/');
-
-      return navObj;
-    } catch (err) {
-      console.error('Failed to load top navigation nodes.', err);
-    }
-  }
-
-  async buildNode(
-    nodeNamesInCurrentPath: any[],
-    nodesInCurrentPath: any[],
-    childrenOfCurrentNode: any[],
-    context: any,
-    pathParams = {}
-  ): Promise<any> {
-    if (!context.parentNavigationContexts) {
-      context.parentNavigationContexts = [];
-    }
-
-    let result = {
-      navigationPath: nodesInCurrentPath,
-      context: context,
-      pathParams: pathParams
-    };
-
-    if (nodeNamesInCurrentPath.length > 0 && childrenOfCurrentNode && childrenOfCurrentNode.length > 0) {
-      const urlPathElement = nodeNamesInCurrentPath[0];
-      const node: any = this.findMatchingNode(urlPathElement, childrenOfCurrentNode);
-
-      if (node) {
-        nodesInCurrentPath.push(node);
-
-        let newContext = NavigationHelpers.applyContext(context, node.context, node.navigationContext);
-
-        if (node.pathSegment.startsWith(':')) {
-          (pathParams as any)[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(urlPathElement);
-        }
-
-        newContext = RoutingHelpers.substituteDynamicParamsInObject(newContext, pathParams);
-
-        try {
-          /**
-           * If it's a virtual tree, build static children
-           */
-          // TODO this.buildVirtualTree(node, nodeNamesInCurrentPath, pathParams);
-
-          const children = await this.getChildren(node, newContext);
-          const newNodeNamesInCurrentPath = nodeNamesInCurrentPath.slice(1);
-
-          result = await this.buildNode(
-            newNodeNamesInCurrentPath,
-            nodesInCurrentPath,
-            children,
-            newContext,
-            pathParams
-          );
-        } catch (err) {
-          console.error('Error getting nodes children', err);
-        }
-      }
-    }
-
-    return result;
   }
 
   findMatchingNode(urlPathElement: string, nodes: Node[]): Node | undefined {

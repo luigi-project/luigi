@@ -132,13 +132,9 @@ export class RoutingService {
     };
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
-    const navPathData = await this.getNavigationService().getNavigationPath(
-      await this.luigi.getConfigValueAsync('navigation.nodes'),
-      path
-    );
     const viewUrl = currentNode?.viewUrl || '';
 
-    if (await this.handlePageNotFound(currentNode, viewUrl, navPathData, path, pathUrlRaw)) {
+    if (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw)) {
       return;
     }
 
@@ -456,7 +452,7 @@ export class RoutingService {
   async handlePageNotFound(
     nodeObject: any,
     viewUrl: string,
-    pathData: any,
+    pathData: PathData,
     path: string,
     pathUrlRaw: string
   ): Promise<boolean> {
@@ -481,10 +477,10 @@ export class RoutingService {
 
         return false;
       } else {
-        if (defaultChildNode && pathData?.navigationPath?.length > 1) {
+        if (defaultChildNode && pathData?.nodesInPath && pathData.nodesInPath.length > 1) {
           // last path segment was invalid but a default node could be in its place
           this.showPageNotFoundError(
-            GenericHelpers.trimTrailingSlash(pathData.matchedPath) + '/' + defaultChildNode,
+            GenericHelpers.trimTrailingSlash(pathData.matchedPath || '') + '/' + defaultChildNode,
             pathUrlRaw,
             true
           );
@@ -494,11 +490,7 @@ export class RoutingService {
 
         // ERROR 404
         // the path is unrecognized at all and cannot be fitted to any known one
-        const rootPathData = await this.getNavigationService().getNavigationPath(
-          await this.luigi.getConfigValueAsync('navigation.nodes'),
-          '/'
-        );
-        const rootPath = await RoutingHelpers.getDefaultChildNode(rootPathData);
+        const rootPath = await RoutingHelpers.getDefaultChildNode(pathData);
 
         this.showPageNotFoundError(rootPath, pathUrlRaw, false);
       }
@@ -507,7 +499,7 @@ export class RoutingService {
     }
 
     if (!pathData?.isExistingRoute) {
-      this.showPageNotFoundError(pathData.matchedPath, pathUrlRaw, true);
+      this.showPageNotFoundError(pathData.matchedPath || '', pathUrlRaw, true);
 
       return true;
     }

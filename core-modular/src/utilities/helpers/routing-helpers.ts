@@ -520,23 +520,24 @@ export const RoutingHelpers = {
   },
 
   async getDefaultChildNode(
-    pathData: any,
+    pathData: PathData,
     childrenResolverFn?: (lastElement: object, pathContext: object) => any
   ): Promise<string> {
     if (!pathData) {
       return '';
     }
 
-    const lastElement = pathData.navigationPath[pathData.navigationPath.length - 1];
+    const lastElement: any = pathData.nodesInPath && pathData.nodesInPath[pathData.nodesInPath.length - 1];
+    const pathContext: any = pathData.context;
     const children = childrenResolverFn
-      ? await childrenResolverFn(lastElement, pathData.context)
-      : await AsyncHelpers.getConfigValueFromObjectAsync(lastElement, 'children', pathData.context);
+      ? await childrenResolverFn(lastElement, pathContext)
+      : await AsyncHelpers.getConfigValueFromObjectAsync(lastElement, 'children', pathContext);
     const pathExists = children.find((childNode: Node) => childNode.pathSegment === lastElement.defaultChildNode);
 
     if (lastElement.defaultChildNode && pathExists) {
       return lastElement.defaultChildNode;
     } else if (children && children.length) {
-      const rootPath = pathData.navigationPath.length === 1;
+      const rootPath = pathData?.nodesInPath?.length === 1;
 
       if (rootPath) {
         const firstNodeWithPathSegment = children.find((child: Node) => child.pathSegment);
