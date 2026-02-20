@@ -10,6 +10,12 @@ describe('Navigation', () => {
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
+  let options: {
+    fromContext?: any;
+    fromClosestContext?: boolean;
+    fromVirtualTreeRoot?: boolean;
+    fromParent?: boolean;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -221,7 +227,13 @@ describe('Navigation', () => {
         path: '/test/path',
         preserveView: 'preserveViewValue',
         preventContextUpdate: false,
-        withoutSync: false
+        withoutSync: false,
+        options: {
+          fromVirtualTreeRoot: false,
+          fromContext: null,
+          fromClosestContext: false,
+          fromParent: false
+        }
       };
 
       expect(handleNavigationRequestSpy).toHaveBeenCalledWith(expectedRequestParams, undefined);
