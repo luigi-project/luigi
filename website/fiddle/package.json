@@ -29,7 +29,7 @@
     "replace-in-file": "^7.0.2",
     "send": "~0.19.0",
     "style-loader": "^3.3.3",
-    "svelte": "^4.2.20",
+    "svelte": "^5.53.0",
     "svelte-loader": "^3.1.9",
     "webpack": "^5.105.2",
     "webpack-cli": "^5.1.4",
