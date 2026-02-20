@@ -1,5 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
-import type { ModalSettings } from './navigation.service';
+import type { ModalSettings } from '../types/navigation';
 
 export interface ModalPromiseObject {
   closePromise?: Promise<void>;

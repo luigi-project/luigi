@@ -2,8 +2,8 @@ import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/cont
 import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
+import type { ModalSettings, Node, PathData } from '../types/navigation';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { ModalSettings, Node, PathData } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
