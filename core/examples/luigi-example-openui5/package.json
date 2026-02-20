@@ -10,11 +10,11 @@
     "serve": "ws --compress -d dist"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.26.0",
-    "@luigi-project/core": "^2.26.0"
+    "@luigi-project/client": "^2.27.0",
+    "@luigi-project/core": "^2.27.0"
   },
   "devDependencies": {
-    "@ui5/cli": "^4.0.42",
+    "@ui5/cli": "^4.0.44",
     "cross-spawn": "^7.0.6",
     "local-web-server": "^5.4.0"
   }
