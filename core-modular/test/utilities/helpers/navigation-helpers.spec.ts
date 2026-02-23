@@ -1,8 +1,7 @@
-import type { PathData } from '../../../src/services/navigation.service';
 import { NavigationHelpers } from '../../../src/utilities/helpers/navigation-helpers';
-import { type Node } from '../../../src/services/navigation.service';
 import type { Luigi } from '../../../src/core-api/luigi';
 import { FeatureToggles } from '../../../src/core-api/feature-toggles';
+import type { Node, PathData } from '../../../src/types/navigation';
 import { AuthHelpers } from '../../../src/utilities/helpers/auth-helpers';
 
 describe('Navigation-helpers', () => {
