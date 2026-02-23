@@ -229,7 +229,6 @@ export interface NavigationRequestParams {
 
 export class NavigationService {
   nodeDataManagementService?: NodeDataManagementService;
-  // pathData: PathData = {} as PathData;
 
   constructor(private luigi: Luigi) {}
 
@@ -1036,7 +1035,6 @@ export class NavigationService {
     if (fromVirtualTreeRoot) {
       let path = '';
       //TODO needs to be clarified if we store pahtData somewhere or calculate new
-      // const nodes = this.pathData.nodesInPath ?? [];
       const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
       const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
       const fullPath = currentPath + (query ? '?' + query : '');
