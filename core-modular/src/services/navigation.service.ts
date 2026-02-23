@@ -719,7 +719,7 @@ export class NavigationService {
   resetMicrofrontendModalData(index?: number): void {
     // reset all modal list
     if (typeof index === 'undefined') {
-      this.getModalService().clearModalStack();
+      this.getModalService().closeModals();
       return;
     }
 
