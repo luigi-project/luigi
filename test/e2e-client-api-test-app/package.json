@@ -5,7 +5,7 @@
   "main": "public/index.html",
   "scripts": {
     "copy": "rm -rf .\\public\\assets && mkdirp public/assets && cp node_modules/@luigi-project/container/bundle.js node_modules/@luigi-project/core/*.* node_modules/@luigi-project/client/*.js node_modules/@sap-theming/theming-base-content/content/Base/baseLib/sap_fiori_3/css_variables.css public/assets/",
-    "serve": "live-server --port=3000 --mount=\"/node_modules\":\"./node_modules\" ./public --no-browser",
+    "serve": "alive-server --port=3000 --mount=\"/node_modules\":\"./node_modules\" ./public --no-browser",
     "dev": "npm run copy && npm run serve",
     "start": "npm run dev",
     "cypress-browser": "cypress open --e2e --browser chrome -c video=false",
@@ -14,13 +14,13 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@luigi-project/client": "^2.23.1",
-    "@luigi-project/container": "^1.7.2",
-    "@luigi-project/core": "^2.23.1",
+    "@luigi-project/client": "^2.27.0",
+    "@luigi-project/container": "^1.7.6",
+    "@luigi-project/core": "^2.27.0",
     "@sap-theming/theming-base-content": "^11.22.0",
+    "alive-server": "^1.3.0",
     "cross-spawn": "^7.0.6",
-    "cypress": "^14.5.4",
-    "live-server": "^1.2.2"
+    "cypress": "^15.10.0"
   },
   "devDependencies": {
     "mkdirp": "^3.0.1"

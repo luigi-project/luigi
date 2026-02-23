@@ -2,9 +2,10 @@ import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/cont
 import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
+import type { ModalSettings, Node, PathData } from '../types/navigation';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { ModalSettings, Node } from './navigation.service';
 import { NavigationService } from './navigation.service';
+import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 
@@ -20,6 +21,7 @@ export class RoutingService {
   previousNode: Node | undefined;
   currentRoute?: Route;
   modalSettings?: ModalSettings;
+  previousPathData?: PathData;
 
   constructor(private luigi: Luigi) {}
 
@@ -62,18 +64,35 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+        const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync, preventContextUpdate);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
       window.addEventListener('popstate', (ev) => {
-        this.handleRouteChange(RoutingHelpers.getCurrentPath());
+        const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
+        const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync, preventContextUpdate);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath());
     }
   }
 
-  async handleRouteChange(routeInfo: { path: string; query: string }): Promise<void> {
+  /**
+   * Deal with route changing scenario.
+   * @param {Object} routeInfo - the information about path and query
+   * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
+   * @param {boolean} preventContextUpdate - make no context update being triggered
+   * @returns {Promise<void>} A promise that resolves when route change is complete.
+   */
+  async handleRouteChange(
+    routeInfo: { path: string; query: string },
+    withoutSync = false,
+    preventContextUpdate = false
+  ): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
@@ -90,9 +109,11 @@ export class RoutingService {
     urlSearchParams.forEach((value, key) => {
       paramsObj[key] = value;
     });
-    const pathData = this.getNavigationService().getPathData(path);
+    this.checkInvalidateCache(this.previousPathData, path);
+    const pathData = await this.getNavigationService().getPathData(path);
+    this.previousPathData = pathData;
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const redirect = this.getNavigationService().shouldRedirect(path, pathData);
+    const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
 
     if (redirect) {
       this.luigi.navigation().navigate(redirect);
@@ -105,12 +126,11 @@ export class RoutingService {
       nodeParams
     };
 
-    this.luigi.getEngine()._connector?.renderTopNav(this.getNavigationService().getTopNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderLeftNav(this.getNavigationService().getLeftNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderTabNav(this.getNavigationService().getTabNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
 
-    const currentNode = pathData?.selectedNode ?? this.getNavigationService().getCurrentNode(path);
-
+    const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
       this.currentRoute.node = currentNode;
       currentNode.nodeParams = nodeParams || {};
@@ -119,7 +139,8 @@ export class RoutingService {
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi);
+
+      UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
     }
   }
 
@@ -373,6 +394,38 @@ export class RoutingService {
       history.replaceState((window as any).state, '', url.href);
     } else {
       history.pushState((window as any).state, '', url.href);
+    }
+  }
+
+  checkInvalidateCache(previousPathData: PathData | undefined, newPath: string): void {
+    if (!previousPathData) return;
+    const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
+    let newPathArray = newPath.split('/');
+    if (previousPathData.nodesInPath && previousPathData.nodesInPath.length > 0) {
+      let previousNavPathWithoutRoot = previousPathData.nodesInPath.slice(1);
+
+      let isSamePath = true;
+      for (let i = 0; i < previousNavPathWithoutRoot.length; i++) {
+        let newPathSegment = newPathArray.length > i ? newPathArray[i] : undefined;
+        let previousPathNode = previousNavPathWithoutRoot[i];
+
+        if (newPathSegment !== previousPathNode.pathSegment || !isSamePath) {
+          if (RoutingHelpers.isDynamicNode(previousPathNode)) {
+            if (
+              !isSamePath ||
+              newPathSegment !== RoutingHelpers.getDynamicNodeValue(previousPathNode, previousPathData.pathParams)
+            ) {
+              nodeDataManagementService.deleteNodesRecursively(previousPathNode);
+              break;
+            }
+          } else {
+            isSamePath = false;
+          }
+        }
+      }
+    } else {
+      // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
+      nodeDataManagementService.deleteCache();
     }
   }
 }

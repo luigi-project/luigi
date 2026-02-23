@@ -221,11 +221,13 @@
                 {#if hasOpenUIicon(profileItem)}
                   <i role="presentation" class="fd-list__icon {getSapIconStr(profileItem.icon)}" />
                 {:else}
-                  <img
-                    class="fd-top-nav__icon nav-icon"
-                    style="background-image:url('{userInfo.icon}')"
-                    alt={profileItem.altText ? profileItem.altText : ''}
-                  />
+                  <i role="presentation" class="fd-list__icon sap-icon">
+                    <img
+                      class="fd-top-nav__icon nav-icon"
+                      src={profileItem.icon}
+                      alt={profileItem.altText ? profileItem.altText : ''}
+                    />
+                  </i>
                 {/if}
               {/if}
               <span class="fd-list__title">{$getTranslation(profileItem.label)}</span>
@@ -311,6 +313,10 @@
   }
   .nav-icon {
     height: 2em;
+  }
+
+  img.nav-icon {
+    max-width: 1.5rem;
   }
 
   /* fixes for long User Name and role */

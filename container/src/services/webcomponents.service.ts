@@ -117,7 +117,7 @@ export class WebComponentService {
         let nodeParams = {};
 
         const linkManagerInstance = {
-          navigate: (route: string, settings = {}) => {
+          navigate: (route: string, settings = {}, callbackFn?: (val?: unknown) => void) => {
             const options = {
               fromContext,
               fromClosestContext,
@@ -126,10 +126,14 @@ export class WebComponentService {
               nodeParams,
               ...settings
             };
-            this.dispatchLuigiEvent(Events.NAVIGATION_REQUEST, {
-              link: route,
-              ...options
-            });
+            this.dispatchLuigiEvent(
+              Events.NAVIGATION_REQUEST,
+              {
+                link: route,
+                ...options
+              },
+              callbackFn
+            );
           },
           navigateToIntent: (semanticSlug: string, params = {}): void => {
             let newPath = '#?intent=';
@@ -262,8 +266,20 @@ export class WebComponentService {
           openAsDrawer: (route: string, drawerSettings = {}) => {
             linkManagerInstance.navigate(route, { drawer: drawerSettings });
           },
-          openAsModal: (route: string, modalSettings = {}) => {
-            linkManagerInstance.navigate(route, { modal: modalSettings });
+          openAsModal: (
+            route: string,
+            modalSettings = {},
+            callbackFn?: (value?: unknown) => void
+          ): Promise<{ goBackValue: unknown }> => {
+            return new Promise((resolve) => {
+              linkManagerInstance.navigate(route, { modal: modalSettings }, (value: unknown) => {
+                resolve({ goBackValue: value });
+
+                if (callbackFn && typeof callbackFn === 'function') {
+                  callbackFn(value);
+                }
+              });
+            });
           },
           openAsSplitView: (route: string, splitViewSettings = {}) => {
             linkManagerInstance.navigate(route, {

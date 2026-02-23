@@ -283,10 +283,10 @@ class NavigationClass {
     return result;
   }
 
-  onNodeChange(prevNode, nextNode) {
+  onNodeChange(prevNode, nextNode, aData) {
     const invokedFunction = LuigiConfig.getConfigValue('navigation.nodeChangeHook');
     if (typeof invokedFunction === 'function') {
-      invokedFunction(prevNode, nextNode);
+      invokedFunction(prevNode, nextNode, aData);
     } else if (invokedFunction !== undefined) {
       console.warn('nodeChangeHook is not a function!');
     }

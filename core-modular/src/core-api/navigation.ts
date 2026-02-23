@@ -1,8 +1,10 @@
 import { ModalService } from '../services/modal.service';
-import type { ModalSettings } from '../services/navigation.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import type { ModalSettings, NavigationRequestParams, Node, RunTimeErrorHandler } from '../types/navigation';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
 
 export class Navigation {
@@ -20,35 +22,24 @@ export class Navigation {
     this.modalService = serviceRegistry.get(ModalService);
   }
 
-  navigate = (
+  navigate = async (
     path: string,
     preserveView?: string,
     modalSettings?: ModalSettings,
-    callbackFn?: (val?: unknown) => void
+    splitViewSettings?: any,
+    drawerSettings?: any
   ) => {
-    const normalizedPath = path.replace(/\/\/+/g, '/');
-    const preventContextUpdate = false; //TODO just added for popState eventDetails
-    const navSync = true; //TODO just added for popState eventDetails
+    const navRequestParams: NavigationRequestParams = {
+      modalSettings,
+      newTab: false,
+      path,
+      preserveView,
+      preventContextUpdate: false,
+      preventHistoryEntry: false,
+      withoutSync: false
+    };
 
-    if (modalSettings) {
-      this.openAsModal(path, modalSettings, callbackFn);
-    } else {
-      this.modalService.closeModals();
-      if (this.hashRouting) {
-        location.hash = normalizedPath;
-      } else {
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
-        const eventDetail = {
-          detail: {
-            preventContextUpdate,
-            withoutSync: !navSync
-          }
-        };
-        const event = new CustomEvent('popstate', eventDetail);
-
-        window.dispatchEvent(event);
-      }
-    }
+    this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
@@ -56,7 +47,7 @@ export class Navigation {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = this.navService.getCurrentNode(normalizedPath);
+    const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node.label;
@@ -68,13 +59,30 @@ export class Navigation {
     this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
   };
 
-  openAsDrawer = (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = this.navService.getCurrentNode(normalizedPath);
+    const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node.label;
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
+  };
+
+  runTimeErrorHandler = async (errorObj: object): Promise<void> => {
+    const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
+    const currentNode: Node = await this.navService.getCurrentNode(path);
+    const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
+      'navigation.defaults.runTimeErrorHandler'
+    );
+
+    if (
+      currentNode?.runTimeErrorHandler?.errorFn &&
+      GenericHelpers.isFunction(currentNode?.runTimeErrorHandler?.errorFn)
+    ) {
+      currentNode.runTimeErrorHandler.errorFn(errorObj, currentNode);
+    } else if (defaultRunTimeErrorHandler?.errorFn && GenericHelpers.isFunction(defaultRunTimeErrorHandler.errorFn)) {
+      defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
+    }
   };
 }

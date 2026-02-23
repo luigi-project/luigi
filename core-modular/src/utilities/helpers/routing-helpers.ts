@@ -1,6 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { Node, PathData } from '../../services/navigation.service';
+import type { Node, PathData } from '../../types/navigation';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
@@ -471,5 +471,22 @@ export const RoutingHelpers = {
       .reduce((acc, [key, value]) => {
         return Object.assign(acc, { [key]: value });
       }, {});
+  },
+
+  /**
+   * Returns true or false whether the passed node is a dynamic node or not
+   * @param {*} node
+   */
+  isDynamicNode(node: Node): boolean {
+    return typeof node.pathSegment === 'string' && node.pathSegment.length > 0 && node.pathSegment[0] === ':';
+  },
+
+  /**
+   * Returns the value from the passed node's pathSegment, e.g. :groupId -> yourGroupId
+   * @param {*} node
+   * @param {*} pathParams
+   */
+  getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
+    return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
   }
 };

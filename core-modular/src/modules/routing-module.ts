@@ -1,8 +1,9 @@
-import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { NavigationService } from '../services/navigation.service';
 import { serviceRegistry } from '../services/service-registry';
 import { RoutingService } from '../services/routing.service';
+import type { ExternalLink, Node, PageErrorHandler } from '../types/navigation';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
@@ -56,10 +57,14 @@ export const RoutingModule = {
    * @param keepBrowserHistory - If `true`, the browser history will be preserved when updating the URL.
    * @param luigi - The Luigi core instance used to interact with the routing API.
    */
-  addSearchParamsFromClient(searchParams: Record<string, any>, keepBrowserHistory: boolean, luigi: Luigi): void {
+  async addSearchParamsFromClient(
+    searchParams: Record<string, any>,
+    keepBrowserHistory: boolean,
+    luigi: Luigi
+  ): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const pathObj = RoutingHelpers.getCurrentPath();
-    const currentNode = navService.getCurrentNode(pathObj.path);
+    const currentNode = await navService.getCurrentNode(pathObj.path);
     const localSearchParams = { ...searchParams };
 
     if (currentNode?.clientPermissions?.urlParameters) {

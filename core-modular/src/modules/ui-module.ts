@@ -1,11 +1,13 @@
 import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
-import { NavigationService, type ModalSettings } from '../services/navigation.service';
+import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
+import { NodeDataManagementService } from '../services/node-data-management.service';
+import type { ModalSettings } from '../types/navigation';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -116,7 +118,7 @@ export const UIModule = {
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
   },
-  update: (scopes?: string[]) => {
+  update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
     if (!croute) {
       return;
@@ -147,7 +149,7 @@ export const UIModule = {
       scopes.includes('navigation.contextSwitcher') ||
       scopes.includes('navigation.productSwitcher')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
     if (
       noScopes ||
@@ -157,8 +159,9 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
-      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
     }
     if (
       noScopes ||
@@ -167,10 +170,11 @@ export const UIModule = {
       scopes.includes('navigation.viewgroupdata') ||
       scopes.includes('settings.theming')
     ) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
-  updateMainContent: async (currentNode: any, luigi: Luigi) => {
+  updateMainContent: async (currentNode: any, luigi: Luigi, withoutSync?: boolean, preventContextUpdate?: boolean) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
       currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
@@ -196,25 +200,29 @@ export const UIModule = {
       });
 
       if (viewGroupContainer) {
-        viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry
-          .get(ViewUrlDecoratorSvc)
-          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
-        viewGroupContainer.nodeParams = currentNode.nodeParams;
-        viewGroupContainer.pathParams = currentNode.pathParams;
-        viewGroupContainer.clientPermissions = currentNode.clientPermissions;
-        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
-        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
-        viewGroupContainer.theme = luigi.theming().getCurrentTheme();
-        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
-        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
-        viewGroupContainer.userSettings = userSettings;
+        if (!withoutSync) {
+          viewGroupContainer.style.display = 'block';
+          viewGroupContainer.viewurl = serviceRegistry
+            .get(ViewUrlDecoratorSvc)
+            .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+          viewGroupContainer.nodeParams = currentNode.nodeParams;
+          viewGroupContainer.pathParams = currentNode.pathParams;
+          viewGroupContainer.clientPermissions = currentNode.clientPermissions;
+          viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+          viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
+          viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+          viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
+          viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
+          viewGroupContainer.userSettings = userSettings;
 
-        setSandboxRules(viewGroupContainer, luigi);
-        setAllowRules(viewGroupContainer, luigi);
+          setSandboxRules(viewGroupContainer, luigi);
+          setAllowRules(viewGroupContainer, luigi);
+        }
 
-        //IMPORTANT!!! This needs to be at the end
-        viewGroupContainer.updateContext(currentNode.context || {});
+        if (!preventContextUpdate) {
+          //IMPORTANT!!! This needs to be at the end
+          viewGroupContainer.updateContext(currentNode.context || {});
+        }
       } else {
         const container = await createContainer(currentNode, luigi);
         containerWrapper?.appendChild(container);
