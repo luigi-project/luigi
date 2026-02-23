@@ -216,9 +216,17 @@ export interface NavigationRequestParams {
 }
 
 export class NavigationService {
+  modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
 
   constructor(private luigi: Luigi) {}
+
+  private getModalService(): ModalService {
+    if (!this.modalService) {
+      this.modalService = serviceRegistry.get(ModalService);
+    }
+    return this.modalService;
+  }
 
   private getNodeDataManagementService(): NodeDataManagementService {
     if (!this.nodeDataManagementService) {
@@ -842,6 +850,10 @@ export class NavigationService {
     const normalizedPath = path.replace(/\/\/+/g, '/');
 
     if (modalSettings) {
+      if (!modalSettings.keepPrevious) {
+        this.resetMicrofrontendModalData();
+      }
+
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
     } else {
       const eventDetail = {
@@ -874,6 +886,16 @@ export class NavigationService {
         window.dispatchEvent(event);
       }
     }
+  }
+
+  resetMicrofrontendModalData(index?: number): void {
+    // reset all modal list
+    if (typeof index === 'undefined') {
+      this.getModalService().clearModalStack();
+      return;
+    }
+
+    this.getModalService().removeModalFromStackByIndex(index);
   }
 
   //TODO check context default object as param

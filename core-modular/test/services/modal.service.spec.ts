@@ -14,6 +14,7 @@ describe('ModalService', () => {
   afterEach(() => {
     warnSpy.mockRestore();
   });
+
   describe('closeModals', () => {
     it('does nothing when modalStack is empty', async () => {
       expect(service._modalStack.length).toBe(0);
@@ -157,6 +158,34 @@ describe('ModalService', () => {
 
       service.clearModalStack();
       expect(service._modalStack.length).toBe(0);
+    });
+  });
+
+  describe('removeModalFromStackByIndex', () => {
+    it('removes given modal from stack', () => {
+      const m1: ModalPromiseObject = { modalsettings: { title: 'First' } };
+      const m2: ModalPromiseObject = { modalsettings: { title: 'Second' } };
+      service.registerModal(m1);
+      service.registerModal(m2);
+      expect(service._modalStack.length).toBe(2);
+
+      service.removeModalFromStackByIndex(0);
+      expect(service._modalStack.length).toBe(1);
+      expect((service._modalStack[0] as any).modalsettings.title).toEqual('Second');
+    });
+  });
+
+  describe('removeLastModalFromStack', () => {
+    it('removes given modal from stack', () => {
+      const m1: ModalPromiseObject = { modalsettings: { title: 'First' } };
+      const m2: ModalPromiseObject = { modalsettings: { title: 'Second' } };
+      service.registerModal(m1);
+      service.registerModal(m2);
+      expect(service._modalStack.length).toBe(2);
+
+      service.removeLastModalFromStack();
+      expect(service._modalStack.length).toBe(1);
+      expect((service._modalStack[0] as any).modalsettings.title).toEqual('First');
     });
   });
 });

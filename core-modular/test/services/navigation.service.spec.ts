@@ -1,11 +1,11 @@
 import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService, type NavigationRequestParams, type Node } from '../../src/services/navigation.service';
-import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
+  let mockModalService: any;
   let mockNodeDataManagementService: any;
 
   beforeEach(() => {
@@ -23,6 +23,11 @@ describe('NavigationService', () => {
     };
     navigationService = new NavigationService(luigiMock);
 
+    mockModalService = {
+      clearModalStack: jest.fn(),
+      closeModals: jest.fn(),
+      removeModalFromStackByIndex: jest.fn()
+    };
     mockNodeDataManagementService = {
       setChildren: jest.fn(),
       getChildren: jest.fn(),
@@ -35,8 +40,11 @@ describe('NavigationService', () => {
       dataManagement: {} as any,
       navPath: '' as any
     };
-    jest.spyOn(serviceRegistry, 'get').mockImplementation((serviceName: any) => {
-      if (serviceName === NodeDataManagementService) {
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
+      if (service.name === 'ModalService') {
+        return mockModalService;
+      }
+      if (service.name === 'NodeDataManagementService') {
         return mockNodeDataManagementService;
       }
     });
@@ -542,15 +550,6 @@ describe('NavigationService', () => {
     });
   });
   describe('NavigationService.handleNavigationRequest', () => {
-    let modalServiceMock: { closeModals: jest.Mock };
-    beforeEach(() => {
-      modalServiceMock = {
-        closeModals: jest.fn()
-      };
-      jest.spyOn(serviceRegistry, 'get').mockReturnValue(modalServiceMock);
-      navigationService = new NavigationService(luigiMock);
-    });
-
     it('should call openAsModal if modalSettings are provided', async () => {
       const navRequestParams: NavigationRequestParams = {
         modalSettings: { size: 'l' },
@@ -580,7 +579,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
 
@@ -620,7 +619,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(openViewInNewTabSpy).toHaveBeenCalledWith('/test/path');
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
@@ -642,7 +641,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
@@ -678,7 +677,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
