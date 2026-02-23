@@ -40,8 +40,8 @@
     "generate-cem": "node --disable-proto=delete generateCEM.js"
   },
   "devDependencies": {
-    "@babel/node": "7.28.6",
-    "@babel/preset-env": "7.28.6",
+    "@babel/node": "7.29.0",
+    "@babel/preset-env": "7.29.0",
     "@babel/preset-typescript": "7.28.5",
     "@cypress/code-coverage": "^4.0.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -67,7 +67,7 @@
     "rollup": "2.79.2",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-livereload": "2.0.5",
-    "rollup-plugin-svelte": "7.2.2",
+    "rollup-plugin-svelte": "7.2.3",
     "sirv-cli": "^2.0.0",
     "source-map-support": "^0.5.21",
     "svelte": "4.2.19",
