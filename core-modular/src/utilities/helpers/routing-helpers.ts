@@ -1,6 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { Node, PathData } from '../../services/navigation.service';
+import type { Node, PathData } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
