@@ -1,9 +1,10 @@
 import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { UIModule } from '../../src/modules/ui-module';
-import { NavigationService, type ModalSettings } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import type { ModalSettings } from '../../src/types/navigation';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 declare global {
