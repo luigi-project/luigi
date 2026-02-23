@@ -1,8 +1,9 @@
-import { NavigationService, type ExternalLink, type Node, type PageErrorHandler } from '../services/navigation.service';
 import type { Luigi } from '../core-api/luigi';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
+import { NavigationService } from '../services/navigation.service';
 import { serviceRegistry } from '../services/service-registry';
 import { RoutingService } from '../services/routing.service';
+import type { ExternalLink, Node, PageErrorHandler } from '../types/navigation';
 
 export const RoutingModule = {
   init: (luigi: Luigi) => {
