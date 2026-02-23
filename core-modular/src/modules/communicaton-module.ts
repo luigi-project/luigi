@@ -1,10 +1,11 @@
 import Events from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
-import { NavigationService, type NavigationRequestParams } from '../services/navigation.service';
+import { NavigationService } from '../services/navigation.service';
 import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
+import type { NavigationRequestParams } from '../types/navigation';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -17,13 +18,15 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      const { link, preserveView, modal, newTab, withoutSync, preventContextUpdate } = event.detail;
+      const { link, modal, newTab, preserveView, preventContextUpdate, preventHistoryEntry, withoutSync } =
+        event.detail;
       const navRequestParams: NavigationRequestParams = {
         modalSettings: modal,
         newTab,
         path: link,
         preserveView,
         preventContextUpdate,
+        preventHistoryEntry,
         withoutSync
       };
 
