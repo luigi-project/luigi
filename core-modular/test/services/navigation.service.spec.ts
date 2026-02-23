@@ -1,6 +1,7 @@
 import { serviceRegistry } from '../../src/services/service-registry';
-import { NavigationService, type NavigationRequestParams, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import type { NavigationRequestParams, Node } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
 describe('NavigationService', () => {
@@ -552,15 +553,16 @@ describe('NavigationService', () => {
     });
 
     it('should call openAsModal if modalSettings are provided', async () => {
+      const openAsModalMock = jest.fn();
       const navRequestParams: NavigationRequestParams = {
         modalSettings: { size: 'l' },
         newTab: false,
         path: '/modal/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: false
       };
-      const openAsModalMock = jest.fn();
 
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
@@ -605,16 +607,17 @@ describe('NavigationService', () => {
 
     it('should navigate to a path in new browser tab', async () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      const pushStateSpy = jest.spyOn(window.history, 'pushState');
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: true,
         path: '/test/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: false
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState');
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
 
@@ -629,16 +632,17 @@ describe('NavigationService', () => {
     it('should close modals and update history if no modalSettings and using withoutSync', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
 
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: false,
         path: '/normal/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: true
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
@@ -648,6 +652,7 @@ describe('NavigationService', () => {
         expect.any(
           CustomEvent<{
             preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
             withoutSync: boolean;
           }>
         )
@@ -656,34 +661,41 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
     });
 
-    it('should close modals and update history if no modalSettings and using preventContextUpdate', async () => {
+    it('should close modals and replace history state if no modalSettings and using preventHistoryEntry', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
-
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: false,
         path: '/normal/path',
         preserveView: undefined,
-        preventContextUpdate: true,
-        withoutSync: true
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
-      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
           CustomEvent<{
             preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
             withoutSync: boolean;
           }>
         )
@@ -692,9 +704,14 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: true, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
+      });
 
       pushStateSpy.mockRestore();
+      replaceStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
     });
   });

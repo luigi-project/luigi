@@ -1,4 +1,21 @@
 import type { Luigi } from '../core-api/luigi';
+import type {
+  AppSwitcher,
+  AppSwitcherItem,
+  HistoryMethod,
+  LeftNavData,
+  NavigationRequestBase,
+  NavigationRequestEvent,
+  NavigationRequestParams,
+  NavItem,
+  Node,
+  PathData,
+  ProfileItem,
+  ProfileSettings,
+  TabNavData,
+  TopNavData,
+  UserInfo
+} from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
@@ -10,210 +27,6 @@ import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
-
-export interface TopNavData {
-  appTitle: string;
-  logo: string;
-  topNodes: NavItem[];
-  productSwitcher?: ProductSwitcher;
-  profile?: ProfileSettings;
-  appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => void;
-}
-
-export interface AppSwitcher {
-  showMainAppEntry?: boolean;
-  items?: AppSwitcherItem[];
-  itemRenderer?: (item: AppSwitcherItem, slot: HTMLElement, appSwitcherApiObj?: any) => void;
-}
-
-export interface AppSwitcherItem {
-  title?: string;
-  subtitle?: string;
-  link?: string;
-  selectionConditions?: selectionConditions;
-}
-
-export interface selectionConditions {
-  route?: string;
-  contextCriteria?: ContextCriteria[];
-}
-
-export interface ContextCriteria {
-  key: string;
-  value: string;
-}
-export interface ProfileSettings {
-  authEnabled: boolean;
-  signedIn: boolean;
-  logout: ProfileLogout;
-  items?: ProfileItem[];
-  staticUserInfoFn?: () => Promise<UserInfo>;
-  onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
-  itemClick: (item: ProfileItem) => void;
-}
-
-export interface ProfileLogout {
-  label?: string;
-  icon?: string;
-  testId?: string;
-  altText?: string;
-  doLogout: () => void;
-}
-
-export interface ProfileItem {
-  label?: string;
-  link?: string;
-  externalLink?: ExternalLink;
-  icon?: string;
-  testId?: string;
-  altText?: string;
-  openNodeInModal?: boolean | ModalSettings;
-}
-
-export interface UserInfo {
-  name?: string;
-  initials?: string;
-  email?: string;
-  picture?: string;
-  description?: string;
-}
-
-export interface LeftNavData {
-  selectedNode: any;
-  items: NavItem[];
-  basePath: string;
-  sideNavFooterText?: string;
-  navClick?: (item: NavItem) => void;
-}
-
-export interface PathData {
-  selectedNode?: Node;
-  selectedNodeChildren?: Node[];
-  nodesInPath?: Node[];
-  rootNodes: Node[];
-  pathParams: Record<string, any>;
-}
-
-export interface RootNode {
-  node: Node;
-}
-
-export interface Node {
-  altText?: string;
-  anonymousAccess?: any;
-  badgeCounter?: {
-    count?: () => number | Promise<number>;
-    label?: string;
-  };
-  category?: any;
-  children?: Node[];
-  clientPermissions?: {
-    changeCurrentLocale?: boolean;
-    urlParameters?: Record<string, any>;
-  };
-  context?: Record<string, any>;
-  drawer?: ModalSettings;
-  externalLink?: ExternalLink;
-  hideFromNav?: boolean;
-  hideSideNav?: boolean;
-  icon?: string;
-  isRootNode?: boolean;
-  keepSelectedForChildren?: boolean;
-  label?: string;
-  onNodeActivation?: (node: Node) => boolean | void;
-  openNodeInModal?: boolean;
-  pageErrorHandler?: PageErrorHandler;
-  parent?: Node;
-  pathSegment?: string;
-  runTimeErrorHandler?: RunTimeErrorHandler;
-  tabNav?: boolean;
-  tooltipText?: string;
-  viewUrl?: string;
-  visibleForFeatureToggles?: string[];
-}
-
-export interface PageErrorHandler {
-  timeout: number;
-  viewUrl?: string;
-  redirectPath?: string;
-  errorFn?: (node?: Node) => void;
-}
-
-export interface RunTimeErrorHandler {
-  errorFn?: (error: object, node?: Node) => void;
-}
-
-export interface Category {
-  altText?: string;
-  collapsible?: boolean;
-  icon?: string;
-  id: string;
-  isGroup?: boolean;
-  label?: string;
-  nodes?: NavItem[];
-  tooltip?: string;
-}
-
-export interface NavItem {
-  altText?: string;
-  category?: Category;
-  icon?: string;
-  node?: Node;
-  label?: string;
-  selected?: boolean;
-  tooltip?: string;
-}
-
-export interface TabNavData {
-  selectedNode?: any;
-  items?: NavItem[];
-  basePath?: string;
-  navClick?: (item: NavItem) => void;
-}
-
-export interface ModalSettings {
-  size?: 'fullscreen' | 'l' | 'm' | 's';
-  width?: string;
-  height?: string;
-  title?: string;
-  closebtn_data_testid?: string;
-  keepPrevious?: boolean;
-}
-
-export interface ProductSwitcher {
-  altText?: string;
-  columns?: number;
-  icon?: string;
-  items?: [ProductSwitcherItem];
-  label?: string;
-  testId?: string;
-}
-
-export interface ProductSwitcherItem {
-  altText?: string;
-  externalLink?: ExternalLink;
-  icon?: string;
-  label?: string;
-  link?: string;
-  selected?: boolean;
-  subTitle?: string;
-  testId?: string;
-}
-
-export interface ExternalLink {
-  url?: string;
-  sameWindow?: boolean;
-}
-
-export interface NavigationRequestParams {
-  modalSettings?: any;
-  newTab?: boolean;
-  path: string;
-  preserveView?: string;
-  preventContextUpdate?: boolean;
-  withoutSync?: boolean;
-}
 
 export class NavigationService {
   nodeDataManagementService?: NodeDataManagementService;
@@ -845,18 +658,29 @@ export class NavigationService {
    * @param {boolean} params.newTab - open a view in new tab by setting it to `true` (optional)
    * @param {boolean} params.withoutSync - disables the navigation handling for a single navigation request (optional)
    * @param {boolean} params.preventContextUpdate - make no context update being triggered; default is false (optional)
+   * @param {boolean} params.preventHistoryEntry - make no history update being triggered; default is false (optional)
    * @param {any} callbackFn - callback to be triggered after opening view as modal (optional)
    */
   async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
-    const { path, preserveView, modalSettings, newTab, withoutSync, preventContextUpdate } = params;
+    const {
+      path,
+      preserveView,
+      modalSettings,
+      newTab,
+      withoutSync,
+      preventContextUpdate,
+      preventHistoryEntry
+    }: NavigationRequestParams = params;
     const normalizedPath = path.replace(/\/\/+/g, '/');
+    const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
     if (modalSettings) {
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
     } else {
-      const eventDetail = {
+      const eventDetail: NavigationRequestEvent = {
         detail: {
           preventContextUpdate: !!preventContextUpdate,
+          preventHistoryEntry: !!preventHistoryEntry,
           withoutSync: !!withoutSync
         }
       };
@@ -868,19 +692,23 @@ export class NavigationService {
         return;
       }
 
+      const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
+        ? 'replaceState'
+        : chosenHistoryMethod;
+
       if (this.luigi.getConfig().routing?.useHashRouting) {
-        if (!withoutSync) {
+        if (!withoutSync && method !== 'replaceState') {
           location.hash = normalizedPath;
         } else {
-          const event = new CustomEvent('hashchange', eventDetail);
+          const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 
-          window.history.pushState({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.history[method]({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
           window.dispatchEvent(event);
         }
       } else {
-        const event = new CustomEvent('popstate', eventDetail);
+        const event = new CustomEvent<NavigationRequestBase>('popstate', eventDetail);
 
-        window.history.pushState({ path: normalizedPath }, '', normalizedPath);
+        window.history[method]({ path: normalizedPath }, '', normalizedPath);
         window.dispatchEvent(event);
       }
     }
