@@ -38,7 +38,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
-    (lcc as any)._virtualViewUrl = node.virtualTree ? node._virtualViewUrl || node.viewUrl: undefined;
+    (lcc as any)._virtualViewUrl =
+      node.virtualTree || node._virtualViewUrl ? node._virtualViewUrl || node.viewUrl : undefined;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
@@ -59,8 +60,10 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    console.log('#########node', node);
     (lc as any).virtualTree = node.virtualTree || node._virtualTree;
-    (lc as any)._virtualViewUrl = node.virtualTree ? node._virtualViewUrl || node.viewUrl: undefined;
+    (lc as any)._virtualViewUrl =
+      node.virtualTree || node._virtualViewUrl ? node._virtualViewUrl || node.viewUrl : undefined;
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
@@ -191,17 +194,22 @@ export const UIModule = {
 
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
-          if (element.viewGroup) {
-            if (currentNode.viewGroup === element.viewGroup) {
-              viewGroupContainer = element;
-            } else {
-              element.style.display = 'none';
-            }
-          } 
-          else if (element.virtualTree && (currentNode._virtualViewUrl === element._virtualViewUrl || currentNode.viewUrl === element._virtualViewUrl)) {
-              viewGroupContainer = element;
-          }
-           else {
+          if (
+            element.virtualTree &&
+            (currentNode._virtualViewUrl === element._virtualViewUrl || currentNode.viewUrl === element._virtualViewUrl)
+          ) {
+            console.log('virtual tree same container');
+            viewGroupContainer = element;
+          } else if (
+            element.viewGroup &&
+            currentNode.viewGroup === element.viewGroup &&
+            (currentNode._virtualViewUrl === element._virtualViewUrl || currentNode.viewUrl === element.viewUrl)
+          ) {
+            console.log('view group same container');
+            viewGroupContainer = element;
+          } else if (element.viewGroup) {
+            element.style.display = 'none';
+          } else {
             element.remove();
           }
         }
