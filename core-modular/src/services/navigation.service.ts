@@ -674,7 +674,7 @@ export class NavigationService {
 
     if (modalSettings) {
       if (!modalSettings.keepPrevious) {
-        this.resetMicrofrontendModalData();
+        this.getModalService().closeModals();
       }
 
       this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
@@ -714,16 +714,6 @@ export class NavigationService {
         window.dispatchEvent(event);
       }
     }
-  }
-
-  resetMicrofrontendModalData(index?: number): void {
-    // reset all modal list
-    if (typeof index === 'undefined') {
-      this.getModalService().closeModals();
-      return;
-    }
-
-    this.getModalService().removeModalFromStackByIndex(index);
   }
 
   //TODO check context default object as param

@@ -88,15 +88,6 @@ export class ModalService {
   }
 
   /**
-   * Removes modal from the stack by index.
-   */
-  removeModalFromStackByIndex(index: number): void {
-    if (this._modalStack[index]) {
-      this._modalStack.splice(index, 1);
-    }
-  }
-
-  /**
    * Removes the last modal from the stack.
    */
   removeLastModalFromStack(): void {

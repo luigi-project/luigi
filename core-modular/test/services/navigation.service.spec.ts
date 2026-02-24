@@ -26,8 +26,7 @@ describe('NavigationService', () => {
 
     mockModalService = {
       clearModalStack: jest.fn(),
-      closeModals: jest.fn(),
-      removeModalFromStackByIndex: jest.fn()
+      closeModals: jest.fn()
     };
     mockNodeDataManagementService = {
       setChildren: jest.fn(),

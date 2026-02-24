@@ -161,20 +161,6 @@ describe('ModalService', () => {
     });
   });
 
-  describe('removeModalFromStackByIndex', () => {
-    it('removes given modal from stack', () => {
-      const m1: ModalPromiseObject = { modalsettings: { title: 'First' } };
-      const m2: ModalPromiseObject = { modalsettings: { title: 'Second' } };
-      service.registerModal(m1);
-      service.registerModal(m2);
-      expect(service._modalStack.length).toBe(2);
-
-      service.removeModalFromStackByIndex(0);
-      expect(service._modalStack.length).toBe(1);
-      expect((service._modalStack[0] as any).modalsettings.title).toEqual('Second');
-    });
-  });
-
   describe('removeLastModalFromStack', () => {
     it('removes given modal from stack', () => {
       const m1: ModalPromiseObject = { modalsettings: { title: 'First' } };
