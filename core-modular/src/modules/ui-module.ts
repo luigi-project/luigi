@@ -59,6 +59,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
     (lc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lc as any)._virtualViewUrl = node.virtualTree ? node._virtualViewUrl || node.viewUrl: undefined;
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
@@ -195,13 +196,11 @@ export const UIModule = {
             } else {
               element.style.display = 'none';
             }
-          } else if (element.virtualTree) {
-            if (currentNode.virtualTree || currentNode._virtualTree) {
+          } 
+          else if (element.virtualTree && (currentNode._virtualViewUrl === element._virtualViewUrl || currentNode.viewUrl === element._virtualViewUrl)) {
               viewGroupContainer = element;
-            } else {
-              element.style.display = 'none';
-            }
-          } else {
+          }
+           else {
             element.remove();
           }
         }
