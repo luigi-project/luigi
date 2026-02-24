@@ -41,6 +41,7 @@ function addShellbarItem(shellbar, item) {
       });
     }
     itemEl.setAttribute('icon', item.node.icon);
+    itemEl.setAttribute('selected', item.selected);
     itemEl.setAttribute('text', item.label);
     itemEl.setAttribute('luigi-route', item.node.pathSegment);
     itemEl.addEventListener('click', () => {
