@@ -47,7 +47,7 @@ describe('NavigationService', () => {
     let prevNode: Node;
     let nextNode: Node;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       prevNode = { label: 'prev', children: [] };
       nextNode = { label: 'next', children: [] };
     });
@@ -925,6 +925,117 @@ describe('NavigationService', () => {
 
       expect(childNode.parent).toBeUndefined();
       expect(childNode).toBe(childNode);
+    });
+  });
+  describe('Navigation nodes with viewurl in rootNode and nodes defined as object', () => {
+    let cfg: any;
+    let getAccessibleNodesSpy: jest.SpyInstance;
+    let details2Children: Node[];
+    let dasboard2Children: Node[];
+    beforeEach(async () => {
+      details2Children = [
+        {
+          pathSegment: 'detail2_aa',
+          label: 'detail2 aa',
+          viewUrl: '/microfrontend.html#detail2_aa'
+        }
+      ];
+      dasboard2Children = [
+        {
+          pathSegment: 'details2',
+          label: 'details2',
+          viewUrl: '/microfrontend.html#details2',
+          children: details2Children
+        }
+      ];
+      let topNavNodes: Node[] = [
+        {
+          pathSegment: 'dashboard',
+          icon: 'employee',
+          label: 'dashboard',
+          viewUrl: '/microfrontend.html#dashboard',
+          children: [
+            {
+              pathSegment: 'details',
+              label: 'details',
+              viewUrl: '/microfrontend.html#details',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'detail',
+                  viewUrl: '/microfrontend.html#detail'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          pathSegment: 'dashboard2',
+          icon: 'settings',
+          label: 'dashboard2',
+          viewUrl: '/microfrontend.html#dashboard2',
+          children: dasboard2Children
+        }
+      ];
+      cfg = {
+        navigation: {
+          nodes: {
+            pathSegment: 'home',
+            label: 'home',
+            icon: 'home',
+            viewUrl: '/microfrontend.html#home',
+            children: topNavNodes
+          },
+          globalContext: {}
+        }
+      };
+      luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
+
+      navigationService = new NavigationService(luigiMock);
+      getAccessibleNodesSpy = jest.spyOn(navigationService as any, 'getAccessibleNodes').mockReturnValue(topNavNodes);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockResolvedValue(topNavNodes);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('rootNode and topNav nodes check', async () => {
+      const pathData = await navigationService.getPathData('');
+      expect(pathData.selectedNode?.pathSegment).toBe('');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#home');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+
+    it('rootNode and topNav nodes and selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2');
+      expect(pathData.selectedNode?.pathSegment).toBe('details2');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#details2');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+    it('selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2/detail2_aa');
+      expect(pathData.selectedNode?.pathSegment).toBe('detail2_aa');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#detail2_aa');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
     });
   });
 });
