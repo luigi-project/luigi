@@ -494,10 +494,9 @@ export const RoutingHelpers = {
   /**
    * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
    * If the there is no `pageNotFoundHandler` defined we return undefined.
-   * @param {string} notFoundPath - the path to check
+   * @param {string} notFoundPath - the path to be checked
    * @param {boolean} isAnyPathMatched - is any path matched or not
    * @param {Luigi} luigi - the Luigi instance used to access config value
-   * @param {string} notFoundPath - the path to check
    * @returns {Object} an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
    */
   getPageNotFoundRedirectResult(notFoundPath: string, isAnyPathMatched = false, luigi: Luigi): object {

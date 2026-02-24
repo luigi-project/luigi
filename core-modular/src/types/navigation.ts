@@ -77,10 +77,8 @@ export interface LeftNavData {
 
 export interface PathData {
   context?: Record<string, any>;
-  isExistingRoute?: boolean;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
-  matchedPath?: string;
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;

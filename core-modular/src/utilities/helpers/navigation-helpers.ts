@@ -126,7 +126,7 @@ export const NavigationHelpers = {
       }
     }
 
-    if (navigationContext) {
+    if (navigationContext && context.parentNavigationContexts) {
       context.parentNavigationContexts.unshift(navigationContext);
     }
 

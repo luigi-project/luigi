@@ -456,12 +456,19 @@ export class RoutingService {
     path: string,
     pathUrlRaw: string
   ): Promise<boolean> {
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const pathSegments: string[] = activePath?.split('/') || [];
+    const navPathSegments: string[] = pathData?.nodesInPath?.length
+      ? pathData.nodesInPath.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment)
+      : [];
+    const isExistingRoute: boolean = !activePath || pathSegments.length === navPathSegments.length;
+
     if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
       const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {
         return await this.getNavigationService().getChildren(node, ctx);
       });
 
-      if (pathData?.isExistingRoute) {
+      if (isExistingRoute) {
         // normal navigation can be performed
         const trimmedPathUrl = GenericHelpers.getTrimmedUrl(path);
 
@@ -480,7 +487,7 @@ export class RoutingService {
         if (defaultChildNode && pathData?.nodesInPath && pathData.nodesInPath.length > 1) {
           // last path segment was invalid but a default node could be in its place
           this.showPageNotFoundError(
-            GenericHelpers.trimTrailingSlash(pathData.matchedPath || '') + '/' + defaultChildNode,
+            GenericHelpers.trimTrailingSlash(activePath || '') + '/' + defaultChildNode,
             pathUrlRaw,
             true
           );
@@ -498,8 +505,8 @@ export class RoutingService {
       return true;
     }
 
-    if (!pathData?.isExistingRoute) {
-      this.showPageNotFoundError(pathData.matchedPath || '', pathUrlRaw, true);
+    if (!isExistingRoute) {
+      this.showPageNotFoundError(activePath || '', pathUrlRaw, true);
 
       return true;
     }
@@ -507,6 +514,13 @@ export class RoutingService {
     return false;
   }
 
+  /**
+   * Handle error for page not found scenario.
+   * @param {string} pathToRedirect - fallback path for redirection
+   * @param {string} notFoundPath - the path which cannot be found
+   * @param {boolean} isAnyPathMatched - is any path matched or not
+   * @returns {Promise<void>} A promise that resolves when error handling is complete.
+   */
   async showPageNotFoundError(pathToRedirect: string, notFoundPath: string, isAnyPathMatched = false): Promise<void> {
     const redirectResult: any = RoutingHelpers.getPageNotFoundRedirectResult(
       notFoundPath,

@@ -74,11 +74,6 @@ export class NavigationService {
     }
 
     const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
-
-    if (!rootContext.parentNavigationContexts) {
-      rootContext.parentNavigationContexts = [];
-    }
-
     const pathParams: Record<string, any> = {};
     const pathData: PathData = {
       context: rootContext,
@@ -124,19 +119,6 @@ export class NavigationService {
           : undefined;
       }
     }
-
-    const activePath: string = GenericHelpers.getTrimmedUrl(path);
-    const nodeNamesInCurrentPath = activePath.split('/');
-    const navPathSegments: string[] = pathData.nodesInPath?.length
-      ? pathData.nodesInPath?.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment)
-      : [];
-
-    pathData.isExistingRoute = !activePath || nodeNamesInCurrentPath.length === navPathSegments.length;
-    pathData.matchedPath = pathSegments
-      .filter((segment, index) => {
-        return (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment;
-      })
-      .join('/');
 
     return pathData;
   }
