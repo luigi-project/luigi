@@ -93,7 +93,7 @@
           await setModalSize();
         }
 
-        if(nodeObject.compound) {
+        if (nodeObject.compound) {
           WebComponentService.renderWebComponentCompound(
             nodeObject,
             document.querySelector(modalElementClassSelector),
@@ -284,7 +284,12 @@
     window.focus();
     // activate loadingindicator if onMount function takes longer than expected
     setTimeout(() => {
-      if (!contextRequested && !nodeObject.webcomponent && !nodeObject.compound && nodeObject.loadingIndicator?.enabled !== false) {
+      if (
+        !contextRequested &&
+        !nodeObject.webcomponent &&
+        !nodeObject.compound &&
+        nodeObject.loadingIndicator?.enabled !== false
+      ) {
         showLoadingIndicator = true;
       }
     }, 250);
