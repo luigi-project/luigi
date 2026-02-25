@@ -8,6 +8,7 @@ import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
 import type { ModalSettings } from '../types/navigation';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
 const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -37,6 +38,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
+    (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
@@ -57,6 +60,8 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    (lc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
@@ -184,21 +189,28 @@ export const UIModule = {
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+      let currentVirtualTreeRootNode: any;
+
+      if (currentNode.virtualTree || currentNode._virtualTree) {
+        currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
+      }
 
       [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          if (element.viewGroup) {
-            if (currentNode.viewGroup === element.viewGroup) {
-              viewGroupContainer = element;
-            } else {
-              element.style.display = 'none';
-            }
+        if (element.tagName?.indexOf('LUIGI-') !== 0) return;
+
+        if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
+          element.style.display = 'none';
+        } else {
+          if (
+            element.viewGroup ||
+            (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
+          ) {
+            viewGroupContainer = element;
           } else {
             element.remove();
           }
         }
       });
-
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
