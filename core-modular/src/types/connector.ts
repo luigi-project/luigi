@@ -1,4 +1,3 @@
-import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData } from '../services/navigation.service';
 import type {
   AlertHandler,
   AlertSettings,
@@ -6,6 +5,7 @@ import type {
   ConfirmationModalSettings,
   UserSettings
 } from '../modules/ux-module';
+import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData } from './navigation';
 
 export interface LuigiConnector {
   renderMainLayout(): void;

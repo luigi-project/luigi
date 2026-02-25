@@ -1,6 +1,7 @@
 import { serviceRegistry } from '../../src/services/service-registry';
-import { NavigationService, type NavigationRequestParams, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import type { NavigationRequestParams, Node } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
 describe('NavigationService', () => {
@@ -46,7 +47,7 @@ describe('NavigationService', () => {
     let prevNode: Node;
     let nextNode: Node;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       prevNode = { label: 'prev', children: [] };
       nextNode = { label: 'next', children: [] };
     });
@@ -552,15 +553,16 @@ describe('NavigationService', () => {
     });
 
     it('should call openAsModal if modalSettings are provided', async () => {
+      const openAsModalMock = jest.fn();
       const navRequestParams: NavigationRequestParams = {
         modalSettings: { size: 'l' },
         newTab: false,
         path: '/modal/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: false
       };
-      const openAsModalMock = jest.fn();
 
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
@@ -605,16 +607,17 @@ describe('NavigationService', () => {
 
     it('should navigate to a path in new browser tab', async () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      const pushStateSpy = jest.spyOn(window.history, 'pushState');
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: true,
         path: '/test/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: false
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState');
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
 
       navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
 
@@ -629,16 +632,17 @@ describe('NavigationService', () => {
     it('should close modals and update history if no modalSettings and using withoutSync', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
 
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: false,
         path: '/normal/path',
         preserveView: undefined,
         preventContextUpdate: false,
+        preventHistoryEntry: false,
         withoutSync: true
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
@@ -648,6 +652,7 @@ describe('NavigationService', () => {
         expect.any(
           CustomEvent<{
             preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
             withoutSync: boolean;
           }>
         )
@@ -656,34 +661,41 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: false, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
     });
 
-    it('should close modals and update history if no modalSettings and using preventContextUpdate', async () => {
+    it('should close modals and replace history state if no modalSettings and using preventHistoryEntry', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
-
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
         newTab: false,
         path: '/normal/path',
         preserveView: undefined,
-        preventContextUpdate: true,
-        withoutSync: true
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
-      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(modalServiceMock.closeModals).toHaveBeenCalled();
-      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
           CustomEvent<{
             preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
             withoutSync: boolean;
           }>
         )
@@ -692,9 +704,14 @@ describe('NavigationService', () => {
       const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
 
       expect(dispatchedEvent.type).toEqual('popstate');
-      expect(dispatchedEvent.detail).toEqual({ preventContextUpdate: true, withoutSync: true });
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
+      });
 
       pushStateSpy.mockRestore();
+      replaceStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
     });
   });
@@ -908,6 +925,117 @@ describe('NavigationService', () => {
 
       expect(childNode.parent).toBeUndefined();
       expect(childNode).toBe(childNode);
+    });
+  });
+  describe('Navigation nodes with viewurl in rootNode and nodes defined as object', () => {
+    let cfg: any;
+    let getAccessibleNodesSpy: jest.SpyInstance;
+    let details2Children: Node[];
+    let dasboard2Children: Node[];
+    beforeEach(async () => {
+      details2Children = [
+        {
+          pathSegment: 'detail2_aa',
+          label: 'detail2 aa',
+          viewUrl: '/microfrontend.html#detail2_aa'
+        }
+      ];
+      dasboard2Children = [
+        {
+          pathSegment: 'details2',
+          label: 'details2',
+          viewUrl: '/microfrontend.html#details2',
+          children: details2Children
+        }
+      ];
+      let topNavNodes: Node[] = [
+        {
+          pathSegment: 'dashboard',
+          icon: 'employee',
+          label: 'dashboard',
+          viewUrl: '/microfrontend.html#dashboard',
+          children: [
+            {
+              pathSegment: 'details',
+              label: 'details',
+              viewUrl: '/microfrontend.html#details',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'detail',
+                  viewUrl: '/microfrontend.html#detail'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          pathSegment: 'dashboard2',
+          icon: 'settings',
+          label: 'dashboard2',
+          viewUrl: '/microfrontend.html#dashboard2',
+          children: dasboard2Children
+        }
+      ];
+      cfg = {
+        navigation: {
+          nodes: {
+            pathSegment: 'home',
+            label: 'home',
+            icon: 'home',
+            viewUrl: '/microfrontend.html#home',
+            children: topNavNodes
+          },
+          globalContext: {}
+        }
+      };
+      luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
+
+      navigationService = new NavigationService(luigiMock);
+      getAccessibleNodesSpy = jest.spyOn(navigationService as any, 'getAccessibleNodes').mockReturnValue(topNavNodes);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockResolvedValue(topNavNodes);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('rootNode and topNav nodes check', async () => {
+      const pathData = await navigationService.getPathData('');
+      expect(pathData.selectedNode?.pathSegment).toBe('');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#home');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+
+    it('rootNode and topNav nodes and selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2');
+      expect(pathData.selectedNode?.pathSegment).toBe('details2');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#details2');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+    it('selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2/detail2_aa');
+      expect(pathData.selectedNode?.pathSegment).toBe('detail2_aa');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#detail2_aa');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
     });
   });
 });
