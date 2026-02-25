@@ -1459,7 +1459,7 @@
 
           if (modal !== undefined) {
             let openerIframe = iframe;
-            if (modal._reuseIframeOpener && mfModalList.length === 1 && mfModalList[0].mfModal?.nodepath === path) {
+            if (modal._reuseIframeOpener && mfModalList.length === 1) {
               openerIframe = mfModalList[0].mfModal.openerIframe;
             }
             !modal.keepPrevious && resetMicrofrontendModalData();
