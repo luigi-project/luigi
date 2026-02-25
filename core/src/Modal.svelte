@@ -83,7 +83,7 @@
       return;
     }
     if (isDataPrepared) {
-      if (nodeObject.webcomponent) {
+      if (nodeObject.webcomponent || nodeObject.compound) {
         //"Workaround" because we need a webcomponent client api
         // to hide/show the loadingIndicator
         showLoadingIndicator = false;
@@ -93,18 +93,30 @@
           await setModalSize();
         }
 
-        WebComponentService.renderWebComponent(
-          nodeObject.viewUrl,
-          document.querySelector(modalElementClassSelector),
-          {
-            context: pathData.context,
-            clientPermissions: nodeObject.clientPermissions || {},
-            pathParams: pathData.pathParams || {}
-          },
-          nodeObject,
-          undefined,
-          true
-        );
+        if(nodeObject.compound) {
+          WebComponentService.renderWebComponentCompound(
+            nodeObject,
+            document.querySelector(modalElementClassSelector),
+            {
+              context: pathData.context,
+              clientPermissions: nodeObject.clientPermissions || {},
+              pathParams: pathData.pathParams || {}
+            }
+          );
+        } else {
+          WebComponentService.renderWebComponent(
+            nodeObject.viewUrl,
+            document.querySelector(modalElementClassSelector),
+            {
+              context: pathData.context,
+              clientPermissions: nodeObject.clientPermissions || {},
+              pathParams: pathData.pathParams || {}
+            },
+            nodeObject,
+            undefined,
+            true
+          );
+        }
         dispatch('wcCreated', {
           modalWC: document.querySelector(modalElementClassSelector),
           modalWCData: { ...pathData, nodeParams }
@@ -272,7 +284,7 @@
     window.focus();
     // activate loadingindicator if onMount function takes longer than expected
     setTimeout(() => {
-      if (!contextRequested && !nodeObject.webcomponent && nodeObject.loadingIndicator?.enabled !== false) {
+      if (!contextRequested && !nodeObject.webcomponent && !nodeObject.compound && nodeObject.loadingIndicator?.enabled !== false) {
         showLoadingIndicator = true;
       }
     }, 250);
