@@ -171,5 +171,15 @@ export const NavigationHelpers = {
       }
     });
     return result;
+  },
+
+  findVirtualTreeRootNode(node: Node): Node | undefined {
+    if (node.virtualTree) {
+      return node;
+    }
+    if (node.parent) {
+      return NavigationHelpers.findVirtualTreeRootNode(node.parent);
+    }
+    return undefined;
   }
 };
