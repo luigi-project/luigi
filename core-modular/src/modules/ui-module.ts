@@ -39,6 +39,7 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
     (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
