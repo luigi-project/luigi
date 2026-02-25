@@ -200,16 +200,15 @@ export const UIModule = {
 
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
           element.style.display = 'none';
-        } else if (element.virtualTree) {
-          if (currentVirtualTreeRootNode === element.virtualTreeRootNode) {
+        } else {
+          if (
+            element.viewGroup ||
+            (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
+          ) {
             viewGroupContainer = element;
           } else {
             element.remove();
           }
-        } else if (element.viewGroup) {
-          viewGroupContainer = element;
-        } else {
-          element.remove();
         }
       });
       if (viewGroupContainer) {
