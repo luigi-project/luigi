@@ -190,25 +190,23 @@ export const UIModule = {
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
 
-      [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          const virtualTreeRootNode = element.virtualTree
-            ? NavigationHelpers.findVirtualTreeRootNode(currentNode)
-            : null;
+      const currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
 
-          if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
-            element.style.display = 'none';
-          } else if (element.virtualTree) {
-            if (virtualTreeRootNode === element.virtualTreeRootNode) {
-              viewGroupContainer = element;
-            } else {
-              element.remove();
-            }
-          } else if (element.viewGroup) {
+      [...containerWrapper.childNodes].forEach((element: any) => {
+        if (element.tagName?.indexOf('LUIGI-') !== 0) return;
+
+        if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
+          element.style.display = 'none';
+        } else if (element.virtualTree) {
+          if (currentVirtualTreeRootNode === element.virtualTreeRootNode) {
             viewGroupContainer = element;
           } else {
             element.remove();
           }
+        } else if (element.viewGroup) {
+          viewGroupContainer = element;
+        } else {
+          element.remove();
         }
       });
       if (viewGroupContainer) {
