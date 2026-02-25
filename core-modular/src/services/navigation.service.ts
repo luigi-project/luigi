@@ -29,9 +29,17 @@ import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 
 export class NavigationService {
+  modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
 
   constructor(private luigi: Luigi) {}
+
+  private getModalService(): ModalService {
+    if (!this.modalService) {
+      this.modalService = serviceRegistry.get(ModalService);
+    }
+    return this.modalService;
+  }
 
   private getNodeDataManagementService(): NodeDataManagementService {
     if (!this.nodeDataManagementService) {
@@ -678,6 +686,10 @@ export class NavigationService {
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
     if (modalSettings) {
+      if (!modalSettings.keepPrevious) {
+        this.getModalService().closeModals();
+      }
+
       this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
     } else {
       const eventDetail: NavigationRequestEvent = {
