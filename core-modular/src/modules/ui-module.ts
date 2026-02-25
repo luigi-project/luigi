@@ -189,8 +189,11 @@ export const UIModule = {
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+      let currentVirtualTreeRootNode: any;
 
-      const currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
+      if (currentNode.virtualTree || currentNode._virtualTree) {
+        currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
+      }
 
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') !== 0) return;
