@@ -193,7 +193,16 @@ export const UIModule = {
         if (element.tagName?.indexOf('LUIGI-') === 0) {
           if (element.viewGroup) {
             if (currentNode.viewGroup === element.viewGroup) {
-              viewGroupContainer = element;
+              if (element.virtualTree) {
+                const virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
+                if (virtualTreeRootNode === element.virtualTreeRootNode) {
+                  viewGroupContainer = element;
+                } else {
+                  element.remove();
+                }
+              } else {
+                viewGroupContainer = element;
+              }
             } else {
               element.style.display = 'none';
             }
