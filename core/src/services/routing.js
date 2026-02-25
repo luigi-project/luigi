@@ -331,7 +331,15 @@ class RoutingClass {
    * @param {boolean} preventContextUpdate - make no context update being triggered; default is false
    * @param {boolean} configChangedInitiated - indicates if the route change was initiated by a config change; default is false
    */
-  async handleRouteChange(rawPath, component, iframeElement, config, withoutSync, preventContextUpdate = false, configChangedInitiated = false) {
+  async handleRouteChange(
+    rawPath,
+    component,
+    iframeElement,
+    config,
+    withoutSync,
+    preventContextUpdate = false,
+    configChangedInitiated = false
+  ) {
     const path = rawPath || '';
     // Handle intent navigation with new tab scenario.
     if (path.external) {
