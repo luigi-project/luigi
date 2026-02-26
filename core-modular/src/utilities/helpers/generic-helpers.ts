@@ -1,3 +1,4 @@
+import { replace, get } from 'lodash';
 export const GenericHelpers = {
   /**
    * Creates a random Id
@@ -169,5 +170,80 @@ export const GenericHelpers = {
 
   getUrlParameter: (key: string) => {
     return new URLSearchParams(window.location.search).get(key);
+  },
+
+  /**
+   * Returns a new Object with the same object,
+   * without the keys that were given.
+   * References still stay.
+   * Allows wildcard ending keys
+   *
+   * @param {Object} input - any given object
+   * @param {Array} keys - allows also wildcards at the end, like: _*
+   */
+  removeProperties(input: Record<string, any>, keys: any[]): Record<string, any> {
+    const res: Record<string, any> = {};
+    if (!(keys instanceof Array) || !keys.length) {
+      console.error('[ERROR] removeProperties requires second parameter: array of keys to remove from object.');
+      return input;
+    }
+    for (const key in input) {
+      if (input.hasOwnProperty(key)) {
+        const noFullMatch = keys.filter((k) => key.includes(k)).length === 0;
+        const noPartialMatch =
+          keys
+            .filter((k) => k.endsWith('*'))
+            .map((k) => k.slice(0, -1))
+            .filter((k) => key.startsWith(k)).length === 0;
+        if (noFullMatch && noPartialMatch) {
+          res[key] = input[key];
+        }
+      }
+    }
+    return res;
+  },
+
+  /**
+   *  Replaces variables in the input string with the values from the params object. Variables are defined with a prefix and wrapped in curly braces, e.g. {i18n.key} or {config.key}.
+   *  If the variable is not found in the params object, it will be removed from the string.
+   * @param inputString
+   * @param params
+   * @param prefix
+   * @param parenthesis
+   * @returns
+   */
+  replaceVars(inputString: string, params: Record<string, any>, prefix: string, parenthesis = true): string {
+    let processedString = inputString;
+    if (params) {
+      if (parenthesis) {
+        processedString = replace(processedString, /{([\s\S]+?)}/g, (val) => {
+          let repl = val.slice(1, -1).trim();
+          if (repl.indexOf(prefix) === 0) {
+            repl = repl.substring(prefix.length);
+          }
+          return get(params, repl, val);
+        });
+      } else {
+        Object.entries(params).forEach((entry) => {
+          processedString = processedString.replace(
+            new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
+            encodeURIComponent(entry[1])
+          );
+        });
+      }
+    }
+    if (parenthesis) {
+      processedString = processedString.replace(new RegExp('\\{' + this.escapeRegExp(prefix) + '[^\\}]+\\}', 'g'), '');
+    }
+    return processedString;
+  },
+
+  /**
+   *  Escapes special characters in a string for use in a regular expression.
+   * @param string
+   * @returns
+   */
+  escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 };
