@@ -313,7 +313,7 @@ describe('Routing-helpers', () => {
   });
 
   describe('getLocationSearchQueryParams', () => {
-    let getLocationStub: SinonStub | undefined;
+    let getLocationStub: jest.SpyInstance | undefined;
     afterEach(() => {
       if (getLocationStub) {
         getLocationStub.mockRestore();
@@ -354,6 +354,56 @@ describe('Routing-helpers', () => {
     it('converts plus sign to space', () => {
       stubLocationSearch('?q=hello+world+test');
       expect(RoutingHelpers.getLocationSearchQueryParams()).toEqual({ q: 'hello world test' });
+    });
+  });
+
+  describe('buildRoute', () => {
+    it('should return path with params if node has no parent (root node)', () => {
+      const rootNode = {
+        pathSegment: 'root'
+      };
+
+      const result = RoutingHelpers.buildRoute(rootNode, '/child', 'id=1');
+
+      expect(result).toBe('/child?id=1');
+    });
+
+    it('should build full route recursively from child to root', () => {
+      const rootNode = { pathSegment: 'root' };
+      const parentNode = { pathSegment: 'parent', parent: rootNode };
+      const childNode = { pathSegment: 'child', parent: parentNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child');
+
+      expect(result).toBe('/root/parent/child');
+    });
+
+    it('should append params only once at the end', () => {
+      const rootNode = { pathSegment: 'root' };
+      const parentNode = { pathSegment: 'parent', parent: rootNode };
+      const childNode = { pathSegment: 'child', parent: parentNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child', 'foo=bar');
+
+      expect(result).toBe('/root/parent/child?foo=bar');
+    });
+
+    it('should handle single parent correctly', () => {
+      const rootNode = { pathSegment: 'root' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child');
+
+      expect(result).toBe('/root/child');
+    });
+
+    it('should work with empty params', () => {
+      const rootNode = { pathSegment: 'root' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child', '');
+
+      expect(result).toBe('/root/child');
     });
   });
 });

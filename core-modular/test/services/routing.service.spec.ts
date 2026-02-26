@@ -753,12 +753,28 @@ describe('Routing Service', () => {
   });
 
   describe('handleRouteChange', () => {
+    beforeEach(() => {
+      // In these tests we don't care about the exact PathData shape,
+      // but RoutingService calls RoutingHelpers.substituteViewUrl(viewUrl, pathData, ...)
+      // which requires pathData.pathParams to exist.
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue({
+        rootNodes: [],
+        pathParams: {},
+        nodesInPath: []
+      });
+    });
+
     it('should handle route change and update main content', async () => {
       const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+      const substituteViewUrlSpy = jest.spyOn(RoutingHelpers, 'substituteViewUrl').mockReturnValue('/some/url');
 
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
-      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({
+        nodeParams: {},
+        searchParams: {},
+        viewUrl: '/some/url'
+      });
 
       await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, false, false);
 
@@ -768,7 +784,7 @@ describe('Routing Service', () => {
 
     it('should handle route change without sync and call UI module', async () => {
       const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
-      const fakeNode = { nodeParams: {}, searchParams: {} };
+      const fakeNode = { nodeParams: {}, searchParams: {}, viewUrl: '/some/url' };
 
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
@@ -782,7 +798,7 @@ describe('Routing Service', () => {
 
     it('should handle route change without sync and preventContextUpdate and call UI module', async () => {
       const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
-      const fakeNode = { nodeParams: {}, searchParams: {} };
+      const fakeNode = { nodeParams: {}, searchParams: {}, viewUrl: '/some/url' };
 
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.shouldRedirect as jest.Mock).mockReturnValue(undefined);
