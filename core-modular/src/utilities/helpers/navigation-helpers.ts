@@ -171,5 +171,20 @@ export const NavigationHelpers = {
       }
     });
     return result;
+  },
+
+  /**
+   * Finds the virtual tree root node for a given node by traversing up the node hierarchy until it finds a node with the virtualTree property set to true. If no such node is found, it returns undefined.
+   * @param node  The node for which to find the virtual tree root node.
+   * @returns The virtual tree root node if found, otherwise undefined.
+   */
+  findVirtualTreeRootNode(node: Node): Node | undefined {
+    if (node.virtualTree) {
+      return node;
+    }
+    if (node.parent) {
+      return NavigationHelpers.findVirtualTreeRootNode(node.parent);
+    }
+    return undefined;
   }
 };
