@@ -43,20 +43,23 @@ export class NavigationService {
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
     let pathSegments = path.split('/');
+
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
 
-    let globalContext = cfg.navigation?.globalContext || {};
+    const globalContext = cfg.navigation?.globalContext || {};
     let currentContext = globalContext;
     let rootNode;
 
     if (this.getNodeDataManagementService().hasRootNode()) {
       rootNode = this.getNodeDataManagementService().getRootNode().node;
     } else {
-      let nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+      const nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+
       if (typeof nodesFromConfig === 'object' && !Array.isArray(nodesFromConfig)) {
         rootNode = nodesFromConfig;
+
         if (rootNode.pathSegment) {
           rootNode.pathSegment = '';
           console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
@@ -64,46 +67,59 @@ export class NavigationService {
       } else {
         rootNode = { children: nodesFromConfig };
       }
+
       rootNode.children = await this.getChildren(rootNode, currentContext);
       rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    let pathParams: Record<string, any> = {};
+    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+    const pathParams: Record<string, any> = {};
     const pathData: PathData = {
+      context: rootContext,
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
       pathParams
     };
+
     for (const segment of pathSegments) {
       if (pathData.selectedNodeChildren) {
         const node = this.findMatchingNode(segment, pathData.selectedNodeChildren || []);
+
         if (!node) {
           // No matching node found; avoid logging full children to prevent circular JSON errors in tests
           console.warn('No matching node found for segment:', segment);
           break;
         }
+
         const nodeContext = node.context || {};
         const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
         let substitutedContext = mergedContext;
+
         pathData.selectedNodeChildren = this.getAccessibleNodes(node, node.children || [], mergedContext);
+
         if (node.pathSegment?.startsWith(':')) {
           pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
           substitutedContext = RoutingHelpers.substituteDynamicParamsInObject(mergedContext, pathParams);
         }
+
         currentContext = substitutedContext;
         node.context = substitutedContext;
         pathData.selectedNode = node;
+
         if (pathData.selectedNode) {
           pathData.nodesInPath?.push(pathData.selectedNode);
         }
-        let children = await this.getChildren(node, currentContext);
+
+        const children = await this.getChildren(node, currentContext);
+
         pathData.selectedNodeChildren = children
           ? this.getAccessibleNodes(pathData.selectedNode, children, currentContext)
           : undefined;
       }
     }
+
     return pathData;
   }
 

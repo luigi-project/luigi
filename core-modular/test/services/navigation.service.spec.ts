@@ -4,6 +4,52 @@ import { NodeDataManagementService } from '../../src/services/node-data-manageme
 import type { NavigationRequestParams, Node } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 
+const sampleNavPromise: Promise<Node[]> = new Promise(function (resolve) {
+  const lazyLoadedChildrenNodesProviderFn = () => {
+    return new Promise(function (resolve) {
+      resolve([
+        {
+          pathSegment: 'b1',
+          context: {
+            lazy: true
+          }
+        }
+      ]);
+    });
+  };
+
+  resolve([
+    {
+      pathSegment: 'aaa',
+      label: 'AAA',
+      viewUrl: '/aaa.html',
+      children: [
+        {
+          pathSegment: 'a1',
+          context: {
+            varA1: 'maskopatol'
+          }
+        },
+        {
+          pathSegment: 'a2'
+        }
+      ],
+      context: {
+        varA: 'tets'
+      }
+    },
+    {
+      pathSegment: 'bbb',
+      label: 'BBB',
+      viewUrl: '/bbb.html',
+      children: lazyLoadedChildrenNodesProviderFn,
+      context: {
+        lazy: false
+      }
+    }
+  ]);
+});
+
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
@@ -872,7 +918,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.getExpandStructuralPathSegment', () => {
+  describe('navigationService.getExpandStructuralPathSegment', () => {
     it('should expand structural path segment', async () => {
       const node: Node = {
         pathSegment: 'node',
@@ -895,7 +941,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.bindChildToParent', () => {
+  describe('navigationService.bindChildToParent', () => {
     it('should bind child to parent node', () => {
       const childNode: Node = {
         pathSegment: 'child',
