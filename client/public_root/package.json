@@ -2,7 +2,14 @@
   "name": "@luigi-project/client",
   "description": "Javascript library supporting consumers of the Luigi framework",
   "license": "Apache-2.0",
-  "main": "luigi-client.js",
+  "main": "./luigi-client.js",
+  "exports": {
+    "." : "./luigi-client.js",
+    "./esm/*": "./esm/*",
+    "./esm": "./esm/luigi-client.mjs",
+    "./luigi-element": "./luigi-element.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "ssh://github.com/luigi-project/luigi.git"
