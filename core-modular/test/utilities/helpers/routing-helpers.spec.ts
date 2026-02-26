@@ -383,10 +383,17 @@ describe('Routing-helpers', () => {
   describe('getPageNotFoundRedirectResult', () => {
     it('with custom pageNotFoundHandler defined redirectTo path', async () => {
       const customRedirect = 'somecustompath';
-      const pageNotFoundHandler = () => ({
-        redirectTo: customRedirect
+
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return () => ({
+            redirectTo: customRedirect
+          });
+        }
+        return null;
       });
-      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler).path;
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi).path;
 
       expect(customRedirect).toEqual(expected);
     });
@@ -395,12 +402,19 @@ describe('Routing-helpers', () => {
       const customKeepURL = true;
       const somePath = 'somePath';
       const ignoreLuigiErrorHandling = undefined;
-      const pageNotFoundHandler = () => ({
-        redirectTo: somePath,
-        keepURL: customKeepURL,
-        ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return () => ({
+            redirectTo: somePath,
+            keepURL: customKeepURL,
+            ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+          });
+        }
+        return null;
       });
-      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('', pageNotFoundHandler);
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('', false, luigi);
 
       expect({
         path: somePath,
@@ -410,15 +424,27 @@ describe('Routing-helpers', () => {
     });
 
     it('with custom pageNotFoundHandler not defined', async () => {
-      const pageNotFoundHandler = undefined;
-      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler);
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return undefined;
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi);
 
       expect({}).toEqual(expected);
     });
 
     it('with custom pageNotFoundHandler not a function', async () => {
-      const pageNotFoundHandler = { thisObject: 'should be function instead' };
-      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', pageNotFoundHandler).path;
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return { thisObject: 'should be function instead' };
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi).path;
 
       expect(undefined).toEqual(expected);
     });

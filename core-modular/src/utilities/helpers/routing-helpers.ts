@@ -1,6 +1,7 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../types/navigation';
+import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
@@ -524,21 +525,19 @@ export const RoutingHelpers = {
   },
 
   /**
-   * Queries the pageNotFoundHandler configuration and returns redirect path if it exists.
+   * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
    * If the there is no `pageNotFoundHandler` defined we return undefined.
-   * @param {string} notFoundPath - the path to check
-   * @param {*} pageNotFoundHandler - preconfigured handler for page not found
-   * @param {boolean} isAnyPathMatched - defines if path exists or not
-   * @returns {Record<string, any>} an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
+   * @param {string} notFoundPath - the path to be checked
+   * @param {boolean} isAnyPathMatched - is any path matched or not
+   * @param {Luigi} luigi - the Luigi instance used to access config value
+   * @returns {Object} an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
    */
-  getPageNotFoundRedirectResult(
-    notFoundPath: string,
-    pageNotFoundHandler: any,
-    isAnyPathMatched = false
-  ): Record<string, any> {
+  getPageNotFoundRedirectResult(notFoundPath: string, isAnyPathMatched = false, luigi: Luigi): object {
+    const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
+
     if (typeof pageNotFoundHandler === 'function') {
       // custom 404 handler is provided, use it
-      const result: Record<string, any> = pageNotFoundHandler(notFoundPath, isAnyPathMatched);
+      const result = pageNotFoundHandler(notFoundPath, isAnyPathMatched);
 
       if (result && (result.redirectTo || result.ignoreLuigiErrorHandling)) {
         return {
@@ -569,9 +568,8 @@ export const RoutingHelpers = {
     if (pathExists) {
       return path;
     }
-
     const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
-    const redirectPath = this.getPageNotFoundRedirectResult(path, pageNotFoundHandler).path;
+    const redirectPath = (this.getPageNotFoundRedirectResult(path, pageNotFoundHandler, luigi) as any)?.path;
 
     if (redirectPath !== undefined) {
       return redirectPath;
@@ -581,5 +579,44 @@ export const RoutingHelpers = {
       console.warn(`Could not find the requested route: ${path}`);
       return undefined;
     }
+  },
+
+  async getDefaultChildNode(
+    pathData: PathData,
+    childrenResolverFn?: (lastElement: object, pathContext: object) => any
+  ): Promise<string> {
+    if (!pathData) {
+      return '';
+    }
+
+    const lastElement: any = pathData.nodesInPath && pathData.nodesInPath[pathData.nodesInPath.length - 1];
+    const pathContext: any = pathData.context;
+    const children = childrenResolverFn
+      ? await childrenResolverFn(lastElement, pathContext)
+      : await AsyncHelpers.getConfigValueFromObjectAsync(lastElement, 'children', pathContext);
+    const pathExists = children.find((childNode: Node) => childNode.pathSegment === lastElement.defaultChildNode);
+
+    if (lastElement.defaultChildNode && pathExists) {
+      return lastElement.defaultChildNode;
+      const rootPath = pathData?.nodesInPath?.length === 1;
+
+      if (rootPath) {
+        const firstNodeWithPathSegment = children.find((child: Node) => child.pathSegment);
+
+        return (
+          (firstNodeWithPathSegment && firstNodeWithPathSegment.pathSegment) ||
+          console.error('At least one navigation node in the root hierarchy must have a pathSegment.')
+        );
+      }
+
+      const validChild = children.find(
+        (child: any) =>
+          child.pathSegment && (child.viewUrl || child.compound || (child.externalLink && child.externalLink.url))
+      );
+
+      if (validChild) return validChild.pathSegment;
+    }
+
+    return '';
   }
 };

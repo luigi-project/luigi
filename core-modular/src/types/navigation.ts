@@ -76,6 +76,7 @@ export interface LeftNavData {
 }
 
 export interface PathData {
+  context?: Record<string, any>;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
   nodesInPath?: Node[];
