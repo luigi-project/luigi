@@ -698,6 +698,13 @@ export class NavigationService {
         return;
       }
 
+      const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
+      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, this.luigi);
+
+      if (!redirectPath) {
+        return;
+      }
+
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
         ? 'replaceState'
         : chosenHistoryMethod;
