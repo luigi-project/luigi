@@ -6,6 +6,19 @@
 
 
 
+## [v2.28.0] (2026-02-26)
+
+#### :rocket: Added
+
+* [#4839](https://github.com/luigi-project/luigi/pull/4839) Open compound microfrontend in modal ([@hardl](https://github.com/hardl))
+
+#### :bug: Fixed
+
+* [#4838](https://github.com/luigi-project/luigi/pull/4838) Modal opener reuse ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.27.0] (2026-02-09)
 
 #### :rocket: Added
@@ -2103,3 +2116,4 @@
 [v2.25.1]: https://github.com/luigi-project/luigi/compare/v2.25.0...v2.25.1
 [v2.26.0]: https://github.com/luigi-project/luigi/compare/v2.25.1...v2.26.0
 [v2.27.0]: https://github.com/luigi-project/luigi/compare/v2.26.0...v2.27.0
+[v2.28.0]: https://github.com/luigi-project/luigi/compare/v2.27.0...v2.28.0
