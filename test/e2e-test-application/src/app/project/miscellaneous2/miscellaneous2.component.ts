@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-project/client';
+import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-project/client/esm';
 
 @Component({
   selector: 'app-miscellaneous2',

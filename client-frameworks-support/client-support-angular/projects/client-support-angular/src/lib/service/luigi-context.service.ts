@@ -1,5 +1,5 @@
 import { Signal } from '@angular/core';
-import { Context } from '@luigi-project/client';
+import { Context } from '@luigi-project/client/esm';
 import { Observable } from 'rxjs';
 import { IContextMessage } from './luigi-context.model';
 

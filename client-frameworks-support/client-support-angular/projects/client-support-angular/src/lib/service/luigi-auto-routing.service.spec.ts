@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Event, NavigationEnd, RouterModule } from '@angular/router';
-import * as Client from '@luigi-project/client';
+import * as Client from '@luigi-project/client/esm';
 import { Observable, of } from 'rxjs';
 import { LuigiAngularSupportModule } from '../luigi.angular.support.module';
 import { LuigiActivatedRouteSnapshotHelper } from '../route/luigi-activated-route-snapshot-helper';
