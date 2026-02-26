@@ -70,3 +70,59 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');
   });
 });
+
+describe('replaceVars', () => {
+  describe('when parenthesis = true (default)', () => {
+    it('should replace variables inside curly braces', () => {
+      const result = GenericHelpers.replaceVars('/users/{:id}', { id: 123 }, ':');
+
+      expect(result).toBe('/users/123');
+    });
+
+    it('should remove unresolved prefixed variables', () => {
+      const result = GenericHelpers.replaceVars('/users/{:id}', {}, ':');
+
+      expect(result).toBe('/users/');
+    });
+
+    it('should keep value if param does not exist and no prefix match', () => {
+      const result = GenericHelpers.replaceVars('/users/{id}', {}, ':');
+
+      expect(result).toBe('/users/{id}');
+    });
+  });
+
+  describe('when parenthesis = false', () => {
+    it('should replace prefixed params directly in string', () => {
+      const result = GenericHelpers.replaceVars('/users/:id', { id: 123 }, ':', false);
+
+      expect(result).toBe('/users/123');
+    });
+
+    it('should replace multiple occurrences', () => {
+      const result = GenericHelpers.replaceVars('/:id/details/:id', { id: 55 }, ':', false);
+
+      expect(result).toBe('/55/details/55');
+    });
+
+    it('should URL encode values', () => {
+      const result = GenericHelpers.replaceVars('/search/:query', { query: 'hello world' }, ':', false);
+
+      expect(result).toBe('/search/hello%20world');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should return original string if params is null', () => {
+      const result = GenericHelpers.replaceVars('/users/:id', null as any, ':', false);
+
+      expect(result).toBe('/users/:id');
+    });
+
+    it('should return original string if params is undefined', () => {
+      const result = GenericHelpers.replaceVars('/users/:id', undefined as any, ':', false);
+
+      expect(result).toBe('/users/:id');
+    });
+  });
+});

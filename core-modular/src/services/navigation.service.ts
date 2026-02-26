@@ -29,9 +29,17 @@ import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 
 export class NavigationService {
+  modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
 
   constructor(private luigi: Luigi) {}
+
+  private getModalService(): ModalService {
+    if (!this.modalService) {
+      this.modalService = serviceRegistry.get(ModalService);
+    }
+    return this.modalService;
+  }
 
   private getNodeDataManagementService(): NodeDataManagementService {
     if (!this.nodeDataManagementService) {
@@ -101,6 +109,7 @@ export class NavigationService {
           if (pathData.selectedNode) {
             pathData.nodesInPath?.push(pathData.selectedNode);
           }
+          this.buildVirtualTree(node, pathData.nodesInPath, pathParams);
           pathData.selectedNodeChildren = await this.getChildren(node, currentContext);
         }
       }
@@ -370,7 +379,7 @@ export class NavigationService {
     } else if (pathData.rootNodes.includes(selectedNode)) {
       parentNode = selectedNode;
       activeNode = undefined;
-    } else if (selectedNode.tabNav) {
+    } else if (selectedNode.tabNav || selectedNode.keepSelectedForChildren) {
       parentNode = lastElement;
     } else {
       parentNode = [...pathToLeftNavParent].pop();
@@ -379,7 +388,6 @@ export class NavigationService {
     let children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
     navItems = this.buildNavItems(children, activeNode, pathData);
 
-    const parentPath = NavigationHelpers.buildPath(pathToLeftNavParent, pathData);
     // convert
     navItems = this.applyNavGroups(navItems);
     return {
@@ -387,23 +395,21 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
     };
   }
 
-  navItemClick(item: Node, parentPath: string): void {
-    if (!item.pathSegment) {
-      console.error('Navigation error: pathSegment is not defined for the node.');
+  navItemClick(node: Node, pathData?: PathData): void {
+    let fullPath = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    let pathParams = pathData?.pathParams;
+
+    fullPath = GenericHelpers.replaceVars(fullPath, pathParams ? pathParams : {}, ':', false);
+    if (!fullPath && fullPath !== '') {
+      console.error(
+        'Navigation error: could not build path for the node. Check if pathSegment is defined for all nodes in the path and if there are no duplicate pathSegments on the same level.'
+      );
       return;
     }
-    let fullPath = '/';
-    if (parentPath.trim() !== '') {
-      fullPath += parentPath + '/';
-    } else if (!item.isRootNode) {
-      console.error('Navigation error: parentPath is empty while the node is not a root node');
-      return;
-    }
-    fullPath += item.pathSegment;
     this.luigi.navigation().navigate(fullPath);
   }
 
@@ -483,7 +489,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, '')
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
     };
   }
 
@@ -545,12 +551,11 @@ export class NavigationService {
       : this.getTruncatedChildren(selectedNode.children);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
-    const parentPath = NavigationHelpers.buildPath(pathData.nodesInPath || [], pathData);
     return {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, parentPath)
+      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
     };
   }
 
@@ -673,13 +678,19 @@ export class NavigationService {
       newTab,
       withoutSync,
       preventContextUpdate,
-      preventHistoryEntry
+      preventHistoryEntry,
+      options
     }: NavigationRequestParams = params;
-    const normalizedPath = path.replace(/\/\/+/g, '/');
+    let computedPath = await this.buildPath(path, options?.fromVirtualTreeRoot);
+    const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
     if (modalSettings) {
-      this.luigi.navigation().openAsModal(path, modalSettings, callbackFn);
+      if (!modalSettings.keepPrevious) {
+        this.getModalService().closeModals();
+      }
+
+      this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
@@ -692,7 +703,7 @@ export class NavigationService {
       await serviceRegistry.get(ModalService).closeModals();
 
       if (newTab) {
-        await this.openViewInNewTab(path);
+        await this.openViewInNewTab(computedPath);
         return;
       }
 
@@ -778,5 +789,118 @@ export class NavigationService {
       child.parent = node;
     }
     return child;
+  }
+
+  /**
+   * Builds a virtual tree structure for the given node based on the provided path parameters.
+   *
+   * @param node - The node for which the virtual tree is being built.
+   * @param nodesInPath - An array of nodes representing the path in the virtual tree.
+   * @param pathParams - An object containing path parameters for the virtual tree.
+   */
+  buildVirtualTree(node: Node, nodesInPath: any, pathParams: Record<string, any>): void {
+    const virtualTreeRoot = node.virtualTree;
+    const virtualTreeChild = node._virtualTree;
+    const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
+    if ((virtualTreeRoot || virtualTreeChild) && nodesInPath[0]) {
+      let currentVirtualPathIndex = typeof node._virtualPathIndex === 'number' ? node._virtualPathIndex : undefined;
+      if (virtualTreeRoot) {
+        currentVirtualPathIndex = undefined;
+        node.keepSelectedForChildren = true;
+      }
+
+      const maxPathDepth = 50;
+      if (typeof currentVirtualPathIndex === 'number' && currentVirtualPathIndex > maxPathDepth) {
+        return;
+      }
+
+      const nextVirtualPathIndex = (currentVirtualPathIndex ?? 0) + 1;
+      if (nextVirtualPathIndex > maxPathDepth) {
+        return;
+      }
+      const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
+      const newChild = GenericHelpers.removeProperties(node, keysToClean);
+      Object.assign(newChild, {
+        pathSegment: ':virtualSegment_' + nextVirtualPathIndex,
+        label: ':virtualSegment_' + nextVirtualPathIndex,
+        viewUrl: GenericHelpers.trimTrailingSlash(
+          this.buildVirtualViewUrl(_virtualViewUrl || '', pathParams, nextVirtualPathIndex)
+        ),
+        _virtualTree: true,
+        _virtualPathIndex: nextVirtualPathIndex,
+        _virtualViewUrl
+      });
+
+      const isVirtualChildren =
+        Array.isArray(node.children) && node.children.length > 0 ? node.children[0]._virtualTree : false;
+      if (node.children && !isVirtualChildren) {
+        console.warn(
+          'Found both virtualTree and children nodes defined on a navigation node. \nChildren nodes are redundant and ignored when virtualTree is enabled. \nPlease refer to documentation'
+        );
+      }
+      node.children = [newChild];
+    }
+  }
+
+  /**
+   * Requires str to include :virtualPath
+   * and pathParams consist of :virtualSegment_N
+   * for deep nested virtual tree building
+   *
+   * @param str - The base string for the virtual view URL.
+   * @param pathParams - An object containing path parameters for the virtual view URL.
+   * @param _virtualPathIndex - The index of the virtual path segment.
+   * @returns The constructed virtual view URL string.
+   */
+  buildVirtualViewUrl(str: string, pathParams: any, _virtualPathIndex: number): string {
+    let newStr = '';
+    for (const key in pathParams) {
+      if (key.startsWith('virtualSegment')) {
+        newStr += ':' + key + '/';
+      }
+    }
+    if (!_virtualPathIndex) {
+      return str;
+    }
+    newStr += ':virtualSegment_' + _virtualPathIndex + '/';
+    return str + '/' + newStr;
+  }
+
+  /**
+   * Builds a path string by concatenating path segments from the virtual tree root or the incoming path.
+   *
+   * @param incomingPath - The incoming path segment to be appended.
+   * @param fromVirtualTreeRoot - A boolean indicating whether to build the path from the virtual tree root.
+   * @returns The constructed path string.
+   */
+  async buildPath(incomingPath: string, fromVirtualTreeRoot = false): Promise<string> {
+    if (!fromVirtualTreeRoot) {
+      return incomingPath;
+    }
+    if (fromVirtualTreeRoot) {
+      let path = '';
+      //TODO needs to be clarified if we store pahtData somewhere or calculate new
+      const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+      const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+      const fullPath = currentPath + (query ? '?' + query : '');
+      const nodes = (await this.getPathData(fullPath)).nodesInPath;
+      if (nodes === undefined) {
+        console.warn('No nodes in path found for current path:', fullPath);
+        return incomingPath;
+      }
+
+      const lastVirtualTreeIndex = [...nodes]
+        .map((n, i) => (n.virtualTree ? i : -1))
+        .filter((i) => i !== -1)
+        .pop();
+
+      nodes.forEach((nip, index) => {
+        if (nip.pathSegment && (lastVirtualTreeIndex === undefined || index <= lastVirtualTreeIndex)) {
+          path += '/' + nip.pathSegment;
+        }
+      });
+      return (path += '/' + incomingPath);
+    }
+    return incomingPath;
   }
 }

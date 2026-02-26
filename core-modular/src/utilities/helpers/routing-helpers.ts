@@ -2,6 +2,7 @@ import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../types/navigation';
 import { EscapingHelpers } from './escaping-helpers';
+import { GenericHelpers } from './generic-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
@@ -488,5 +489,47 @@ export const RoutingHelpers = {
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
     return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
+  },
+
+  /**
+   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
+   * @param node - The current node from which to start building the route.
+   * @param path - The accumulated path string (used internally for recursion).
+   * @param params - Optional query parameters to append to the final route.
+   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
+   */
+  buildRoute(node: Node, path?: string, params?: string): string {
+    return !node.parent
+      ? path + (params ? '?' + params : '')
+      : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
+  },
+
+  substituteViewUrl(viewUrl: string, pathData: PathData, luigi: Luigi): string {
+    //TODO issue nr 4575
+    //currently minimal requirement for this task
+    // const contextVarPrefix = 'context.';
+    // const nodeParamsVarPrefix = 'nodeParams.';
+    // const searchQuery = 'routing.queryParams';
+
+    viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.pathParams, ':', false);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
+    //TODO
+    // viewUrl = this.getI18nViewUrl(viewUrl);
+
+    // if (viewUrl && viewUrl.includes(searchQuery)) {
+    //   const viewUrlSearchParam = viewUrl.split('?')[1];
+    //   if (viewUrlSearchParam) {
+    //     const key = viewUrlSearchParam.split('=')[0];
+    //     const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
+    //     if (searchParams[key]) {
+    //       viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
+    //     } else {
+    //       viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+    //     }
+    //   }
+    // }
+
+    return viewUrl;
   }
 };
