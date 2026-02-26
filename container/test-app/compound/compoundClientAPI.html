@@ -394,9 +394,7 @@
 
       document.querySelector('#luigi-update-context').addEventListener('click', () => {
         compoundContainer.updateContext({ newContextData: 'some data' });
-        document.querySelector('#cc-ctx').innerHTML = JSON.stringify(
-          compoundContainer.context,
-        );
+        document.querySelector('#cc-ctx').innerHTML = compoundContainer.context;
       });
     </script>
   </body>

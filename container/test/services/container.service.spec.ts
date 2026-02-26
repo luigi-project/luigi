@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { LuigiInternalMessageID } from '../../src/constants/internal-communication';
 import { Events, LuigiEvent } from '../../src/constants/communication';
 import type { IframeHandle, ContainerElement } from '../../src/constants/container.model';

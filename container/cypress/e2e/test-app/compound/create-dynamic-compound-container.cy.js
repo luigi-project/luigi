@@ -69,9 +69,10 @@ describe('create luigi-compound-container dynamically', () => {
                 }]
             };
             content.appendChild(wc);
-            </script>
-       `;
+        </script>
+    `;
     const stub = cy.stub();
+
     cy.on('window:alert', stub);
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', scriptCode);
@@ -88,7 +89,8 @@ describe('create luigi-compound-container dynamically', () => {
           .get('luigi-wc-687474703a2f2f6c6f63616c686f73743a383038302f6173736574732f6d61696e2e6a73')
           .should('exist')
           .shadow()
-          .should('not.exist'); // ShadowRoot in 'closed' mode
+          .find('section')
+          .should('contain.text', 'This is a luigi micro frontend, based on web components.');
       });
   });
 
@@ -163,10 +165,10 @@ describe('create luigi-compound-container dynamically', () => {
             </script>
        `;
     const stub = cy.stub();
+
     cy.on('window:alert', stub);
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', scriptCode);
-
     cy.get('luigi-compound-container').shadow().should('not.exist');
   });
 
@@ -241,6 +243,7 @@ describe('create luigi-compound-container dynamically', () => {
             </script>
        `;
     const stub = cy.stub();
+
     cy.on('window:alert', stub);
     cy.visit(tetsPage);
     cy.get('.content').invoke('append', scriptCode);

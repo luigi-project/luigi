@@ -27,12 +27,21 @@ export interface RendererConfig extends RendererLayout {
   layouts?: RendererLayout[];
 }
 
+/* eslint-disable */
+export interface NavNodeListener {
+  action?: any;
+  dataConverter?: any;
+  name?: any;
+  source?: any;
+}
+
 export interface RendererUseProps {
-  attachCompoundItem?: (compoundCnt, compoundItemCnt, renderer) => void;
-  createCompoundContainer?: (config, renderer) => HTMLDivElement;
-  createCompoundItemContainer?: (layoutConfig, config?, renderer?) => HTMLDivElement;
+  attachCompoundItem?: (compoundCnt: any, compoundItemCnt: any, renderer: any) => void;
+  createCompoundContainer?: (config: any, renderer: any) => HTMLDivElement;
+  createCompoundItemContainer?: (layoutConfig: any, config?: any, renderer?: any) => HTMLDivElement;
   extends?: string;
 }
+/* eslint-enable */
 
 export interface RendererObject {
   config?: RendererConfig;

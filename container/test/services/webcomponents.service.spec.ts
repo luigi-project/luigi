@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Events } from '../../src/constants/communication';
 import { ContainerService, containerService } from '../../src/services/container.service';
 import { WebComponentService } from '../../src/services/webcomponents.service';
