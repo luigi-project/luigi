@@ -11,6 +11,7 @@
 #### :rocket: Added
 
 * [#4839](https://github.com/luigi-project/luigi/pull/4839) Open compound microfrontend in modal ([@hardl](https://github.com/hardl))
+* [#4683](https://github.com/luigi-project/luigi/pull/4683) openAsModal in webcomponent client api ([@walmazacn](https://github.com/walmazacn))
 
 #### :bug: Fixed
 
