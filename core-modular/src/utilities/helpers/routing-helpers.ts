@@ -622,6 +622,7 @@ export const RoutingHelpers = {
 
     if (lastElement.defaultChildNode && pathExists) {
       return lastElement.defaultChildNode;
+    } else if (children && children.length) {
       const rootPath = pathData?.nodesInPath?.length === 1;
 
       if (rootPath) {
