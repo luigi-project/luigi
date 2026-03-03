@@ -457,11 +457,7 @@ export class RoutingService {
     pathUrlRaw: string
   ): Promise<boolean> {
     const activePath: string = GenericHelpers.getTrimmedUrl(path);
-    const pathSegments: string[] = activePath?.split('/') || [];
-    const navPathSegments: string[] = pathData?.nodesInPath?.length
-      ? pathData.nodesInPath.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment)
-      : [];
-    const isExistingRoute: boolean = !activePath || pathSegments.length === navPathSegments.length;
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
 
     if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
       const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {

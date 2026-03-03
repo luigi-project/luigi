@@ -357,29 +357,6 @@ describe('Routing-helpers', () => {
     });
   });
 
-  describe('hasIntent', () => {
-    it('checks against correct intent keyword', () => {
-      const path = '#?intent=';
-      const hasIntent = RoutingHelpers.hasIntent(path);
-
-      expect(hasIntent).toBeTruthy();
-    });
-
-    it('check against incorrect intent keyword', () => {
-      const path = '#?int=';
-      const hasIntent = RoutingHelpers.hasIntent(path);
-
-      expect(hasIntent).toBeFalsy();
-    });
-
-    it('check against undefined intent keyword', () => {
-      const path = undefined;
-      const hasIntent = RoutingHelpers.hasIntent(path);
-
-      expect(hasIntent).toBeFalsy();
-    });
-  });
-
   describe('getPageNotFoundRedirectResult', () => {
     it('with custom pageNotFoundHandler defined redirectTo path', async () => {
       const customRedirect = 'somecustompath';

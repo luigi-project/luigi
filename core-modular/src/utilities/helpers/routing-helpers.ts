@@ -3,6 +3,7 @@ import type { Luigi } from '../../core-api/luigi';
 import type { Node, PathData } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
+import { GenericHelpers } from './generic-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
@@ -492,36 +493,57 @@ export const RoutingHelpers = {
   },
 
   /**
-   * Checks if given path contains intent navigation special syntax
-   * @param {string} path - path to be checked
+   * Checks if given path is an existing route or not
+   * @param {string} activePath - path to be checked
+   * @param {PathData} pathData - related path data
    * @returns {boolean} the result of path checking as boolean value
    */
-  hasIntent(path: string): boolean {
-    return !!path && path.toLowerCase().includes('#?intent=');
+  isExistingRoute(activePath: string, pathData: PathData): boolean {
+    const pathSegments: string[] = activePath?.split('/') || [];
+    const nodesInPath: Node[] = pathData?.nodesInPath || [];
+    const findChildNode = (node: null | Node, segment: string): null | Node => {
+      let output = null;
+
+      if (node?.children?.length) {
+        const nodes: Node[] = node.children.filter((node: Node) => node.pathSegment === segment);
+
+        if (nodes?.length) {
+          output = nodes[0];
+        }
+      }
+
+      return output;
+    };
+    let navPathSegments: string[] = [];
+
+    if (pathSegments.length > 1 && nodesInPath.length === 1) {
+      let currentNode: null | Node;
+
+      pathSegments.forEach((segment, index) => {
+        const parentNode = index === 0 ? nodesInPath[0] : currentNode;
+
+        currentNode = findChildNode(parentNode, segment);
+        navPathSegments.push(currentNode?.pathSegment || '');
+      });
+    } else {
+      navPathSegments = nodesInPath.filter((node: Node) => node.pathSegment).map((node: Node) => node.pathSegment || '');
+    }
+
+    return !activePath || pathSegments.length === navPathSegments.length;
   },
 
   /**
    * Handles case if path exists or not.
-   * @param {string} path - the path to check for
+   * @param {string} path - the path to be checked
    * @param {Luigi} luigi - the Luigi instance used to access configuration values
    * @returns {Promise<boolean>} the result of path checking as async boolean value
    */
   async pathExists(path: string, luigi: Luigi): Promise<boolean> {
-    /* TODO
-    const data: Record<string, any> = {
-      link: path,
-      relative: path[0] !== '/',
-      intent: RoutingHelpers.hasIntent(path)
-    };
-    const builtPath = RoutingHelpers.buildPath(data);
-    const pathData = builtPath
-      ? await NavigationHelpers.getNavigationPath(luigi.getConfigValueAsync('navigation.nodes'), builtPath)
-      : false;
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const pathData: PathData = await luigi.navigation().navService.getPathData(path);
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
 
-    return pathData ? pathData.isExistingRoute : false;
-    */
-
-    return true;
+    return pathData ? isExistingRoute : false;
   },
 
   /**
