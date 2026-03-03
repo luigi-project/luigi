@@ -526,7 +526,9 @@ export const RoutingHelpers = {
         navPathSegments.push(currentNode?.pathSegment || '');
       });
     } else {
-      navPathSegments = nodesInPath.filter((node: Node) => node.pathSegment).map((node: Node) => node.pathSegment || '');
+      navPathSegments = nodesInPath
+        .filter((node: Node) => node.pathSegment)
+        .map((node: Node) => node.pathSegment || '');
     }
 
     return !activePath || pathSegments.length === navPathSegments.length;
