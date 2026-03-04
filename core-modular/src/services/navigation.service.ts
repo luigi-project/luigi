@@ -807,7 +807,6 @@ export class NavigationService {
    * @param pathParams - An object containing path parameters for the virtual tree.
    */
   buildVirtualTree(node: Node, segment: any, pathParams: Record<string, any>): Node[] | undefined {
-    // console.log('buildVirtualTree', { node, segment, pathParams });
     const virtualTreeRoot = node.virtualTree;
     const virtualTreeChild = node._virtualTree;
     const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
@@ -828,7 +827,7 @@ export class NavigationService {
         return;
       }
       const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
-      let newChild = GenericHelpers.removeProperties(node, keysToClean);
+      const newChild = GenericHelpers.removeProperties(node, keysToClean);
       Object.assign(newChild, {
         pathSegment: ':virtualSegment_' + nextVirtualPathIndex,
         label: ':virtualSegment_' + nextVirtualPathIndex,
