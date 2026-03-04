@@ -406,4 +406,32 @@ describe('Routing-helpers', () => {
       expect(result).toBe('/root/child');
     });
   });
+
+  describe('RoutingHelpers.getNodePath', () => {
+    it('should return path for node without parent', () => {
+      const node = { pathSegment: 'home' };
+      const result = RoutingHelpers.getNodePath(node);
+      expect(result).toBe('/home');
+    });
+    
+    it('should return full path for nested nodes', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const result = RoutingHelpers.getNodePath(childNode);
+      expect(result).toBe('/home/child');
+    });
+    it('should return full path for deeply nested nodes', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const grandChildNode = { pathSegment: 'grandchild', parent: childNode };
+      const result = RoutingHelpers.getNodePath(grandChildNode);
+      expect(result).toBe('/home/child/grandchild');
+    });
+    it('should return full path with params', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const result = RoutingHelpers.getNodePath(childNode, 'id=1');
+      expect(result).toBe('/home/child?id=1');
+    });
+  });
 });
