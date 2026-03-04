@@ -500,9 +500,11 @@ export const RoutingHelpers = {
    */
   showRouteNotFoundAlert(path: string, isAnyPathMatched = false, luigi: Luigi): void {
     const alertSettings: AlertSettings = {
-      text: luigi.i18n().getTranslation(isAnyPathMatched ? 'luigi.notExactTargetNode' : 'luigi.requestedRouteNotFound', {
-        route: path
-      } as any),
+      text: luigi
+        .i18n()
+        .getTranslation(isAnyPathMatched ? 'luigi.notExactTargetNode' : 'luigi.requestedRouteNotFound', {
+          route: path
+        } as any),
       type: 'error',
       ttl: 1 // how many redirections the alert will 'survive'
     };
