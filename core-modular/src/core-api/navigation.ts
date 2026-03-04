@@ -2,7 +2,13 @@ import { ModalService } from '../services/modal.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
-import type { ModalSettings, NavigationOptions, NavigationRequestParams, Node, RunTimeErrorHandler } from '../types/navigation';
+import type {
+  ModalSettings,
+  NavigationOptions,
+  NavigationRequestParams,
+  Node,
+  RunTimeErrorHandler
+} from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
@@ -103,6 +109,27 @@ export class Navigation {
     this.options.fromContext = null;
     this.options.fromClosestContext = false;
     this.options.fromVirtualTreeRoot = true;
+    this.options.fromParent = false;
+    return this;
+  }
+
+  /**
+   * Allows navigation from the node which has the navigation context set.
+   * @param navigationContext
+   * @returns {navigation} navigation instance
+   */
+  fromContext(navigationContext: string): this {
+    this.options.fromContext = navigationContext;
+    return this;
+  }
+
+  /**
+   * Allows navigation from the closest node which has the navigation context set. If there are multiple nodes with the same navigation context, the closest one will be used as the navigation base.
+   * @returns {navigation} navigation instance
+   */
+  fromClosestContext(): this {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = true;
     this.options.fromParent = false;
     return this;
   }

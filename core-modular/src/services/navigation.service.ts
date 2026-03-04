@@ -4,6 +4,7 @@ import type {
   AppSwitcherItem,
   HistoryMethod,
   LeftNavData,
+  NavigationOptions,
   NavigationRequestBase,
   NavigationRequestEvent,
   NavigationRequestParams,
@@ -109,7 +110,14 @@ export class NavigationService {
           if (pathData.selectedNode) {
             pathData.nodesInPath?.push(pathData.selectedNode);
           }
-          this.buildVirtualTree(node, pathData.nodesInPath, pathParams);
+
+          if (node.virtualTree || node._virtualTree) {
+            const virtualTreeChildren = this.buildVirtualTree(node, segment, pathParams);
+            if (virtualTreeChildren && virtualTreeChildren.length > 0) {
+              node.children = virtualTreeChildren;
+            }
+          }
+
           pathData.selectedNodeChildren = await this.getChildren(node, currentContext);
         }
       }
@@ -400,7 +408,7 @@ export class NavigationService {
   }
 
   navItemClick(node: Node, pathData?: PathData): void {
-    let fullPath = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
     fullPath = GenericHelpers.replaceVars(fullPath, pathParams ? pathParams : {}, ':', false);
@@ -681,7 +689,7 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    let computedPath = await this.buildPath(path, options?.fromVirtualTreeRoot);
+    let computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
@@ -798,11 +806,12 @@ export class NavigationService {
    * @param nodesInPath - An array of nodes representing the path in the virtual tree.
    * @param pathParams - An object containing path parameters for the virtual tree.
    */
-  buildVirtualTree(node: Node, nodesInPath: any, pathParams: Record<string, any>): void {
+  buildVirtualTree(node: Node, segment: any, pathParams: Record<string, any>): Node[] | undefined {
+    // console.log('buildVirtualTree', { node, segment, pathParams });
     const virtualTreeRoot = node.virtualTree;
     const virtualTreeChild = node._virtualTree;
     const _virtualViewUrl = node._virtualViewUrl || node.viewUrl;
-    if ((virtualTreeRoot || virtualTreeChild) && nodesInPath[0]) {
+    if ((virtualTreeRoot || virtualTreeChild) && segment) {
       let currentVirtualPathIndex = typeof node._virtualPathIndex === 'number' ? node._virtualPathIndex : undefined;
       if (virtualTreeRoot) {
         currentVirtualPathIndex = undefined;
@@ -819,7 +828,7 @@ export class NavigationService {
         return;
       }
       const keysToClean = ['_*', 'virtualTree', 'parent', 'children', 'keepSelectedForChildren', 'navigationContext'];
-      const newChild = GenericHelpers.removeProperties(node, keysToClean);
+      let newChild = GenericHelpers.removeProperties(node, keysToClean);
       Object.assign(newChild, {
         pathSegment: ':virtualSegment_' + nextVirtualPathIndex,
         label: ':virtualSegment_' + nextVirtualPathIndex,
@@ -838,7 +847,7 @@ export class NavigationService {
           'Found both virtualTree and children nodes defined on a navigation node. \nChildren nodes are redundant and ignored when virtualTree is enabled. \nPlease refer to documentation'
         );
       }
-      node.children = [newChild];
+      return [newChild];
     }
   }
 
@@ -873,22 +882,23 @@ export class NavigationService {
    * @param fromVirtualTreeRoot - A boolean indicating whether to build the path from the virtual tree root.
    * @returns The constructed path string.
    */
-  async buildPath(incomingPath: string, fromVirtualTreeRoot = false): Promise<string> {
-    if (!fromVirtualTreeRoot) {
+  async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
+    const { fromVirtualTreeRoot, fromContext, fromClosestContext } = options;
+    if (!fromVirtualTreeRoot && !fromContext && !fromClosestContext) {
+      return incomingPath;
+    }
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+    const fullPath = currentPath + (query ? '?' + query : '');
+    const pathData = await this.getPathData(fullPath);
+    const nodes = pathData.nodesInPath;
+    if (nodes === undefined) {
+      console.warn('No nodes in path found for current path:', fullPath);
       return incomingPath;
     }
     if (fromVirtualTreeRoot) {
       let path = '';
       //TODO needs to be clarified if we store pahtData somewhere or calculate new
-      const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-      const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
-      const fullPath = currentPath + (query ? '?' + query : '');
-      const nodes = (await this.getPathData(fullPath)).nodesInPath;
-      if (nodes === undefined) {
-        console.warn('No nodes in path found for current path:', fullPath);
-        return incomingPath;
-      }
-
       const lastVirtualTreeIndex = [...nodes]
         .map((n, i) => (n.virtualTree ? i : -1))
         .filter((i) => i !== -1)
@@ -899,7 +909,17 @@ export class NavigationService {
           path += '/' + nip.pathSegment;
         }
       });
-      return (path += '/' + incomingPath);
+      let testPath = (path += '/' + incomingPath);
+      return testPath;
+    } else if (fromContext) {
+      const navigationContext = fromContext;
+      const node = [...nodes].reverse().find((n) => navigationContext === n.navigationContext);
+      let fullPath = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
+      return fullPath;
+    } else if (fromClosestContext) {
+      const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
+      let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
+      return path;
     }
     return incomingPath;
   }

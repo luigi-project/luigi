@@ -498,20 +498,28 @@ export const RoutingHelpers = {
    * @param params - Optional query parameters to append to the final route.
    * @returns a string representing the full route from the root to the given node, including query parameters if provided.
    */
-  buildRoute(node: Node, path?: string, params?: string): string {
+  getNodePath(node: Node, params?: string): string {
+    if (!node || params) {
+      return node ? this.buildRoute(node, node.pathSegment ? '/' + node.pathSegment : '', params) : '';
+    } else {
+      return `${node.parent ? this.getNodePath(node.parent) : ''}/${node.pathSegment}`;
+    }
+  },
+
+  buildRoute(node: Node, path: string, params?: string): string {
     return !node.parent
       ? path + (params ? '?' + params : '')
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
-  substituteViewUrl(viewUrl: string, pathData: PathData, luigi: Luigi): string {
+  substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
     //TODO issue nr 4575
     //currently minimal requirement for this task
     // const contextVarPrefix = 'context.';
     // const nodeParamsVarPrefix = 'nodeParams.';
     // const searchQuery = 'routing.queryParams';
 
-    viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.pathParams, ':', false);
+    viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
     //TODO
@@ -531,5 +539,27 @@ export const RoutingHelpers = {
     // }
 
     return viewUrl;
+  },
+
+  getSubPath(node: any, nodePathParams: any): string {
+    return GenericHelpers.replaceVars(RoutingHelpers.getNodePath(node), nodePathParams, ':', false);
+  },
+
+  concatenatePath(basePath: any, relativePath?: any): string {
+    let path = GenericHelpers.getPathWithoutHash(basePath);
+    if (!path) {
+      return relativePath;
+    }
+    if (!relativePath) {
+      return path;
+    }
+    if (path.endsWith('/')) {
+      path = path.substring(0, path.length - 1);
+    }
+    if (!relativePath.startsWith('/')) {
+      path += '/';
+    }
+    path += relativePath;
+    return path;
   }
 };

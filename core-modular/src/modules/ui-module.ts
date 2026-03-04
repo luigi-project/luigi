@@ -24,7 +24,9 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
 
     lcc.setAttribute('lui_container', 'true');
-    lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
+    lcc.viewurl = serviceRegistry
+      .get(ViewUrlDecoratorSvc)
+      .applyDecorators(RoutingHelpers.substituteViewUrl(node.viewUrl, node.pathParams, luigi), node.decodeViewUrl);
     lcc.webcomponent = node.webcomponent;
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
@@ -46,7 +48,9 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
 
     lc.setAttribute('lui_container', 'true');
-    lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
+    lc.viewurl = serviceRegistry
+      .get(ViewUrlDecoratorSvc)
+      .applyDecorators(RoutingHelpers.substituteViewUrl(node.viewUrl, node.pathParams, luigi), node.decodeViewUrl);
     lc.webcomponent = node.webcomponent;
     lc.context = node.context;
     lc.clientPermissions = node.clientPermissions;
@@ -216,7 +220,10 @@ export const UIModule = {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = serviceRegistry
             .get(ViewUrlDecoratorSvc)
-            .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
+            .applyDecorators(
+              RoutingHelpers.substituteViewUrl(currentNode.viewUrl, currentNode.pathParams, luigi),
+              currentNode.decodeViewUrl
+            );
           viewGroupContainer.nodeParams = currentNode.nodeParams;
           viewGroupContainer.pathParams = currentNode.pathParams;
           viewGroupContainer.clientPermissions = currentNode.clientPermissions;
