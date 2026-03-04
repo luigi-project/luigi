@@ -23,7 +23,13 @@ describe('Routing-helpers', () => {
         }
         return null;
       },
-      getActiveFeatureToggles: () => []
+      getActiveFeatureToggles: () => [],
+      i18n: jest.fn().mockReturnValue({
+        getTranslation: (key: string) => key
+      }),
+      ux: jest.fn().mockReturnValue({
+        showAlert: jest.fn()
+      })
     };
   });
 
@@ -424,6 +430,32 @@ describe('Routing-helpers', () => {
       const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi).path;
 
       expect(undefined).toEqual(expected);
+    });
+  });
+
+  describe('showRouteNotFoundAlert', () => {
+    it('should show error alert when no path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', false, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.requestedRouteNotFound',
+        type: 'error',
+        ttl: 1
+      });
+    });
+
+    it('should show error alert when path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', true, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.notExactTargetNode',
+        type: 'error',
+        ttl: 1
+      });
     });
   });
 });

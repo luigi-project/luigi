@@ -55,7 +55,12 @@ describe('Routing Service', () => {
       auth: jest.fn().mockReturnValue({
         isAuthorizationEnabled: jest.fn()
       }),
-      i18n: jest.fn().mockReturnValue({ getTranslation: (key: string) => key })
+      i18n: jest.fn().mockReturnValue({
+        getTranslation: (key: string) => key
+      }),
+      ux: jest.fn().mockReturnValue({
+        showAlert: jest.fn()
+      })
     };
     mockNavService = {
       shouldRedirect: jest.fn(),
@@ -815,7 +820,7 @@ describe('Routing Service', () => {
     const pathToRedirect2 = '/go/there';
     const notFoundPath = '/this/does/not/exist';
 
-    it('navigate to redirect path', async () => {
+    it('should navigate to redirect path', async () => {
       const handleRouteChangeSpy = jest.spyOn(routingService, 'handleRouteChange');
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
 
@@ -827,7 +832,7 @@ describe('Routing Service', () => {
       expect(handleNavigationRequestSpy).toHaveBeenCalledWith({ path: pathToRedirect });
     });
 
-    it('navigate to path specified by custom handler', async () => {
+    it('should navigate to path specified by custom handler', async () => {
       const handleRouteChangeSpy = jest.spyOn(routingService, 'handleRouteChange');
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
       const custom = {
@@ -846,9 +851,10 @@ describe('Routing Service', () => {
       expect(handleNavigationRequestSpy).toHaveBeenCalledWith({ path: pathToRedirect2 });
     });
 
-    it('do nothing if ignoreLuigiErrorHandling is implemented by the custom handler', async () => {
+    it('should do nothing if ignoreLuigiErrorHandling is implemented by the custom handler', async () => {
       const handleRouteChangeSpy = jest.spyOn(routingService, 'handleRouteChange');
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const showRouteNotFoundAlertSpy = jest.spyOn(RoutingHelpers, 'showRouteNotFoundAlert');
       const custom = {
         handler: () => {
           return {
@@ -863,12 +869,13 @@ describe('Routing Service', () => {
 
       expect(handleRouteChangeSpy).not.toHaveBeenCalled();
       expect(handleNavigationRequestSpy).not.toHaveBeenCalled();
-      // expect(RoutingHelpers.showRouteNotFoundAlert).not.toHaveBeenCalled();
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
     });
 
-    it('handle route change if all params are implemented by the custom handler', async () => {
+    it('should handle route change if all params are implemented by the custom handler', async () => {
       const handleRouteChangeSpy = jest.spyOn(routingService, 'handleRouteChange');
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const showRouteNotFoundAlertSpy = jest.spyOn(RoutingHelpers, 'showRouteNotFoundAlert');
       const custom = {
         handler: () => {
           return {
@@ -888,7 +895,33 @@ describe('Routing Service', () => {
 
       expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: pathToRedirect2, query: 'foo=bar' });
       expect(handleNavigationRequestSpy).not.toHaveBeenCalled();
-      // expect(RoutingHelpers.showRouteNotFoundAlert).not.toHaveBeenCalled();
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should trigger showRouteNotFoundAlert when path is missing in the custom handler', async () => {
+      const handleRouteChangeSpy = jest.spyOn(routingService, 'handleRouteChange');
+      const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const showRouteNotFoundAlertSpy = jest.spyOn(RoutingHelpers, 'showRouteNotFoundAlert');
+      const custom = {
+        handler: () => {
+          return {
+            ignoreLuigiErrorHandling: false,
+            keepURL: false,
+            path: undefined,
+            redirectTo: undefined
+          };
+        }
+      };
+
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(custom.handler);
+      mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => true);
+
+      await routingService.showPageNotFoundError(pathToRedirect, notFoundPath);
+
+      expect(handleRouteChangeSpy).not.toHaveBeenCalled();
+      expect(showRouteNotFoundAlertSpy).toHaveBeenCalled();
+      expect(handleNavigationRequestSpy).toHaveBeenCalled();
     });
   });
 });
