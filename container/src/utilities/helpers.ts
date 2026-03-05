@@ -7,7 +7,8 @@ export class GenericHelpersClass {
    * @param {Function} functionToCheck - function to be checked
    * @returns {boolean}
    */
-  isFunction(functionToCheck: (arg) => void): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  isFunction(functionToCheck: (arg: any) => void): boolean {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
   }
 
@@ -32,6 +33,7 @@ export class GenericHelpersClass {
       return webcomponent;
     } else {
       console.warn('Webcomponent value has a wrong type.');
+      return false;
     }
   }
 
