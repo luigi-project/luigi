@@ -222,18 +222,29 @@ export class NavigationService {
 
   async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
     const pathData = pData ?? (await this.getPathData(path));
+
     if (path == '') {
       // poor mans implementation, full path resolution TBD
-      return pathData.rootNodes[0]?.pathSegment;
+      if (pathData.nodesInPath?.length === 1 && !pathData.nodesInPath[0].pathSegment) {
+        return undefined;
+      } else {
+        return pathData.rootNodes[0]?.pathSegment;
+      }
     } else if (pathData.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
       return path + '/' + pathData.selectedNode.children[0].pathSegment;
     }
+
     return undefined;
   }
 
-  async getCurrentNode(path: string): Promise<any> {
-    const pathData = await this.getPathData(path);
-    const node = pathData.selectedNode;
+  async getCurrentNode(path: string): Promise<Node | undefined> {
+    const pathData: PathData = await this.getPathData(path);
+    let node: Node | undefined = pathData.selectedNode;
+
+    if (!node && pathData.nodesInPath?.length === 1) {
+      node = pathData.nodesInPath[0];
+    }
+
     if (
       !node ||
       !NavigationHelpers.isNodeAccessPermitted(
@@ -245,6 +256,7 @@ export class NavigationService {
     ) {
       return undefined;
     }
+
     return node;
   }
 

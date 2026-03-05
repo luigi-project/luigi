@@ -144,9 +144,9 @@ export class RoutingService {
 
     if (currentNode) {
       this.currentRoute.node = currentNode;
-      currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData?.pathParams || {};
-      currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
+      (currentNode as any).nodeParams = nodeParams || {};
+      (currentNode as any).pathParams = pathData?.pathParams || {};
+      (currentNode as any).searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;

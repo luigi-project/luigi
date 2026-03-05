@@ -50,7 +50,7 @@ export class Navigation {
     const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
-      settings.title = node.label;
+      settings.title = node?.label;
     }
     // Append modal data to URL only if configured and if no other modals are open
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
@@ -64,14 +64,14 @@ export class Navigation {
     const node = await this.navService.getCurrentNode(normalizedPath);
     const settings = modalSettings || {};
     if (!settings.title) {
-      settings.title = node.label;
+      settings.title = node?.label;
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
     const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
-    const currentNode: Node = await this.navService.getCurrentNode(path);
+    const currentNode: Node | undefined = await this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
     );

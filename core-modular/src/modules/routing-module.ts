@@ -70,7 +70,7 @@ export const RoutingModule = {
     if (currentNode?.clientPermissions?.urlParameters) {
       const filteredObj: Record<string, any> = {};
       Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {
-        if (key in localSearchParams && currentNode.clientPermissions.urlParameters[key].write === true) {
+        if (key in localSearchParams && (currentNode.clientPermissions as any).urlParameters[key].write === true) {
           filteredObj[key] = localSearchParams[key];
           delete localSearchParams[key];
         }

@@ -523,7 +523,9 @@ export const RoutingHelpers = {
         const parentNode = index === 0 ? nodesInPath[0] : currentNode;
 
         currentNode = findChildNode(parentNode, segment);
-        navPathSegments.push(currentNode?.pathSegment || '');
+        if (currentNode?.pathSegment) {
+          navPathSegments.push(currentNode.pathSegment);
+        }
       });
     } else {
       navPathSegments = nodesInPath
