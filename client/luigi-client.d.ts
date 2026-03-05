@@ -78,7 +78,7 @@ export declare interface ClientPermissions {
 
 export declare interface AlertSettings {
   text?: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type?: 'info' | 'success' | 'warning' | 'error';
   links?: {
     [key: string]: { text: string; url?: string; dismissKey?: string };
   };
@@ -198,7 +198,7 @@ export declare interface UxManager {
    *     // Logic to execute when the confirmation modal is dismissed
    *  });
    */
-  showConfirmationModal: (settings: ConfirmationModalSettings) => Promise<void>;
+  showConfirmationModal: <T = unknown>(settings: ConfirmationModalSettings) => Promise<T>;
 
   /**
    * Gets the current locale.
@@ -427,7 +427,7 @@ export declare interface LinkManager {
    *     console.log(res.data) //=> {foo: 'bar'}
    *  });
    */
-  openAsModal: (nodepath: string, modalSettings?: ModalSettings) => Promise<void>;
+  openAsModal: <T = unknown>(nodepath: string, modalSettings?: ModalSettings) => Promise<T>;
 
   /**
    * Updates the current title and size of a modal. If `routing.showModalPathInUrl` is set to `true`, the URL will be updated with the modal settings data.
