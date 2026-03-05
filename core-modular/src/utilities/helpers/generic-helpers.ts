@@ -248,21 +248,21 @@ export const GenericHelpers = {
   },
 
   /**
-   * Checks if a given input string begins a hash with slash
+   * Checks if a given input string begins with a hash or a slash
    * @param {string} path
    * @returns {boolean}
    */
-  hasHash: (path: string): boolean => {
+  hasHashOrSlash: (path: string): boolean => {
     return !!(path && path.search(/^[#\/].*$/) === 0);
   },
 
   /**
-   * Removes leading hash of a string
+   * Removes leading hash or slash of a string
    * @param {string} path
    * @returns {string}
    */
-  getPathWithoutHash: (path: string): string => {
-    while (GenericHelpers.hasHash(path)) {
+  getPathWithoutHashOrSlash: (path: string): string => {
+    while (GenericHelpers.hasHashOrSlash(path)) {
       path = path.substring(1, path.length);
     }
 

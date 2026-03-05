@@ -492,11 +492,11 @@ export const RoutingHelpers = {
   },
 
   /**
-   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
-   * @param node - The current node from which to start building the route.
-   * @param path - The accumulated path string (used internally for recursion).
-   * @param params - Optional query parameters to append to the final route.
-   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
+   *  Recursively constructs the full path for a given node by concatenating its path segment with those of its ancestors.
+   *  If `params` are provided, they are appended as query parameters to the final path.
+   * @param node - The node for which to construct the path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param params - Optional query parameters to append to the path. If provided, it should be a string in the format of URL query parameters (e.g., "key=value&anotherKey=anotherValue").
+   * @returns The constructed path as a string, including any query parameters if provided.
    */
   getNodePath(node: Node, params?: string): string {
     if (!node || params) {
@@ -505,7 +505,13 @@ export const RoutingHelpers = {
       return `${node.parent ? this.getNodePath(node.parent) : ''}/${node.pathSegment}`;
     }
   },
-
+  /**
+   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
+   * @param node - The current node from which to start building the route.
+   * @param path - The accumulated path string (used internally for recursion).
+   * @param params - Optional query parameters to append to the final route.
+   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
+   */
   buildRoute(node: Node, path: string, params?: string): string {
     return !node.parent
       ? path + (params ? '?' + params : '')
@@ -541,12 +547,29 @@ export const RoutingHelpers = {
     return viewUrl;
   },
 
+  /**
+   *  Generates a sub-path for a given node by replacing dynamic parameters in the node's path with actual values from pathParams.
+   * @param node - The node for which to generate the sub-path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param nodePathParams - An object containing the values for dynamic parameters in the node's path. The keys should match the parameter names in the path segments.
+   * @returns A string representing the sub-path with dynamic parameters replaced by their corresponding values from pathParams.
+   */
   getSubPath(node: any, nodePathParams: any): string {
     return GenericHelpers.replaceVars(RoutingHelpers.getNodePath(node), nodePathParams, ':', false);
   },
 
+  /**
+   * Concatenates a base path and a relative path
+   *
+   * The function performs the following steps:
+   * 1. Removes any trailing '/' from the base path.
+   * 2. If the relative path does not start with '/', it adds a '/' between the base and relative paths.
+   * 3. Concatenates the base path and the relative path.
+   * @param basePath The base path to which the relative path will be appended. It may or may not end with a '/' character.
+   * @param relativePath The relative path to append to the base path. It may or may not start with a '/' character.
+   * @returns A string representing the concatenated path, with exactly one '/' character between the base and relative paths.
+   */
   concatenatePath(basePath: any, relativePath?: any): string {
-    let path = GenericHelpers.getPathWithoutHash(basePath);
+    let path = GenericHelpers.getPathWithoutHashOrSlash(basePath);
     if (!path) {
       return relativePath;
     }

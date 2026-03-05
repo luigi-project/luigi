@@ -105,7 +105,7 @@ export class Navigation {
    * @example
    * Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
    */
-  fromVirtualTreeRoot(): this {
+  fromVirtualTreeRoot(): Navigation {
     this.options.fromContext = null;
     this.options.fromClosestContext = false;
     this.options.fromVirtualTreeRoot = true;
@@ -118,7 +118,7 @@ export class Navigation {
    * @param navigationContext
    * @returns {navigation} navigation instance
    */
-  fromContext(navigationContext: string): this {
+  fromContext(navigationContext: string): Navigation {
     this.options.fromContext = navigationContext;
     return this;
   }
@@ -127,7 +127,7 @@ export class Navigation {
    * Allows navigation from the closest node which has the navigation context set. If there are multiple nodes with the same navigation context, the closest one will be used as the navigation base.
    * @returns {navigation} navigation instance
    */
-  fromClosestContext(): this {
+  fromClosestContext(): Navigation {
     this.options.fromContext = null;
     this.options.fromClosestContext = true;
     this.options.fromParent = false;
