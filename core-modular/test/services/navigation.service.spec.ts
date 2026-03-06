@@ -2,54 +2,8 @@ import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService } from '../../src/services/navigation.service';
 import type { NavigationRequestParams, Node, PathData } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
-import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
-
-const sampleNavPromise: Promise<Node[]> = new Promise(function (resolve) {
-  const lazyLoadedChildrenNodesProviderFn = () => {
-    return new Promise(function (resolve) {
-      resolve([
-        {
-          pathSegment: 'b1',
-          context: {
-            lazy: true
-          }
-        }
-      ]);
-    });
-  };
-
-  resolve([
-    {
-      pathSegment: 'aaa',
-      label: 'AAA',
-      viewUrl: '/aaa.html',
-      children: [
-        {
-          pathSegment: 'a1',
-          context: {
-            varA1: 'maskopatol'
-          }
-        },
-        {
-          pathSegment: 'a2'
-        }
-      ],
-      context: {
-        varA: 'tets'
-      }
-    },
-    {
-      pathSegment: 'bbb',
-      label: 'BBB',
-      viewUrl: '/bbb.html',
-      children: lazyLoadedChildrenNodesProviderFn,
-      context: {
-        lazy: false
-      }
-    }
-  ]);
-});
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -265,6 +219,7 @@ describe('NavigationService', () => {
       expect(matchingNode).toBeUndefined();
     });
   });
+
   describe('NavigationService.getPathData', () => {
     it('should return path data with pathParams included', async () => {
       const cfg = {
@@ -578,7 +533,12 @@ describe('NavigationService', () => {
       expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('NavigationService.handleNavigationRequest', () => {
+    beforeEach(() => {
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+    });
+
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
       const navRequestParams: NavigationRequestParams = {

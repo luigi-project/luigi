@@ -144,9 +144,9 @@ export class RoutingService {
 
     if (currentNode) {
       this.currentRoute.node = currentNode;
-      currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData?.pathParams || {};
-      currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
+      (currentNode as any).nodeParams = nodeParams || {};
+      (currentNode as any).pathParams = pathData?.pathParams || {};
+      (currentNode as any).searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
@@ -456,11 +456,7 @@ export class RoutingService {
     pathUrlRaw: string
   ): Promise<boolean> {
     const activePath: string = GenericHelpers.getTrimmedUrl(path);
-    const pathSegments: string[] = activePath?.split('/') || [];
-    const navPathSegments: string[] = pathData?.nodesInPath?.length
-      ? pathData.nodesInPath.filter((x: any) => x.pathSegment).map((x: any) => x.pathSegment)
-      : [];
-    const isExistingRoute: boolean = !activePath || pathSegments.length === navPathSegments.length;
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
 
     if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
       const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {

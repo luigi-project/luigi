@@ -427,6 +427,39 @@ describe('Routing-helpers', () => {
     });
   });
 
+  describe('handlePageNotFoundAndRetrieveRedirectPath', () => {
+    it('when path exists should return path itself', async () => {
+      const path = 'existingpath';
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, true, luigi);
+
+      expect(path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined', async () => {
+      const path = 'somepathtoredirect';
+      const redirectPath = { path };
+      // define pageNotFoundHandler return value with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue(redirectPath);
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(redirectPath.path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler as not defined', async () => {
+      const path = 'notFoundPath';
+      const consoleWarnSpy = jest.spyOn(console, 'warn');
+      // set pageNotFoundHandler as undefined with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not find the requested route: ${path}`);
+      // TODO expect(RoutingHelpers.showRouteNotFoundAlert).toHaveBeenCalled();
+      expect(undefined).toEqual(expected);
+    });
+  });
+
   describe('buildRoute', () => {
     it('should return path with params if node has no parent (root node)', () => {
       const rootNode = {
@@ -490,6 +523,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(childNode);
       expect(result).toBe('/home/child');
     });
+
     it('should return full path for deeply nested nodes', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };
@@ -497,6 +531,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(grandChildNode);
       expect(result).toBe('/home/child/grandchild');
     });
+
     it('should return full path with params', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };

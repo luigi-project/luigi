@@ -493,6 +493,64 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Checks if given path is an existing route or not
+   * @param {string} activePath - path to be checked
+   * @param {PathData} pathData - related path data
+   * @returns {boolean} the result of path checking as boolean value
+   */
+  isExistingRoute(activePath: string, pathData: PathData): boolean {
+    const pathSegments: string[] = activePath?.split('/') || [];
+    const nodesInPath: Node[] = pathData?.nodesInPath || [];
+    const findChildNode = (node: null | Node, segment: string): null | Node => {
+      let output = null;
+
+      if (node?.children?.length) {
+        const nodes: Node[] = node.children.filter((node: Node) => node.pathSegment === segment);
+
+        if (nodes?.length) {
+          output = nodes[0];
+        }
+      }
+
+      return output;
+    };
+    let navPathSegments: string[] = [];
+
+    if (pathSegments.length > 1 && nodesInPath.length === 1) {
+      let currentNode: null | Node;
+
+      pathSegments.forEach((segment, index) => {
+        const parentNode = index === 0 ? nodesInPath[0] : currentNode;
+
+        currentNode = findChildNode(parentNode, segment);
+        if (currentNode?.pathSegment) {
+          navPathSegments.push(currentNode.pathSegment);
+        }
+      });
+    } else {
+      navPathSegments = nodesInPath
+        .filter((node: Node) => node.pathSegment)
+        .map((node: Node) => node.pathSegment || '');
+    }
+
+    return !activePath || pathSegments.length === navPathSegments.length;
+  },
+
+  /**
+   * Handles case if path exists or not.
+   * @param {string} path - the path to be checked
+   * @param {Luigi} luigi - the Luigi instance used to access configuration values
+   * @returns {Promise<boolean>} the result of path checking as async boolean value
+   */
+  async pathExists(path: string, luigi: Luigi): Promise<boolean> {
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const pathData: PathData = await luigi.navigation().navService.getPathData(path);
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
+
+    return pathData ? isExistingRoute : false;
+  },
+
+  /**
    * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
    * If the there is no `pageNotFoundHandler` defined we return undefined.
    * @param {string} notFoundPath - the path to be checked
@@ -517,6 +575,36 @@ export const RoutingHelpers = {
     }
 
     return {};
+  },
+
+  /**
+   * Handles pageNotFound situation depending if path exists or not.
+   * If path exists simply return the given path, else fetch the pageNotFound redirect path and return it.
+   * In case there was no pageNotFound handler defined it shows an alert and returns undefined.
+   * @param {string} path - the path to check for
+   * @param {boolean} pathExists - defines if path exists or not
+   * @param {Luigi} luigi - the Luigi instance used to access configuration values
+   * @returns {} the path to redirect to or undefined if path doesn't exist and no redirect path is defined
+   */
+  async handlePageNotFoundAndRetrieveRedirectPath(
+    path: string,
+    pathExists: boolean,
+    luigi: Luigi
+  ): Promise<string | undefined> {
+    if (pathExists) {
+      return path;
+    }
+    const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
+    const redirectPath = (this.getPageNotFoundRedirectResult(path, pageNotFoundHandler, luigi) as any)?.path;
+
+    if (redirectPath !== undefined) {
+      return redirectPath;
+    } else {
+      // default behavior if `pageNotFoundHandler` did not produce a redirect path
+      // TODO this.showRouteNotFoundAlert(component, path);
+      console.warn(`Could not find the requested route: ${path}`);
+      return undefined;
+    }
   },
 
   async getDefaultChildNode(
