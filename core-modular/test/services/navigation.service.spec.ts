@@ -495,7 +495,7 @@ describe('NavigationService', () => {
         navigate: navigateSpy
       });
 
-      jest.spyOn(RoutingHelpers, 'buildRoute').mockReturnValue('/home');
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/home');
       jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue('/home');
 
       const node = {
@@ -524,7 +524,7 @@ describe('NavigationService', () => {
         rootNodes: []
       };
 
-      jest.spyOn(RoutingHelpers, 'buildRoute').mockReturnValue(undefined as any);
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue(undefined as any);
       jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue(undefined as any);
 
       navigationService.navItemClick({ pathSegment: 'home' } as any, pathData);
@@ -922,7 +922,7 @@ describe('NavigationService', () => {
     });
 
     it('should return incomingPath if fromVirtualTreeRoot is false', async () => {
-      const result = await navigationService.buildPath('/my/path', false);
+      const result = await navigationService.buildPath('/my/path', { fromVirtualTreeRoot: false });
 
       expect(result).toBe('/my/path');
     });
@@ -936,7 +936,7 @@ describe('NavigationService', () => {
         ]
       } as any);
 
-      const result = await navigationService.buildPath('details', true);
+      const result = await navigationService.buildPath('details', { fromVirtualTreeRoot: true });
 
       expect(result).toBe('/parent/child/details');
     });
@@ -951,7 +951,7 @@ describe('NavigationService', () => {
         ]
       } as any);
 
-      const result = await navigationService.buildPath('next', true);
+      const result = await navigationService.buildPath('next', { fromVirtualTreeRoot: true });
 
       expect(result).toBe('/level1/virtual/next');
     });
@@ -965,7 +965,7 @@ describe('NavigationService', () => {
         ]
       } as any);
 
-      const result = await navigationService.buildPath('end', true);
+      const result = await navigationService.buildPath('end', { fromVirtualTreeRoot: true });
 
       expect(result).toBe('/valid/end');
     });
@@ -975,7 +975,7 @@ describe('NavigationService', () => {
         nodesInPath: []
       } as any);
 
-      const result = await navigationService.buildPath('alone', true);
+      const result = await navigationService.buildPath('alone', { fromVirtualTreeRoot: true });
 
       expect(result).toBe('/alone');
     });
@@ -985,7 +985,7 @@ describe('NavigationService', () => {
         nodesInPath: undefined
       } as any);
 
-      const result = await navigationService.buildPath('fallback', true);
+      const result = await navigationService.buildPath('fallback', { fromVirtualTreeRoot: true });
 
       expect(result).toBe('fallback');
     });
@@ -1061,17 +1061,18 @@ describe('NavigationService', () => {
 
       const nodesInPath = [{}];
 
-      navigationService.buildVirtualTree(node, nodesInPath, {});
+      const children = navigationService.buildVirtualTree(node, nodesInPath, {});
 
       expect(node.keepSelectedForChildren).toBe(true);
-      expect(node.children).toHaveLength(1);
+      expect(children).toHaveLength(1);
 
-      const child = node.children[0];
+      const child = children ? children[0] : undefined;
 
-      expect(child.pathSegment).toBe(':virtualSegment_1');
-      expect(child._virtualTree).toBe(true);
-      expect(child._virtualPathIndex).toBe(1);
-      expect(child.viewUrl).toBe('/virtual/url');
+      expect(child).toBeDefined();
+      expect(child!.pathSegment).toBe(':virtualSegment_1');
+      expect(child!._virtualTree).toBe(true);
+      expect(child!._virtualPathIndex).toBe(1);
+      expect(child!.viewUrl).toBe('/virtual/url');
     });
 
     it('should increment _virtualPathIndex if provided', () => {
@@ -1083,12 +1084,10 @@ describe('NavigationService', () => {
 
       const nodesInPath = [{}];
 
-      navigationService.buildVirtualTree(node, nodesInPath, {});
+      const children = navigationService.buildVirtualTree(node, nodesInPath, {}) || [];
 
-      const child = node.children[0];
-
-      expect(child._virtualPathIndex).toBe(3);
-      expect(child.pathSegment).toBe(':virtualSegment_3');
+      expect(children[0]!._virtualPathIndex).toBe(3);
+      expect(children[0]!.pathSegment).toBe(':virtualSegment_3');
     });
 
     it('should stop if _virtualPathIndex exceeds max depth', () => {
