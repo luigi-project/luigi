@@ -369,7 +369,7 @@
 
       NodeDataManagementStorage.deleteCache();
       const currentPath = Routing.getCurrentPath();
-      Routing.handleRouteChange(currentPath, getComponentWrapper(), node, config);
+      Routing.handleRouteChange(currentPath, getComponentWrapper(), node, config, false, false, true);
     }, ['navigation.nodes']);
 
     // subsequential route handling
@@ -1458,8 +1458,12 @@
           contentNode = node;
 
           if (modal !== undefined) {
+            let openerIframe = iframe;
+            if (modal._reuseIframeOpener && mfModalList.length === 1) {
+              openerIframe = mfModalList[0].mfModal.openerIframe;
+            }
             !modal.keepPrevious && resetMicrofrontendModalData();
-            await openViewInModal(path, modal === true ? {} : modal, iframe);
+            await openViewInModal(path, modal === true ? {} : modal, openerIframe);
             checkResolve();
           } else if (splitView !== undefined) {
             await openSplitView(path, splitView);
