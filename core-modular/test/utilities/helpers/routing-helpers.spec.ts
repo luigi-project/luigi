@@ -23,7 +23,13 @@ describe('Routing-helpers', () => {
         }
         return null;
       },
-      getActiveFeatureToggles: () => []
+      getActiveFeatureToggles: () => [],
+      i18n: jest.fn().mockReturnValue({
+        getTranslation: (key: string) => key
+      }),
+      ux: jest.fn().mockReturnValue({
+        showAlert: jest.fn()
+      })
     };
   });
 
@@ -427,6 +433,32 @@ describe('Routing-helpers', () => {
     });
   });
 
+  describe('showRouteNotFoundAlert', () => {
+    it('should show error alert when no path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', false, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.requestedRouteNotFound',
+        type: 'error',
+        ttl: 1
+      });
+    });
+
+    it('should show error alert when path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', true, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.notExactTargetNode',
+        type: 'error',
+        ttl: 1
+      });
+    });
+  });
+
   describe('buildRoute', () => {
     it('should return path with params if node has no parent (root node)', () => {
       const rootNode = {
@@ -490,6 +522,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(childNode);
       expect(result).toBe('/home/child');
     });
+
     it('should return full path for deeply nested nodes', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };
@@ -497,6 +530,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(grandChildNode);
       expect(result).toBe('/home/child/grandchild');
     });
+
     it('should return full path with params', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };
