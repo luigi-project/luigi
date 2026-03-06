@@ -110,6 +110,7 @@ export interface Node {
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
@@ -120,6 +121,10 @@ export interface Node {
   tooltipText?: string;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
+  virtualTree?: boolean;
+  _virtualTree?: Node;
+  _virtualPathIndex?: number;
+  _virtualViewUrl?: string;
 }
 
 export interface PageErrorHandler {
@@ -195,10 +200,18 @@ export interface ExternalLink {
   sameWindow?: boolean;
 }
 
+export interface NavigationOptions {
+  fromContext?: any;
+  fromClosestContext?: boolean;
+  fromVirtualTreeRoot?: boolean;
+  fromParent?: boolean;
+}
+
 export interface NavigationRequestBase {
   preventContextUpdate?: boolean;
   preventHistoryEntry?: boolean;
   withoutSync?: boolean;
+  options?: NavigationOptions;
 }
 
 export interface NavigationRequestParams extends NavigationRequestBase {

@@ -313,7 +313,7 @@ describe('Routing-helpers', () => {
   });
 
   describe('getLocationSearchQueryParams', () => {
-    let getLocationStub: SinonStub | undefined;
+    let getLocationStub: jest.SpyInstance | undefined;
     afterEach(() => {
       if (getLocationStub) {
         getLocationStub.mockRestore();
@@ -457,6 +457,151 @@ describe('Routing-helpers', () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not find the requested route: ${path}`);
       // TODO expect(RoutingHelpers.showRouteNotFoundAlert).toHaveBeenCalled();
       expect(undefined).toEqual(expected);
+    });
+  });
+
+  describe('buildRoute', () => {
+    it('should return path with params if node has no parent (root node)', () => {
+      const rootNode = {
+        pathSegment: 'root'
+      };
+
+      const result = RoutingHelpers.buildRoute(rootNode, '/child', 'id=1');
+
+      expect(result).toBe('/child?id=1');
+    });
+
+    it('should build full route recursively from child to root', () => {
+      const rootNode = { pathSegment: 'root' };
+      const parentNode = { pathSegment: 'parent', parent: rootNode };
+      const childNode = { pathSegment: 'child', parent: parentNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child');
+
+      expect(result).toBe('/root/parent/child');
+    });
+
+    it('should append params only once at the end', () => {
+      const rootNode = { pathSegment: 'root' };
+      const parentNode = { pathSegment: 'parent', parent: rootNode };
+      const childNode = { pathSegment: 'child', parent: parentNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child', 'foo=bar');
+
+      expect(result).toBe('/root/parent/child?foo=bar');
+    });
+
+    it('should handle single parent correctly', () => {
+      const rootNode = { pathSegment: 'root' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child');
+
+      expect(result).toBe('/root/child');
+    });
+
+    it('should work with empty params', () => {
+      const rootNode = { pathSegment: 'root' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+
+      const result = RoutingHelpers.buildRoute(childNode, '/child', '');
+
+      expect(result).toBe('/root/child');
+    });
+  });
+
+  describe('RoutingHelpers.getNodePath', () => {
+    it('should return path for node without parent', () => {
+      const node = { pathSegment: 'home' };
+      const result = RoutingHelpers.getNodePath(node);
+      expect(result).toBe('/home');
+    });
+
+    it('should return full path for nested nodes', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const result = RoutingHelpers.getNodePath(childNode);
+      expect(result).toBe('/home/child');
+    });
+
+    it('should return full path for deeply nested nodes', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const grandChildNode = { pathSegment: 'grandchild', parent: childNode };
+      const result = RoutingHelpers.getNodePath(grandChildNode);
+      expect(result).toBe('/home/child/grandchild');
+    });
+
+    it('should return full path with params', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: 'child', parent: rootNode };
+      const result = RoutingHelpers.getNodePath(childNode, 'id=1');
+      expect(result).toBe('/home/child?id=1');
+    });
+  });
+
+  describe('RoutingHelpers.concatenatePath', () => {
+    it('should concatenate base path and relative path', () => {
+      const result = RoutingHelpers.concatenatePath('/base/path', 'relative/path');
+      expect(result).toBe('base/path/relative/path');
+    });
+
+    it('should concatenate base path with leading hash and relative path', () => {
+      const result = RoutingHelpers.concatenatePath('#/base/path', 'relative/path');
+      expect(result).toBe('base/path/relative/path');
+    });
+
+    it('should concatenate base path with leading slash and hash and relative path', () => {
+      const result = RoutingHelpers.concatenatePath('/#/base/path', 'relative/path');
+      expect(result).toBe('base/path/relative/path');
+    });
+
+    it('should return relative path if base path is empty', () => {
+      const result = RoutingHelpers.concatenatePath('', 'relative/path');
+      expect(result).toBe('relative/path');
+    });
+
+    it('should return base path if relative path is empty', () => {
+      const result = RoutingHelpers.concatenatePath('/base/path', '');
+      expect(result).toBe('base/path');
+    });
+
+    it('should handle slashes correctly', () => {
+      const result = RoutingHelpers.concatenatePath('/base/path/', '/relative/path/');
+      expect(result).toBe('base/path/relative/path/');
+    });
+  });
+
+  describe('RoutingHelpers.getSubPath', () => {
+    it('should replace variables in the node path with values from pathParams', () => {
+      const node = { pathSegment: ':id' };
+      const pathParams = { id: '123' };
+      const result = RoutingHelpers.getSubPath(node, pathParams);
+      expect(result).toBe('/123');
+    });
+
+    it('should return the node path without replacement if it is not a dynamic node', () => {
+      const node = { pathSegment: 'static' };
+      const pathParams = { id: '123' };
+      const result = RoutingHelpers.getSubPath(node, pathParams);
+      expect(result).toBe('/static');
+    });
+
+    it('should return dynamic pathSegment if the node is dynamic but has no corresponding path parameter', () => {
+      const node = { pathSegment: ':id' };
+      const pathParams = {};
+      const result = RoutingHelpers.getSubPath(node, pathParams);
+      expect(result).toBe('/:id');
+    });
+
+    it('should return full path for deeply nested dynamic nodes', () => {
+      const rootNode = { pathSegment: 'home' };
+      const childNode = { pathSegment: ':id', parent: rootNode };
+      const grandChildNode = { pathSegment: 'details', parent: childNode };
+      const grandGrandChildNode = { pathSegment: ':detail', parent: grandChildNode };
+      const pathParams = { id: '123', detail: 'info' };
+      const result = RoutingHelpers.getSubPath(grandGrandChildNode, pathParams);
+      expect(result).toBe('/home/123/details/info');
     });
   });
 });

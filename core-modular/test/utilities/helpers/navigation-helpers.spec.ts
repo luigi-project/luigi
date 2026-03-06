@@ -136,4 +136,25 @@ describe('Navigation-helpers', () => {
       expect(result).toEqual({ ...mockedContext, ...mockedAddition });
     });
   });
+
+  describe('findVirtualTreeRootNode', () => {
+    it('should return the node itself if it is a virtual tree root', () => {
+      const node: Node = { pathSegment: 'root', virtualTree: true };
+      const result = NavigationHelpers.findVirtualTreeRootNode(node);
+      expect(result).toBe(node);
+    });
+
+    it('should return the virtual tree root node from ancestors', () => {
+      const virtualRoot: Node = { pathSegment: 'root', virtualTree: true };
+      const childNode: Node = { pathSegment: 'child', parent: virtualRoot };
+      const result = NavigationHelpers.findVirtualTreeRootNode(childNode);
+      expect(result).toBe(virtualRoot);
+    });
+
+    it('should return undefined if no virtual tree root is found', () => {
+      const node: Node = { pathSegment: 'node' };
+      const result = NavigationHelpers.findVirtualTreeRootNode(node);
+      expect(result).toBeUndefined();
+    });
+  });
 });
