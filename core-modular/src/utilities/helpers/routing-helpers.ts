@@ -1,5 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
+import type { AlertSettings } from '../../modules/ux-module';
 import type { Node, PathData } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
@@ -490,6 +491,26 @@ export const RoutingHelpers = {
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
     return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
+  },
+
+  /**
+   * Shows an error alert on the given path
+   * @param {string} path - the path to show in the alert
+   * @param {boolean} isAnyPathMatched - shows whether a valid path was found / which means path was only partially wrong; otherwise it is false
+   * @param {Luigi} luigi - the Luigi instance used to access i18n and ux methods
+   */
+  showRouteNotFoundAlert(path: string, isAnyPathMatched = false, luigi: Luigi): void {
+    const alertSettings: AlertSettings = {
+      text: luigi
+        .i18n()
+        .getTranslation(isAnyPathMatched ? 'luigi.notExactTargetNode' : 'luigi.requestedRouteNotFound', {
+          route: path
+        } as any),
+      type: 'error',
+      ttl: 1 // how many redirections the alert will 'survive'
+    };
+
+    luigi.ux().showAlert(alertSettings);
   },
 
   /**
