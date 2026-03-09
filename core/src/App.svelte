@@ -1675,7 +1675,7 @@
 
       if ('luigi.addSearchParams' === e.data.msg) {
         if (iframe.luigi.currentNode.clientPermissions && iframe.luigi.currentNode.clientPermissions.urlParameters) {
-          const { data, keepBrowserHistory, preventConfigChange: preventLuigiConfigUpdate } = e.data;
+          const { data, keepBrowserHistory, preventLuigiConfigUpdate } = e.data;
           RoutingHelpers.addSearchParamsFromClient(
             iframe.luigi.currentNode,
             data,
