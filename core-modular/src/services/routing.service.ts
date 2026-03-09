@@ -544,7 +544,7 @@ export class RoutingService {
       return;
     }
 
-    // TODO RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched);
+    RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched, this.luigi);
     this.getNavigationService().handleNavigationRequest({ path: GenericHelpers.addLeadingSlash(pathToRedirect) });
   }
 }
