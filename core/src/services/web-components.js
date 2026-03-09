@@ -135,6 +135,18 @@ class WebComponentSvcClass {
         };
         return RoutingHelpers.prepareSearchParamsForClient(node);
       },
+      addCoreSearchParams(searchParams, keepBrowserHistory = true, preventLuigiConfigUpdate = false) {
+        const node = {
+          clientPermissions: wc.extendedContext.clientPermissions
+        };
+        RoutingHelpers.addSearchParamsFromClient(
+          node,
+          searchParams,
+          keepBrowserHistory,
+          true,
+          preventLuigiConfigUpdate
+        );
+      },
       getClientPermissions: () => (wc.extendedContext?.clientPermissions ? wc.extendedContext.clientPermissions : {}),
       addNodeParams: (params, keepBrowserHistory) => {
         if (!isSpecialMf) {

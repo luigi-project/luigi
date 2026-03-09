@@ -1675,8 +1675,13 @@
 
       if ('luigi.addSearchParams' === e.data.msg) {
         if (iframe.luigi.currentNode.clientPermissions && iframe.luigi.currentNode.clientPermissions.urlParameters) {
-          const { data, keepBrowserHistory } = e.data;
-          RoutingHelpers.addSearchParamsFromClient(iframe.luigi.currentNode, data, keepBrowserHistory);
+          const { data, keepBrowserHistory, preventConfigChange: preventLuigiConfigUpdate } = e.data;
+          RoutingHelpers.addSearchParamsFromClient(
+            iframe.luigi.currentNode,
+            data,
+            keepBrowserHistory,
+            preventLuigiConfigUpdate
+          );
         } else {
           console.warn('No client permissions to add url parameter for this node.');
         }
