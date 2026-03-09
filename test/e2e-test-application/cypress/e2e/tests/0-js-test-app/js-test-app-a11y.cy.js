@@ -492,6 +492,13 @@ describe('JS-TEST-APP 4', () => {
       };
     });
 
+    it('Header contains heading element', () => {
+      cy.visitTestApp('/home', newConfig);
+      cy.get('#app[configversion="header-a11y"]');
+      cy.get('h1').should('be.visible');
+      cy.get('h1').should('have.class', 'fd-shellbar__heading');
+    });
+
     it('Header has correct aria-labels', () => {
       cy.visitTestApp('/home', newConfig);
       newConfig.settings.customTranslationImplementation = () => {

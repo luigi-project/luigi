@@ -163,193 +163,202 @@
   }
 </script>
 
-<div
-  class="fd-shellbar__branding"
-  aria-label={$getTranslation(title)}
-  role="button"
-  tabindex="0"
-  on:keyup|preventDefault={(event) => {
-    (event.key === 'Enter' || event.key === ' ') && goTo('/');
-  }}
->
-  {#if addNavHrefForAnchor}
-    <a
-      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
-      aria-hidden="true"
-      on:click={(event) => {
-        NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo('/');
-      }}
-      href="/"
-      tabindex="-1"
-    >
-      {#if hasLogo}<img data-testid="luigi-topnav-logo" bind:this={logo} alt={title} />{/if}
-    </a>
-  {:else}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <span
-      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
-      aria-hidden="true"
-      on:click={() => goTo('/')}
-      tabindex="-1"
-    >
-      {#if hasLogo}<img data-testid="luigi-topnav-logo" bind:this={logo} alt={title} />{/if}
-    </span>
-  {/if}
-  {#if title}
-    {#if !hasApps || keepMainTitle}
-      {#if addNavHrefForAnchor}
-        <a
-          class="fd-shellbar__title lui-shellbar-single-app-title {hasApps && 'lui-has-apps'}"
-          data-testid="luigi-topnav-title"
-          aria-hidden="true"
-          on:click={(event) => {
-            NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo('/');
-          }}
-          tabindex="-1"
-          href="/"
-        >
-          {$getTranslation(keepMainTitle ? defaultTitle : title)}
-        </a>
-      {:else}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <span
-          class="fd-shellbar__title lui-shellbar-single-app-title"
-          data-testid="luigi-topnav-title"
-          aria-hidden="true"
-          on:click={() => goTo('/')}
-          tabindex="-1"
-        >
-          {$getTranslation(keepMainTitle ? defaultTitle : title)}
-        </span>
+<h1 class="fd-shellbar__heading">
+  <div
+    class="fd-shellbar__branding"
+    aria-label={$getTranslation(title)}
+    role="button"
+    tabindex="0"
+    on:keyup|preventDefault={(event) => {
+      (event.key === 'Enter' || event.key === ' ') && goTo('/');
+    }}
+  >
+    {#if addNavHrefForAnchor}
+      <a
+        class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
+        aria-hidden="true"
+        on:click={(event) => {
+          NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo('/');
+        }}
+        href="/"
+        tabindex="-1"
+      >
+        {#if hasLogo}<img data-testid="luigi-topnav-logo" bind:this={logo} alt={title} />{/if}
+      </a>
+    {:else}
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <span
+        class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
+        aria-hidden="true"
+        on:click={() => goTo('/')}
+        tabindex="-1"
+      >
+        {#if hasLogo}<img data-testid="luigi-topnav-logo" bind:this={logo} alt={title} />{/if}
+      </span>
+    {/if}
+    {#if title}
+      {#if !hasApps || keepMainTitle}
+        {#if addNavHrefForAnchor}
+          <a
+            class="fd-shellbar__title lui-shellbar-single-app-title {hasApps && 'lui-has-apps'}"
+            data-testid="luigi-topnav-title"
+            aria-hidden="true"
+            on:click={(event) => {
+              NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo('/');
+            }}
+            tabindex="-1"
+            href="/"
+          >
+            {$getTranslation(keepMainTitle ? defaultTitle : title)}
+          </a>
+        {:else}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-no-static-element-interactions -->
+          <span
+            class="fd-shellbar__title lui-shellbar-single-app-title"
+            data-testid="luigi-topnav-title"
+            aria-hidden="true"
+            on:click={() => goTo('/')}
+            tabindex="-1"
+          >
+            {$getTranslation(keepMainTitle ? defaultTitle : title)}
+          </span>
+        {/if}
       {/if}
     {/if}
-  {/if}
-</div>
-{#if title}
-  {#if hasApps}
-    {#if keepMainTitle}<span class="fd-shellbar__separator"></span>{/if}
-    <div
-      class="fd-popover {keepMainTitle && 'lui-keep-main'} {appSwitcherItems &&
-        appSwitcherItems.length === 1 &&
-        'lui-sat'}"
-    >
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
-        {#if addNavHrefForAnchor}
-          {#if appSwitcherItems && appSwitcherItems.length === 1}
-            <a
-              href={getRouteLink(appSwitcherItems[0])}
-              class="fd-shellbar__title lui-shellbar-single-app-title"
-              on:click={(event) => {
-                NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo(appSwitcherItems[0].link);
-              }}
-            >
-              <span>{$getTranslation(appSwitcherItems[0].title)}</span>
-            </a>
-          {/if}
-          {#if appSwitcherItems && appSwitcherItems.length > 1}
-            {#each appSwitcherItems as item}
-              {#if item === selectedItem && hasValidLink(item, pathParams)}
-                <a
-                  href={getRouteLink(item)}
-                  class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
-                  aria-haspopup="true"
-                  aria-expanded={dropDownStates.appSwitcherPopover || false}
-                  on:click|preventDefault={() => toggleDropdownState('appSwitcherPopover')}
-                  data-testid="app-switcher"
-                >
-                  <span class="fd-button__text" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
-                  <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
-                </a>
-              {/if}
-            {/each}
-          {/if}
-          {#if appSwitcherItems.length > 1 && !selectedItem}
-            <a
-              href="/"
-              class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
-              aria-haspopup="true"
-              aria-expanded={dropDownStates.appSwitcherPopover || false}
-              on:click|preventDefault={() => toggleDropdownState('appSwitcherPopover')}
-              data-testid="app-switcher"
-            >
-              <span class="fd-button__text" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
-              <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
-            </a>
-          {/if}
-        {:else}
-          <button
-            class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
-            aria-haspopup="true"
-            aria-expanded={dropDownStates.appSwitcherPopover || false}
-            on:click|stopPropagation={() => toggleDropdownState('appSwitcherPopover')}
-            data-testid="app-switcher"
-          >
-            <span class="fd-shellbar__title" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
-            <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
-          </button>
-        {/if}
-      </div>
+  </div>
+  {#if title}
+    {#if hasApps}
+      {#if keepMainTitle}<span class="fd-shellbar__separator"></span>{/if}
       <div
-        class="fd-popover__body fd-popover__body--left"
-        aria-hidden={!(dropDownStates.appSwitcherPopover || false)}
-        id="appSwitcherPopover"
+        class="fd-popover {keepMainTitle && 'lui-keep-main'} {appSwitcherItems &&
+          appSwitcherItems.length === 1 &&
+          'lui-sat'}"
       >
-        <nav class="fd-menu">
-          <ul class="fd-menu__list fd-menu__list--no-shadow" bind:this={customItemRenderer__slotContainer}>
-            {#if showMainAppEntry && selectedItem}
-              <li class="fd-menu__item">
-                <a
-                  href="/"
-                  role="button"
-                  class="fd-menu__link"
-                  on:click|preventDefault={goToRoot}
-                  data-testid={getTestId(defaultTitle)}
-                >
-                  <span class="fd-menu__title">{$getTranslation(defaultTitle)}</span>
-                </a>
-              </li>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="fd-popover__control" on:click|stopPropagation={() => {}}>
+          {#if addNavHrefForAnchor}
+            {#if appSwitcherItems && appSwitcherItems.length === 1}
+              <a
+                href={getRouteLink(appSwitcherItems[0])}
+                class="fd-shellbar__title lui-shellbar-single-app-title"
+                on:click={(event) => {
+                  NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo(appSwitcherItems[0].link);
+                }}
+              >
+                <span>{$getTranslation(appSwitcherItems[0].title)}</span>
+              </a>
             {/if}
-            {#if appSwitcherItems && appSwitcherItems.length > 0}
-              {#each appSwitcherItems as item, index}
-                {#if GenericHelpers.isFunction(itemRenderer)}
-                  {#if customItemRenderer__slotContainer}
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <li class="fd-menu__item" tabindex="0">
-                      {@html renderCustomList(item, customItemRenderer__slotContainer, index)}
-                    </li>
-                  {/if}
-                {:else if item !== selectedItem && hasValidLink(item, pathParams)}
-                  <li class="fd-menu__item">
-                    <a
-                      role="button"
-                      class="fd-menu__link"
-                      on:click={(event) => {
-                        NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo(item.link);
-                      }}
-                      href={addNavHrefForAnchor ? getRouteLink(item, pathParams) : undefined}
-                      data-testid={getTestId(item)}
-                    >
-                      <span class="fd-menu__title">{$getTranslation(item.title)}</span>
-                    </a>
-                  </li>
+            {#if appSwitcherItems && appSwitcherItems.length > 1}
+              {#each appSwitcherItems as item}
+                {#if item === selectedItem && hasValidLink(item, pathParams)}
+                  <a
+                    href={getRouteLink(item)}
+                    class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
+                    aria-haspopup="true"
+                    aria-expanded={dropDownStates.appSwitcherPopover || false}
+                    on:click|preventDefault={() => toggleDropdownState('appSwitcherPopover')}
+                    data-testid="app-switcher"
+                  >
+                    <span class="fd-button__text" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
+                    <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
+                  </a>
                 {/if}
               {/each}
             {/if}
-          </ul>
-        </nav>
+            {#if appSwitcherItems.length > 1 && !selectedItem}
+              <a
+                href="/"
+                class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
+                aria-haspopup="true"
+                aria-expanded={dropDownStates.appSwitcherPopover || false}
+                on:click|preventDefault={() => toggleDropdownState('appSwitcherPopover')}
+                data-testid="app-switcher"
+              >
+                <span class="fd-button__text" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
+                <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
+              </a>
+            {/if}
+          {:else}
+            <button
+              class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-app-switch"
+              aria-haspopup="true"
+              aria-expanded={dropDownStates.appSwitcherPopover || false}
+              on:click|stopPropagation={() => toggleDropdownState('appSwitcherPopover')}
+              data-testid="app-switcher"
+            >
+              <span class="fd-shellbar__title" data-testid="luigi-topnav-title">{$getTranslation(title)}</span>
+              <i class="sap-icon sap-icon--megamenu fd-shellbar__button--icon" />
+            </button>
+          {/if}
+        </div>
+        <div
+          class="fd-popover__body fd-popover__body--left"
+          aria-hidden={!(dropDownStates.appSwitcherPopover || false)}
+          id="appSwitcherPopover"
+        >
+          <nav class="fd-menu">
+            <ul class="fd-menu__list fd-menu__list--no-shadow" bind:this={customItemRenderer__slotContainer}>
+              {#if showMainAppEntry && selectedItem}
+                <li class="fd-menu__item">
+                  <a
+                    href="/"
+                    role="button"
+                    class="fd-menu__link"
+                    on:click|preventDefault={goToRoot}
+                    data-testid={getTestId(defaultTitle)}
+                  >
+                    <span class="fd-menu__title">{$getTranslation(defaultTitle)}</span>
+                  </a>
+                </li>
+              {/if}
+              {#if appSwitcherItems && appSwitcherItems.length > 0}
+                {#each appSwitcherItems as item, index}
+                  {#if GenericHelpers.isFunction(itemRenderer)}
+                    {#if customItemRenderer__slotContainer}
+                      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                      <li class="fd-menu__item" tabindex="0">
+                        {@html renderCustomList(item, customItemRenderer__slotContainer, index)}
+                      </li>
+                    {/if}
+                  {:else if item !== selectedItem && hasValidLink(item, pathParams)}
+                    <li class="fd-menu__item">
+                      <a
+                        role="button"
+                        class="fd-menu__link"
+                        on:click={(event) => {
+                          NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo(item.link);
+                        }}
+                        href={addNavHrefForAnchor ? getRouteLink(item, pathParams) : undefined}
+                        data-testid={getTestId(item)}
+                      >
+                        <span class="fd-menu__title">{$getTranslation(item.title)}</span>
+                      </a>
+                    </li>
+                  {/if}
+                {/each}
+              {/if}
+            </ul>
+          </nav>
+        </div>
       </div>
-    </div>
+    {/if}
+    {#if subTitle && showSubTitle}
+      <div class="fd-shellbar__subtitle">{$getTranslation(subTitle)}</div>
+    {/if}
   {/if}
-  {#if subTitle && showSubTitle}
-    <div class="fd-shellbar__subtitle">{$getTranslation(subTitle)}</div>
-  {/if}
-{/if}
+</h1>
 
 <style lang="scss">
+  .fd-shellbar__heading {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
   // Force height because of base64 img src
   .lui-customlogo img {
     height: 24px;
