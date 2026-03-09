@@ -615,6 +615,7 @@ export const RoutingHelpers = {
     if (pathExists) {
       return path;
     }
+
     const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
     const redirectPath = (this.getPageNotFoundRedirectResult(path, pageNotFoundHandler, luigi) as any)?.path;
 
@@ -622,7 +623,7 @@ export const RoutingHelpers = {
       return redirectPath;
     } else {
       // default behavior if `pageNotFoundHandler` did not produce a redirect path
-      // TODO this.showRouteNotFoundAlert(component, path);
+      this.showRouteNotFoundAlert(path, false, luigi);
       console.warn(`Could not find the requested route: ${path}`);
       return undefined;
     }
