@@ -65,12 +65,13 @@ export const RoutingModule = {
     const navService = serviceRegistry.get(NavigationService);
     const pathObj = RoutingHelpers.getCurrentPath();
     const currentNode = await navService.getCurrentNode(pathObj.path);
+    const urlParams = currentNode?.clientPermissions?.urlParameters;
     const localSearchParams = { ...searchParams };
 
-    if (currentNode?.clientPermissions?.urlParameters) {
+    if (urlParams) {
       const filteredObj: Record<string, any> = {};
-      Object.keys(currentNode.clientPermissions.urlParameters).forEach((key) => {
-        if (key in localSearchParams && currentNode.clientPermissions.urlParameters[key].write === true) {
+      Object.keys(urlParams).forEach((key) => {
+        if (key in localSearchParams && urlParams[key]?.write === true) {
           filteredObj[key] = localSearchParams[key];
           delete localSearchParams[key];
         }

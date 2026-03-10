@@ -433,6 +433,39 @@ describe('Routing-helpers', () => {
     });
   });
 
+  describe('handlePageNotFoundAndRetrieveRedirectPath', () => {
+    it('when path exists should return path itself', async () => {
+      const path = 'existingpath';
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, true, luigi);
+
+      expect(path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined', async () => {
+      const path = 'somepathtoredirect';
+      const redirectPath = { path };
+      // define pageNotFoundHandler return value with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue(redirectPath);
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(redirectPath.path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler as not defined', async () => {
+      const path = 'notFoundPath';
+      const consoleWarnSpy = jest.spyOn(console, 'warn');
+      // set pageNotFoundHandler as undefined with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not find the requested route: ${path}`);
+      // TODO expect(RoutingHelpers.showRouteNotFoundAlert).toHaveBeenCalled();
+      expect(undefined).toEqual(expected);
+    });
+  });
+
   describe('showRouteNotFoundAlert', () => {
     it('should show error alert when no path is matched', () => {
       const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
