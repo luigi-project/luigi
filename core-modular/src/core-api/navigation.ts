@@ -2,7 +2,13 @@ import { ModalService } from '../services/modal.service';
 import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
-import type { ModalSettings, NavigationRequestParams, Node, RunTimeErrorHandler } from '../types/navigation';
+import type {
+  ModalSettings,
+  NavigationOptions,
+  NavigationRequestParams,
+  Node,
+  RunTimeErrorHandler
+} from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
@@ -13,6 +19,12 @@ export class Navigation {
   navService: NavigationService;
   routingService: RoutingService;
   modalService: ModalService;
+  options: NavigationOptions = {
+    fromContext: null,
+    fromClosestContext: false,
+    fromVirtualTreeRoot: false,
+    fromParent: false
+  };
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -32,6 +44,7 @@ export class Navigation {
     const navRequestParams: NavigationRequestParams = {
       modalSettings,
       newTab: false,
+      options: this.options,
       path,
       preserveView,
       preventContextUpdate: false,
@@ -43,7 +56,7 @@ export class Navigation {
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    if (!modalSettings.keepPrevious) {
+    if (!modalSettings?.keepPrevious) {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
@@ -85,4 +98,51 @@ export class Navigation {
       defaultRunTimeErrorHandler.errorFn(errorObj, currentNode);
     }
   };
+
+  /**
+   * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
+   * @returns {navigation} navigation instance
+   * @example
+   * Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
+   */
+  fromVirtualTreeRoot(): Navigation {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = false;
+    this.options.fromVirtualTreeRoot = true;
+    this.options.fromParent = false;
+    return this;
+  }
+
+  /**
+   * Allows navigation from the node which has the navigation context set.
+   * @param navigationContext
+   * @returns {navigation} navigation instance
+   */
+  fromContext(navigationContext: string): Navigation {
+    this.options.fromContext = navigationContext;
+    return this;
+  }
+
+  /**
+   * Allows navigation from the closest node which has the navigation context set. If there are multiple nodes with the same navigation context, the closest one will be used as the navigation base.
+   * @returns {navigation} navigation instance
+   */
+  fromClosestContext(): Navigation {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = true;
+    this.options.fromParent = false;
+    return this;
+  }
+
+  /**
+   * Allows navigation from the parent node. The parent node is the node one level above the active node in the navigation tree. If the active node is a root node, this method has no effect.
+   * @returns {navigation} navigation instance
+   */
+  fromParent() : Navigation {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = false;
+    this.options.fromVirtualTreeRoot = false;
+    this.options.fromParent = true;
+    return this;
+  }
 }
