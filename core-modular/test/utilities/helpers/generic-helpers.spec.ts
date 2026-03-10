@@ -126,3 +126,45 @@ describe('replaceVars', () => {
     });
   });
 });
+describe('GenericHelpers.hasHashOrSlash', () => {
+  it('should return true if the string starts with a hash', () => {
+    expect(GenericHelpers.hasHashOrSlash('#luigi/tets/something')).toBe(true);
+  });
+
+  it('should return true if the string starts with a slash', () => {
+    expect(GenericHelpers.hasHashOrSlash('/#/luigi/tets/something')).toBe(true);
+  });
+
+  it('should return false if the string does not start with a hash or slash', () => {
+    expect(GenericHelpers.hasHashOrSlash('luigi/tets/something')).toBe(false);
+  });
+
+  it('should return false if the string is empty', () => {
+    expect(GenericHelpers.hasHashOrSlash('')).toBe(false);
+  });
+
+  it('should return false if the string is null', () => {
+    expect(GenericHelpers.hasHashOrSlash(null as any)).toBe(false);
+  });
+
+  it('should return false if the string is undefined', () => {
+    expect(GenericHelpers.hasHashOrSlash(undefined as any)).toBe(false);
+  });
+});
+describe('GenericHelpers.getPathWithoutHashOrSlash', () => {
+  it('should remove leading hash from the string', () => {
+    expect(GenericHelpers.getPathWithoutHashOrSlash('#/section')).toBe('section');
+  });
+
+  it('should remove multiple leading hashes from the string', () => {
+    expect(GenericHelpers.getPathWithoutHashOrSlash('##/section')).toBe('section');
+  });
+
+  it('should return the original string if there are no leading hashes', () => {
+    expect(GenericHelpers.getPathWithoutHashOrSlash('/section')).toBe('section');
+  });
+
+  it('should return the original string if it does not start with a hash', () => {
+    expect(GenericHelpers.getPathWithoutHashOrSlash('section')).toBe('section');
+  });
+});
