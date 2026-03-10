@@ -132,14 +132,16 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
+      const luigiParams = {
+        nodeParams: nodeParams || {},
+        pathParams: pathData?.pathParams || {},
+        searchParams: RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi)
+      };
       this.currentRoute.node = currentNode;
-      currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData?.pathParams || {};
-      currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
+      UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
     }
   }
 

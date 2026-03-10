@@ -10,10 +10,13 @@ import { NodeDataManagementService } from '../services/node-data-management.serv
 import type { ModalSettings } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 
-const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
+const createContainer = async (node: any, luigi: Luigi, luigiParams?: any): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const nodeParams = luigiParams?.nodeParams;
+  const pathParams = luigiParams?.pathParams;
+  const searchParams = luigiParams?.searchParams;
 
   if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
     console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
@@ -31,11 +34,11 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lcc.compoundConfig = node.compound;
     lcc.context = node.context;
     lcc.clientPermissions = node.clientPermissions;
-    lcc.nodeParams = node.nodeParams;
-    lcc.pathParams = node.pathParams;
+    lcc.nodeParams = nodeParams;
+    lcc.pathParams = pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
-    lcc.searchParams = node.searchParams;
+    lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
@@ -55,11 +58,11 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     lc.context = node.context;
     lc.clientPermissions = node.clientPermissions;
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
-    lc.nodeParams = node.nodeParams;
-    lc.pathParams = node.pathParams;
+    lc.nodeParams = nodeParams;
+    lc.pathParams = pathParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
-    lc.searchParams = node.searchParams;
+    lc.searchParams = searchParams;
     lc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
@@ -183,13 +186,22 @@ export const UIModule = {
       UIModule.updateMainContent(croute.node, UIModule.luigi);
     }
   },
-  updateMainContent: async (currentNode: any, luigi: Luigi, withoutSync?: boolean, preventContextUpdate?: boolean) => {
+  updateMainContent: async (
+    currentNode: any,
+    luigi: Luigi,
+    luigiParams?: any,
+    withoutSync?: boolean,
+    preventContextUpdate?: boolean
+  ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
       currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
     const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+    const nodeParams = luigiParams?.nodeParams;
+    const pathParams = luigiParams?.pathParams;
+    const searchParams = luigiParams?.searchParams;
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -224,10 +236,10 @@ export const UIModule = {
               RoutingHelpers.substituteViewUrl(currentNode.viewUrl, currentNode.pathParams, luigi),
               currentNode.decodeViewUrl
             );
-          viewGroupContainer.nodeParams = currentNode.nodeParams;
-          viewGroupContainer.pathParams = currentNode.pathParams;
+          viewGroupContainer.nodeParams = nodeParams;
+          viewGroupContainer.pathParams = pathParams;
           viewGroupContainer.clientPermissions = currentNode.clientPermissions;
-          viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
+          viewGroupContainer.searchParams = searchParams;
           viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
           viewGroupContainer.theme = luigi.theming().getCurrentTheme();
           viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
@@ -243,7 +255,7 @@ export const UIModule = {
           viewGroupContainer.updateContext(currentNode.context || {});
         }
       } else {
-        const container = await createContainer(currentNode, luigi);
+        const container = await createContainer(currentNode, luigi, luigiParams);
         containerWrapper?.appendChild(container);
         const connector = luigi.getEngine()._connector;
         if (currentNode.loadingIndicator?.enabled !== false) {
