@@ -276,10 +276,7 @@
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
     tabindex="0"
   >
-    <div class="fd-shellbar__group fd-shellbar__group--product"
-         role="heading"
-         aria-level="1"
-    >
+    <div class="fd-shellbar__group fd-shellbar__group--product" role="heading" aria-level="1">
       {#if responsiveNavSetting === 'simple' || responsiveNavSetting === 'simpleMobileOnly' || responsiveNavSetting === 'Fiori3'}
         <button
           class="fd-shellbar__button fd-button fd-button--transparent lui-burger"
@@ -463,7 +460,7 @@
                           <a
                             class="fd-menu__link"
                             on:click|stopPropagation={() => {
-                              toggleSearch(), toggleDropdownState('overflowPopover');
+                              (toggleSearch(), toggleDropdownState('overflowPopover'));
                             }}
                             data-testid="luigi-search-btn-mobile"
                           >

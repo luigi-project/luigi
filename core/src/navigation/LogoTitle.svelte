@@ -174,9 +174,7 @@
 >
   {#if addNavHrefForAnchor}
     <a
-      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo
-        ? 'lui-customlogo'
-        : ''}"
+      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
       aria-hidden="true"
       on:click={(event) => {
         NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event) && goTo('/');
@@ -190,9 +188,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <span
-      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo
-        ? 'lui-customlogo'
-        : ''}"
+      class="fd-shellbar__logo {!hasLogo ? 'fd-shellbar__logo--image-replaced' : ''} {hasLogo ? 'lui-customlogo' : ''}"
       aria-hidden="true"
       on:click={() => goTo('/')}
       tabindex="-1"
