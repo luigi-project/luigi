@@ -165,7 +165,7 @@
 
 <div
   class="fd-shellbar__branding"
-  aria-label={title}
+  aria-label={$getTranslation(title)}
   role="button"
   tabindex="0"
   on:keyup|preventDefault={(event) => {

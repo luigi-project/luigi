@@ -1,8 +1,10 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
+import type { AlertSettings } from '../../modules/ux-module';
 import type { Node, PathData } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
+import { GenericHelpers } from './generic-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
@@ -492,6 +494,84 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Checks if given path is an existing route or not
+   * @param {string} activePath - path to be checked
+   * @param {PathData} pathData - related path data
+   * @returns {boolean} the result of path checking as boolean value
+   */
+  isExistingRoute(activePath: string, pathData: PathData): boolean {
+    const pathSegments: string[] = activePath?.split('/') || [];
+    const nodesInPath: Node[] = pathData?.nodesInPath || [];
+    const findChildNode = (node: null | Node, segment: string): null | Node => {
+      let output = null;
+
+      if (node?.children?.length) {
+        const nodes: Node[] = node.children.filter((node: Node) => node.pathSegment === segment);
+
+        if (nodes?.length) {
+          output = nodes[0];
+        }
+      }
+
+      return output;
+    };
+    let navPathSegments: string[] = [];
+
+    if (pathSegments.length > 1 && nodesInPath.length === 1) {
+      let currentNode: null | Node;
+
+      pathSegments.forEach((segment, index) => {
+        const parentNode = index === 0 ? nodesInPath[0] : currentNode;
+
+        currentNode = findChildNode(parentNode, segment);
+        if (currentNode?.pathSegment) {
+          navPathSegments.push(currentNode.pathSegment);
+        }
+      });
+    } else {
+      navPathSegments = nodesInPath
+        .filter((node: Node) => node.pathSegment)
+        .map((node: Node) => node.pathSegment || '');
+    }
+
+    return !activePath || pathSegments.length === navPathSegments.length;
+  },
+
+  /**
+   * Handles case if path exists or not.
+   * @param {string} path - the path to be checked
+   * @param {Luigi} luigi - the Luigi instance used to access configuration values
+   * @returns {Promise<boolean>} the result of path checking as async boolean value
+   */
+  async pathExists(path: string, luigi: Luigi): Promise<boolean> {
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const pathData: PathData = await luigi.navigation().navService.getPathData(path);
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
+
+    return pathData ? isExistingRoute : false;
+  },
+
+  /*
+   * Shows an error alert on the given path
+   * @param {string} path - the path to show in the alert
+   * @param {boolean} isAnyPathMatched - shows whether a valid path was found / which means path was only partially wrong; otherwise it is false
+   * @param {Luigi} luigi - the Luigi instance used to access i18n and ux methods
+   */
+  showRouteNotFoundAlert(path: string, isAnyPathMatched = false, luigi: Luigi): void {
+    const alertSettings: AlertSettings = {
+      text: luigi
+        .i18n()
+        .getTranslation(isAnyPathMatched ? 'luigi.notExactTargetNode' : 'luigi.requestedRouteNotFound', {
+          route: path
+        } as any),
+      type: 'error',
+      ttl: 1 // how many redirections the alert will 'survive'
+    };
+
+    luigi.ux().showAlert(alertSettings);
+  },
+
+  /**
    * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
    * If the there is no `pageNotFoundHandler` defined we return undefined.
    * @param {string} notFoundPath - the path to be checked
@@ -516,6 +596,37 @@ export const RoutingHelpers = {
     }
 
     return {};
+  },
+
+  /**
+   * Handles pageNotFound situation depending if path exists or not.
+   * If path exists simply return the given path, else fetch the pageNotFound redirect path and return it.
+   * In case there was no pageNotFound handler defined it shows an alert and returns undefined.
+   * @param {string} path - the path to check for
+   * @param {boolean} pathExists - defines if path exists or not
+   * @param {Luigi} luigi - the Luigi instance used to access configuration values
+   * @returns {} the path to redirect to or undefined if path doesn't exist and no redirect path is defined
+   */
+  async handlePageNotFoundAndRetrieveRedirectPath(
+    path: string,
+    pathExists: boolean,
+    luigi: Luigi
+  ): Promise<string | undefined> {
+    if (pathExists) {
+      return path;
+    }
+
+    const pageNotFoundHandler = luigi.getConfigValue('routing.pageNotFoundHandler');
+    const redirectPath = (this.getPageNotFoundRedirectResult(path, pageNotFoundHandler, luigi) as any)?.path;
+
+    if (redirectPath !== undefined) {
+      return redirectPath;
+    } else {
+      // default behavior if `pageNotFoundHandler` did not produce a redirect path
+      this.showRouteNotFoundAlert(path, false, luigi);
+      console.warn(`Could not find the requested route: ${path}`);
+      return undefined;
+    }
   },
 
   async getDefaultChildNode(
@@ -556,5 +667,101 @@ export const RoutingHelpers = {
     }
 
     return '';
+  },
+
+  /**
+   *  Recursively constructs the full path for a given node by concatenating its path segment with those of its ancestors.
+   *  If `params` are provided, they are appended as query parameters to the final path.
+   * @param node - The node for which to construct the path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param params - Optional query parameters to append to the path. If provided, it should be a string in the format of URL query parameters (e.g., "key=value&anotherKey=anotherValue").
+   * @returns The constructed path as a string, including any query parameters if provided.
+   */
+  getNodePath(node: Node, params?: string): string {
+    if (!node || params) {
+      return node ? this.buildRoute(node, node.pathSegment ? '/' + node.pathSegment : '', params) : '';
+    } else {
+      return `${node.parent ? this.getNodePath(node.parent) : ''}/${node.pathSegment}`;
+    }
+  },
+
+  /**
+   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
+   * @param node - The current node from which to start building the route.
+   * @param path - The accumulated path string (used internally for recursion).
+   * @param params - Optional query parameters to append to the final route.
+   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
+   */
+  buildRoute(node: Node, path: string, params?: string): string {
+    return !node.parent
+      ? path + (params ? '?' + params : '')
+      : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
+  },
+
+  substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
+    //TODO issue nr 4575
+    //currently minimal requirement for this task
+    // const contextVarPrefix = 'context.';
+    // const nodeParamsVarPrefix = 'nodeParams.';
+    // const searchQuery = 'routing.queryParams';
+
+    viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
+    //TODO
+    // viewUrl = this.getI18nViewUrl(viewUrl);
+
+    // if (viewUrl && viewUrl.includes(searchQuery)) {
+    //   const viewUrlSearchParam = viewUrl.split('?')[1];
+    //   if (viewUrlSearchParam) {
+    //     const key = viewUrlSearchParam.split('=')[0];
+    //     const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
+    //     if (searchParams[key]) {
+    //       viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
+    //     } else {
+    //       viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+    //     }
+    //   }
+    // }
+
+    return viewUrl;
+  },
+
+  /**
+   *  Generates a sub-path for a given node by replacing dynamic parameters in the node's path with actual values from pathParams.
+   * @param node - The node for which to generate the sub-path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param nodePathParams - An object containing the values for dynamic parameters in the node's path. The keys should match the parameter names in the path segments.
+   * @returns A string representing the sub-path with dynamic parameters replaced by their corresponding values from pathParams.
+   */
+  getSubPath(node: any, nodePathParams: any): string {
+    return GenericHelpers.replaceVars(RoutingHelpers.getNodePath(node), nodePathParams, ':', false);
+  },
+
+  /**
+   * Concatenates a base path and a relative path
+   *
+   * The function performs the following steps:
+   * 1. Removes any trailing '/' from the base path.
+   * 2. If the relative path does not start with '/', it adds a '/' between the base and relative paths.
+   * 3. Concatenates the base path and the relative path.
+   * @param basePath The base path to which the relative path will be appended. It may or may not end with a '/' character.
+   * @param relativePath The relative path to append to the base path. It may or may not start with a '/' character.
+   * @returns A string representing the concatenated path, with exactly one '/' character between the base and relative paths.
+   */
+  concatenatePath(basePath: any, relativePath?: any): string {
+    let path = GenericHelpers.getPathWithoutHashOrSlash(basePath);
+    if (!path) {
+      return relativePath;
+    }
+    if (!relativePath) {
+      return path;
+    }
+    if (path.endsWith('/')) {
+      path = path.substring(0, path.length - 1);
+    }
+    if (!relativePath.startsWith('/')) {
+      path += '/';
+    }
+    path += relativePath;
+    return path;
   }
 };
