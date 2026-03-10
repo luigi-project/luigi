@@ -9,14 +9,15 @@ import { ModalService, type ModalPromiseObject } from '../services/modal.service
 import { NodeDataManagementService } from '../services/node-data-management.service';
 import type { ModalSettings } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
+import type { LuigiParams } from '../types/routing';
 
-const createContainer = async (node: any, luigi: Luigi, luigiParams?: any): Promise<HTMLElement> => {
+const createContainer = async (node: any, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
-  const nodeParams = luigiParams?.nodeParams;
-  const pathParams = luigiParams?.pathParams;
-  const searchParams = luigiParams?.searchParams;
+  const nodeParams = luigiParams?.nodeParams || {};
+  const pathParams = luigiParams?.pathParams || {};
+  const searchParams = luigiParams?.searchParams || {};
 
   if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
     console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
@@ -189,7 +190,7 @@ export const UIModule = {
   updateMainContent: async (
     currentNode: any,
     luigi: Luigi,
-    luigiParams?: any,
+    luigiParams?: LuigiParams,
     withoutSync?: boolean,
     preventContextUpdate?: boolean
   ) => {
