@@ -905,8 +905,8 @@ export class NavigationService {
    * @returns The constructed path string.
    */
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
-    const { fromVirtualTreeRoot, fromContext, fromClosestContext } = options;
-    if (!fromVirtualTreeRoot && !fromContext && !fromClosestContext) {
+    const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
+    if (!fromVirtualTreeRoot && !fromContext && !fromClosestContext && !fromParent) {
       return incomingPath;
     }
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
@@ -942,6 +942,8 @@ export class NavigationService {
       const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
       let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
       return path;
+    } else if(fromParent){
+      return RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams), incomingPath);
     }
     return incomingPath;
   }

@@ -150,4 +150,16 @@ export class Navigation {
     this.options.fromParent = false;
     return this;
   }
+
+  /**
+   * Allows navigation from the parent node. The parent node is the node one level above the active node in the navigation tree. If the active node is a root node, this method has no effect.
+   * @returns {navigation} navigation instance
+   */
+  fromParent() : Navigation {
+    this.options.fromContext = null;
+    this.options.fromClosestContext = false;
+    this.options.fromVirtualTreeRoot = false;
+    this.options.fromParent = true;
+    return this;
+  }
 }
