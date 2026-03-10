@@ -109,6 +109,7 @@ export interface Node {
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
   openNodeInModal?: boolean;
   pageErrorHandler?: PageErrorHandler;
