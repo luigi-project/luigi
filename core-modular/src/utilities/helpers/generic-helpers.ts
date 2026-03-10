@@ -245,5 +245,27 @@ export const GenericHelpers = {
    */
   escapeRegExp(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  },
+
+  /**
+   * Checks if a given input string begins with a hash or a slash
+   * @param {string} path
+   * @returns {boolean}
+   */
+  hasHashOrSlash: (path: string): boolean => {
+    return !!(path && path.search(/^[#\/].*$/) === 0);
+  },
+
+  /**
+   * Removes leading hash or slash of a string
+   * @param {string} path
+   * @returns {string}
+   */
+  getPathWithoutHashOrSlash: (path: string): string => {
+    while (GenericHelpers.hasHashOrSlash(path)) {
+      path = path.substring(1, path.length);
+    }
+
+    return path;
   }
 };

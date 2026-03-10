@@ -477,4 +477,32 @@ describe('JS-TEST-APP 4', () => {
     //   cy.get('.fd-shellbar__button.fd-button.fd-button--transparent.lui-burger').click();
     // });
   });
+
+  describe('A11y for header', () => {
+    let newConfig;
+    beforeEach(() => {
+      newConfig = structuredClone(defaultLuigiConfig);
+      newConfig.settings.header = {
+        title: 'Test App'
+      };
+      newConfig.tag = 'header-a11y';
+      newConfig.settings.sideNav = {
+        style: 'vega',
+        displayFooterWhenCollapsed: true
+      };
+    });
+
+    it('Header has correct aria-labels', () => {
+      cy.visitTestApp('/home', newConfig);
+      newConfig.settings.customTranslationImplementation = () => {
+        return {
+          getTranslation: (key, interpolations, locale) => {
+            return '*' + key + '*';
+          }
+        };
+      };
+      cy.get('#app[configversion="header-a11y"]');
+      cy.get('.fd-shellbar__branding').should('have.attr', 'aria-label', '*Test App*');
+    });
+  });
 });
