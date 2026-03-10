@@ -28,7 +28,8 @@ export const CommunicationModule = {
         preventHistoryEntry,
         fromVirtualTreeRoot,
         fromContext,
-        fromClosestContext
+        fromClosestContext,
+        fromParent
       } = event.detail;
       const navRequestParams: NavigationRequestParams = {
         modalSettings: modal,
@@ -39,7 +40,8 @@ export const CommunicationModule = {
         options: {
           fromVirtualTreeRoot,
           fromContext,
-          fromClosestContext
+          fromClosestContext,
+          fromParent
         },
         preventHistoryEntry,
         withoutSync
