@@ -817,7 +817,7 @@ describe('Routing Service', () => {
 
   describe('showPageNotFoundError()', () => {
     const pathToRedirect = '/go/here';
-    const pathToRedirect2 = '/go/there';
+    const redirectPathFromNotFoundHandler = '/go/there';
     const notFoundPath = '/this/does/not/exist';
 
     it('should navigate to redirect path', async () => {
@@ -838,7 +838,7 @@ describe('Routing Service', () => {
       const custom = {
         handler: () => {
           return {
-            redirectTo: pathToRedirect2
+            redirectTo: redirectPathFromNotFoundHandler
           };
         }
       };
@@ -848,7 +848,7 @@ describe('Routing Service', () => {
       await routingService.showPageNotFoundError(pathToRedirect, notFoundPath);
 
       expect(handleRouteChangeSpy).not.toHaveBeenCalled();
-      expect(handleNavigationRequestSpy).toHaveBeenCalledWith({ path: pathToRedirect2 });
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith({ path: redirectPathFromNotFoundHandler });
     });
 
     it('should do nothing if ignoreLuigiErrorHandling is implemented by the custom handler', async () => {
@@ -882,7 +882,7 @@ describe('Routing Service', () => {
             ignoreLuigiErrorHandling: false,
             keepURL: true,
             path: notFoundPath,
-            redirectTo: pathToRedirect2
+            redirectTo: redirectPathFromNotFoundHandler
           };
         }
       };
@@ -893,7 +893,7 @@ describe('Routing Service', () => {
 
       await routingService.showPageNotFoundError(pathToRedirect, notFoundPath);
 
-      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: pathToRedirect2, query: 'foo=bar' });
+      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: redirectPathFromNotFoundHandler, query: 'foo=bar' });
       expect(handleNavigationRequestSpy).not.toHaveBeenCalled();
       expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
     });
