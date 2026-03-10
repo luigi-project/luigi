@@ -276,7 +276,10 @@
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
     tabindex="0"
   >
-    <div class="fd-shellbar__group fd-shellbar__group--product">
+    <div class="fd-shellbar__group fd-shellbar__group--product"
+         role="heading"
+         aria-level="1"
+    >
       {#if responsiveNavSetting === 'simple' || responsiveNavSetting === 'simpleMobileOnly' || responsiveNavSetting === 'Fiori3'}
         <button
           class="fd-shellbar__button fd-button fd-button--transparent lui-burger"

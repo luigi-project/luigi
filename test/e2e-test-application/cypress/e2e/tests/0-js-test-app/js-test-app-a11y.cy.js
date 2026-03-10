@@ -492,11 +492,11 @@ describe('JS-TEST-APP 4', () => {
       };
     });
 
-    it('Header contains heading element', () => {
+    it('Header contains heading role', () => {
       cy.visitTestApp('/home', newConfig);
       cy.get('#app[configversion="header-a11y"]');
-      cy.get('h1').should('be.visible');
-      cy.get('h1').should('have.class', 'fd-shellbar__heading');
+      cy.get('.fd-shellbar__group--product').should('have.attr', 'aria-level', 1);
+      cy.get('.fd-shellbar__group--product').should('have.attr', 'role', 'heading');
     });
 
     it('Header has correct aria-labels', () => {
