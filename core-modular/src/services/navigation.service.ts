@@ -705,7 +705,7 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    let computedPath = await this.buildPath(path, options || {});
+    const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
@@ -731,7 +731,8 @@ export class NavigationService {
         return;
       }
 
-      const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
+      // TODO handle path checking when virtual tree is present
+      const pathExist = !options?.fromVirtualTreeRoot ? await RoutingHelpers.pathExists(path, this.luigi) : true;
       const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, this.luigi);
 
       if (!redirectPath) {
