@@ -660,7 +660,7 @@ export class NavigationService {
     // return this.getAccessibleNodes(undefined, rootNodes, context);
   }
 
-  private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
+  private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any> | string): Node[] {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
@@ -738,7 +738,7 @@ export class NavigationService {
   }
 
   //TODO check context default object as param
-  async getChildren(node: Node | undefined, context: Record<string, any> = {}) {
+  async getChildren(node: Node | undefined, context: Record<string, any> | string = {}) {
     const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     if (!node) {
       return [];
@@ -919,8 +919,11 @@ export class NavigationService {
       const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
       let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
       return path;
-    } else if(fromParent){
-      return RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams), incomingPath);
+    } else if (fromParent) {
+      return RoutingHelpers.concatenatePath(
+        RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams),
+        incomingPath
+      );
     }
     return incomingPath;
   }

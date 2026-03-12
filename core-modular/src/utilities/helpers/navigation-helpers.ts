@@ -88,7 +88,7 @@ export const NavigationHelpers = {
   isNodeAccessPermitted: (
     nodeToCheckPermissionFor: Node,
     parentNode: Node | undefined,
-    currentContext: Record<string, any>,
+    currentContext: Record<string, any> | string,
     luigi: Luigi
   ): boolean => {
     if (luigi.auth().isAuthorizationEnabled()) {
@@ -159,7 +159,7 @@ export const NavigationHelpers = {
     return replacedSegments.join('/');
   },
 
-  mergeContext(...objs: Record<string, any>[]): Record<string, any> {
+  mergeContext(...objs: (Record<string, any> | string)[]): Record<string, any> {
     return Object.assign({}, ...objs);
   },
 

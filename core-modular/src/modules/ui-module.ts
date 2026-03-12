@@ -7,19 +7,19 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { ModalSettings } from '../types/navigation';
+import type { ModalSettings, Node } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 
-const createContainer = async (node: any, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
+const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-  const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
   const nodeParams = luigiParams?.nodeParams || {};
   const pathParams = luigiParams?.pathParams || {};
   const searchParams = luigiParams?.searchParams || {};
 
-  if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
+  if (node.webcomponent && node.viewUrl && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
     console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
     return document.createElement('div');
   }
@@ -28,13 +28,18 @@ const createContainer = async (node: any, luigi: Luigi, luigiParams?: LuigiParam
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
 
     lcc.setAttribute('lui_container', 'true');
-    lcc.viewurl = serviceRegistry
-      .get(ViewUrlDecoratorSvc)
-      .applyDecorators(RoutingHelpers.substituteViewUrl(node.viewUrl, node.pathParams, luigi), node.decodeViewUrl);
-    lcc.webcomponent = node.webcomponent;
+    lcc.viewurl = node.viewUrl
+      ? serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node.viewUrl, pathParams, luigi),
+            node.decodeViewUrl ?? false
+          )
+      : '';
+    lcc.webcomponent = node.webcomponent ?? false;
     lcc.compoundConfig = node.compound;
-    lcc.context = node.context;
-    lcc.clientPermissions = node.clientPermissions;
+    (lcc as any).context = node.context;
+    lcc.clientPermissions = node.clientPermissions ?? {};
     lcc.nodeParams = nodeParams;
     lcc.pathParams = pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
@@ -52,12 +57,17 @@ const createContainer = async (node: any, luigi: Luigi, luigiParams?: LuigiParam
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
 
     lc.setAttribute('lui_container', 'true');
-    lc.viewurl = serviceRegistry
-      .get(ViewUrlDecoratorSvc)
-      .applyDecorators(RoutingHelpers.substituteViewUrl(node.viewUrl, node.pathParams, luigi), node.decodeViewUrl);
-    lc.webcomponent = node.webcomponent;
-    lc.context = node.context;
-    lc.clientPermissions = node.clientPermissions;
+    lc.viewurl = node.viewUrl
+      ? serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node.viewUrl, pathParams, luigi),
+            node.decodeViewUrl ?? false
+          )
+      : '';
+    lc.webcomponent = node.webcomponent ?? false;
+    (lc as any).context = node.context;
+    lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = nodeParams;
     lc.pathParams = pathParams;
