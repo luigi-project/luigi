@@ -194,11 +194,13 @@ export const UIModule = {
       scopes.includes('settings.theming')
     ) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
-      UIModule.updateMainContent(croute.node, UIModule.luigi);
+      if (croute.node) {
+        UIModule.updateMainContent(croute.node, UIModule.luigi);
+      }
     }
   },
   updateMainContent: async (
-    currentNode: any,
+    currentNode: Node,
     luigi: Luigi,
     luigiParams?: LuigiParams,
     withoutSync?: boolean,
@@ -207,12 +209,13 @@ export const UIModule = {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
       currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-    const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
+    const userSettings =
+      hasUserSettings && currentNode.userSettingsGroup ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
-    const nodeParams = luigiParams?.nodeParams;
-    const pathParams = luigiParams?.pathParams;
-    const searchParams = luigiParams?.searchParams;
+    const nodeParams = luigiParams?.nodeParams || {};
+    const pathParams = luigiParams?.pathParams || {};
+    const searchParams = luigiParams?.searchParams || {};
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
@@ -241,12 +244,14 @@ export const UIModule = {
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
-          viewGroupContainer.viewurl = serviceRegistry
-            .get(ViewUrlDecoratorSvc)
-            .applyDecorators(
-              RoutingHelpers.substituteViewUrl(currentNode.viewUrl, currentNode.pathParams, luigi),
-              currentNode.decodeViewUrl
-            );
+          viewGroupContainer.viewurl = currentNode.viewUrl
+            ? serviceRegistry
+                .get(ViewUrlDecoratorSvc)
+                .applyDecorators(
+                  RoutingHelpers.substituteViewUrl(currentNode.viewUrl, pathParams, luigi),
+                  currentNode.decodeViewUrl ?? false
+                )
+            : '';
           viewGroupContainer.nodeParams = nodeParams;
           viewGroupContainer.pathParams = pathParams;
           viewGroupContainer.clientPermissions = currentNode.clientPermissions;
@@ -275,7 +280,7 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -354,7 +359,7 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;

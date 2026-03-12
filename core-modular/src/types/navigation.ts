@@ -68,7 +68,7 @@ export interface UserInfo {
 }
 
 export interface LeftNavData {
-  selectedNode: any;
+  selectedNode: Node;
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
@@ -111,6 +111,9 @@ export interface Node {
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  loadingIndicator?: {
+    enabled: boolean;
+  };
   navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
   openNodeInModal?: boolean;
