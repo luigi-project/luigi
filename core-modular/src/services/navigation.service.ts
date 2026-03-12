@@ -660,7 +660,7 @@ export class NavigationService {
     // return this.getAccessibleNodes(undefined, rootNodes, context);
   }
 
-  private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any> | string): Node[] {
+  private getAccessibleNodes(node: Node | undefined, children: Node[], context: Record<string, any>): Node[] {
     return children
       ? children.filter((child) => NavigationHelpers.isNodeAccessPermitted(child, node, context, this.luigi))
       : [];
@@ -738,7 +738,7 @@ export class NavigationService {
   }
 
   //TODO check context default object as param
-  async getChildren(node: Node | undefined, context: Record<string, any> | string = {}) {
+  async getChildren(node: Node | undefined, context: Record<string, any> = {}) {
     const nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     if (!node) {
       return [];

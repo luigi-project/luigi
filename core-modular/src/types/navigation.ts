@@ -101,7 +101,7 @@ export interface Node {
     urlParameters?: Record<string, any>;
   };
   compound?: CompoundConfig;
-  context?: Record<string, any> | string;
+  context?: Record<string, any>;
   drawer?: ModalSettings;
   decodeViewUrl?: boolean;
   externalLink?: ExternalLink;
@@ -375,7 +375,7 @@ export interface CompoundConfig {
     /**
      * Context object passed to the web component
      */
-    context?: Record<string, any> | string;
+    context?: Record<string, any>;
     /**
      * Layout configuration for positioning this child
      */
