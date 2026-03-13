@@ -63,7 +63,7 @@ export const RoutingModule = {
     luigi: Luigi
   ): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
-    const pathObj = RoutingHelpers.getCurrentPath();
+    const pathObj = RoutingHelpers.getCurrentPath(luigi.getConfig().routing?.useHashRouting);
     const currentNode = await navService.getCurrentNode(pathObj.path);
     const localSearchParams = { ...searchParams };
 
