@@ -21,6 +21,9 @@ describe('Luigi routing', function () {
   });
 
   describe('SearchParams path routing', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
     it('get searchparams', () => {
       locationSpy.mockImplementation(() => {
         return new URL('http://some.url.de?test=tets&luigi=rocks');
@@ -46,6 +49,16 @@ describe('Luigi routing', function () {
       });
       LuigiRouting.addSearchParams({ foo: 'bar' }, true);
       sinon.assert.calledWithExactly(window.history.pushState, window.state, '', 'http://some.url.de/?foo=bar');
+    });
+    it('set searchparams preventConfigChanged function called', () => {
+      window.state = {};
+      LuigiConfig.configChanged = sinon.spy();
+      locationSpy.mockImplementation(() => {
+        return new URL('http://some.url.de');
+      });
+      LuigiRouting.addSearchParams({ foo: 'bar' }, true, true);
+      sinon.assert.calledWithExactly(window.history.pushState, window.state, '', 'http://some.url.de/?foo=bar');
+      sinon.assert.neverCalledWith(LuigiConfig.configChanged);
     });
     it('set searchparams without keeping browser history', () => {
       window.state = {};

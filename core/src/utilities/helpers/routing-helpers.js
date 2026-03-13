@@ -533,7 +533,7 @@ class RoutingHelpersClass {
     return filteredObj;
   }
 
-  addSearchParamsFromClient(currentNode, searchParams, keepBrowserHistory) {
+  addSearchParamsFromClient(currentNode, searchParams, keepBrowserHistory, preventLuigiConfigUpdate = false) {
     const localSearchParams = { ...searchParams };
     if (!GenericHelpers.isObject(localSearchParams)) {
       return;
@@ -551,7 +551,7 @@ class RoutingHelpersClass {
         console.warn(`No permission to add the search param "${key}" to the url`);
       }
       if (Object.keys(filteredObj).length > 0) {
-        LuigiRouting.addSearchParams(filteredObj, keepBrowserHistory);
+        LuigiRouting.addSearchParams(filteredObj, keepBrowserHistory, preventLuigiConfigUpdate);
       }
     }
   }
