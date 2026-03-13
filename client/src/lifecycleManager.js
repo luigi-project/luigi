@@ -489,21 +489,22 @@ class LifecycleManager extends LuigiClientBase {
   }
 
   /**
-   * <!-- label-success: Web App API only  -->
    * Sends search query parameters to Luigi Core. The search parameters will be added to the URL if they are first allowed on a node level using {@link navigation-parameters-reference.md#clientpermissionsurlparameters clientPermissions.urlParameters}.
 
    * @param {Object} searchParams
    * @param {boolean} keepBrowserHistory
+   * @param {boolean} preventLuigiConfigUpdate - If true, the configChanged function will be triggered (since NEXTRELEASE). By default it is set to `false`.
    * @memberof Lifecycle
    * @example
    * LuigiClient.addCoreSearchParams({luigi:'rocks'}, false);
    */
-  addCoreSearchParams(searchParams, keepBrowserHistory = true) {
+  addCoreSearchParams(searchParams, keepBrowserHistory = true, preventLuigiConfigUpdate = false) {
     if (searchParams) {
       helpers.sendPostMessageToLuigiCore({
         msg: 'luigi.addSearchParams',
         data: searchParams,
-        keepBrowserHistory
+        keepBrowserHistory,
+        preventLuigiConfigUpdate
       });
     }
   }

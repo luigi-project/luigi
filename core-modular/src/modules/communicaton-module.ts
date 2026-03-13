@@ -18,7 +18,19 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      const { link, preserveView, modal, newTab, withoutSync, preventContextUpdate, preventHistoryEntry, fromVirtualTreeRoot } = event.detail;
+      const {
+        link,
+        preserveView,
+        modal,
+        newTab,
+        withoutSync,
+        preventContextUpdate,
+        preventHistoryEntry,
+        fromVirtualTreeRoot,
+        fromContext,
+        fromClosestContext,
+        fromParent
+      } = event.detail;
       const navRequestParams: NavigationRequestParams = {
         modalSettings: modal,
         newTab,
@@ -26,11 +38,13 @@ export const CommunicationModule = {
         preserveView,
         preventContextUpdate,
         options: {
-          fromVirtualTreeRoot
+          fromVirtualTreeRoot,
+          fromContext,
+          fromClosestContext,
+          fromParent
         },
         preventHistoryEntry,
         withoutSync
-
       };
 
       serviceRegistry.get(NavigationService).handleNavigationRequest(navRequestParams, event.callbackFn);
