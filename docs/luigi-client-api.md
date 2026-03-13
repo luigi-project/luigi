@@ -31,7 +31,10 @@ This document outlines the features provided by the Luigi Client API. It covers 
 
 ## Lifecycle&nbsp;  
 ### publishEvent&nbsp;  
-<!-- label-success: Web Component API only-->Publish an event that can be listened to from the container host.Similar to [sendCustomMessage](luigi-client-api.md#sendCustomMessage) but for WebComponent based microfrontends only.
+<!-- label-success: Web Component API only-->
+Publish an event that can be listened to from the container host.
+
+Similar to [sendCustomMessage](luigi-client-api.md#sendCustomMessage) but for WebComponent based microfrontends only.
 
 **Params**
 
@@ -40,7 +43,55 @@ This document outlines the features provided by the Luigi Client API. It covers 
   
 **Example**  
 ```js
-// case 1: publish an event from a WC based microfrontend// wcComponent.js// sending a message to parent hostthis.LuigiClient.publishEvent(new CustomEvent('sendSomeMsg', { detail: 'My own message' }));// host.htmlmyContainer.addEventListener('custom-message', event => {  console.log('My custom message from the microfrontend', event.detail.data);}// case 2: publish an event from a compound microfrontend// secondChild.js// Set the custom event name = 'sendInput' and// send a message to its parent (main.html) and sibling (firstChild.js)this.LuigiClient.publishEvent(new CustomEvent('sendInput', { detail: 'My own message' }));// main.htmlmyContainer.addEventListener('custom-message', event => {  console.log('My custom message from microfrontend', event.detail.data);}// Note: eventListeners.name must match CustomEvent name above// eventListeners.source = input1 = id of secondChild.js, which is where the message being sent fromcompoundConfig = { ... children: [  {    viewUrl: 'firstChild.js'    ...    eventListeners: [          {            source: 'input1',            name: 'sendInput',            action: 'update',            dataConverter: data => {              console.log(                'dataConverter(): Received Custom Message from "input1" MF ' + data              );              return 'new text: ' + data;            }          }     ]  },  {    viewUrl: 'secondChild.js',    id: 'input1',  }
+// case 1: publish an event from a WC based microfrontend
+
+// wcComponent.js
+// sending a message to parent host
+this.LuigiClient.publishEvent(new CustomEvent('sendSomeMsg', { detail: 'My own message' }));
+
+// host.html
+myContainer.addEventListener('custom-message', event => {
+  console.log('My custom message from the microfrontend', event.detail.data);
+}
+
+// case 2: publish an event from a compound microfrontend
+
+// secondChild.js
+// Set the custom event name = 'sendInput' and
+// send a message to its parent (main.html) and sibling (firstChild.js)
+this.LuigiClient.publishEvent(new CustomEvent('sendInput', { detail: 'My own message' }));
+
+// main.html
+myContainer.addEventListener('custom-message', event => {
+  console.log('My custom message from microfrontend', event.detail.data);
+}
+
+// Note: eventListeners.name must match CustomEvent name above
+// eventListeners.source = input1 = id of secondChild.js, which is where the message being sent from
+compoundConfig = {
+ ...
+ children: [
+  {
+    viewUrl: 'firstChild.js'
+    ...
+    eventListeners: [
+          {
+            source: 'input1',
+            name: 'sendInput',
+            action: 'update',
+            dataConverter: data => {
+              console.log(
+                'dataConverter(): Received Custom Message from "input1" MF ' + data
+              );
+              return 'new text: ' + data;
+            }
+          }
+     ]
+  },
+  {
+    viewUrl: 'secondChild.js',
+    id: 'input1',
+  }
 ```
 ### isLuigiClientInitialized&nbsp;  
 Check if LuigiClient is initialized
@@ -115,7 +166,13 @@ Removes a context update listener.
 LuigiClient.removeContextUpdateListener(updateListenerId)
 ```
 ### addInactiveListener&nbsp;  
-Registers a listener called upon micro frontend inactivity. This happens when a new micro frontend gets shown while keeping the old one cached.Gets called when:- navigating with **preserveView**- navigating from or to a **viewGroup**Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.Once the micro frontend turns back into active state, the `addContextUpdateListener` receives an updated context.
+Registers a listener called upon micro frontend inactivity. This happens when a new micro frontend gets shown while keeping the old one cached.
+Gets called when:
+- navigating with **preserveView**
+- navigating from or to a **viewGroup**
+
+Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.
+Once the micro frontend turns back into active state, the `addContextUpdateListener` receives an updated context.
 
 **Params**
 
@@ -124,7 +181,8 @@ Registers a listener called upon micro frontend inactivity. This happens when a 
   
 **Example**  
 ```js
-LuigiClient.addInactiveListener(() => mfIsInactive = true)const inactiveListenerId = LuigiClient.addInactiveListener(() => mfIsInactive = true)
+LuigiClient.addInactiveListener(() => mfIsInactive = true)
+const inactiveListenerId = LuigiClient.addInactiveListener(() => mfIsInactive = true)
 ```
 ### removeInactiveListener&nbsp;  
 Removes a listener for inactive micro frontends.
@@ -221,7 +279,10 @@ Sets node parameters in Luigi Core. The parameters will be added to the URL.
 LuigiClient.addNodeParams({luigi:'rocks'}, true);
 ```
 ### getNodeParams&nbsp;  
-Returns the node parameters of the active URL.Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.<!-- add-attribute:class:warning -->> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
+Returns the node parameters of the active URL.
+Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.
+<!-- add-attribute:class:warning -->
+> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
 
 **Params**
 
@@ -230,11 +291,16 @@ Returns the node parameters of the active URL.Node parameters are defined like 
   
 **Example**  
 ```js
-const nodeParams = LuigiClient.getNodeParams()const nodeParams = LuigiClient.getNodeParams(true)
+const nodeParams = LuigiClient.getNodeParams()
+const nodeParams = LuigiClient.getNodeParams(true)
 ```
 **Returns**: <code>Object</code> - node parameters, where the object property name is the node parameter name without the prefix, and its value is the value of the node parameter. For example `{sort: 'asc', page: 3}`  
 ### getPathParams&nbsp;  
-Returns the dynamic path parameters of the active URL.Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.All path parameters in the current navigation path (as defined by the active URL) are returned.<!-- add-attribute:class:warning -->> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in path parameters are HTML-encoded.
+Returns the dynamic path parameters of the active URL.
+Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.
+All path parameters in the current navigation path (as defined by the active URL) are returned.
+<!-- add-attribute:class:warning -->
+> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in path parameters are HTML-encoded.
 
   
 **Example**  
@@ -252,12 +318,13 @@ LuigiClient.getCoreSearchParams();
 ```
 **Returns**: Core search query parameters  
 ### addCoreSearchParams&nbsp;  
-<!-- label-success: Web App API only  -->Sends search query parameters to Luigi Core. The search parameters will be added to the URL if they are first allowed on a node level using [clientPermissions.urlParameters](navigation-parameters-reference.md#clientpermissionsurlparameters).
+Sends search query parameters to Luigi Core. The search parameters will be added to the URL if they are first allowed on a node level using [clientPermissions.urlParameters](navigation-parameters-reference.md#clientpermissionsurlparameters).
 
 **Params**
 
 - searchParams <code>Object</code>
 - keepBrowserHistory <code>boolean</code> <code> = true</code>
+- preventLuigiConfigUpdate <code>boolean</code> <code> = false</code> - If true, the configChanged function will be triggered (since NEXTRELEASE). By default it is set to `false`.
 
   
 **Example**  
@@ -274,7 +341,8 @@ const permissions = LuigiClient.getClientPermissions()
 ```
 **Returns**: <code>Object</code> - client permissions as specified in the navigation node  
 ### setTargetOrigin&nbsp;  
-<!-- label-success: Web App API only  -->When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client. Typically used only in custom micro-frontend frameworks that are compatible with LuigiClient API.
+<!-- label-success: Web App API only  -->
+When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client. Typically used only in custom micro-frontend frameworks that are compatible with LuigiClient API.
 
 **Params**
 
@@ -289,7 +357,8 @@ LuigiClient.setTargetOrigin(window.location.origin)
 **Meta**:  
 * **since:** 0.7.3
 ### sendCustomMessage&nbsp;  
-<!-- label-success: Web App API only  -->Sends a custom message to the Luigi Core application.
+<!-- label-success: Web App API only  -->
+Sends a custom message to the Luigi Core application.
 
 **Params**
 
@@ -300,7 +369,8 @@ LuigiClient.setTargetOrigin(window.location.origin)
   
 **Example**  
 ```js
-LuigiClient.sendCustomMessage({id: 'environment.created', production: false})LuigiClient.sendCustomMessage({id: 'environment.created', data: environmentDataObj})
+LuigiClient.sendCustomMessage({id: 'environment.created', production: false})
+LuigiClient.sendCustomMessage({id: 'environment.created', data: environmentDataObj})
 ```
   
 **Meta**:  
@@ -360,7 +430,8 @@ LuigiClient.setViewGroupData({'vg1':' Luigi rocks!'})
 **Meta**:  
 * **since:** 2.2.0
 ### initListenerCallback&nbsp;  
-Callback of the addInitListener <br><br>Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+Callback of the addInitListener <br><br>
+Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
 
 **Params**
 
@@ -369,7 +440,8 @@ Callback of the addInitListener <br><br>Type: [Function](https://developer.mozi
 
   
 ### customMessageListenerCallback&nbsp;  
-Callback of the customMessageListener <br><br>Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+Callback of the customMessageListener <br><br>
+Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
 
 **Params**
 
@@ -407,7 +479,10 @@ Navigates to the given path in the application hosted by Luigi. It contains eith
   
 **Example**  
 ```js
-LuigiClient.linkManager().navigate('/overview')LuigiClient.linkManager().navigate('users/groups/stakeholders')LuigiClient.linkManager().navigate('/settings', null, true) // preserve viewLuigiClient.linkManager().navigate('#?Intent=Sales-order?id=13') // intent navigation
+LuigiClient.linkManager().navigate('/overview')
+LuigiClient.linkManager().navigate('users/groups/stakeholders')
+LuigiClient.linkManager().navigate('/settings', null, true) // preserve view
+LuigiClient.linkManager().navigate('#?Intent=Sales-order?id=13') // intent navigation
 ```
 ### updateModalPathInternalNavigation&nbsp;  
 Updates path of the modalPathParam when internal navigation occurs.
@@ -427,7 +502,13 @@ LuigiClient.linkManager().updateModalPathInternalNavigation('microfrontend')
 **Meta**:  
 * **since:** 1.21.0
 ### navigateToIntent&nbsp;  
-Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containingparameters.This method internally generates a URL of the form `#?intent=<semantic object>-<action>?<param_name>=<param_value>` through the giveninput arguments. This then follows a call to the original `linkManager.navigate(...)` function.Consequently, the following calls shall have the exact same effect:- linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})- linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')
+Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing
+parameters.
+This method internally generates a URL of the form `#?intent=<semantic object>-<action>?<param_name>=<param_value>` through the given
+input arguments. This then follows a call to the original `linkManager.navigate(...)` function.
+Consequently, the following calls shall have the exact same effect:
+- linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
+- linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')
 
 **Params**
 
@@ -437,7 +518,8 @@ Offers an alternative way of navigating with intents. This involves specifying a
   
 **Example**  
 ```js
-LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})LuigiClient.linkManager().navigateToIntent('Sales-settings')
+LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
+LuigiClient.linkManager().navigateToIntent('Sales-settings')
 ```
 ### openAsModal&nbsp;  
 Opens a view in a modal. You can specify the modal's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty.  The default size of the modal is `l`, which means 80%. You can also use `m` (60%) and `s` (40%) to set the modal size. Optionally, use it in combination with any of the navigation functions.
@@ -456,11 +538,16 @@ Opens a view in a modal. You can specify the modal's title and size. If you don'
   
 **Example**  
 ```js
-LuigiClient.linkManager().openAsModal('projects/pr1/users', {title:'Users', size:'m'}).then((res) => {    // Logic to execute when the modal will be closed    console.log(res.data) //=> {foo: 'bar'} });
+LuigiClient.linkManager().openAsModal('projects/pr1/users', {title:'Users', size:'m'}).then((res) => {
+    // Logic to execute when the modal will be closed
+    console.log(res.data) //=> {foo: 'bar'}
+ });
 ```
 **Returns**: <code>promise</code> - which is resolved when closing the modal. By using LuigiClient.linkManager().goBack({ foo: 'bar' }) to close the modal you have access to the `goBackContext` when the promise will be resolved.  
 ### updateModalSettings&nbsp;  
-<!-- label-success: Web App API only  -->Updates the current title and size of a modal. If `routing.showModalPathInUrl` is set to `true`, the URL will be updated with the modal settings data.In addition, you can specify if a new history entry will be created with the updated URL.
+<!-- label-success: Web App API only  -->
+Updates the current title and size of a modal. If `routing.showModalPathInUrl` is set to `true`, the URL will be updated with the modal settings data.
+In addition, you can specify if a new history entry will be created with the updated URL.
 
 **Params**
 
@@ -512,7 +599,8 @@ Opens a view in a drawer. You can specify the size of the drawer, whether the dr
   
 **Example**  
 ```js
-LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
+LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});
+LuigiClient.linkManager().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
 ```
   
 **Meta**:  
@@ -573,11 +661,15 @@ Sends node parameters to the route. The parameters are used by the `navigate` fu
   
 **Example**  
 ```js
-LuigiClient.linkManager().withParams({foo: "bar"}).navigate("path")// Can be chained with context setting functions such as:LuigiClient.linkManager().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
+LuigiClient.linkManager().withParams({foo: "bar"}).navigate("path")
+
+// Can be chained with context setting functions such as:
+LuigiClient.linkManager().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
 ```
 **Returns**: [<code>linkManager</code>](#linkManager) - link manager instance  
 ### withOptions&nbsp;  
-<!-- label-success: Web App API only  -->Sets options to customise route changing behaviour. The parameters are used by the `navigate` function. Use it optionally in combination with any of the navigation functions and receive it as part of the context object in Luigi Client.
+<!-- label-success: Web App API only  -->
+Sets options to customise route changing behaviour. The parameters are used by the `navigate` function. Use it optionally in combination with any of the navigation functions and receive it as part of the context object in Luigi Client.
 
 **Params**
 
@@ -588,7 +680,9 @@ LuigiClient.linkManager().withParams({foo: "bar"}).navigate("path")// Can be c
   
 **Example**  
 ```js
-LuigiClient.linkManager().withOptions({ preventContextUpdate:true, preventHistoryEntry: true }).navigate('/overview')
+LuigiClient.linkManager().withOptions(
+{ preventContextUpdate:true, preventHistoryEntry: true }
+).navigate('/overview')
 ```
 **Returns**: [<code>linkManager</code>](#linkManager) - link manager instance  
   
@@ -604,7 +698,13 @@ Checks if the path you can navigate to exists in the main application. For examp
   
 **Example**  
 ```js
-let pathExists; LuigiClient .linkManager() .pathExists('projects/pr2') .then(   (pathExists) => {  } );
+let pathExists;
+ LuigiClient
+ .linkManager()
+ .pathExists('projects/pr2')
+ .then(
+   (pathExists) => {  }
+ );
 ```
 **Returns**: <code>promise</code> - a promise which resolves to a Boolean variable specifying whether the path exists or not  
 ### hasBack&nbsp;  
@@ -622,21 +722,27 @@ Discards the active view and navigates back to the last visited view. Works with
   
 **Example**  
 ```js
-LuigiClient.linkManager().goBack({ foo: 'bar' });LuigiClient.linkManager().goBack(true);
+LuigiClient.linkManager().goBack({ foo: 'bar' });
+LuigiClient.linkManager().goBack(true);
 ```
 ### withoutSync&nbsp;  
-<!-- label-success: Web App API only  -->Disables the navigation handling for a single navigation request.It prevents Luigi Core from handling the URL change after `navigate()`.Used for auto-navigation.
+<!-- label-success: Web App API only  -->
+Disables the navigation handling for a single navigation request.
+It prevents Luigi Core from handling the URL change after `navigate()`.
+Used for auto-navigation.
 
   
 **Example**  
 ```js
-LuigiClient.linkManager().withoutSync().navigate('/projects/xy/foobar');LuigiClient.linkManager().withoutSync().fromClosestContext().navigate('settings');
+LuigiClient.linkManager().withoutSync().navigate('/projects/xy/foobar');
+LuigiClient.linkManager().withoutSync().fromClosestContext().navigate('settings');
 ```
   
 **Meta**:  
 * **since:** 0.7.7
 ### newTab&nbsp;  
-<!-- label-success: Web App API only  -->Enables navigating to a new tab.
+<!-- label-success: Web App API only  -->
+Enables navigating to a new tab.
 
   
 **Example**  
@@ -647,7 +753,8 @@ LuigiClient.linkManager().newTab().navigate('/projects/xy/foobar');
 **Meta**:  
 * **since:** 1.16.0
 ### preserveQueryParams&nbsp;  
-<!-- label-success: Web App API only  -->Keeps the URL's query parameters for a navigation request.
+<!-- label-success: Web App API only  -->
+Keeps the URL's query parameters for a navigation request.
 
 **Params**
 
@@ -656,7 +763,8 @@ LuigiClient.linkManager().newTab().navigate('/projects/xy/foobar');
   
 **Example**  
 ```js
-LuigiClient.linkManager().preserveQueryParams(true).navigate('/projects/xy/foobar');LuigiClient.linkManager().preserveQueryParams(false).navigate('/projects/xy/foobar');
+LuigiClient.linkManager().preserveQueryParams(true).navigate('/projects/xy/foobar');
+LuigiClient.linkManager().preserveQueryParams(false).navigate('/projects/xy/foobar');
 ```
   
 **Meta**:  
@@ -667,7 +775,9 @@ Gets the luigi route associated with the current micro frontend.
   
 **Example**  
 ```js
-LuigiClient.linkManager().getCurrentRoute();LuigiClient.linkManager().fromContext('project').getCurrentRoute();LuigiClient.linkManager().fromVirtualTreeRoot().getCurrentRoute();
+LuigiClient.linkManager().getCurrentRoute();
+LuigiClient.linkManager().fromContext('project').getCurrentRoute();
+LuigiClient.linkManager().fromVirtualTreeRoot().getCurrentRoute();
 ```
 **Returns**: <code>promise</code> - a promise which resolves to a String value specifying the current luigi route  
   
@@ -733,7 +843,10 @@ Registers a listener for split view events
   
 **Example**  
 ```js
-const listenerId = splitViewHandle.on('expand', () => {});const listenerId = splitViewHandle.on('collapse', () => {});const listenerId = splitViewHandle.on('resize', () => {});const listenerId = splitViewHandle.on('close', () => {});
+const listenerId = splitViewHandle.on('expand', () => {});
+const listenerId = splitViewHandle.on('collapse', () => {});
+const listenerId = splitViewHandle.on('resize', () => {});
+const listenerId = splitViewHandle.on('close', () => {});
 ```
 **Returns**: <code>string</code> - listener id  
   
@@ -846,7 +959,20 @@ Shows a confirmation modal.
   
 **Example**  
 ```js
-import LuigiClient from '@luigi-project/client';const settings = { type: "confirmation", header: "Confirmation", body: "Are you sure you want to do this?", buttonConfirm: "Yes", buttonDismiss: "No"}LuigiClient .uxManager() .showConfirmationModal(settings) .then(() => {    // Logic to execute when the confirmation modal is dismissed });
+import LuigiClient from '@luigi-project/client';
+const settings = {
+ type: "confirmation",
+ header: "Confirmation",
+ body: "Are you sure you want to do this?",
+ buttonConfirm: "Yes",
+ buttonDismiss: "No"
+}
+LuigiClient
+ .uxManager()
+ .showConfirmationModal(settings)
+ .then(() => {
+    // Logic to execute when the confirmation modal is dismissed
+ });
 ```
 **Returns**: <code>promise</code> - which is resolved when accepting the confirmation modal and rejected when dismissing it  
 ### showAlert&nbsp;  
@@ -867,7 +993,24 @@ Shows an alert.
   
 **Example**  
 ```js
-import LuigiClient from '@luigi-project/client';const settings = { text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}", type: 'info', links: {   goToHome: { text: 'homepage', url: '/overview' },   goToOtherProject: { text: 'other project', url: '/projects/pr2' },   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000}LuigiClient .uxManager() .showAlert(settings) .then(() => {    // Logic to execute when the alert is dismissed });
+import LuigiClient from '@luigi-project/client';
+const settings = {
+ text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}",
+ type: 'info',
+ links: {
+   goToHome: { text: 'homepage', url: '/overview' },
+   goToOtherProject: { text: 'other project', url: '/projects/pr2' },
+   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },
+   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
+ },
+ closeAfter: 3000
+}
+LuigiClient
+ .uxManager()
+ .showAlert(settings)
+ .then(() => {
+    // Logic to execute when the alert is dismissed
+ });
 ```
 **Returns**: <code>promise</code> - which is resolved when the alert is dismissed  
 ### getCurrentLocale&nbsp;  
@@ -876,7 +1019,10 @@ Gets the current locale.
   
 **Returns**: <code>string</code> - current locale  
 ### setCurrentLocale&nbsp;  
-<!-- label-success: Web App API only  -->Sets current locale to the specified one.**NOTE:** this must be explicitly allowed on the navigation node level by setting `clientPermissions.changeCurrentLocale` to `true`. (See [Node parameters](navigation-parameters-reference.md).)
+<!-- label-success: Web App API only  -->
+Sets current locale to the specified one.
+
+**NOTE:** this must be explicitly allowed on the navigation node level by setting `clientPermissions.changeCurrentLocale` to `true`. (See [Node parameters](navigation-parameters-reference.md).)
 
 **Params**
 
@@ -884,7 +1030,8 @@ Gets the current locale.
 
   
 ### isSplitView&nbsp;  
-<!-- label-success: Web App API only  -->Checks if the current micro frontend is displayed inside a split view
+<!-- label-success: Web App API only  -->
+Checks if the current micro frontend is displayed inside a split view
 
   
 **Returns**: <code>boolean</code> - indicating if it is loaded inside a split view  
@@ -892,7 +1039,8 @@ Gets the current locale.
 **Meta**:  
 * **since:** 0.6.0
 ### isModal&nbsp;  
-<!-- label-success: Web App API only  -->Checks if the current micro frontend is displayed inside a modal
+<!-- label-success: Web App API only  -->
+Checks if the current micro frontend is displayed inside a modal
 
   
 **Returns**: <code>boolean</code> - indicating if it is loaded inside a modal  
@@ -900,7 +1048,8 @@ Gets the current locale.
 **Meta**:  
 * **since:** 0.6.0
 ### isDrawer&nbsp;  
-<!-- label-success: Web App API only  -->Checks if the current micro frontend is displayed inside a drawer
+<!-- label-success: Web App API only  -->
+Checks if the current micro frontend is displayed inside a drawer
 
   
 **Returns**: <code>boolean</code> - indicating if it is loaded inside a drawer  
@@ -913,7 +1062,8 @@ Gets the current theme.
   
 **Returns**: <code>\*</code> - current themeObj  
 ### getCSSVariables&nbsp;  
-<!-- label-success: Web App API only  -->Gets the CSS variables from Luigi Core with their key and value.
+<!-- label-success: Web App API only  -->
+Gets the CSS variables from Luigi Core with their key and value.
 
   
 **Example**  
@@ -925,7 +1075,8 @@ LuigiClient.uxManager().getCSSVariables();
 **Meta**:  
 * **since:** 2.3.0
 ### applyCSS&nbsp;  
-<!-- label-success: Web App API only  -->Adds the CSS variables from Luigi Core in a <style> tag to the document <head> section.
+<!-- label-success: Web App API only  -->
+Adds the CSS variables from Luigi Core in a <style> tag to the document <head> section.
 
   
 **Example**  
@@ -937,7 +1088,10 @@ LuigiClient.uxManager().applyCSS();
 * **since:** 2.3.0
 ## storageManager&nbsp;  
 ### storageManager&nbsp;  
-<!-- label-success: Web App API only  -->StorageManager allows you to use browser local storage of key/values. Every storage operation is sent to be managed by Luigi Core.The idea is that different micro frontends can share or persist items using local storage, as long as they come from the same domain and follow the [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).Since all storage operations are asynchronous (sending an event to Luigi Core that will reply once operation is finished), all the methods return Promises.
+<!-- label-success: Web App API only  -->
+StorageManager allows you to use browser local storage of key/values. Every storage operation is sent to be managed by Luigi Core.
+The idea is that different micro frontends can share or persist items using local storage, as long as they come from the same domain and follow the [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
+Since all storage operations are asynchronous (sending an event to Luigi Core that will reply once operation is finished), all the methods return Promises.
 
   
 ### setItem&nbsp;  
