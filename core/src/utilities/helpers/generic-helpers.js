@@ -244,12 +244,14 @@ class GenericHelpersClass {
       } else {
         const delim = slashStop ? ' ' : '';
         processedString = processedString.replace(/\//g, delim + '/') + delim;
-        Array.from(Object.entries(params)).sort((a, b) => b[0].length - a[0].length).forEach((entry) => {
-          processedString = processedString.replace(
-            new RegExp(this.escapeRegExp(prefix + entry[0] + delim), 'g'),
-            encodeURIComponent(entry[1])
-          );
-        });
+        Array.from(Object.entries(params))
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach((entry) => {
+            processedString = processedString.replace(
+              new RegExp(this.escapeRegExp(prefix + entry[0] + delim), 'g'),
+              encodeURIComponent(entry[1])
+            );
+          });
         processedString = processedString.replace(new RegExp(this.escapeRegExp(delim), 'g'), '');
       }
     }
