@@ -33,11 +33,12 @@ export class ContainerService {
    * @param msg the message to be sent
    * @param msgName the optional message name
    */
-  sendCustomMessageToIframe(iframeHandle: IframeHandle, msg: object, msgName?: string) {
+  sendCustomMessageToIframe(iframeHandle: IframeHandle | undefined, msg: object, msgName?: string) {
     const messageName = msgName || 'custom';
 
     if (iframeHandle?.iframe?.contentWindow) {
       const iframeUrl = new URL(iframeHandle.iframe.src);
+
       if (messageName === 'custom') {
         iframeHandle.iframe.contentWindow.postMessage({ msg: messageName, data: msg }, iframeUrl.origin);
       } else {
@@ -61,7 +62,8 @@ export class ContainerService {
     targetCnt: ContainerElement,
     data: object,
     payload: object,
-    callback?: (arg?) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback?: (arg?: any) => void
   ): void {
     this.dispatch(msg, targetCnt, data, callback, payload);
   }
@@ -73,8 +75,17 @@ export class ContainerService {
    * @param {Object} data - custom data added to the event to be dispatched
    * @param {Function} callback - optional callback function
    */
-  dispatch(msg: string, targetCnt: ContainerElement, data: object, callback?: (arg?) => void, payload?: object): void {
-    const customEvent = new LuigiEvent(msg, data, payload, callback);
+  dispatch(
+    msg: string,
+    targetCnt: ContainerElement,
+    data: object | string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback?: (arg?: any) => void,
+    payload?: object
+  ): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const customEvent: any = new LuigiEvent(msg, data, payload, callback);
+
     targetCnt.dispatchEvent(customEvent);
   }
 
@@ -84,10 +95,12 @@ export class ContainerService {
    * @param event The event object representing the source of the container.
    * @returns {ContainerElement | undefined} the target container object or undefined if not found
    */
-  getTargetContainer(event): ContainerElement | undefined {
-    let cnt;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getTargetContainer(event: any): ContainerElement | undefined {
+    let cnt: ContainerElement | undefined;
 
-    globalThis.__luigi_container_manager.container.forEach((element) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any).__luigi_container_manager.container.forEach((element: ContainerElement) => {
       if (element.iframeHandle?.iframe && element.iframeHandle.iframe.contentWindow === event.source) {
         cnt = element;
       }
@@ -103,14 +116,16 @@ export class ContainerService {
    * @returns __luigi_container_manager which has the added container array and message listeners
    */
   getContainerManager() {
-    if (!globalThis.__luigi_container_manager) {
-      globalThis.__luigi_container_manager = {
+    /* eslint-disable */
+    if (!(globalThis as any).__luigi_container_manager) {
+      (globalThis as any).__luigi_container_manager = {
         container: [],
-        messageListener: (event) => {
+        messageListener: (event: any) => {
           // Handle incoming messages and dispatch events based on the message type
           // (Custom messages, navigation requests, alert requests, etc.)
           const targetCnt = this.getTargetContainer(event);
           const target = targetCnt?.iframeHandle?.iframe?.contentWindow;
+
           if (target && target === event.source) {
             // messages emitted from microfrontends
             const msg = event.data.msg;
@@ -121,6 +136,7 @@ export class ContainerService {
                 {
                   const evData = event.data.data;
                   const id = evData.id;
+
                   delete evData.id;
                   this.dispatch(Events.CUSTOM_MESSAGE, targetCnt, {
                     id: id,
@@ -324,10 +340,11 @@ export class ContainerService {
           }
         }
       };
-      window.addEventListener('message', globalThis.__luigi_container_manager.messageListener);
+      window.addEventListener('message', (globalThis as any).__luigi_container_manager.messageListener);
     }
 
-    return globalThis.__luigi_container_manager;
+    return (globalThis as any).__luigi_container_manager;
+    /* eslint-enable */
   }
 
   /**
