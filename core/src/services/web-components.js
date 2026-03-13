@@ -143,7 +143,6 @@ class WebComponentSvcClass {
           node,
           searchParams,
           keepBrowserHistory,
-          true,
           preventLuigiConfigUpdate
         );
       },
