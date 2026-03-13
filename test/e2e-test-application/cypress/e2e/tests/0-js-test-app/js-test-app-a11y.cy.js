@@ -492,6 +492,13 @@ describe('JS-TEST-APP 4', () => {
       };
     });
 
+    it('Header contains heading role', () => {
+      cy.visitTestApp('/home', newConfig);
+      cy.get('#app[configversion="header-a11y"]');
+      cy.get('.fd-shellbar__group--product').should('have.attr', 'aria-level', 1);
+      cy.get('.fd-shellbar__group--product').should('have.attr', 'role', 'heading');
+    });
+
     it('Header has correct aria-labels', () => {
       cy.visitTestApp('/home', newConfig);
       newConfig.settings.customTranslationImplementation = () => {
