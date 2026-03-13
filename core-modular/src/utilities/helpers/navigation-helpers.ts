@@ -68,7 +68,7 @@ export const NavigationHelpers = {
     return true;
   },
 
-  generateTooltipText: (node: any, translation: string, luigi: Luigi): string => {
+  generateTooltipText: (node: Node, translation: string, luigi: Luigi): string => {
     let ttText: boolean | string | undefined = node?.tooltipText;
 
     if (ttText === undefined) {
