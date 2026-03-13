@@ -731,12 +731,16 @@ export class NavigationService {
         return;
       }
 
-      // TODO handle path checking when virtual tree is present
-      const pathExist = !options?.fromVirtualTreeRoot ? await RoutingHelpers.pathExists(path, this.luigi) : true;
-      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, this.luigi);
+      const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
+      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, !!options?.fromVirtualTreeRoot, this.luigi);
 
       if (!redirectPath) {
-        return;
+        if (options?.fromVirtualTreeRoot) {
+          // TODO handle case when requested route is not added to virtual tree
+          console.warn(`Route '${path}' is not present in virtual tree`);
+        } else {
+          return;
+        }
       }
 
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
