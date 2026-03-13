@@ -300,8 +300,6 @@ window.onload = () => {
     },
     routing: {
       pageNotFoundHandler: function (notFoundPath, isAnyPathMatched) {
-        document.body.classList.add('page-not-found');
-
         return {
           redirectTo: '/404',
           keepURL: false,

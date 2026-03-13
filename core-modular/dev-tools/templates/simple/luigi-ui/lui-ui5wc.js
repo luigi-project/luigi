@@ -528,10 +528,6 @@ const connector = {
         });
       }
 
-      if (leftNavData?.items?.length) {
-        document.body.classList.remove('page-not-found');
-      }
-
       document.body.classList.toggle('left-nav-hidden', !(leftNavData.items?.length > 0));
       sidenav.appendChild(containerFrag);
 

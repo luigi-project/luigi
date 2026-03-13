@@ -10,7 +10,7 @@ ui5-side-navigation {
     min-height: 0;
 }
 
-.left-nav-hidden:not(.page-not-found) ui5-side-navigation,
+.left-nav-hidden ui5-side-navigation,
 .left-nav-hidden ui5-shellbar #toggle {
     display: none;
 }
