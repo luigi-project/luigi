@@ -265,15 +265,15 @@ export class NavigationService {
    * @param array children
    * @returns array children
    */
-  getTruncatedChildren(children: any): any[] {
+  getTruncatedChildren(children: Node[]): Node[] {
     let childToKeepFound = false;
     let tabNavUnset = false;
-    let res: any = [];
+    let res: Node[] = [];
 
     children
       .slice()
       .reverse()
-      .forEach((node: any) => {
+      .forEach((node: Node) => {
         if (!childToKeepFound || node.tabNav) {
           if (node.tabNav === false) {
             // explicitly set to false
@@ -356,7 +356,7 @@ export class NavigationService {
   async getLeftNavData(path: string, pData?: PathData): Promise<LeftNavData> {
     const pathData = pData ?? (await this.getPathData(path));
     if (path === '' && pathData?.nodesInPath?.[0].viewUrl) {
-      return { items: [], basePath: '', selectedNode: undefined, navClick: undefined };
+      return { items: [], basePath: '', selectedNode: {} as Node, navClick: undefined };
     }
     let navItems: NavItem[] = [];
     const pathToLeftNavParent: Node[] = [];
@@ -370,7 +370,7 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath);
+    const pathDataTruncatedChildren = this.getTruncatedChildren(pathData.nodesInPath ?? []);
     let lastElement = [...pathDataTruncatedChildren].pop();
     let selectedNode = pathData.selectedNode;
     if (lastElement?.keepSelectedForChildren || lastElement?.tabNav) {
@@ -399,7 +399,7 @@ export class NavigationService {
     // convert
     navItems = this.applyNavGroups(navItems);
     return {
-      selectedNode: selectedNode,
+      selectedNode: selectedNode || ({} as Node),
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
@@ -555,8 +555,8 @@ export class NavigationService {
     });
 
     const pathDataTruncatedChildren = parentNode
-      ? this.getTruncatedChildren(parentNode.children)
-      : this.getTruncatedChildren(selectedNode.children);
+      ? this.getTruncatedChildren(parentNode.children ?? [])
+      : this.getTruncatedChildren(selectedNode.children ?? []);
 
     const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
     return {
@@ -641,11 +641,11 @@ export class NavigationService {
     window.open(nodepath, '_blank', 'noopener,noreferrer');
   }
 
-  private resolveTooltipText(node: any, translation: string): string {
+  private resolveTooltipText(node: Node, translation: string): string {
     return NavigationHelpers.generateTooltipText(node, translation, this.luigi);
   }
 
-  private prepareRootNodes(navNodes: any[], context: Record<string, any>): Node[] {
+  private prepareRootNodes(navNodes: Node[], context: Record<string, any>): Node[] {
     const rootNodes = navNodes;
 
     if (!rootNodes.length) {
@@ -919,8 +919,11 @@ export class NavigationService {
       const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
       let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
       return path;
-    } else if(fromParent){
-      return RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams), incomingPath);
+    } else if (fromParent) {
+      return RoutingHelpers.concatenatePath(
+        RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams),
+        incomingPath
+      );
     }
     return incomingPath;
   }

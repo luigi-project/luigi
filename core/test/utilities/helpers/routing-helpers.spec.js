@@ -456,10 +456,7 @@ describe('Routing-helpers', () => {
         setItem: sinon.stub()
       };
       sinon.stub(RoutingHelpers, 'getRouteLink');
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);
     });
     afterEach(() => {
       sinon.restore();
@@ -722,6 +719,16 @@ describe('Routing-helpers', () => {
       RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' });
       sinon.assert.calledWith(console.warn, 'No permission to add the search param "luigi" to the url');
     });
+    it('Client can write luigi url parameter when default preventLuigiConfigUpdate value', () => {
+      currentNode.clientPermissions.urlParameters.luigi.write = true;
+      RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' }, true);
+      sinon.assert.calledWith(LuigiRouting.addSearchParams, { luigi: 'rocks' }, true, false);
+    });
+    it('Client can write luigi url parameter when preventLuigiConfigUpdate is true', () => {
+      currentNode.clientPermissions.urlParameters.luigi.write = true;
+      RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' }, true, true);
+      sinon.assert.calledWith(LuigiRouting.addSearchParams, { luigi: 'rocks' }, true, true);
+    });
     it('Client can only write specific url parameter', () => {
       currentNode.clientPermissions.urlParameters = {
         test: {
@@ -823,10 +830,7 @@ describe('Routing-helpers', () => {
     });
 
     it('with custom pageNotFoundHandler not defined', async () => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.pageNotFoundHandler')
-        .returns();
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.pageNotFoundHandler').returns();
       const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath');
       assert.deepEqual({}, expected);
     });
@@ -927,10 +931,7 @@ describe('Routing-helpers', () => {
   });
   describe('modifySearchParams', () => {
     beforeEach(() => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);
     });
     afterEach(() => {
       sinon.restore();

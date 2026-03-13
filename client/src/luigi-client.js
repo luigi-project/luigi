@@ -62,8 +62,8 @@ class LuigiClient {
   getCoreSearchParams() {
     return lifecycleManager.getCoreSearchParams();
   }
-  addCoreSearchParams(searchParams, keepBrowserHistory) {
-    return lifecycleManager.addCoreSearchParams(searchParams, keepBrowserHistory);
+  addCoreSearchParams(searchParams, keepBrowserHistory, addCoreSearchParams) {
+    return lifecycleManager.addCoreSearchParams(searchParams, keepBrowserHistory, addCoreSearchParams);
   }
   getClientPermissions() {
     return lifecycleManager.getClientPermissions();
