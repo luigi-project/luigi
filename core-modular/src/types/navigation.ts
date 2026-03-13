@@ -218,6 +218,8 @@ export interface NavigationOptions {
   fromClosestContext?: boolean;
   fromVirtualTreeRoot?: boolean;
   fromParent?: boolean;
+  relative?: any;
+  nodeParams?: Record<string, any>;
 }
 
 export interface NavigationRequestBase {

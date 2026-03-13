@@ -225,7 +225,8 @@ describe('Navigation', () => {
           fromVirtualTreeRoot: false,
           fromContext: null,
           fromClosestContext: false,
-          fromParent: false
+          fromParent: false,
+          nodeParams: {}
         }
       };
 
