@@ -732,7 +732,12 @@ export class NavigationService {
       }
 
       const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
-      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, !!options?.fromVirtualTreeRoot, this.luigi);
+      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
+        path,
+        pathExist,
+        !!options?.fromVirtualTreeRoot,
+        this.luigi
+      );
 
       if (!redirectPath) {
         if (options?.fromVirtualTreeRoot) {
@@ -947,8 +952,11 @@ export class NavigationService {
       const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
       let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
       return path;
-    } else if(fromParent){
-      return RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams), incomingPath);
+    } else if (fromParent) {
+      return RoutingHelpers.concatenatePath(
+        RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams),
+        incomingPath
+      );
     }
     return incomingPath;
   }
