@@ -5,11 +5,12 @@ import { DirtyStatusService } from '../services/dirty-status.service';
 import { writable } from '../utilities/store';
 
 export interface AlertSettings {
-  text?: string;
-  type?: string;
-  links?: Record<string, Link>;
   closeAfter?: number;
   id?: string;
+  links?: Record<string, Link>;
+  text?: string;
+  ttl?: number;
+  type?: string;
 }
 
 export interface AlertHandler {
