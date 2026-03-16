@@ -105,19 +105,10 @@ export class RoutingService {
       paramsObj[key] = value;
     });
     this.checkInvalidateCache(this.previousPathData, path);
-
     const pathData = await this.getNavigationService().getPathData(path);
-
     this.previousPathData = pathData;
-
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
     const pathUrlRaw = GenericHelpers.getPathWithoutHash(path);
-
-    if (redirect) {
-      this.luigi.navigation().navigate(redirect);
-      return;
-    }
 
     this.currentRoute = {
       raw: window.location.href,

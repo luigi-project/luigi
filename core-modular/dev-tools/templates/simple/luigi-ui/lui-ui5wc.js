@@ -28,7 +28,7 @@ function readExpandedState(uid) {
   return false;
 }
 
-function addShellbarItem(shellbar, item) {
+function addShellbarItem(shellbar, item, navClickFn) {
   if (item.node?.hideFromNav) {
     return;
   }
@@ -45,7 +45,7 @@ function addShellbarItem(shellbar, item) {
     itemEl.setAttribute('text', item.label);
     itemEl.setAttribute('luigi-route', item.node.pathSegment);
     itemEl.addEventListener('click', () => {
-      globalThis.Luigi.navigation().navigate(itemEl.getAttribute('luigi-route'));
+      navClickFn(item)
     });
     shellbar.appendChild(itemEl);
   }
@@ -441,7 +441,7 @@ const connector = {
       }
 
       (topNavData.topNodes || []).forEach((item) => {
-        addShellbarItem(shellbar, item);
+        addShellbarItem(shellbar, item, topNavData.navClick);
       });
 
       if (topNavData.appSwitcher?.items) {
@@ -477,7 +477,7 @@ const connector = {
       if (topNavData.topNodes !== shellbar._lastTopNavData.topNodes) {
         shellbar.querySelectorAll('ui5-shellbar-item').forEach((item) => item.remove());
         (topNavData.topNodes || []).forEach((item) => {
-          addShellbarItem(shellbar, item);
+          addShellbarItem(shellbar, item, topNavData.navClick);
         });
       }
       if (shellbar._lastTopNavData) {
