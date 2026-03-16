@@ -42,6 +42,8 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
+    const relativePath = path[0] !== '/';
+    this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
       modalSettings,
       newTab: false,
