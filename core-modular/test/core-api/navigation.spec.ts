@@ -1,8 +1,9 @@
 import { Navigation } from '../../src/core-api/navigation';
 import { ModalService } from '../../src/services/modal.service';
-import { NavigationService, type NavigationRequestParams, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
+import type { NavigationRequestParams, Node } from '../../src/types/navigation';
 
 describe('Navigation', () => {
   let luigiMock: any;
@@ -10,6 +11,12 @@ describe('Navigation', () => {
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
+  let options: {
+    fromContext?: any;
+    fromClosestContext?: boolean;
+    fromVirtualTreeRoot?: boolean;
+    fromParent?: boolean;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -206,6 +213,21 @@ describe('Navigation', () => {
   describe('navigate', () => {
     it('check parameter for navigate function', () => {
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: { title: 'Modal Title' },
+        newTab: false,
+        path: '/test/path',
+        preserveView: 'preserveViewValue',
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false,
+        options: {
+          fromVirtualTreeRoot: false,
+          fromContext: null,
+          fromClosestContext: false,
+          fromParent: false
+        }
+      };
 
       navigation.navigate(
         '/test/path',
@@ -215,16 +237,7 @@ describe('Navigation', () => {
         { drawer: true }
       );
 
-      const expectedRequestParams: NavigationRequestParams = {
-        modalSettings: { title: 'Modal Title' },
-        newTab: false,
-        path: '/test/path',
-        preserveView: 'preserveViewValue',
-        preventContextUpdate: false,
-        withoutSync: false
-      };
-
-      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(expectedRequestParams, undefined);
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(navRequestParams, undefined);
     });
   });
 });

@@ -1,8 +1,7 @@
-import type { PathData } from '../../../src/services/navigation.service';
 import { NavigationHelpers } from '../../../src/utilities/helpers/navigation-helpers';
-import { type Node } from '../../../src/services/navigation.service';
 import type { Luigi } from '../../../src/core-api/luigi';
 import { FeatureToggles } from '../../../src/core-api/feature-toggles';
+import type { Node, PathData } from '../../../src/types/navigation';
 import { AuthHelpers } from '../../../src/utilities/helpers/auth-helpers';
 
 describe('Navigation-helpers', () => {
@@ -119,5 +118,26 @@ describe('Navigation-helpers', () => {
   it('prepareForTests', () => {
     expect(NavigationHelpers.prepareForTests(undefined as unknown as string)).toEqual('');
     expect(NavigationHelpers.prepareForTests('Whatever It', 'Takes')).toEqual('whateverit_takes');
+  });
+
+  describe('findVirtualTreeRootNode', () => {
+    it('should return the node itself if it is a virtual tree root', () => {
+      const node: Node = { pathSegment: 'root', virtualTree: true };
+      const result = NavigationHelpers.findVirtualTreeRootNode(node);
+      expect(result).toBe(node);
+    });
+
+    it('should return the virtual tree root node from ancestors', () => {
+      const virtualRoot: Node = { pathSegment: 'root', virtualTree: true };
+      const childNode: Node = { pathSegment: 'child', parent: virtualRoot };
+      const result = NavigationHelpers.findVirtualTreeRootNode(childNode);
+      expect(result).toBe(virtualRoot);
+    });
+
+    it('should return undefined if no virtual tree root is found', () => {
+      const node: Node = { pathSegment: 'node' };
+      const result = NavigationHelpers.findVirtualTreeRootNode(node);
+      expect(result).toBeUndefined();
+    });
   });
 });

@@ -1,6 +1,6 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { AppSwitcher, Node, PathData } from '../../services/navigation.service';
+import type { AppSwitcher, Node, PathData } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 
@@ -68,7 +68,7 @@ export const NavigationHelpers = {
     return true;
   },
 
-  generateTooltipText: (node: any, translation: string, luigi: Luigi): string => {
+  generateTooltipText: (node: Node, translation: string, luigi: Luigi): string => {
     let ttText: boolean | string | undefined = node?.tooltipText;
 
     if (ttText === undefined) {
@@ -171,5 +171,20 @@ export const NavigationHelpers = {
       }
     });
     return result;
+  },
+
+  /**
+   * Finds the virtual tree root node for a given node by traversing up the node hierarchy until it finds a node with the virtualTree property set to true. If no such node is found, it returns undefined.
+   * @param node  The node for which to find the virtual tree root node.
+   * @returns The virtual tree root node if found, otherwise undefined.
+   */
+  findVirtualTreeRootNode(node: Node): Node | undefined {
+    if (node.virtualTree) {
+      return node;
+    }
+    if (node.parent) {
+      return NavigationHelpers.findVirtualTreeRootNode(node.parent);
+    }
+    return undefined;
   }
 };

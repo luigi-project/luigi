@@ -1,20 +1,14 @@
 import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { FeatureToggles } from '../core-api/feature-toggles';
 import type { Luigi } from '../core-api/luigi';
+import type { Route, LuigiParams } from '../types/routing';
 import { UIModule } from '../modules/ui-module';
+import type { ModalSettings, Node, PathData } from '../types/navigation';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
-import type { ModalSettings, Node, PathData } from './navigation.service';
 import { NavigationService } from './navigation.service';
 import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
-
-export interface Route {
-  raw: string;
-  node?: Node;
-  path: string;
-  nodeParams?: Record<string, string>;
-}
 
 export class RoutingService {
   navigationService?: NavigationService;
@@ -132,15 +126,16 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
+      const luigiParams: LuigiParams = {
+        nodeParams: nodeParams || {},
+        pathParams: pathData?.pathParams || {},
+        searchParams: RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi)
+      };
       this.currentRoute.node = currentNode;
-      currentNode.nodeParams = nodeParams || {};
-      currentNode.pathParams = pathData?.pathParams || {};
-      currentNode.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi);
 
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-
-      UIModule.updateMainContent(currentNode, this.luigi, withoutSync, preventContextUpdate);
+      UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
     }
   }
 

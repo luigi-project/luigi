@@ -9,10 +9,10 @@
     "start": "live-server --port=8181 --entry-file=index.html  --mount=./node_modules:/node_modules"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.26.0",
-    "@luigi-project/testing-utilities": "^2.26.0",
+    "@luigi-project/client": "^2.27.0",
+    "@luigi-project/testing-utilities": "^2.27.0",
     "cross-spawn": "^7.0.6",
-    "cypress": "^15.8.2",
+    "cypress": "^15.10.0",
     "fundamental-styles": "^0.26.5"
   }
 }

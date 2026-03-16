@@ -1,4 +1,4 @@
-import type { Node, RootNode } from './navigation.service';
+import type { Node, RootNode } from '../types/navigation';
 
 export class NodeDataManagementService {
   dataManagement: Map<any, any>;

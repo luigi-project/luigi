@@ -1,7 +1,8 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { Node, PathData } from '../../services/navigation.service';
+import type { Node, PathData } from '../../types/navigation';
 import { EscapingHelpers } from './escaping-helpers';
+import { GenericHelpers } from './generic-helpers';
 import { NavigationHelpers } from './navigation-helpers';
 
 export const RoutingHelpers = {
@@ -488,5 +489,100 @@ export const RoutingHelpers = {
    */
   getDynamicNodeValue(node: Node, pathParams: Record<string, string>): string | undefined {
     return this.isDynamicNode(node) && node.pathSegment ? pathParams[node.pathSegment.substring(1)] : undefined;
+  },
+
+  /**
+   *  Recursively constructs the full path for a given node by concatenating its path segment with those of its ancestors.
+   *  If `params` are provided, they are appended as query parameters to the final path.
+   * @param node - The node for which to construct the path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param params - Optional query parameters to append to the path. If provided, it should be a string in the format of URL query parameters (e.g., "key=value&anotherKey=anotherValue").
+   * @returns The constructed path as a string, including any query parameters if provided.
+   */
+  getNodePath(node: Node, params?: string): string {
+    if (!node || params) {
+      return node ? this.buildRoute(node, node.pathSegment ? '/' + node.pathSegment : '', params) : '';
+    } else {
+      return `${node.parent ? this.getNodePath(node.parent) : ''}/${node.pathSegment}`;
+    }
+  },
+  /**
+   * Builds a route string by recursively traversing up the node hierarchy and concatenating path segments.
+   * @param node - The current node from which to start building the route.
+   * @param path - The accumulated path string (used internally for recursion).
+   * @param params - Optional query parameters to append to the final route.
+   * @returns a string representing the full route from the root to the given node, including query parameters if provided.
+   */
+  buildRoute(node: Node, path: string, params?: string): string {
+    return !node.parent
+      ? path + (params ? '?' + params : '')
+      : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
+  },
+
+  substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
+    //TODO issue nr 4575
+    //currently minimal requirement for this task
+    // const contextVarPrefix = 'context.';
+    // const nodeParamsVarPrefix = 'nodeParams.';
+    // const searchQuery = 'routing.queryParams';
+
+    viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
+    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
+    //TODO
+    // viewUrl = this.getI18nViewUrl(viewUrl);
+
+    // if (viewUrl && viewUrl.includes(searchQuery)) {
+    //   const viewUrlSearchParam = viewUrl.split('?')[1];
+    //   if (viewUrlSearchParam) {
+    //     const key = viewUrlSearchParam.split('=')[0];
+    //     const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
+    //     if (searchParams[key]) {
+    //       viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
+    //     } else {
+    //       viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+    //     }
+    //   }
+    // }
+
+    return viewUrl;
+  },
+
+  /**
+   *  Generates a sub-path for a given node by replacing dynamic parameters in the node's path with actual values from pathParams.
+   * @param node - The node for which to generate the sub-path. It is expected to have a `pathSegment` property and optionally a `parent` property pointing to its parent node.
+   * @param nodePathParams - An object containing the values for dynamic parameters in the node's path. The keys should match the parameter names in the path segments.
+   * @returns A string representing the sub-path with dynamic parameters replaced by their corresponding values from pathParams.
+   */
+  getSubPath(node: any, nodePathParams: any): string {
+    return GenericHelpers.replaceVars(RoutingHelpers.getNodePath(node), nodePathParams, ':', false);
+  },
+
+  /**
+   * Concatenates a base path and a relative path
+   *
+   * The function performs the following steps:
+   * 1. Removes any trailing '/' from the base path.
+   * 2. If the relative path does not start with '/', it adds a '/' between the base and relative paths.
+   * 3. Concatenates the base path and the relative path.
+   * @param basePath The base path to which the relative path will be appended. It may or may not end with a '/' character.
+   * @param relativePath The relative path to append to the base path. It may or may not start with a '/' character.
+   * @returns A string representing the concatenated path, with exactly one '/' character between the base and relative paths.
+   */
+  concatenatePath(basePath: any, relativePath?: any): string {
+    let path = GenericHelpers.getPathWithoutHashOrSlash(basePath);
+    if (!path) {
+      return relativePath;
+    }
+    if (!relativePath) {
+      return path;
+    }
+    if (path.endsWith('/')) {
+      path = path.substring(0, path.length - 1);
+    }
+    if (!relativePath.startsWith('/')) {
+      path += '/';
+    }
+    path += relativePath;
+    return path;
   }
 };
