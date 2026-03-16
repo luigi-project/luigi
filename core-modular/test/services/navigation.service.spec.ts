@@ -1061,6 +1061,54 @@ describe('NavigationService', () => {
       //   expect(result).toBe('/path');
       // });
     });
+
+    describe('relative', () => {
+      beforeEach(() => {
+        const homeNodeMock = { pathSegment: 'home' };
+        const baseNodeMock = { pathSegment: 'base', parent: homeNodeMock };
+
+        jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/home/base', query: undefined } as any);
+        jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+          nodesInPath: [
+            {
+              children: [homeNodeMock]
+            },
+            homeNodeMock,
+            baseNodeMock
+          ],
+          selectedNode: baseNodeMock,
+          pathParams: {}
+        } as any);
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('relative path from existing path', async () => {
+        const result = await navigationService.buildPath('relative/path', { relative: true });
+
+        expect(result).toBe('home/base/relative/path');
+      });
+
+      it('relative path with nodeParams', async () => {
+        jest.spyOn(RoutingHelpers, 'getContentViewParamPrefix').mockReturnValue('~');
+        const result = await navigationService.buildPath('relative/path', {
+          relative: true,
+          nodeParams: { id: '123' }
+        });
+
+        expect(result).toBe('home/base/relative/path?~id=123');
+      });
+
+      //TODO waiting for error handling implementation
+      // it('wrong relative path from existing path', async () => {
+      //   const result = await navigationService.buildPath('blaaa', { relative: true });
+
+      //   expect(result).toBe('home/base');
+
+      // });
+    });
   });
 
   describe('buildVirtualViewUrl', () => {
