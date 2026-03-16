@@ -226,7 +226,8 @@ describe('Navigation', () => {
           fromContext: null,
           fromClosestContext: false,
           fromParent: false,
-          nodeParams: {}
+          nodeParams: {},
+          relative: false
         }
       };
 
