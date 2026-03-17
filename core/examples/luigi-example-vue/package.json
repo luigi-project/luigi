@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@luigi-project/client": "^2.28.0",
-    "vue": "^3.5.29",
+    "vue": "^3.5.30",
     "vue-router": "^5.0.3"
   },
   "devDependencies": {
