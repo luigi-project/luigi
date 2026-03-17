@@ -604,14 +604,12 @@ export const RoutingHelpers = {
    * In case there was no pageNotFound handler defined it shows an alert and returns undefined.
    * @param {string} path - the path to check for
    * @param {boolean} pathExists - defines if path exists or not
-   * @param {boolean} virtualTree - defines if virtual tree is present or not
    * @param {Luigi} luigi - the Luigi instance used to access configuration values
    * @returns {} the path to redirect to or undefined if path doesn't exist and no redirect path is defined
    */
   async handlePageNotFoundAndRetrieveRedirectPath(
     path: string,
     pathExists: boolean,
-    virtualTree: boolean,
     luigi: Luigi
   ): Promise<string | undefined> {
     if (pathExists) {
@@ -625,10 +623,7 @@ export const RoutingHelpers = {
       return redirectPath;
     } else {
       // default behavior if `pageNotFoundHandler` did not produce a redirect path
-      if (!virtualTree) {
-        this.showRouteNotFoundAlert(path, false, luigi);
-      }
-
+      this.showRouteNotFoundAlert(path, false, luigi);
       console.warn(`Could not find the requested route: ${path}`);
       return undefined;
     }

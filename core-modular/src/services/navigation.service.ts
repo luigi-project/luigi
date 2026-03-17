@@ -710,25 +710,19 @@ export class NavigationService {
       await serviceRegistry.get(ModalService).closeModals();
 
       if (newTab) {
-        await this.openViewInNewTab(computedPath);
+        await this.openViewInNewTab(normalizedPath);
         return;
       }
 
-      const pathExist = await RoutingHelpers.pathExists(path, this.luigi);
+      const pathExist = await RoutingHelpers.pathExists(normalizedPath, this.luigi);
       const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
-        path,
+        normalizedPath,
         pathExist,
-        !!options?.fromVirtualTreeRoot,
         this.luigi
       );
 
       if (!redirectPath) {
-        if (options?.fromVirtualTreeRoot) {
-          // TODO handle case when requested route is not added to virtual tree
-          console.warn(`Route '${path}' is not present in virtual tree`);
-        } else {
-          return;
-        }
+        return;
       }
 
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
