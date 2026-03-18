@@ -63,7 +63,7 @@ export class Navigation {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath) as Node;
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node?.label;
@@ -77,7 +77,7 @@ export class Navigation {
 
   openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath) as Node;
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
       settings.title = node?.label;
@@ -119,7 +119,7 @@ export class Navigation {
     return await RoutingHelpers.pathExists(path, this.luigi);
   };
 
-   /**
+  /**
    * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
    * @returns {Navigation} navigation instance
    * @example
