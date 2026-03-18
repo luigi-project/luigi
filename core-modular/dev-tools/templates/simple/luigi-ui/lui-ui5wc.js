@@ -45,7 +45,7 @@ function addShellbarItem(shellbar, item, navClickFn) {
     itemEl.setAttribute('text', item.label);
     itemEl.setAttribute('luigi-route', item.node.pathSegment);
     itemEl.addEventListener('click', () => {
-      navClickFn(item)
+      navClickFn(item);
     });
     shellbar.appendChild(itemEl);
   }
