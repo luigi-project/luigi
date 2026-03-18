@@ -3,6 +3,7 @@ import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, Node, PathData } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
+import { RoutingHelpers } from './routing-helpers';
 
 export const NavigationHelpers = {
   normalizePath: (raw: string) => {
@@ -204,5 +205,18 @@ export const NavigationHelpers = {
       return NavigationHelpers.findVirtualTreeRootNode(node.parent);
     }
     return undefined;
+  },
+
+  /**
+   * Validates if a path exists and handles page not found cases.
+   * Returns the redirect path if valid, or undefined if the path should not be followed.
+   * @param path The path to validate
+   * @param luigi The Luigi instance
+   * @returns The redirect path if valid, undefined otherwise
+   */
+  validatePathAndGetRedirect: async (path: string, luigi: Luigi): Promise<string | undefined> => {
+    const pathExist = await RoutingHelpers.pathExists(path, luigi);
+    const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, luigi);
+    return redirectPath || undefined;
   }
 };

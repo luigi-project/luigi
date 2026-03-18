@@ -10,6 +10,7 @@ import type {
   RunTimeErrorHandler
 } from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
 
@@ -63,6 +64,10 @@ export class Navigation {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+
+    if (!redirectPath) return;
+
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
@@ -77,6 +82,8 @@ export class Navigation {
 
   openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+    if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
