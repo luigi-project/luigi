@@ -23,7 +23,8 @@ export class Navigation {
     fromContext: null,
     fromClosestContext: false,
     fromVirtualTreeRoot: false,
-    fromParent: false
+    fromParent: false,
+    nodeParams: {}
   };
 
   constructor(luigi: Luigi) {
@@ -41,6 +42,8 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ) => {
+    const relativePath = path[0] !== '/';
+    this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
       modalSettings,
       newTab: false,
@@ -138,11 +141,18 @@ export class Navigation {
    * Allows navigation from the parent node. The parent node is the node one level above the active node in the navigation tree. If the active node is a root node, this method has no effect.
    * @returns {navigation} navigation instance
    */
-  fromParent() : Navigation {
+  fromParent(): Navigation {
     this.options.fromContext = null;
     this.options.fromClosestContext = false;
     this.options.fromVirtualTreeRoot = false;
     this.options.fromParent = true;
+    return this;
+  }
+
+  withParams(nodeParams: Record<string, any>): Navigation {
+    if (nodeParams) {
+      Object.assign(this.options.nodeParams ?? {}, nodeParams);
+    }
     return this;
   }
 }
