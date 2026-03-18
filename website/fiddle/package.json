@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "braces": "~3.0.3",
-    "copy-webpack-plugin": "^11.0.0",
+    "copy-webpack-plugin": "^14.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "express": "^5.2.1",
@@ -31,7 +31,7 @@
     "style-loader": "^3.3.3",
     "svelte": "^4.2.20",
     "svelte-loader": "^3.2.4",
-    "webpack": "^5.105.3",
+    "webpack": "^5.105.4",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.3"
   },
