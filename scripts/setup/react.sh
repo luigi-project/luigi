@@ -17,7 +17,7 @@ echo yes | npm run eject
 
 # install dependencies
 npm i -P @luigi-project/core @luigi-project/client fundamental-styles@0.11.0 @sap-theming/theming-base-content react-router-dom@6 --legacy-peer-deps
-npm i copy-webpack-plugin@6 webpack@5 webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev
+npm i copy-webpack-plugin@5 webpack@5 webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev --legacy-peer-deps
 
 # replace strings in some places
 sed "s/const HtmlWebpackPlugin = require('html-webpack-plugin');/const HtmlWebpackPlugin = require('html-webpack-plugin');const CopyWebpackPlugin = require('copy-webpack-plugin');/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
