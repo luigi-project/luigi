@@ -910,6 +910,10 @@ const connector = {
 
     fd_ui.appendChild(errorDiv);
     document.getElementById('app').appendChild(fd_ui);
+  },
+
+  getShellbarElement: () => {
+    return document.querySelector('ui5-navigation-layout > ui5-shellbar');
   }
 };
 
