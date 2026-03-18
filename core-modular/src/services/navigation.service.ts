@@ -882,22 +882,20 @@ export class NavigationService {
    * @returns The constructed path string.
    */
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
-    const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
-    if (!fromVirtualTreeRoot && !fromContext && !fromClosestContext && !fromParent) {
-      return incomingPath;
-    }
+    const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent, relative, nodeParams } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
     const fullPath = currentPath + (query ? '?' + query : '');
     const pathData = await this.getPathData(fullPath);
     const nodes = pathData.nodesInPath;
+    let path = incomingPath;
     if (nodes === undefined) {
       console.warn('No nodes in path found for current path:', fullPath);
-      return incomingPath;
+      return path;
     }
     if (fromVirtualTreeRoot) {
-      let path = '';
       //TODO needs to be clarified if we store pahtData somewhere or calculate new
+      path = '';
       const lastVirtualTreeIndex = [...nodes]
         .map((n, i) => (n.virtualTree ? i : -1))
         .filter((i) => i !== -1)
@@ -908,23 +906,36 @@ export class NavigationService {
           path += '/' + nip.pathSegment;
         }
       });
-      let testPath = (path += '/' + incomingPath);
-      return testPath;
+      path += '/' + incomingPath;
     } else if (fromContext) {
       const navigationContext = fromContext;
       const node = [...nodes].reverse().find((n) => navigationContext === n.navigationContext);
-      let fullPath = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
-      return fullPath;
+      path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
     } else if (fromClosestContext) {
       const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
-      let path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
-      return path;
+      path = RoutingHelpers.concatenatePath(RoutingHelpers.getSubPath(node, pathData.pathParams), incomingPath);
     } else if (fromParent) {
-      return RoutingHelpers.concatenatePath(
+      path = RoutingHelpers.concatenatePath(
         RoutingHelpers.getSubPath(pathData.selectedNode?.parent, pathData.pathParams),
         incomingPath
       );
+    } else if (relative) {
+      path = RoutingHelpers.concatenatePath(
+        RoutingHelpers.getSubPath(pathData.selectedNode, pathData.pathParams),
+        incomingPath
+      );
     }
-    return incomingPath;
+
+    if (nodeParams && Object.keys(nodeParams).length > 0) {
+      path += path.includes('?') ? '&' : '?';
+      Object.entries(nodeParams).forEach((entry, index) => {
+        path +=
+          encodeURIComponent(RoutingHelpers.getContentViewParamPrefix(this.luigi) + entry[0]) +
+          '=' +
+          encodeURIComponent(entry[1]) +
+          (index < Object.keys(nodeParams).length - 1 ? '&' : '');
+      });
+    }
+    return path;
   }
 }

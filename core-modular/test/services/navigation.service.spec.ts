@@ -81,7 +81,7 @@ describe('NavigationService', () => {
     });
 
     it('should warn if nodeChangeHook is not a function but defined', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       luigiMock.getConfigValue.mockReturnValue('notAFunction');
 
       navigationService.onNodeChange(prevNode, nextNode);
@@ -535,10 +535,16 @@ describe('NavigationService', () => {
   describe('NavigationService.handleNavigationRequest', () => {
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/modal/path');
       const navRequestParams: NavigationRequestParams = {
         modalSettings: { size: 'l' },
         newTab: false,
-        options: { fromVirtualTreeRoot: false },
+        options: {
+          fromVirtualTreeRoot: false,
+          fromClosestContext: false,
+          fromParent: false,
+          nodeParams: {}
+        },
         path: '/modal/path',
         preserveView: undefined,
         preventContextUpdate: false,
@@ -559,7 +565,7 @@ describe('NavigationService', () => {
       const navRequestParams: NavigationRequestParams = {
         path: '/normal/path'
       };
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
       await navigationService.handleNavigationRequest(navRequestParams);
@@ -589,6 +595,7 @@ describe('NavigationService', () => {
 
     it('should navigate to a path in new browser tab', async () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/test/path');
       const pushStateSpy = jest.spyOn(window.history, 'pushState');
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
       const navRequestParams: NavigationRequestParams = {
@@ -614,7 +621,7 @@ describe('NavigationService', () => {
     it('should close modals and update history if no modalSettings and using withoutSync', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
 
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
@@ -655,8 +662,8 @@ describe('NavigationService', () => {
 
     it('should close modals and replace history state if no modalSettings and using preventHistoryEntry', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
-      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => { });
-      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => { });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
         modalSettings: undefined,
@@ -912,7 +919,9 @@ describe('NavigationService', () => {
 
   describe('buildPath', () => {
     beforeEach(() => {
-      jest.spyOn((navigationService as any).luigi, 'getConfigValue').mockReturnValue(false);
+      jest.spyOn((navigationService as any).luigi, 'getConfig').mockReturnValue({
+        navigation: {}
+      });
 
       jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
     });
@@ -994,7 +1003,6 @@ describe('NavigationService', () => {
       beforeEach(() => {
         jest.spyOn(RoutingHelpers, 'concatenatePath').mockImplementation((base, rel) => `${base}/${rel}`);
         jest.spyOn(GenericHelpers, 'replaceVars').mockImplementation((path) => path);
-
       });
 
       it('should build path from parent node', async () => {
@@ -1002,12 +1010,7 @@ describe('NavigationService', () => {
         const selectedNode = { pathSegment: 'current', parent: parentNode };
 
         jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
-          nodesInPath: [
-            { pathSegment: '' },
-            { pathSegment: 'grandparent' },
-            parentNode,
-            selectedNode
-          ],
+          nodesInPath: [{ pathSegment: '' }, { pathSegment: 'grandparent' }, parentNode, selectedNode],
           selectedNode: selectedNode,
           pathParams: {}
         } as any);
@@ -1019,7 +1022,7 @@ describe('NavigationService', () => {
         expect(result).toBe('/parent/path/sibling');
       });
 
-      // TODO waiting for error handling implementation 
+      // TODO waiting for error handling implementation
       // it('should handle selectedNode without parent', async () => {
       //   const selectedNode = { pathSegment: 'current' };
 
@@ -1056,6 +1059,54 @@ describe('NavigationService', () => {
 
       //   expect(RoutingHelpers.getSubPath).toHaveBeenCalledWith(undefined, {});
       //   expect(result).toBe('/path');
+      // });
+    });
+
+    describe('relative', () => {
+      beforeEach(() => {
+        const homeNodeMock = { pathSegment: 'home' };
+        const baseNodeMock = { pathSegment: 'base', parent: homeNodeMock };
+
+        jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/home/base', query: undefined } as any);
+        jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+          nodesInPath: [
+            {
+              children: [homeNodeMock]
+            },
+            homeNodeMock,
+            baseNodeMock
+          ],
+          selectedNode: baseNodeMock,
+          pathParams: {}
+        } as any);
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('relative path from existing path', async () => {
+        const result = await navigationService.buildPath('relative/path', { relative: true });
+
+        expect(result).toBe('home/base/relative/path');
+      });
+
+      it('relative path with nodeParams', async () => {
+        jest.spyOn(RoutingHelpers, 'getContentViewParamPrefix').mockReturnValue('~');
+        const result = await navigationService.buildPath('relative/path', {
+          relative: true,
+          nodeParams: { id: '123' }
+        });
+
+        expect(result).toBe('home/base/relative/path?~id=123');
+      });
+
+      //TODO waiting for error handling implementation
+      // it('wrong relative path from existing path', async () => {
+      //   const result = await navigationService.buildPath('blaaa', { relative: true });
+
+      //   expect(result).toBe('home/base');
+
       // });
     });
   });
