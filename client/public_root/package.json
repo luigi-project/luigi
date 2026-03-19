@@ -4,10 +4,14 @@
   "license": "Apache-2.0",
   "main": "./luigi-client.js",
   "exports": {
-    "." : "./luigi-client.js",
-    "./esm/*": "./esm/*",
-    "./esm": "./esm/luigi-client.mjs",
-    "./luigi-element": "./luigi-element.js",
+    ".": {
+      "import": "./esm/luigi-client.mjs",
+      "require": "./luigi-client.js"
+    },
+    "./luigi-client": {
+      "import": "./esm/luigi-client.mjs",
+      "require": "./luigi-client.js"
+    },
     "./*": "./*"
   },
   "repository": {
