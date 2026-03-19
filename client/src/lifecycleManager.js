@@ -1,5 +1,6 @@
 import { LuigiClientBase } from './baseClass';
 import { helpers } from './helpers';
+import * as pkg from '../public_root/package.json';
 
 /**
  * @summary Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.
@@ -146,7 +147,7 @@ class LifecycleManager extends LuigiClientBase {
     window.parent.postMessage(
       {
         msg: 'luigi.get-context',
-        clientVersion: require('../public/package.json').version
+        clientVersion: pkg.version
       },
       '*'
     );
