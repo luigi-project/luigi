@@ -118,14 +118,11 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     const viewUrl = currentNode?.viewUrl || '';
-
-    // render top nav even if requested route cannot be found or/and `ignoreLuigiErrorHandling` is set
-    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
-
     if (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw)) {
       return;
     }
-
+    // render top nav even if requested route cannot be found or/and `ignoreLuigiErrorHandling` is set
+    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
 
@@ -490,7 +487,7 @@ export class RoutingService {
     }
 
     if (!isExistingRoute) {
-      this.showPageNotFoundError(activePath || '', pathUrlRaw, true);
+      this.showPageNotFoundError(pathData.matchedPath, pathUrlRaw, true);
 
       return true;
     }

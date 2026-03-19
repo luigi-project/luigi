@@ -82,6 +82,7 @@ export interface PathData {
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;
+  matchedPath: string;
 }
 
 export interface RootNode {

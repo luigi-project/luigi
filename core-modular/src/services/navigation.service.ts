@@ -89,7 +89,8 @@ export class NavigationService {
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
-      pathParams
+      pathParams,
+      matchedPath: ''
     };
 
     if (rootNode.viewUrl && pathSegments.length === 0) {
@@ -128,6 +129,8 @@ export class NavigationService {
         }
       }
     }
+
+    pathData.matchedPath = pathData.nodesInPath?.map((n) => n.pathSegment).filter((s) => !!s).join('/') || '';
 
     return pathData;
   }
@@ -714,16 +717,16 @@ export class NavigationService {
         return;
       }
 
-      const pathExist = await RoutingHelpers.pathExists(normalizedPath, this.luigi);
-      const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
-        normalizedPath,
-        pathExist,
-        this.luigi
-      );
-
-      if (!redirectPath) {
-        return;
-      }
+      //TODO still an issue with reload
+      // const pathExist = await RoutingHelpers.pathExists(normalizedPath, this.luigi);
+      // const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
+      //   normalizedPath,
+      //   pathExist,
+      //   this.luigi
+      // );
+      // if (!redirectPath) {
+      //   return;
+      // }
 
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
         ? 'replaceState'
