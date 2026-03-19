@@ -5,13 +5,22 @@
   "main": "./luigi-client.js",
   "exports": {
     ".": {
+      "types": {
+        "import": "./esm/luigi-client.d.mts",
+        "require": "./luigi-client.d.ts"
+      },
       "import": "./esm/luigi-client.mjs",
       "require": "./luigi-client.js"
     },
     "./luigi-client": {
+      "types": {
+        "import": "./esm/luigi-client.d.mts",
+        "require": "./luigi-client.d.ts"
+      },
       "import": "./esm/luigi-client.mjs",
       "require": "./luigi-client.js"
     },
+    "./luigi-element": "./luigi-element.js",
     "./*": "./*"
   },
   "repository": {
