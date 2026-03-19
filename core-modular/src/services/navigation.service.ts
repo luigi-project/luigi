@@ -130,7 +130,15 @@ export class NavigationService {
       }
     }
 
-    pathData.matchedPath = pathData.nodesInPath?.map((n) => n.pathSegment).filter((s) => !!s).join('/') || '';
+    const navPathSegments = pathData.nodesInPath?.filter((n) => n.pathSegment).map((n) => n.pathSegment) || [];
+    pathData.matchedPath =
+      pathSegments
+        .filter((segment, index) => {
+          return (
+            (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
+          );
+        })
+        .join('/') || '';
 
     return pathData;
   }
