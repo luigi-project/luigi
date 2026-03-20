@@ -3,7 +3,7 @@ let status = 'not_checked';
 
 window.addEventListener(
   'message',
-  function(e) {
+  function (e) {
     // Validate origin - should be parent frame origin or same origin
     // For third-party cookie check, accept if origin is set and not 'null'
     const expectedOrigin = window.location.ancestorOrigins?.[0] || document.referrer || window.location.origin;
@@ -13,9 +13,7 @@ window.addEventListener(
     }
 
     if (e.data === 'luigi.tpcDisabled') {
-      console.warn(
-        'Third party cookies are not supported! Silent token renewal might not work!'
-      );
+      console.warn('Third party cookies are not supported! Silent token renewal might not work!');
       status = 'disabled';
     } else if (e.data === 'luigi.tpcEnabled') {
       status = 'enabled';

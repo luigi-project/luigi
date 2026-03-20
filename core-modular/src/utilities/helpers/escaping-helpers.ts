@@ -3,18 +3,20 @@ import type { Link, ProcessedTextAndLinks } from '../../modules/ux-module';
 // Helper methods that deal with character escaping.
 export const EscapingHelpers = {
   sanitizeHtml(text = '') {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-      // Remove all dangerous URI schemes (not just javascript:)
-      .replace(/javascript:/gi, '')
-      .replace(/data:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .replace(/file:/gi, '')
-      .replace(/about:/gi, '');
+    return (
+      text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        // Remove all dangerous URI schemes (not just javascript:)
+        .replace(/javascript:/gi, '')
+        .replace(/data:/gi, '')
+        .replace(/vbscript:/gi, '')
+        .replace(/file:/gi, '')
+        .replace(/about:/gi, '')
+    );
   },
 
   restoreSanitizedBrs(text = '') {

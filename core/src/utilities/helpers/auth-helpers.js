@@ -51,8 +51,11 @@ class AuthHelpersClass {
 
     if (error && validErrorCodes.includes(error)) {
       // Sanitize error description to prevent injection
-      const sanitizedErrorDescription = errorDescription ?
-        String(errorDescription).substring(0, 500).replace(/[<>&"']/g, '') : '';
+      const sanitizedErrorDescription = errorDescription
+        ? String(errorDescription)
+            .substring(0, 500)
+            .replace(/[<>&"']/g, '')
+        : '';
 
       return await LuigiAuth.handleAuthEvent(
         'onAuthError',

@@ -30,7 +30,7 @@ export class LuigiMockEngine {
         }
 
         (window as any).luigiMockEnvironment = {
-          msgListener: function(e: any) {
+          msgListener: function (e: any) {
             // Origin validation for testing: accept same-origin or null (for standalone mode)
             if (e.origin !== window.location.origin && e.origin !== 'null' && e.origin !== '') {
               console.warn('[Luigi Mock] Rejected message from untrusted origin:', e.origin);
