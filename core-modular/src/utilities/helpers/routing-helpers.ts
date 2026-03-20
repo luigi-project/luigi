@@ -65,17 +65,36 @@ export const RoutingHelpers = {
    * @returns A sanitized map of node-specific parameters with the prefix removed from their keys.
    */
   filterNodeParams(params: Record<string, string>, luigi: Luigi): Record<string, string> {
-    const result: Record<string, string> = {};
+    const result: Record<string, string> = Object.create(null); // Prevent prototype pollution
     const paramPrefix = this.getContentViewParamPrefix(luigi);
     if (params) {
       Object.entries(params).forEach((entry) => {
-        if (entry[0].startsWith(paramPrefix)) {
-          const paramName = entry[0].substr(paramPrefix.length);
-          result[paramName] = entry[1];
+        const [key, value] = entry;
+        if (key.startsWith(paramPrefix)) {
+          const paramName = key.substring(paramPrefix.length); // Use substring instead of deprecated substr
+          // Validate parameter name to prevent prototype pollution
+          if (this.isValidParamKey(paramName)) {
+            result[paramName] = value;
+          } else {
+            console.warn('[Luigi] Rejected potentially malicious parameter key:', paramName);
+          }
         }
       });
     }
     return this.sanitizeParamsMap(result);
+  },
+
+  /**
+   * Validates that a parameter key is safe to use as an object property name.
+   * Prevents prototype pollution attacks by rejecting dangerous property names.
+   */
+  isValidParamKey(key: string): boolean {
+    const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+    if (dangerousKeys.includes(key.toLowerCase())) {
+      return false;
+    }
+    // Only allow safe characters in parameter keys
+    return /^[a-zA-Z0-9_\-\.]+$/.test(key);
   },
 
   /**

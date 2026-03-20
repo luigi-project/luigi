@@ -631,6 +631,12 @@ export class NavigationService {
       return;
     }
 
+    // Validate path before opening to prevent open redirect attacks
+    if (!this.isValidNavigationPath(nodepath)) {
+      console.error('[Luigi Navigation] Invalid or potentially malicious path rejected:', nodepath);
+      return;
+    }
+
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
 
     if (hashRouting) {
@@ -639,6 +645,41 @@ export class NavigationService {
 
     /*'noopener,noreferrer' required to disable XSS injections*/
     window.open(nodepath, '_blank', 'noopener,noreferrer');
+  }
+
+  /**
+   * Validates that a navigation path is safe to open.
+   * Prevents open redirect attacks by rejecting external URLs and dangerous schemes.
+   * @private
+   */
+  private isValidNavigationPath(path: string): boolean {
+    try {
+      // Reject dangerous URI schemes
+      if (/^(javascript|data|vbscript|file|about):/i.test(path)) {
+        return false;
+      }
+
+      // For hash routing paths - additional validation
+      if (path.startsWith('#')) {
+        const cleanPath = path.substring(1);
+        if (/^(javascript|data|vbscript|file|about):/i.test(cleanPath)) {
+          return false;
+        }
+        return true;
+      }
+
+      // Absolute URLs - must be same origin
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        const url = new URL(path, window.location.href);
+        return url.origin === window.location.origin;
+      }
+
+      // Relative paths are OK (they stay within same origin)
+      return true;
+    } catch (e) {
+      console.error('[Luigi Navigation] Path validation error:', e);
+      return false;
+    }
   }
 
   private resolveTooltipText(node: Node, translation: string): string {

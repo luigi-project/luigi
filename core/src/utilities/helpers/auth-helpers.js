@@ -34,20 +34,45 @@ class AuthHelpersClass {
    * @param {string} errorDescription
    */
   async handleUrlAuthErrors(providerInstanceSettings, error, errorDescription) {
-    if (error) {
+    // Validate error parameter to prevent security bypass
+    // Only process known OAuth 2.0 error codes
+    const validErrorCodes = [
+      'access_denied',
+      'unauthorized_client',
+      'invalid_request',
+      'invalid_scope',
+      'invalid_grant',
+      'unsupported_response_type',
+      'unsupported_grant_type',
+      'invalid_client',
+      'server_error',
+      'temporarily_unavailable'
+    ];
+
+    if (error && validErrorCodes.includes(error)) {
+      // Sanitize error description to prevent injection
+      const sanitizedErrorDescription = errorDescription ?
+        String(errorDescription).substring(0, 500).replace(/[<>&"']/g, '') : '';
+
       return await LuigiAuth.handleAuthEvent(
         'onAuthError',
         providerInstanceSettings,
-        { error, errorDescription },
+        { error, errorDescription: sanitizedErrorDescription },
         providerInstanceSettings.logoutUrl +
           '?post_logout_redirect_uri=' +
-          providerInstanceSettings.post_logout_redirect_uri +
+          encodeURIComponent(providerInstanceSettings.post_logout_redirect_uri) +
           '&error=' +
-          error +
+          encodeURIComponent(error) +
           '&errorDescription=' +
-          errorDescription
+          encodeURIComponent(sanitizedErrorDescription)
       );
     }
+
+    // If error is present but invalid, log warning
+    if (error) {
+      console.warn('[Luigi Auth] Invalid or unrecognized error code:', error);
+    }
+
     return true;
   }
 }

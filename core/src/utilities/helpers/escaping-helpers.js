@@ -7,7 +7,12 @@ class EscapingHelpersClass {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
-      .replace(/javascript:/g, '');
+      // Remove all dangerous URI schemes (not just javascript:)
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '')
+      .replace(/file:/gi, '')
+      .replace(/about:/gi, '');
   }
 
   restoreSanitizedBrs(text = '') {

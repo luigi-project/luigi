@@ -91,7 +91,7 @@ export class RoutingService {
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
     const urlSearchParams = new URLSearchParams(query);
-    const paramsObj: Record<string, string> = {};
+    const paramsObj: Record<string, string> = Object.create(null); // Prevent prototype pollution
 
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;
@@ -101,7 +101,12 @@ export class RoutingService {
     await this.shouldShowModalPathInUrl(routeInfo);
 
     urlSearchParams.forEach((value, key) => {
-      paramsObj[key] = value;
+      // Validate key to prevent prototype pollution
+      if (this.isValidParamKey(key)) {
+        paramsObj[key] = value;
+      } else {
+        console.warn('[Luigi Routing] Rejected potentially malicious parameter key:', key);
+      }
     });
     this.checkInvalidateCache(this.previousPathData, path);
     const pathData = await this.getNavigationService().getPathData(path);
@@ -422,5 +427,19 @@ export class RoutingService {
       // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
       nodeDataManagementService.deleteCache();
     }
+  }
+
+  /**
+   * Validates that a parameter key is safe to use as an object property name.
+   * Prevents prototype pollution attacks by rejecting dangerous property names.
+   * @private
+   */
+  private isValidParamKey(key: string): boolean {
+    const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+    if (dangerousKeys.includes(key.toLowerCase())) {
+      return false;
+    }
+    // Only allow safe characters in parameter keys
+    return /^[a-zA-Z0-9_\-\.]+$/.test(key);
   }
 }

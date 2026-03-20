@@ -47,18 +47,41 @@ class RoutingHelpersClass {
 
   parseParams(paramsString) {
     if (!paramsString) return {};
-    const result = {};
+    const result = Object.create(null); // Use null prototype object to prevent prototype pollution
     const viewParamString = paramsString.replace(/\+/g, ' ');
     const pairs = viewParamString ? viewParamString.split('&') : null;
     if (pairs) {
       pairs.forEach((pairString) => {
         const keyValue = pairString.split('=');
         if (keyValue && keyValue.length > 0) {
-          result[decodeURIComponent(keyValue[0])] = decodeURIComponent(keyValue[1]);
+          const key = decodeURIComponent(keyValue[0]);
+          const value = decodeURIComponent(keyValue[1]);
+
+          // Prevent prototype pollution attacks
+          if (this.isValidParamKey(key)) {
+            result[key] = value;
+          } else {
+            console.warn('[Luigi] Rejected potentially malicious parameter key:', key);
+          }
         }
       });
     }
     return result;
+  }
+
+  isValidParamKey(key) {
+    // Reject dangerous property names that could cause prototype pollution
+    const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+    if (dangerousKeys.includes(key.toLowerCase())) {
+      return false;
+    }
+
+    // Only allow safe characters in parameter keys
+    if (!/^[a-zA-Z0-9_\-\.]+$/.test(key)) {
+      return false;
+    }
+
+    return true;
   }
 
   encodeParams(dataObj) {

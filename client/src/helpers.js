@@ -6,6 +6,12 @@ class Helpers {
     this.origin = '';
 
     const helperListener = function (evt) {
+      // Validate origin to prevent XSS/CSRF attacks
+      if (this.origin && evt.origin !== this.origin) {
+        console.warn('[Luigi Client] Rejected postMessage from untrusted origin:', evt.origin);
+        return;
+      }
+
       if (!evt.data.msg) {
         return;
       }
