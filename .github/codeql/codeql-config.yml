@@ -1,0 +1,31 @@
+name: "CodeQL Security Scan Config"
+
+# Paths to exclude from CodeQL scanning
+# Use glob patterns to specify directories and files to ignore
+paths-ignore:
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/public/**'
+  - '**/coverage/**'
+  - '**/*.min.js'
+  - '**/*.min.css'
+  - '**/*.map'
+  - '**/cypress/videos/**'
+  - '**/cypress/screenshots/**'
+  - '**/tmp-*/**'
+  - '**/.nyc_output/**'
+  - '**/wss-generated-file.config'
+  - '**/.git/**'
+  - '**/.changelog/**'
+
+# Optional: Exclude specific queries that produce noise
+# query-filters:
+#   - exclude:
+#       id: js/unused-local-variable
+
+# Note: Query suite is specified in the workflow file and during codeql analyze command
+# The 'queries' section below is used by GitHub Actions code scanning
+# For local CLI usage, specify queries in the 'codeql database analyze' command instead
+queries:
+  - uses: security-extended
