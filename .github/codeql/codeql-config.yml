@@ -20,6 +20,8 @@ paths-ignore:
   - '**/examples/**'
   - '**/example/**'
   - 'core/examples/**'
+  - 'container/test-app/**'
+  - 'container/prepareNextRelease.js'
 
   # Build output (these are generated from src, so scanning src is sufficient)
   - '**/dist/**'
