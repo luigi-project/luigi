@@ -1115,7 +1115,7 @@ In order to delete a search query param you can set the value of the param to un
 
 - params <code>Object</code>
 - keepBrowserHistory <code>boolean</code>
-- preventLuigiConfigUpdate <code>boolean</code> <code> = false</code> - If true, the configChanged function will be triggered (since NEXTRELEASE). By default it is set to `false`.
+- preventLuigiConfigUpdate <code>boolean</code> <code> = false</code> - If true, the configChanged function will be triggered (since 2.29.0). By default it is set to `false`.
 
   
 **Example**  

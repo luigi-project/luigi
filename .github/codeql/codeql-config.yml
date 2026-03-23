@@ -1,0 +1,84 @@
+name: "CodeQL Security Scan Config"
+
+# Paths to exclude from CodeQL scanning
+# Excludes folders/files that don't end up in shipped packages (test code, examples, tooling, docs)
+# NOTE: Source code (src/) is SCANNED because that's where vulnerabilities are found
+#       Built artifacts (public/) are what get shipped, but we scan the source
+paths-ignore:
+  # Dependencies
+  - '**/node_modules/**'
+
+  # Development and test directories (not shipped)
+  - '**/test/**'
+  - '**/tests/**'
+  - '**/__tests__/**'
+  - '**/cypress/**'
+  - '**/e2e/**'
+  - 'test/**'
+
+  # Example and demo applications (not shipped)
+  - '**/examples/**'
+  - '**/example/**'
+  - 'core/examples/**'
+  - 'container/test-app/**'
+  - 'container/prepareNextRelease.js'
+
+  # Build output (these are generated from src, so scanning src is sufficient)
+  - '**/dist/**'
+  - '**/build/**'
+
+  # Test coverage and reports
+  - '**/coverage/**'
+  - '**/.nyc_output/**'
+
+  # Generated and minified files
+  - '**/*.min.js'
+  - '**/*.min.css'
+  - '**/*.map'
+  - '**/*.generated.*'
+
+  # Documentation and website (not shipped in packages)
+  - 'docs/**'
+  - 'blog/**'
+  - '**/doc/**'
+  - '**/documentation/**'
+
+  # Scripts and tooling (not shipped)
+  - 'scripts/**'
+  - '**/dev-tools/**'
+
+  # Cypress artifacts
+  - '**/cypress/videos/**'
+  - '**/cypress/screenshots/**'
+
+  # Temporary and cache directories
+  - '**/tmp-*/**'
+  - '**/.cache/**'
+  - '**/.temp/**'
+
+  # Git and version control
+  - '**/.git/**'
+  - '**/.changelog/**'
+
+  # IDE and editor files
+  - '**/.vscode/**'
+  - '**/.idea/**'
+
+  # Config files (not source code)
+  - '**/wss-generated-file.config'
+  - '**/.eslintrc*'
+  - '**/tsconfig.json'
+  - '**/rollup.config.*'
+  - '**/webpack.config.*'
+  - '**/vite.config.*'
+  - '**/.babelrc'
+  - '**/.prettierrc*'
+
+  # License files
+  - 'LICENSES/**'
+
+# Query suite to run (security-extended provides comprehensive coverage)
+queries:
+  - uses: security-extended
+
+
