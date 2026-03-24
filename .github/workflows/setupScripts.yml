@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '20.19.x'
       - run: |
-          OUT=$(bash ./test/setuptests.sh @vue/cli 4173 http://localhost:4173/ https://raw.githubusercontent.com/luigi-project/luigi/4904-fix-react-setup-script/scripts/setup/vue.sh | tee /dev/fd/2)
+          OUT=$(bash ./test/setuptests.sh @vue/cli 4173 http://localhost:4173/ https://raw.githubusercontent.com/luigi-project/luigi/main/scripts/setup/vue.sh | tee /dev/fd/2)
           RES=$(grep -c "Stopping webserver on port 4173" <<< "$OUT")
           echo "$RES"
           if [ $RES == 1 ]; then exit 0; else exit 1; fi
