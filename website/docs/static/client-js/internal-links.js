@@ -71,9 +71,6 @@ export class InternalLinksHandler {
    * @param {string} name
    */
   getUrlParameter(name, locationSearch = window.location.search) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var result = regex.exec(locationSearch);
-    return (result && decodeURIComponent(result[1].replace(/\+/g, ' '))) || '';
+    return new URLSearchParams(locationSearch).get(name) || '';
   }
 }
