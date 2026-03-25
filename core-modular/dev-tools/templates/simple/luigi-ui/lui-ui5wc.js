@@ -912,7 +912,7 @@ const connector = {
     document.getElementById('app').appendChild(fd_ui);
   },
 
-  domElements: () => {
+  getCoreAPISupportedElements: () => {
     return {
       getShellbarElement: () => {
         return document.querySelector('ui5-navigation-layout > ui5-shellbar');

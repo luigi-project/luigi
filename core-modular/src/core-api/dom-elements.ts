@@ -14,7 +14,7 @@ export class Elements {
    * Luigi.elements().getShellbar();
    */
   getShellbar(): HTMLElement | null {
-    return this.luigi.getEngine()._connector?.getDomElements().getShellbarElement() || null;
+    return this.luigi.getEngine()._connector?.getCoreAPISupportedElements().getShellbarElement() || null;
   }
 
   /**
@@ -25,6 +25,6 @@ export class Elements {
    * Luigi.elements().getShellbarActions();
    */
   getShellbarActions(): HTMLElement | null {
-    return this.luigi.getEngine()._connector?.getDomElements().getShellbarActions() || null;
+    return this.luigi.getEngine()._connector?.getCoreAPISupportedElements().getShellbarActions() || null;
   }
 }
