@@ -1,31 +1,84 @@
 name: "CodeQL Security Scan Config"
 
 # Paths to exclude from CodeQL scanning
-# Use glob patterns to specify directories and files to ignore
+# Excludes folders/files that don't end up in shipped packages (test code, examples, tooling, docs)
+# NOTE: Source code (src/) is SCANNED because that's where vulnerabilities are found
+#       Built artifacts (public/) are what get shipped, but we scan the source
 paths-ignore:
+  # Dependencies
   - '**/node_modules/**'
+
+  # Development and test directories (not shipped)
+  - '**/test/**'
+  - '**/tests/**'
+  - '**/__tests__/**'
+  - '**/cypress/**'
+  - '**/e2e/**'
+  - 'test/**'
+
+  # Example and demo applications (not shipped)
+  - '**/examples/**'
+  - '**/example/**'
+  - 'core/examples/**'
+  - 'container/test-app/**'
+  - 'container/prepareNextRelease.js'
+
+  # Build output (these are generated from src, so scanning src is sufficient)
   - '**/dist/**'
   - '**/build/**'
-  - '**/public/**'
+
+  # Test coverage and reports
   - '**/coverage/**'
+  - '**/.nyc_output/**'
+
+  # Generated and minified files
   - '**/*.min.js'
   - '**/*.min.css'
   - '**/*.map'
+  - '**/*.generated.*'
+
+  # Documentation and website (not shipped in packages)
+  - 'docs/**'
+  - 'blog/**'
+  - '**/doc/**'
+  - '**/documentation/**'
+
+  # Scripts and tooling (not shipped)
+  - 'scripts/**'
+  - '**/dev-tools/**'
+
+  # Cypress artifacts
   - '**/cypress/videos/**'
   - '**/cypress/screenshots/**'
+
+  # Temporary and cache directories
   - '**/tmp-*/**'
-  - '**/.nyc_output/**'
-  - '**/wss-generated-file.config'
+  - '**/.cache/**'
+  - '**/.temp/**'
+
+  # Git and version control
   - '**/.git/**'
   - '**/.changelog/**'
 
-# Optional: Exclude specific queries that produce noise
-# query-filters:
-#   - exclude:
-#       id: js/unused-local-variable
+  # IDE and editor files
+  - '**/.vscode/**'
+  - '**/.idea/**'
 
-# Note: Query suite is specified in the workflow file and during codeql analyze command
-# The 'queries' section below is used by GitHub Actions code scanning
-# For local CLI usage, specify queries in the 'codeql database analyze' command instead
+  # Config files (not source code)
+  - '**/wss-generated-file.config'
+  - '**/.eslintrc*'
+  - '**/tsconfig.json'
+  - '**/rollup.config.*'
+  - '**/webpack.config.*'
+  - '**/vite.config.*'
+  - '**/.babelrc'
+  - '**/.prettierrc*'
+
+  # License files
+  - 'LICENSES/**'
+
+# Query suite to run (security-extended provides comprehensive coverage)
 queries:
   - uses: security-extended
+
+
