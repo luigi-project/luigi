@@ -70,7 +70,7 @@ class RoutingHelpersClass {
   }
 
   getNodeParams(params) {
-    const result = {};
+    const result = Object.create(null);
     const paramPrefix = this.getContentViewParamPrefix();
     if (params) {
       Object.entries(params).forEach((entry) => {
