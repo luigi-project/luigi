@@ -58,7 +58,10 @@ export interface LuigiConnector {
 
   showFatalError(error: string): void;
 
-  getShellbarElement(): HTMLElement | null;
+  getDomElements(): {
+    getShellbarElement(): HTMLElement | null;
+    getShellbarActions(): HTMLElement | null;
+  };
 }
 
 export type { Node };

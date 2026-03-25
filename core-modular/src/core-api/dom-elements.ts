@@ -14,6 +14,17 @@ export class Elements {
    * Luigi.elements().getShellbar();
    */
   getShellbar(): HTMLElement | null {
-    return this.luigi.getEngine()._connector?.getShellbarElement() || null;
+    return this.luigi.getEngine()._connector?.getDomElements().getShellbarElement() || null;
+  }
+
+  /**
+   * Returns the shellbar actions.
+   * @returns {HTMLElement} the shellbar actions DOM element
+   * @memberof Elements
+   * @example
+   * Luigi.elements().getShellbarActions();
+   */
+  getShellbarActions(): HTMLElement | null {
+    return this.luigi.getEngine()._connector?.getDomElements().getShellbarActions() || null;
   }
 }

@@ -912,8 +912,18 @@ const connector = {
     document.getElementById('app').appendChild(fd_ui);
   },
 
-  getShellbarElement: () => {
-    return document.querySelector('ui5-navigation-layout > ui5-shellbar');
+  domElements: () => {
+    return {
+      getShellbarElement: () => {
+        return document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      },
+      getShellbarActions: () => {
+        // This is a workaround to get the actions element of the shellbar, as there is no direct way to access it.
+        // The actions element is a shadow DOM element of the shellbar, so we need to access it through the shadow root.
+        // However, since the shadow root is closed, we cannot access it directly. Therefore, we need to use a workaround to access the actions element.
+        return document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      }
+    };
   }
 };
 
