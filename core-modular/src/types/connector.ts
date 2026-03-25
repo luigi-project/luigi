@@ -61,6 +61,8 @@ export interface LuigiConnector {
   getCoreAPISupportedElements(): {
     getShellbarElement(): HTMLElement | null;
     getShellbarActions(): HTMLElement | null;
+    getLuigiContainer(): HTMLElement | null;
+    getNavFooterContainer(): HTMLElement | null;
   };
 }
 

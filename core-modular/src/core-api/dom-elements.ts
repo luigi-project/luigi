@@ -8,7 +8,7 @@ export class Elements {
 
   /**
    * Returns the shellbar component.
-   * @returns {HTMLElement} the shellbar DOM element
+   * @returns {HTMLElement | null} the shellbar DOM element
    * @memberof Elements
    * @example
    * Luigi.elements().getShellbar();
@@ -19,12 +19,30 @@ export class Elements {
 
   /**
    * Returns the shellbar actions.
-   * @returns {HTMLElement} the shellbar actions DOM element
+   * @returns {HTMLElement | null} the shellbar actions DOM element
    * @memberof Elements
    * @example
    * Luigi.elements().getShellbarActions();
    */
   getShellbarActions(): HTMLElement | null {
     return this.luigi.getEngine()._connector?.getCoreAPISupportedElements().getShellbarActions() || null;
+  }
+
+  /**
+   * Returns the main container of the Luigi application.
+   * @memberof Elements
+   * @returns {HTMLElement | null} the Luigi container DOM element
+   */
+  getLuigiContainer(): HTMLElement | null {
+    return this.luigi.getEngine()._connector?.getCoreAPISupportedElements().getLuigiContainer() || null;
+  }
+
+  /**
+   * Returns the navigation footer container of the Luigi application.
+   * @memberof Elements
+   * @returns {HTMLElement | null} the navigation footer container DOM element
+   */
+  getNavFooterContainer(): HTMLElement | null {
+    return this.luigi.getEngine()._connector?.getCoreAPISupportedElements().getNavFooterContainer() || null;
   }
 }
