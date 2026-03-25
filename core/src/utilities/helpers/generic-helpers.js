@@ -130,10 +130,7 @@ class GenericHelpersClass {
    * @param {string} name
    */
   getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    const result = regex.exec(window.location.search);
-    return (result && decodeURIComponent(result[1].replace(/\+/g, ' '))) || '';
+    return new URLSearchParams(window.location.search).get(name) || '';
   }
 
   /**
