@@ -35,9 +35,9 @@ export default class ListWC extends HTMLElement {
     editableListContainer.classList.add('editable-list');
 
     // get attribute values from getters
-    const title = this.title;
-    const addItemText = this.addItemText;
-    const listItems = this.items;
+    const title = this.escape(this.title);
+    const addItemText = this.escape(this.addItemText);
+    const listItems = this.items.map(item => this.escape(item));
 
     editableListContainer.innerHTML = `
         <style>
