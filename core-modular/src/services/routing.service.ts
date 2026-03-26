@@ -91,7 +91,7 @@ export class RoutingService {
     const query = routeInfo.query;
     const fullPath = path + (query ? '?' + query : '');
     const urlSearchParams = new URLSearchParams(query);
-    const paramsObj: Record<string, string> = {};
+    const paramsObj: Record<string, string> = Object.create(null);
 
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;

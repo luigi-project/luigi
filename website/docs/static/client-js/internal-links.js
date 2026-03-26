@@ -3,7 +3,7 @@ export class InternalLinksHandler {
     if (!window) {
       return;
     }
-    LuigiClient.addInitListener(ctx => {
+    LuigiClient.addInitListener((ctx) => {
       if (this.initDone) {
         return;
       }
@@ -53,7 +53,7 @@ export class InternalLinksHandler {
   }
 
   prepareLinks(ctx, links) {
-    links.forEach(link => {
+    links.forEach((link) => {
       if (link.getAttribute('data-linktype') === 'internal') {
         const url = new URL(link.href);
         let newHref =
@@ -71,9 +71,6 @@ export class InternalLinksHandler {
    * @param {string} name
    */
   getUrlParameter(name, locationSearch = window.location.search) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var result = regex.exec(locationSearch);
-    return (result && decodeURIComponent(result[1].replace(/\+/g, ' '))) || '';
+    return new URLSearchParams(locationSearch).get(name) || '';
   }
 }
