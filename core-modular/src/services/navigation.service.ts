@@ -637,6 +637,15 @@ export class NavigationService {
       nodepath = '#' + nodepath;
     }
 
+    try {
+      const url = new URL(nodepath, window.location.origin);
+      if (url.origin !== window.location.origin) {
+        return;
+      }
+    } catch (e) {
+      return;
+    }
+
     /*'noopener,noreferrer' required to disable XSS injections*/
     window.open(nodepath, '_blank', 'noopener,noreferrer');
   }
