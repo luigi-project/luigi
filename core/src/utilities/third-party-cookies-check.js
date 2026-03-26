@@ -4,7 +4,7 @@ let status = 'not_checked';
 
 EventListenerHelpers.addEventListener(
   'message',
-  function(e) {
+  function (e) {
     if (e.origin !== window.location.origin) {
       return;
     }
