@@ -47,7 +47,7 @@ class RoutingHelpersClass {
 
   parseParams(paramsString) {
     if (!paramsString) return {};
-    const result = {};
+    const result = Object.create(null);
     const viewParamString = paramsString.replace(/\+/g, ' ');
     const pairs = viewParamString ? viewParamString.split('&') : null;
     if (pairs) {
@@ -70,7 +70,7 @@ class RoutingHelpersClass {
   }
 
   getNodeParams(params) {
-    const result = {};
+    const result = Object.create(null);
     const paramPrefix = this.getContentViewParamPrefix();
     if (params) {
       Object.entries(params).forEach((entry) => {

@@ -1,0 +1,41 @@
+{
+  "name": "@luigi-project/client",
+  "description": "Javascript library supporting consumers of the Luigi framework",
+  "license": "Apache-2.0",
+  "main": "./luigi-client.js",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./esm/luigi-client.d.mts",
+        "require": "./luigi-client.d.ts"
+      },
+      "import": "./esm/luigi-client.mjs",
+      "require": "./luigi-client.js"
+    },
+    "./luigi-client": {
+      "types": {
+        "import": "./esm/luigi-client.d.mts",
+        "require": "./luigi-client.d.ts"
+      },
+      "import": "./esm/luigi-client.mjs",
+      "require": "./luigi-client.js"
+    },
+    "./luigi-element": "./luigi-element.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://github.com/luigi-project/luigi.git"
+  },
+  "publishConfig": {
+    "tag": "luigi-client"
+  },
+  "keywords": [
+    "luigi",
+    "UI",
+    "extensibility",
+    "micro-frontends",
+    "microfrontends"
+  ],
+  "version": "2.29.0"
+}

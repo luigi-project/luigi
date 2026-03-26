@@ -57,6 +57,13 @@ export interface LuigiConnector {
   updateModalSettings(modalSettings: ModalSettings): void;
 
   showFatalError(error: string): void;
+
+  getCoreAPISupportedElements(): {
+    getShellbarElement(): HTMLElement | null;
+    getShellbarActions(): HTMLElement | null;
+    getLuigiContainer(): HTMLElement | null;
+    getNavFooterContainer(): HTMLElement | null;
+  };
 }
 
 export type { Node };

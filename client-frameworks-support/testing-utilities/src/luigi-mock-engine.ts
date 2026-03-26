@@ -50,9 +50,9 @@ export class LuigiMockEngine {
               LuigiMockEngine.visualize(JSON.stringify(e.data));
 
               // Check and run mocked callback if it exists
-              const mockListener = (window as any).luigiMockEnvironment.mockListeners[e.data.msg];
-              if (mockListener) {
-                mockListener(e);
+              const mockListeners = (window as any).luigiMockEnvironment.mockListeners;
+              if (Object.hasOwn(mockListeners, e.data.msg)) {
+                mockListeners[e.data.msg](e);
               }
             }
           },
