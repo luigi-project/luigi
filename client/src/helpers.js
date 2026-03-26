@@ -6,6 +6,9 @@ class Helpers {
     this.origin = '';
 
     const helperListener = function (evt) {
+      if (this.origin && this.origin !== '*' && evt.origin !== this.origin) {
+        return;
+      }
       if (!evt.data.msg) {
         return;
       }
