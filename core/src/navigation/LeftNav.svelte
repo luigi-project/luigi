@@ -1389,7 +1389,10 @@
         <!-- Vega sideNav footer items -->
         {#if sideNavItems && sideNavItems.length > 0}
           <hr class="fd-side-nav__separator" />
-          <div class="fd-side-nav__container fd-side-nav__container--bottom lui-sidenav-footer-items" data-testid="lui-sidenav-footer-items">
+          <div
+            class="fd-side-nav__container fd-side-nav__container--bottom lui-sidenav-footer-items"
+            data-testid="lui-sidenav-footer-items"
+          >
             <ul class="fd-navigation-list" role="list">
               {#each sideNavItems as item, index}
                 {#if item.label}
@@ -1397,7 +1400,9 @@
                     <!-- Collapsible parent item -->
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <li
-                      class="fd-navigation-list__item {isSemiCollapsed ? 'fd-popover__control' : ''} lui-footer-nav-entry"
+                      class="fd-navigation-list__item {isSemiCollapsed
+                        ? 'fd-popover__control'
+                        : ''} lui-footer-nav-entry"
                       role="presentation"
                       on:click|stopPropagation={(event) => {
                         if (isSemiCollapsed) {
@@ -1417,10 +1422,14 @@
                         aria-selected={false}
                         title={$getTranslation(item.label)}
                         on:click|preventDefault={() => {
-                          if (!isSemiCollapsed) { toggleFooterItem(index); }
+                          if (!isSemiCollapsed) {
+                            toggleFooterItem(index);
+                          }
                         }}
                         on:keyup={(event) => {
-                          if (!isSemiCollapsed && (event.key === 'Enter' || event.code === 'Space')) { toggleFooterItem(index); }
+                          if (!isSemiCollapsed && (event.key === 'Enter' || event.code === 'Space')) {
+                            toggleFooterItem(index);
+                          }
                         }}
                         data-testid={item.testId || NavigationHelpers.prepareForTests(item.label, 'footer')}
                       >
@@ -1428,7 +1437,7 @@
                           {#if item.icon}
                             <span class="fd-navigation-list__icon">
                               {#if isOpenUIiconName(item.icon)}
-                                <i class="{getSapIconStr(item.icon)}" role="presentation" />
+                                <i class={getSapIconStr(item.icon)} role="presentation" />
                               {:else}
                                 <img src={item.icon} alt={item.altText || ''} />
                               {/if}
@@ -1469,7 +1478,8 @@
                                     href={getFooterItemHref(child)}
                                     title={$getTranslation(child.label)}
                                     on:click|preventDefault={() => handleFooterItemClick(child)}
-                                    data-testid={child.testId || NavigationHelpers.prepareForTests(child.label, 'footer')}
+                                    data-testid={child.testId ||
+                                      NavigationHelpers.prepareForTests(child.label, 'footer')}
                                   >
                                     <div class="fd-navigation-list__content-container">
                                       <span class="fd-navigation-list__text">{$getTranslation(child.label)}</span>
@@ -1500,7 +1510,7 @@
                           {#if item.icon}
                             <span class="fd-navigation-list__icon">
                               {#if isOpenUIiconName(item.icon)}
-                                <i class="{getSapIconStr(item.icon)}" role="presentation" />
+                                <i class={getSapIconStr(item.icon)} role="presentation" />
                               {:else}
                                 <img src={item.icon} alt={item.altText || ''} />
                               {/if}
