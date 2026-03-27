@@ -67,7 +67,7 @@ export const RoutingHelpers = {
    * @returns A sanitized map of node-specific parameters with the prefix removed from their keys.
    */
   filterNodeParams(params: Record<string, string>, luigi: Luigi): Record<string, string> {
-    const result: Record<string, string> = {};
+    const result: Record<string, string> = Object.create(null);
     const paramPrefix = this.getContentViewParamPrefix(luigi);
     if (params) {
       Object.entries(params).forEach((entry) => {

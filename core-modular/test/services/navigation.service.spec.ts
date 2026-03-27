@@ -150,7 +150,7 @@ describe('NavigationService', () => {
 
       await navigationService.openViewInNewTab(nodepath);
 
-      expect(windowOpenSpy).toHaveBeenCalledWith(nodepath, '_blank', 'noopener,noreferrer');
+      expect(windowOpenSpy).toHaveBeenCalledWith(window.location.origin + nodepath, '_blank', 'noopener,noreferrer');
     });
 
     it('should not open view in new tab if navigation is prevented', async () => {
