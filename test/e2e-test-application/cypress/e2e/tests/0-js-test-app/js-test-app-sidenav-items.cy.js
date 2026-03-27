@@ -52,9 +52,7 @@ describe('JS-TEST-APP', () => {
       cy.visitTestApp('/home/one', newConfig);
 
       cy.get('[data-testid="lui-sidenav-footer-items"]').should('exist');
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .find('.lui-footer-nav-entry')
-        .should('have.length', 3);
+      cy.get('[data-testid="lui-sidenav-footer-items"]').find('.lui-footer-nav-entry').should('have.length', 3);
     });
 
     it('Should render separator before footer items', localRetries, () => {
@@ -82,9 +80,7 @@ describe('JS-TEST-APP', () => {
     it('Should navigate to internal link on leaf item click', localRetries, () => {
       cy.visitTestApp('/home/two', newConfig);
 
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Legal Information')
-        .click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Legal Information').click();
 
       cy.expectPathToBe('/home/one');
     });
@@ -103,59 +99,37 @@ describe('JS-TEST-APP', () => {
       cy.visitTestApp('/home/one', newConfig);
 
       // Children should not be visible initially
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .find('.fd-navigation-list.level-2')
-        .should('not.exist');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').find('.fd-navigation-list.level-2').should('not.exist');
 
       // Click the collapsible parent
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Resources')
-        .click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Resources').click();
 
       // Children should now be visible
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .find('.fd-navigation-list.level-2')
-        .should('exist');
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Documentation')
-        .should('be.visible');
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('GitHub')
-        .should('be.visible');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').find('.fd-navigation-list.level-2').should('exist');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Documentation').should('be.visible');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('GitHub').should('be.visible');
     });
 
     it('Should collapse children on second click', localRetries, () => {
       cy.visitTestApp('/home/one', newConfig);
 
       // Expand
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Resources')
-        .click();
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .find('.fd-navigation-list.level-2')
-        .should('exist');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Resources').click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').find('.fd-navigation-list.level-2').should('exist');
 
       // Collapse
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Resources')
-        .click();
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .find('.fd-navigation-list.level-2')
-        .should('not.exist');
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Resources').click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').find('.fd-navigation-list.level-2').should('not.exist');
     });
 
     it('Should navigate when clicking a child item', localRetries, () => {
       cy.visitTestApp('/home/one', newConfig);
 
       // Expand
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Resources')
-        .click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Resources').click();
 
       // Click child
-      cy.get('[data-testid="lui-sidenav-footer-items"]')
-        .contains('Documentation')
-        .click();
+      cy.get('[data-testid="lui-sidenav-footer-items"]').contains('Documentation').click();
 
       cy.expectPathToBe('/home/two');
     });
