@@ -1,6 +1,5 @@
 <svelte:options
   customElement={{
-    tag: null,
     shadow: 'none',
     props: {
       activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
@@ -15,7 +14,7 @@
         reflect: false,
         attribute: 'compound-config'
       },
-      context: { type: 'String', reflect: false, attribute: 'context' },
+      context: { type: 'String', reflect: true, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
       dirtyStatus: { type: 'Boolean', reflect: false, attribute: 'dirty-status' },
       documentTitle: { type: 'String', reflect: false, attribute: 'document-title' },
@@ -44,6 +43,7 @@
         return () =>
           console.warn(name + " can't be called on luigi-container before its micro frontend is attached to the DOM.");
       };
+
       return class extends customElementConstructor {
         updateContext = notInitFn('updateContext');
         notifyAlertClosed = notInitFn('notifyAlertClosed');
@@ -55,7 +55,9 @@
             console.warn('Error in attributeChangedCallback', e);
           }
           if (this.containerInitialized && name === 'context') {
-            this.updateContext(JSON.parse(newValue));
+            if (oldValue !== newValue) {
+              this.updateContext(JSON.parse(newValue));
+            }
           }
         }
 
@@ -76,74 +78,85 @@
   import { GenericHelperFunctions } from './utilities/helpers';
 
   /* eslint-disable */
-  export let activeFeatureToggleList: string[];
-  export let anchor: string;
-  export let clientPermissions: any;
-  export let compoundConfig: any;
-  export let context: string;
-  export let deferInit: boolean;
-  export let dirtyStatus: boolean;
-  export let documentTitle: string;
-  export let hasBack: boolean;
-  export let locale: string;
-  export let noShadow: boolean;
-  export let nodeParams: any;
-  export let pathParams: any;
-  export let searchParams: any;
-  export let skipInitCheck: boolean;
-  export let theme: string;
-  export let userSettings: any;
-  export let viewurl: string;
-  export let webcomponent: any;
+  interface Props {
+    activeFeatureToggleList: string[];
+    anchor: string;
+    clientPermissions: any;
+    compoundConfig: any;
+    context: string;
+    deferInit: boolean;
+    dirtyStatus: boolean;
+    documentTitle: string;
+    hasBack: boolean;
+    locale: string;
+    noShadow: boolean;
+    nodeParams: any;
+    pathParams: any;
+    searchParams: any;
+    skipInitCheck: boolean;
+    theme: string;
+    userSettings: any;
+    viewurl: string;
+    webcomponent: any;
+  }
   /* eslint-enable */
 
-  let containerInitialized = false;
+  let {
+    activeFeatureToggleList,
+    anchor,
+    clientPermissions,
+    compoundConfig,
+    context = $bindable(),
+    deferInit = $bindable(),
+    dirtyStatus,
+    documentTitle,
+    hasBack,
+    locale,
+    noShadow,
+    nodeParams,
+    pathParams,
+    searchParams,
+    skipInitCheck,
+    theme,
+    userSettings,
+    viewurl,
+    webcomponent
+  }: Props = $props();
+
+  let containerInitialized = $state(false);
   let mainComponent: ContainerElement;
   let eventBusElement: ContainerElement;
 
   const containerService = new ContainerService();
   const webcomponentService = new WebComponentService();
 
-  // Only needed for get rid of "unused export property" svelte compiler warnings
-  export const unwarn = () => {
-    return (
-      activeFeatureToggleList &&
-      anchor &&
-      clientPermissions &&
-      dirtyStatus &&
-      documentTitle &&
-      hasBack &&
-      locale &&
-      noShadow &&
-      nodeParams &&
-      pathParams &&
-      searchParams &&
-      skipInitCheck &&
-      theme &&
-      userSettings
-    );
-  };
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const initialize = (thisComponent: any) => {
     if (!compoundConfig || containerInitialized) {
       return;
     }
+
     thisComponent.updateContext = (contextObj: object, internal?: object) => {
       const rootElement = thisComponent.getNoShadow() ? thisComponent : mainComponent;
+
       rootElement._luigi_mfe_webcomponent.context = contextObj;
-      context = contextObj;
+      context = JSON.stringify(contextObj);
 
       const compoundChildrenQueryElement = rootElement._luigi_mfe_webcomponent;
+
       if (compoundChildrenQueryElement) {
         const compoundChildren = compoundChildrenQueryElement.querySelectorAll('[lui_web_component]');
+
         compoundChildren?.forEach((item) => {
           const ctx = item.context || {};
+
           item.context = Object.assign(ctx, contextObj);
         });
       }
     };
+
     const ctx = GenericHelperFunctions.resolveContext(context);
+
     deferInit = false;
 
     thisComponent.notifyAlertClosed = (id: string, dismissKey?: string) => {
@@ -165,18 +178,23 @@
       viewUrl: viewurl,
       webcomponent: GenericHelperFunctions.checkWebcomponentValue(webcomponent) || true
     };
+
     if (!thisComponent.getNoShadow()) {
       mainComponent.innerHTML = '';
+
       const shadow = thisComponent.attachShadow({ mode: 'open' });
+
       shadow.append(mainComponent);
     } else {
       // removing mainComponent
       thisComponent.innerHTML = '';
     }
+
     webcomponentService
       .renderWebComponentCompound(node, thisComponent.getNoShadow() ? thisComponent : mainComponent, ctx)
       .then((compCnt: ContainerElement) => {
         eventBusElement = compCnt;
+
         if (skipInitCheck || !node.viewUrl) {
           thisComponent.initialized = true;
           setTimeout(() => {
@@ -187,6 +205,7 @@
           webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
         }
       });
+
     containerInitialized = true;
     thisComponent.containerInitialized = true;
   };
@@ -201,6 +220,7 @@
     thisComponent.init = () => {
       initialize(thisComponent);
     };
+
     if (!deferInit) {
       initialize(thisComponent);
     }
@@ -210,7 +230,7 @@
   });
 </script>
 
-<main bind:this={mainComponent} />
+<main bind:this={mainComponent}></main>
 
 <style>
   main {
