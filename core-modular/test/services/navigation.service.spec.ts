@@ -2,8 +2,8 @@ import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService } from '../../src/services/navigation.service';
 import type { NavigationRequestParams, Node, PathData } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
-import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -219,6 +219,7 @@ describe('NavigationService', () => {
       expect(matchingNode).toBeUndefined();
     });
   });
+
   describe('NavigationService.getPathData', () => {
     it('should return path data with pathParams included', async () => {
       const cfg = {
@@ -532,7 +533,12 @@ describe('NavigationService', () => {
       expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('NavigationService.handleNavigationRequest', () => {
+    beforeEach(() => {
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+    });
+
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/modal/path');
@@ -861,7 +867,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.getExpandStructuralPathSegment', () => {
+  describe('navigationService.getExpandStructuralPathSegment', () => {
     it('should expand structural path segment', async () => {
       const node: Node = {
         pathSegment: 'node',
@@ -884,7 +890,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.bindChildToParent', () => {
+  describe('navigationService.bindChildToParent', () => {
     it('should bind child to parent node', () => {
       const childNode: Node = {
         pathSegment: 'child',
