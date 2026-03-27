@@ -260,6 +260,51 @@ You can set the following values:
 - **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
 - **since** 2.25.0
 
+### sideNav.items
+- **type**: array
+- **description**: configures navigation items pinned to the bottom of the left side navigation in the `Vega` layout, above the footer text. Requires `sideNav.style` to be set to `vega`. Each item is an object with the following properties:
+  - **label** (string, required): the text displayed for the item. Supports i18n translation keys.
+  - **icon** (string, optional): an icon from the SAP icon font or a URL to a custom image.
+  - **altText** (string, optional): alt text for a custom icon image.
+  - **link** (string, optional): an absolute path to a Luigi navigation node.
+  - **externalLink** (object, optional): defines an external URL with properties:
+    - **url** (string): the external URL.
+    - **sameWindow** (boolean, default false): whether to open in the same browser tab.
+  - **children** (array, optional): one level of child items. When defined, the parent item renders as a collapsible group with an expand/collapse toggle. Each child item supports the same properties as a top-level item (`label`, `icon`, `altText`, `link`, `externalLink`, `testId`).
+  - **testId** (string, optional): custom `data-testid` attribute for testing.
+- **example**:
+```javascript
+settings: {
+  sideNav: {
+    style: 'vega',
+    items: [
+      {
+        label: 'Legal Information',
+        icon: 'sys-help',
+        link: '/legal'
+      },
+      {
+        label: 'Resources',
+        icon: 'folder',
+        children: [
+          { label: 'Documentation', link: '/docs' },
+          { label: 'GitHub', externalLink: { url: 'https://github.com/example' } }
+        ]
+      },
+      {
+        label: 'External Docs',
+        icon: 'world',
+        externalLink: {
+          url: 'https://docs.example.com',
+          sameWindow: false
+        }
+      }
+    ]
+  }
+}
+```
+- **since** NEXT_RELEASE
+
 ### sideNav.style
 - **description**: Displays the updated side navigation layout styled according to the `Vega` design guidelines. Must be set to `vega`. 
 - **since** v2.23.0
