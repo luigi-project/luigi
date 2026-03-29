@@ -77,7 +77,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "lodash": ">=4.17.23",
     "sass": "^1.97.3",
-    "serialize-javascript": ">=7.0.4",
+    "serialize-javascript": ">=7.0.5",
     "tar": ">=7.5.11",
     "ts-node": "~3.2.0",
     "typescript": "^5.9.3",
