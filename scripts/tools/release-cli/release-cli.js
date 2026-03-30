@@ -36,7 +36,8 @@ const base = path.resolve(__dirname, '..', '..', '..');
 const pkgJsonPaths = {
   core: path.resolve(base, 'core', 'public', 'package.json'),
   core_public_root: path.resolve(base, 'core', 'public_root', 'package.json'),
-  client: path.resolve(base, 'client', 'public_root', 'package.json'),
+  client: path.resolve(base, 'client', 'public', 'package.json'),
+  client_public_root: path.resolve(base, 'client', 'public_root', 'package.json'),
   authOAuth2: path.resolve(base, 'plugins', 'auth', 'public', 'auth-oauth2', 'package.json'),
   authOIDC: path.resolve(base, 'plugins', 'auth', 'public', 'auth-oidc', 'package.json'),
   testing_utilities: path.resolve(base, 'client-frameworks-support', 'testing-utilities', 'dist', 'package.json'),
