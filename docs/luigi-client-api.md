@@ -324,7 +324,7 @@ Sends search query parameters to Luigi Core. The search parameters will be added
 
 - searchParams <code>Object</code>
 - keepBrowserHistory <code>boolean</code> <code> = true</code>
-- preventLuigiConfigUpdate <code>boolean</code> <code> = false</code> - If true, the configChanged function will be triggered (since NEXTRELEASE). By default it is set to `false`.
+- preventLuigiConfigUpdate <code>boolean</code> <code> = false</code> - If true, the configChanged function will be triggered (since 2.29.0). By default it is set to `false`.
 
   
 **Example**  

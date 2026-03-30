@@ -9,7 +9,9 @@ export const EscapingHelpers = {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
-      .replace(/javascript:/g, '');
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '');
   },
 
   restoreSanitizedBrs(text = '') {

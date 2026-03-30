@@ -48,7 +48,7 @@ class LuigiRouting {
    * @since 1.16.1
    * @param {Object} params
    * @param {boolean} keepBrowserHistory
-   * @param {boolean} preventLuigiConfigUpdate - If true, the configChanged function will be triggered (since NEXTRELEASE). By default it is set to `false`.
+   * @param {boolean} preventLuigiConfigUpdate - If true, the configChanged function will be triggered (since 2.29.0). By default it is set to `false`.
    * @example
    * Luigi.routing().addSearchParams({luigi:'rocks', mario:undefined}, false);
    */
