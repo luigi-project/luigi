@@ -112,7 +112,9 @@
       data-testid="luigi-alert"
       aria-labelledby="luigi-alert-sr-{al.settings.id} luigi-alert-text-{al.settings.id}"
     >
-      <span class="fd-message-strip__sr-only" id="luigi-alert-sr-{al.settings.id}">{alertTypeMap[al.settings.type]}</span>
+      <span class="fd-message-strip__sr-only" id="luigi-alert-sr-{al.settings.id}"
+        >{alertTypeMap[al.settings.type]}</span
+      >
       <div class="fd-message-strip__icon-container" aria-hidden="true">
         <span
           class="sap-icon sap-icon--message-{alertTypeMap[al.settings.type]}"
