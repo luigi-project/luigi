@@ -16,17 +16,19 @@ npx create-react-app $folder && cd $folder
 echo yes | npm run eject
 
 # install dependencies
-npm i -P @luigi-project/core @luigi-project/client fundamental-styles@0.11.0 @sap-theming/theming-base-content react-router-dom@5.1.2
-npm i copy-webpack-plugin@5 webpack webpack-cli @babel/core @babel/preset-env babel-loader --save-dev
+npm i -P @luigi-project/core @luigi-project/client @sap-theming/theming-base-content react-router-dom@6
+npm i copy-webpack-plugin@9 webpack webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev
 
 # replace strings in some places
 sed "s/const HtmlWebpackPlugin = require('html-webpack-plugin');/const HtmlWebpackPlugin = require('html-webpack-plugin');const CopyWebpackPlugin = require('copy-webpack-plugin');/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
-sed "s/new HtmlWebpackPlugin(/new CopyWebpackPlugin([\
-  {context: 'public', to: 'index.html', from: 'index.html'  },\
-  {context: 'node_modules\/@luigi-project\/core',to: '.\/luigi-core',from: {glob: '**',dot: true}}],\
-  {ignore: ['.gitkeep', '**\/.DS_Store', '**\/Thumbs.db'],debug: 'warning'\
-  }),\
-  new HtmlWebpackPlugin(/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
+sed "s/new HtmlWebpackPlugin(/new CopyWebpackPlugin({\
+  patterns: [\
+    {from: 'index.html', context: 'public', to: 'index.html'},\
+    {from: '**\/*', context: 'node_modules\/@luigi-project\/core', to: '.\/luigi-core',\
+      globOptions: {ignore: ['.gitkeep', '**\/.DS_Store', '**\/Thumbs.db']}}\
+  ]\
+}),\
+new HtmlWebpackPlugin(/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
 sed "s/template: paths.appHtml,/template: paths.appHtml,\
   filename: 'sampleapp.html',/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
 sed "s/public\/index.html/public\/sampleapp.html/g" config/paths.js > config/paths.tmp.js && mv config/paths.tmp.js config/paths.js
