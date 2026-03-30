@@ -2,6 +2,7 @@ import type { LuigiEngine } from '../luigi-engine';
 import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
+import { Elements } from './dom-elements';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LifecycleHooks } from '../utilities/lifecycle-hooks';
 import { LuigiStore, writable } from '../utilities/store';
@@ -21,6 +22,7 @@ export class Luigi {
   _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
+  _elements?: Elements;
   __cssVars?: any;
   preventLoadingModalData?: boolean;
   initialized = false;
@@ -149,6 +151,13 @@ export class Luigi {
     }
 
     return this._i18n;
+  };
+
+  elements = (): Elements => {
+    if (!this._elements) {
+      this._elements = new Elements(this);
+    }
+    return this._elements as Elements;
   };
 
   navigation = (): Navigation => {
