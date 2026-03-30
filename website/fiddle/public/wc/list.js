@@ -35,9 +35,9 @@ export default class ListWC extends HTMLElement {
     editableListContainer.classList.add('editable-list');
 
     // get attribute values from getters
-    const title = this.title;
-    const addItemText = this.addItemText;
-    const listItems = this.items;
+    const title = this.escape(this.title);
+    const addItemText = this.escape(this.addItemText);
+    const listItems = this.items.map((item) => this.escape(item));
 
     editableListContainer.innerHTML = `
         <style>
@@ -71,7 +71,7 @@ export default class ListWC extends HTMLElement {
         <ul class="item-list">
           ${listItems
             .map(
-              item => `
+              (item) => `
             <li class="item-list-element">
               <button class="editable-list-remove-item icon">&ominus;</button>
               ${item}
@@ -118,7 +118,7 @@ export default class ListWC extends HTMLElement {
       '>': '&gt;'
     };
 
-    return text.replace(/[&<>]/g, function(tag) {
+    return text.replace(/[&<>]/g, function (tag) {
       return tagsToReplace[tag] || tag;
     });
   }
@@ -145,7 +145,7 @@ export default class ListWC extends HTMLElement {
   get items() {
     const items = [];
 
-    [...this.$editable_list.attributes].forEach(attr => {
+    [...this.$editable_list.attributes].forEach((attr) => {
       if (attr.name.includes('list-item')) {
         items.push(attr.value);
       }
@@ -155,7 +155,7 @@ export default class ListWC extends HTMLElement {
   }
 
   handleRemoveItemListeners(arrayOfElements) {
-    arrayOfElements.forEach(element => {
+    arrayOfElements.forEach((element) => {
       element.addEventListener('click', this.removeListItem, false);
     });
   }

@@ -143,10 +143,18 @@ export default class oAuth2ImplicitGrant {
 
   generateNonce() {
     const validChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz';
+    const limit = validChars.length;
     const crypto = window.crypto;
     const random = Array.from(crypto.getRandomValues(new Uint8Array(20)));
 
-    return random.map((x) => validChars[x % validChars.length]).join('');
+    return random
+      .map((x) => {
+        while (x >= Math.floor(256 / limit) * limit) {
+          x = crypto.getRandomValues(new Uint8Array(1))[0];
+        }
+        return validChars[x % limit];
+      })
+      .join('');
   }
 
   resetExpirationChecks() {

@@ -1,8 +1,6 @@
 name: Checkmarx One Scan
 on: 
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *"
 jobs:
   trigger_scan:
     runs-on: ubuntu-latest
