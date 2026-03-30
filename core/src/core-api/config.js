@@ -8,6 +8,7 @@ import {
 } from '../utilities/helpers';
 import { LuigiAuth, LuigiElements } from '.';
 import { AuthLayerSvc, LifecycleHooks } from '../services';
+import { CompoundIframeService } from '../services/compound-iframe';
 import { NodeDataManagementStorage } from '../services/node-data-management.js';
 
 /**
@@ -377,6 +378,9 @@ class LuigiConfig {
       luiWebComponents.forEach((luiWebComponent) => {
         luiWebComponent.context = Object.assign({}, luiWebComponent.context, ctx);
       });
+    }
+    if (CompoundIframeService.isActive()) {
+      CompoundIframeService.forwardContextUpdate(ctx);
     }
   }
 }

@@ -7,6 +7,7 @@ import { Iframe } from './';
 import { NAVIGATION_DEFAULTS } from './../utilities/luigi-config-defaults';
 import { NodeDataManagementStorage } from './node-data-management';
 import { WebComponentService } from './web-components';
+import { CompoundIframeService } from './compound-iframe';
 import { isEqual } from 'lodash';
 
 class RoutingClass {
@@ -468,18 +469,32 @@ class RoutingClass {
         }
       }
       if (nodeObject.compound) {
-        Iframe.switchActiveIframe(iframeElement, undefined, false);
-        if (iContainer) {
-          iContainer.classList.add('lui-webComponent');
+        const isIsolated =
+          nodeObject.compound.isolated && GenericHelpers.requestExperimentalFeature('compoundIsolation', true);
+        if (isIsolated) {
+          this.removeLastChildFromWCContainer();
+          if (iContainer) {
+            iContainer.classList.remove('lui-webComponent');
+          }
+          Iframe.switchActiveIframe(iframeElement, undefined, false);
+          CompoundIframeService.createIsolatedCompound(nodeObject, iContainer, component.get());
+        } else {
+          CompoundIframeService.cleanup();
+          Iframe.switchActiveIframe(iframeElement, undefined, false);
+          if (iContainer) {
+            iContainer.classList.add('lui-webComponent');
+          }
+          this.navigateWebComponentCompound(component, nodeObject);
         }
-        this.navigateWebComponentCompound(component, nodeObject);
       } else if (nodeObject.webcomponent) {
+        CompoundIframeService.cleanup();
         Iframe.switchActiveIframe(iframeElement, undefined, false);
         if (iContainer) {
           iContainer.classList.add('lui-webComponent');
         }
         this.navigateWebComponent(component, nodeObject);
       } else {
+        CompoundIframeService.cleanup();
         const wc_container = document.querySelector('.wcContainer');
         if (wc_container) wc_container.configChangedRequest = false;
         if (iContainer) {

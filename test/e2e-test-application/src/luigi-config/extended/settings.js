@@ -70,7 +70,8 @@ class Settings {
   btpToolLayout = false;
   experimental = {
     btpToolLayout: true,
-    profileMenuFiori3: true
+    profileMenuFiori3: true,
+    compoundIsolation: true
   };
 }
 

@@ -3,6 +3,7 @@ import { GenericHelpers } from './';
 import { MICROFRONTEND_TYPES } from './../constants';
 import { LuigiConfig, LuigiFeatureToggles, LuigiI18N, LuigiTheming } from '../../core-api';
 import { ViewUrlDecorator } from '../../services';
+import { CompoundIframeService } from '../../services/compound-iframe';
 
 class IframeHelpersClass {
   get specialIframeTypes() {
@@ -122,12 +123,14 @@ class IframeHelpersClass {
   ]*/
   getMicrofrontendsInDom() {
     return MICROFRONTEND_TYPES.map(({ type, selector }) => {
-      return Array.from(document.querySelectorAll(selector)).map((container) => ({
-        id: container.luigi.id,
-        container,
-        active: GenericHelpers.isElementVisible(container),
-        type
-      }));
+      return Array.from(document.querySelectorAll(selector))
+        .filter((container) => container.luigi)
+        .map((container) => ({
+          id: container.luigi.id,
+          container,
+          active: GenericHelpers.isElementVisible(container),
+          type
+        }));
     }).reduce((acc, val) => acc.concat(val), []); // flatten
   }
 
@@ -143,7 +146,8 @@ class IframeHelpersClass {
     const modalIframes = this.getModalIframes();
     const mainIframes = this.getMainIframes().filter(GenericHelpers.isElementVisible);
     const webComponentCtn = this.getCurrentWebcomponentCtnInDom();
-    return modalIframes[0] || mainIframes[0] || webComponentCtn || null;
+    const compoundIframe = CompoundIframeService.isActive() ? CompoundIframeService.getIframe() : null;
+    return modalIframes[0] || mainIframes[0] || compoundIframe || webComponentCtn || null;
   }
 
   getIframesWithType(type) {

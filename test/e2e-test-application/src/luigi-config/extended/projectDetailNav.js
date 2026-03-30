@@ -1,4 +1,4 @@
-export const projectDetailNavStructure = projectId => [
+export const projectDetailNavStructure = (projectId) => [
   {
     pathSegment: 'wc_grid',
     label: 'Grid',
@@ -100,7 +100,7 @@ export const projectDetailNavStructure = projectId => [
               source: 'btn',
               name: 'sendBtn',
               action: 'update',
-              dataConverter: data => data
+              dataConverter: (data) => data
             }
           ]
         }
@@ -108,7 +108,63 @@ export const projectDetailNavStructure = projectId => [
     }
   },
   {
-    category: { label: 'User Management', icon: 'person-placeholder' },
+    pathSegment: 'wc_grid_compound_isolated',
+    label: 'Grid Compound Isolated',
+    hideFromNav: true,
+    category: {
+      label: 'Compound',
+      icon: 'attachment-html',
+      collapsible: true
+    },
+    compound: {
+      isolated: true,
+      renderer: {
+        use: 'grid',
+        config: {
+          columns: '1fr 1fr',
+          layouts: [
+            {
+              minWidth: 0,
+              maxWidth: 600,
+              columns: '1fr',
+              gap: 0
+            },
+            {
+              minWidth: 600,
+              maxWidth: 1024,
+              columns: '1fr 1fr',
+              gap: '30px'
+            }
+          ]
+        }
+      },
+      children: [
+        {
+          id: 'btn',
+          viewUrl: '/assets/wc_grid_btn.js',
+          context: {
+            text: 'Start'
+          }
+        },
+        {
+          id: 'timer',
+          viewUrl: '/assets/wc_grid_timer.js',
+          context: {
+            s: 0
+          },
+          eventListeners: [
+            {
+              source: 'btn',
+              name: 'sendBtn',
+              action: 'update',
+              dataConverter: (data) => data
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     pathSegment: 'users',
     label: 'Users and Groups',
     viewUrl: '/sampleapp.html#/projects/' + projectId + '/users',
@@ -408,24 +464,14 @@ export const projectDetailNavStructure = projectId => [
       label: 'Avengers',
       links: ['Captain America', 'Iron Man', 'Thor', 'Hulk', 'Black Widow', 'Hawkeye', 'Loki']
     },
-    children: ['Captain America', 'Iron Man', 'Thor', 'Hulk', 'Black Widow', 'Hawkeye', 'Loki'].map(name => ({
-      pathSegment: name
-        .toLowerCase()
-        .split(' ')
-        .join('-'),
+    children: ['Captain America', 'Iron Man', 'Thor', 'Hulk', 'Black Widow', 'Hawkeye', 'Loki'].map((name) => ({
+      pathSegment: name.toLowerCase().split(' ').join('-'),
       label: name,
       context: {
         label: name,
         links: ['Super Power']
       },
-      viewUrl:
-        '/sampleapp.html#/projects/' +
-        projectId +
-        '/dynamic/' +
-        name
-          .toLowerCase()
-          .split(' ')
-          .join('-'),
+      viewUrl: '/sampleapp.html#/projects/' + projectId + '/dynamic/' + name.toLowerCase().split(' ').join('-'),
       children: [
         {
           label: 'Super Power',
@@ -480,7 +526,7 @@ export const projectDetailNavStructure = projectId => [
     icon: 'synchronize',
     navigationContext: 'navSync',
     children: [
-      ...['one', 'two', 'three', 'four'].map(seg => ({
+      ...['one', 'two', 'three', 'four'].map((seg) => ({
         label: seg,
         pathSegment: seg,
         viewUrl: '/sampleapp.html#/nav-sync-example/' + seg
