@@ -43,9 +43,9 @@ class AuthHelpersClass {
           '?post_logout_redirect_uri=' +
           providerInstanceSettings.post_logout_redirect_uri +
           '&error=' +
-          error +
+          encodeURIComponent(error) +
           '&errorDescription=' +
-          errorDescription
+          encodeURIComponent(errorDescription || '')
       );
     }
     return true;

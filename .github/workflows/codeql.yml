@@ -2,12 +2,12 @@ name: CodeQL Security Scan
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to scan'
-        required: true
-        default: 'main'
-        type: string
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
   analyze:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref }}
+          ref: ${{ github.ref }}
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
