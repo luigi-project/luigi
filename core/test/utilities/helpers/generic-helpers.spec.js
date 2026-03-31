@@ -145,6 +145,11 @@ describe('Generic-helpers', () => {
       'index.html#/a_val/{context.b.c}',
       'colon prefix, no paranthesis'
     );
+    assert.equal(
+      GenericHelpers.replaceVars('/projects/:project/users/:projectManager', { project: 'pr1' }, ':', false, true),
+      '/projects/pr1/users/:projectManager',
+      'slashStop prevents :project from partially matching inside :projectManager'
+    );
   });
 
   describe('semverCompare', () => {
