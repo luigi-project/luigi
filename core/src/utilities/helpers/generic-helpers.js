@@ -227,7 +227,7 @@ class GenericHelpersClass {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  replaceVars(inputString, params, prefix, parenthesis = true) {
+  replaceVars(inputString, params, prefix, parenthesis = true, slashStop = false) {
     let processedString = inputString;
     if (params) {
       if (parenthesis) {
@@ -239,12 +239,17 @@ class GenericHelpersClass {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach((entry) => {
-          processedString = processedString.replace(
-            new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
-            encodeURIComponent(entry[1])
-          );
-        });
+        const delim = slashStop ? ' ' : '';
+        processedString = processedString.replace(/\//g, delim + '/') + delim;
+        Array.from(Object.entries(params))
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach((entry) => {
+            processedString = processedString.replace(
+              new RegExp(this.escapeRegExp(prefix + entry[0] + delim), 'g'),
+              encodeURIComponent(entry[1])
+            );
+          });
+        processedString = processedString.replace(new RegExp(this.escapeRegExp(delim), 'g'), '');
       }
     }
     if (parenthesis) {
