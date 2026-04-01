@@ -70,7 +70,7 @@ class RoutingHelpersClass {
   }
 
   getNodeParams(params) {
-    const result = {};
+    const result = Object.create(null);
     const paramPrefix = this.getContentViewParamPrefix();
     if (params) {
       Object.entries(params).forEach((entry) => {
@@ -224,7 +224,7 @@ class RoutingHelpersClass {
     }
 
     const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
-    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
   }
 
   calculateNodeHref(node, pathParams) {

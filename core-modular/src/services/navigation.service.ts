@@ -637,8 +637,18 @@ export class NavigationService {
       nodepath = '#' + nodepath;
     }
 
+    let validatedUrl: URL | undefined;
+    try {
+      validatedUrl = new URL(nodepath, window.location.origin);
+      if (validatedUrl.origin !== window.location.origin) {
+        return;
+      }
+    } catch (e) {
+      return;
+    }
+
     /*'noopener,noreferrer' required to disable XSS injections*/
-    window.open(nodepath, '_blank', 'noopener,noreferrer');
+    window.open(validatedUrl.toString(), '_blank', 'noopener,noreferrer');
   }
 
   private resolveTooltipText(node: Node, translation: string): string {
