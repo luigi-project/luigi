@@ -15,7 +15,7 @@ describe('JS-TEST-APP', () => {
       newConfig = structuredClone(defaultLuigiConfig);
       newConfig.settings.sideNav = {
         style: 'vega',
-        items: [
+        footerItems: [
           {
             label: 'Legal Information',
             icon: 'sys-help',
@@ -142,7 +142,7 @@ describe('JS-TEST-APP', () => {
     });
 
     it('Should not render footer items when items array is empty', localRetries, () => {
-      newConfig.settings.sideNav.items = [];
+      newConfig.settings.sideNav.footerItems = [];
       cy.visitTestApp('/home/one', newConfig);
 
       cy.get('[data-testid="lui-sidenav-footer-items"]').should('not.exist');

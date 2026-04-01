@@ -155,7 +155,7 @@
   let context;
   let previousPathData;
   let sideNavCompactMode;
-  let sideNavItems = [];
+  let sideNavFooterItems = [];
   let expandedFooterItems = {};
   let store = getContext('store');
   let getTranslation = getContext('getTranslation');
@@ -203,14 +203,14 @@
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
     displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.sideNav.displayFooterWhenCollapsed');
-    sideNavItems = LuigiConfig.getConfigValue('settings.sideNav.items') || [];
+    sideNavFooterItems = LuigiConfig.getConfigValue('settings.sideNav.footerItems') || [];
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
     }, ['settings.footer']);
 
     StateHelpers.doOnStoreChange(store, () => {
-      sideNavItems = LuigiConfig.getConfigValue('settings.sideNav.items') || [];
+      sideNavFooterItems = LuigiConfig.getConfigValue('settings.sideNav.footerItems') || [];
     }, ['settings.sideNav']);
 
     StateHelpers.doOnStoreChange(store, () => {
@@ -1123,7 +1123,7 @@
   <div
     class="fd-app__sidebar fd-navigation {hideNavComponent ? 'hideNavComponent' : ''} {footerText ||
     semiCollapsibleButton ||
-    (sideNavItems && sideNavItems.length > 0)
+    (sideNavFooterItems && sideNavFooterItems.length > 0)
       ? 'hasFooter'
       : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}"
   >
@@ -1387,14 +1387,14 @@
           </ul>
         </div>
         <!-- Vega sideNav footer items -->
-        {#if sideNavItems && sideNavItems.length > 0}
+        {#if sideNavFooterItems && sideNavFooterItems.length > 0}
           <hr class="fd-side-nav__separator" />
           <div
             class="fd-side-nav__container fd-side-nav__container--bottom lui-sidenav-footer-items"
             data-testid="lui-sidenav-footer-items"
           >
             <ul class="fd-navigation-list" role="list">
-              {#each sideNavItems as item, index}
+              {#each sideNavFooterItems as item, index}
                 {#if item.label}
                   {#if item.children && item.children.length > 0}
                     <!-- Collapsible parent item -->

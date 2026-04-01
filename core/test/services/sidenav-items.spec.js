@@ -14,7 +14,7 @@ describe('SideNav Footer Items', () => {
         settings: {
           sideNav: {
             style: 'vega',
-            items: [
+            footerItems: [
               { label: 'Legal', icon: 'sys-help', link: '/legal' },
               { label: 'Docs', icon: 'world', externalLink: { url: 'https://example.com' } }
             ]
@@ -22,7 +22,7 @@ describe('SideNav Footer Items', () => {
         }
       };
 
-      const items = LuigiConfig.getConfigValue('settings.sideNav.items');
+      const items = LuigiConfig.getConfigValue('settings.sideNav.footerItems');
       expect(Array.isArray(items)).toBe(true);
       expect(items.length).toBe(2);
       expect(items[0].label).toBe('Legal');
@@ -41,7 +41,7 @@ describe('SideNav Footer Items', () => {
         }
       };
 
-      const items = LuigiConfig.getConfigValue('settings.sideNav.items');
+      const items = LuigiConfig.getConfigValue('settings.sideNav.footerItems');
       expect(items).toBeUndefined();
     });
 
@@ -50,7 +50,7 @@ describe('SideNav Footer Items', () => {
         settings: {
           sideNav: {
             style: 'vega',
-            items: [
+            footerItems: [
               {
                 label: 'Resources',
                 icon: 'folder',
@@ -64,7 +64,7 @@ describe('SideNav Footer Items', () => {
         }
       };
 
-      const items = LuigiConfig.getConfigValue('settings.sideNav.items');
+      const items = LuigiConfig.getConfigValue('settings.sideNav.footerItems');
       expect(items.length).toBe(1);
       expect(items[0].label).toBe('Resources');
       expect(Array.isArray(items[0].children)).toBe(true);

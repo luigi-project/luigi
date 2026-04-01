@@ -260,7 +260,7 @@ You can set the following values:
 - **description**: shows the footer in the `Vega` layout even when the left navigation is collapsed.
 - **since** 2.25.0
 
-### sideNav.items
+### sideNav.footerItems
 - **type**: array
 - **description**: configures navigation items pinned to the bottom of the left side navigation in the `Vega` layout, above the footer text. Requires `sideNav.style` to be set to `vega`. Each item is an object with the following properties:
   - **label** (string, required): the text displayed for the item. Supports i18n translation keys.
@@ -277,7 +277,7 @@ You can set the following values:
 settings: {
   sideNav: {
     style: 'vega',
-    items: [
+    footerItems: [
       {
         label: 'Legal Information',
         icon: 'sys-help',
