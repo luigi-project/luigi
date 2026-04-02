@@ -32,7 +32,7 @@
             var parts = item.split('=');
             result[parts[0]] = parts[1];
             return result;
-          }, {});
+          }, Object.create(null));
       };
 
       const processExpDate = (expiresInString) => {

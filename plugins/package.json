@@ -33,10 +33,10 @@
     "oidc-client": "^1.11.5",
     "oidc-client-ts": "^3.4.1",
     "regenerator-runtime": "^0.13.3",
-    "serialize-javascript": ">=6.0.2",
+    "serialize-javascript": ">=7.0.5",
     "set-value": ">=2.0.1",
     "ssri": ">=6.0.2",
-    "webpack": "^5.105.0",
+    "webpack": "^5.105.4",
     "webpack-cli": "^5.1.4"
   },
   "engines": {
