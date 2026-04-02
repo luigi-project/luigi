@@ -62,7 +62,7 @@
     "eslint": "^9.39.2",
     "eslint-plugin-svelte": "^2.46.1",
     "jest": "29.7.0",
-    "jest-environment-jsdom": "29.7.0",
+    "jest-environment-jsdom": "30.3.0",
     "nyc": "^17.1.0",
     "rollup": "2.80.0",
     "rollup-plugin-copy": "^3.5.0",
