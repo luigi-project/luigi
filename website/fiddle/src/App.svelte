@@ -4,10 +4,12 @@
   import luigiCorePkgInfo from '../node_modules/@luigi-project/core/package.json';
   import defaultConfig from './defaultConfig.js';
 
-  export let luigiVersion = luigiCorePkgInfo.version;
-  export let customVersion;
-  export let versions;
-  export let showVersions;
+  let {
+    luigiVersion = $bindable(luigiCorePkgInfo.version),
+    customVersion = $bindable(),
+    versions = $bindable(),
+    showVersions = $bindable()
+  } = $props();
 
   let defaultConfigString = defaultConfig;
   let configString = defaultConfigString;
@@ -154,7 +156,9 @@
     }
   }
 
-  async function chooseVersion() {
+  async function chooseVersion(event) {
+    event.stopPropagation();
+    event.preventDefault();
     showVersions = true;
     if (!versions) {
       const response = await fetch('https://registry.npmjs.org/@luigi-project/core');
@@ -191,7 +195,7 @@
   });
 </script>
 
-<svelte:window on:click={closeDropdowns} on:blur={closeDropdowns} />
+<svelte:window onclick={closeDropdowns} onblur={closeDropdowns} />
 <div class="editor_container">
   <div class="fd-dialog" role="dialog">
     <div class="fd-dialog__content" role="document" style="width:80%; max-width:80%;">
@@ -203,32 +207,32 @@
         </div>
       </header>
       <div class="fd-dialog__body fd-dialog__body--no-vertical-padding">
-        <div id="editor" class="lui-mobile-hide" />
-        <textarea id="editorTA" class="lui-mobile-show" />
+        <div id="editor" class="lui-mobile-hide"></div>
+        <textarea id="editorTA" class="lui-mobile-show"></textarea>
       </div>
       <footer class="fd-dialog__footer fd-bar fd-bar--footer">
         <div class="fd-bar__right">
           <div class="fd-bar__element">
             <button
               class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
-              on:click={resetConfig}>Reset</button
+              onclick={resetConfig}>Reset</button
             >
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" on:click={closeConfig}
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}
               >Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
             <button
               class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
-              on:click={saveConfig}>Apply</button
+              onclick={saveConfig}>Apply</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-show">
             <button
               class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
-              on:click={saveConfigTA}>Apply</button
+              onclick={saveConfigTA}>Apply</button
             >
           </div>
         </div>
@@ -246,7 +250,7 @@
           >powered by Luigi
           <button
             class="fd-button fd-button--compact btn-primary"
-            on:click|preventDefault|stopPropagation={chooseVersion}
+            onclick={chooseVersion}
           >
             <span class="lui-mobile-hide"
               >v{luigiVersion + (customVersion ? ' (CDN)' : '')}
@@ -254,10 +258,10 @@
                 <div class="lui-version-chooser">
                   {#if !versions}
                     <div class="fiddle_spinner">
-                      <div />
-                      <div />
-                      <div />
-                      <div />
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
                     </div>
                   {/if}
                   {#each versions || [] as version}
@@ -266,7 +270,7 @@
                       href="#top"
                       target="_blank"
                       rel="noopener noreferrer"
-                      on:click={switchVersion(version)}
+                      onclick={switchVersion(version)}
                     >
                       {version}
                     </a><br />
@@ -288,18 +292,18 @@
       </div>
 
       <div class="fd-action-bar__actions">
-        <button class="fd-button fd-button--standard btn-primary" on:click={clearAll}>
+        <button class="fd-button fd-button--standard btn-primary" onclick={clearAll}>
           <span class="lui-mobile-hide">Clear All</span>
-          <span class="lui-mobile-show sap-icon--delete" />
+          <span class="lui-mobile-show sap-icon--delete"></span>
         </button>
-        <span class="lui-sep" />
-        <button class="fd-button fd-button--standard btn-primary" on:click={openConfig}>
+        <span class="lui-sep"></span>
+        <button class="fd-button fd-button--standard btn-primary" onclick={openConfig}>
           <span class="lui-mobile-hide">Modify Config</span>
-          <span class="lui-mobile-show sap-icon--edit" />
+          <span class="lui-mobile-show sap-icon--edit"></span>
         </button>
-        <button class="fd-button fd-button--standard btn-primary" on:click={hide}>
+        <button class="fd-button fd-button--standard btn-primary" onclick={hide}>
           <span class="lui-mobile-hide">Hide</span>
-          <span class="lui-mobile-show sap-icon--hide" />
+          <span class="lui-mobile-show sap-icon--hide"></span>
         </button>
       </div>
     </div>
