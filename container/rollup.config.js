@@ -139,10 +139,12 @@ export default [
   {
     input: 'src/events.ts',
     output: {
-      file: 'public/constants/events.js',
+      file: 'public/constants/events.js'
     },
-    plugins: [typescript({
-      sourceMap: false,
-    })]
+    plugins: [
+      typescript({
+        sourceMap: false
+      })
+    ]
   }
 ];

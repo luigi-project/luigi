@@ -150,14 +150,14 @@
       if (thisComponent.isConnected) {
         webcomponentService.resolveAlert(id, dismissKey);
       }
-    }
+    };
 
     thisComponent.notifyConfirmationModalClosed = (result) => {
       // check if thisComponent is in dom
       if (thisComponent.isConnected) {
         webcomponentService.notifyConfirmationModalClosed(!!result);
       }
-    }
+    };
 
     const node = {
       compound: compoundConfig,
@@ -209,7 +209,7 @@
   });
 </script>
 
-<main bind:this={mainComponent} ></main>
+<main bind:this={mainComponent}></main>
 
 <style>
   main {
