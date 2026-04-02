@@ -1,6 +1,5 @@
 <svelte:options
   customElement={{
-    tag: null,
     shadow: 'none',
     props: {
       activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
@@ -80,7 +79,7 @@
   export let anchor: string;
   export let authData: any;
   export let clientPermissions: any;
-  export let context: string;
+  export let context: string | object;
   export let deferInit: boolean;
   export let dirtyStatus: boolean;
   export let documentTitle: string;
@@ -289,7 +288,7 @@
         title={label}
         allow={getAllowRules(allowRules)}
         sandbox={sandboxRules ? sandboxRules.join(' ') : undefined}
-      />
+      ></iframe>
     {/if}
   {/if}
 </main>
