@@ -7,16 +7,16 @@
     "dev": "node patch.js && node build_patch_ui5.js && webpack serve  --static public"
   },
   "dependencies": {
-    "@luigi-project/client": "2.28.0",
+    "@luigi-project/client": "2.29.0",
     "@luigi-project/container": "1.7.6",
-    "@luigi-project/core": "2.28.0",
-    "@luigi-project/plugin-auth-oauth2": "2.28.0",
-    "@luigi-project/plugin-auth-oidc": "2.28.0",
+    "@luigi-project/core": "2.29.0",
+    "@luigi-project/plugin-auth-oauth2": "2.29.0",
+    "@luigi-project/plugin-auth-oidc": "2.29.0",
     "@luigi-project/plugin-auth-oidc-pkce": "^0.42.0",
     "@ui5/webcomponents": "^2.16.2",
     "@ui5/webcomponents-fiori": "^2.16.2",
-    "ace-builds": "^1.43.2",
-    "fs-extra": "^11.3.3",
+    "ace-builds": "^1.43.6",
+    "fs-extra": "^11.3.4",
     "fundamental-styles": "0.23.0"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "replace-in-file": "^7.0.2",
     "send": "~0.19.0",
     "style-loader": "^3.3.3",
-    "svelte": "^4.2.20",
+    "svelte": "^5.55.1",
     "svelte-loader": "^3.2.4",
     "webpack": "^5.105.4",
     "webpack-cli": "^5.1.4",
