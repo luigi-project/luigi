@@ -219,8 +219,7 @@
             >
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}
-              >Cancel</button
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}>Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
@@ -248,10 +247,7 @@
         <img alt="Luigi" src="./img/luigi.png" />
         <span class="lui-mobile-hide"
           >powered by Luigi
-          <button
-            class="fd-button fd-button--compact btn-primary"
-            onclick={chooseVersion}
-          >
+          <button class="fd-button fd-button--compact btn-primary" onclick={chooseVersion}>
             <span class="lui-mobile-hide"
               >v{luigiVersion + (customVersion ? ' (CDN)' : '')}
               {#if showVersions}
@@ -282,8 +278,8 @@
         </span>
         <span class="lui-mobile-hide">
           <div class="cr-footer">
-            Copyright © The Linux Foundation Europe. <br />For web site terms of use, trademark policy and other
-            project policies please see
+            Copyright © The Linux Foundation Europe. <br />For web site terms of use, trademark policy and other project
+            policies please see
             <a href="https://linuxfoundation.eu/en/policies" target="_blank">
               https://linuxfoundation.eu/en/policies
             </a>.
