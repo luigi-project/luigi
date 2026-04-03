@@ -52,20 +52,23 @@ export class NavigationService {
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
     let pathSegments = path.split('/');
+
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
 
-    let globalContext = cfg.navigation?.globalContext || {};
+    const globalContext = cfg.navigation?.globalContext || {};
     let currentContext = globalContext;
     let rootNode;
 
     if (this.getNodeDataManagementService().hasRootNode()) {
       rootNode = this.getNodeDataManagementService().getRootNode().node;
     } else {
-      let nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+      const nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+
       if (typeof nodesFromConfig === 'object' && !Array.isArray(nodesFromConfig)) {
         rootNode = nodesFromConfig;
+
         if (rootNode.pathSegment) {
           rootNode.pathSegment = '';
           console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
@@ -73,17 +76,21 @@ export class NavigationService {
       } else {
         rootNode = { children: nodesFromConfig } as Node;
       }
+
       rootNode.children = await this.getChildren(rootNode, currentContext);
       rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    let pathParams: Record<string, any> = {};
+    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+    const pathParams: Record<string, any> = {};
     const pathData: PathData = {
+      context: rootContext,
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
-      pathParams
+      pathParams,
+      matchedPath: ''
     };
 
     if (rootNode.viewUrl && pathSegments.length === 0) {
@@ -122,6 +129,17 @@ export class NavigationService {
         }
       }
     }
+
+    const navPathSegments = pathData.nodesInPath?.filter((n) => n.pathSegment).map((n) => n.pathSegment) || [];
+    pathData.matchedPath =
+      pathSegments
+        .filter((segment, index) => {
+          return (
+            (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
+          );
+        })
+        .join('/') || '';
+
     return pathData;
   }
 
@@ -222,23 +240,14 @@ export class NavigationService {
     return items;
   }
 
-  async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
-    const pathData = pData ?? (await this.getPathData(path));
-    if (path == '') {
-      if (pathData?.nodesInPath?.[0].viewUrl) {
-        return undefined;
-      }
-      // poor mans implementation, full path resolution TBD
-      return pathData?.rootNodes?.[0]?.pathSegment;
-    } else if (pathData?.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
-      return path + '/' + pathData.selectedNode.children[0].pathSegment;
-    }
-    return undefined;
-  }
+  async getCurrentNode(path: string): Promise<Node | undefined> {
+    const pathData: PathData = await this.getPathData(path);
+    let node: Node | undefined = pathData.selectedNode;
 
-  async getCurrentNode(path: string): Promise<any> {
-    const pathData = await this.getPathData(path);
-    const node = pathData.selectedNode;
+    if (!node && pathData.nodesInPath?.length === 1) {
+      node = pathData.nodesInPath[0];
+    }
+
     if (
       !node ||
       !NavigationHelpers.isNodeAccessPermitted(
@@ -250,6 +259,7 @@ export class NavigationService {
     ) {
       return undefined;
     }
+
     return node;
   }
 
@@ -699,7 +709,7 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    let computedPath = await this.buildPath(path, options || {});
+    const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
@@ -721,9 +731,20 @@ export class NavigationService {
       await serviceRegistry.get(ModalService).closeModals();
 
       if (newTab) {
-        await this.openViewInNewTab(computedPath);
+        await this.openViewInNewTab(normalizedPath);
         return;
       }
+
+      //TODO still an issue with reload
+      // const pathExist = await RoutingHelpers.pathExists(normalizedPath, this.luigi);
+      // const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
+      //   normalizedPath,
+      //   pathExist,
+      //   this.luigi
+      // );
+      // if (!redirectPath) {
+      //   return;
+      // }
 
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
         ? 'replaceState'
