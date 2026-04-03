@@ -1,11 +1,12 @@
+import { GenericHelpers, RoutingHelpers } from '../../../src/utilities/helpers';
+import { LuigiConfig, LuigiFeatureToggles, LuigiI18N, LuigiRouting } from '../../../src/core-api';
+import { Routing } from '../../../src/services/routing';
+import { config } from '../../../src/core-api/config';
+
 const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
 const assert = chai.assert;
-import { GenericHelpers, NavigationHelpers, RoutingHelpers } from '../../../src/utilities/helpers';
-import { LuigiConfig, LuigiFeatureToggles, LuigiI18N, LuigiRouting } from '../../../src/core-api';
-import { Routing } from '../../../src/services/routing';
-import { config } from '../../../src/core-api/config';
 
 describe('Routing-helpers', () => {
   describe('substituteDynamicParamsInObject', () => {
@@ -124,6 +125,7 @@ describe('Routing-helpers', () => {
       ).to.equal(expected);
     });
   });
+
   describe('substitute search query params', () => {
     afterEach(() => {
       sinon.restore();
@@ -390,6 +392,7 @@ describe('Routing-helpers', () => {
       assert.equal(RoutingHelpers.buildRoute(node, '/' + node.pathSegment, params), '/home/projects/one?' + params);
     });
   });
+
   describe('getRouteLink', () => {
     beforeEach(() => {
       global['sessionStorage'] = {
@@ -449,6 +452,7 @@ describe('Routing-helpers', () => {
       sinon.assert.calledWith(GenericHelpers.replaceVars, expected, undefined, ':', false);
     });
   });
+
   describe('calculateNodeHref', () => {
     beforeEach(() => {
       global['sessionStorage'] = {
@@ -472,6 +476,7 @@ describe('Routing-helpers', () => {
       expect(RoutingHelpers.calculateNodeHref(node, {})).to.equal('https://luigi-project.io');
     });
   });
+
   describe('getNodeHref', () => {
     beforeEach(() => {
       sinon.stub(LuigiConfig, 'getConfigBooleanValue');
@@ -895,22 +900,9 @@ describe('Routing-helpers', () => {
 
   describe('composeSearchParamsToRoute', () => {
     const route = '/home';
-    let locationSpy;
-
-    beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
-    });
-
-    afterEach(() => {
-      locationSpy.mockRestore();
-    });
 
     it('with location search params', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          search: '?query=params'
-        };
-      });
+      window.location.search = '?query=params';
       const actual = RoutingHelpers.composeSearchParamsToRoute(route);
       const expected = '/home?query=params';
 
@@ -918,17 +910,14 @@ describe('Routing-helpers', () => {
     });
 
     it('without location search params', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          search: ''
-        };
-      });
+      window.location.search = '';
       const actual = RoutingHelpers.composeSearchParamsToRoute(route);
       const expected = '/home';
 
       assert.equal(actual, expected);
     });
   });
+
   describe('modifySearchParams', () => {
     beforeEach(() => {
       sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);

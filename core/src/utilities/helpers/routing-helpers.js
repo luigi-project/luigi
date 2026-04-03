@@ -131,7 +131,7 @@ class RoutingHelpersClass {
   }
 
   getLocation() {
-    return location;
+    return window.location;
   }
 
   getLocationHashQueryParams() {
@@ -155,10 +155,10 @@ class RoutingHelpersClass {
   composeSearchParamsToRoute(route) {
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     if (hashRoutingActive) {
-      const queryParamIndex = location.hash.indexOf(this.defaultQueryParamSeparator);
-      return queryParamIndex !== -1 ? route + location.hash.slice(queryParamIndex) : route;
+      const queryParamIndex = window.location.hash.indexOf(this.defaultQueryParamSeparator);
+      return queryParamIndex !== -1 ? route + window.location.hash.slice(queryParamIndex) : route;
     }
-    return location.search ? route + location.search : route;
+    return window.location.search ? route + window.location.search : route;
   }
 
   getModalPathFromPath() {
@@ -182,7 +182,7 @@ class RoutingHelpersClass {
     });
 
     EventListenerHelpers.addEventListener('popstate', (e) => {
-      const path = hashRoutingActive ? Routing.getHashPath(location.href) : Routing.getModifiedPathname();
+      const path = hashRoutingActive ? Routing.getHashPath(window.location.href) : Routing.getModifiedPathname();
       callback(path, e.detail);
     });
   }

@@ -65,7 +65,7 @@ class RoutingClass {
     }
     const hashRouting = LuigiConfig.getConfigValue('routing.useHashRouting');
     const preserveQueryParams = LuigiConfig.getConfigValue('routing.preserveQueryParams');
-    let url = new URL(location.href);
+    let url = new URL(window.location.href);
     route = preserveQueryParams ? RoutingHelpers.composeSearchParamsToRoute(route) : route;
     if (hashRouting) {
       url.hash = route;
@@ -177,7 +177,7 @@ class RoutingClass {
     const defaultPattern = [/access_token=/, /id_token=/];
     const patterns = LuigiConfig.getConfigValue('routing.skipRoutingForUrlPatterns') || defaultPattern;
 
-    return patterns.filter((p) => location.href.match(p)).length !== 0;
+    return patterns.filter((p) => window.location.href.match(p)).length !== 0;
   }
 
   /**
@@ -726,10 +726,10 @@ class RoutingClass {
     if (modalParams && Object.keys(modalParams).length) {
       params[`${modalParamName}Params`] = JSON.stringify(modalParams);
     }
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     if (hashRoutingActive) {
-      const queryParamIndex = location.hash.indexOf(queryParamSeparator);
+      const queryParamIndex = window.location.hash.indexOf(queryParamSeparator);
       if (queryParamIndex !== -1) {
         url.hash = url.hash.slice(0, queryParamIndex);
       }
@@ -756,7 +756,7 @@ class RoutingClass {
     const params = RoutingHelpers.getQueryParams();
     const modalParamName = RoutingHelpers.getModalViewParamName();
     const prevModalPath = params[modalParamName];
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     let historyState = history.state;
     let pathWithoutModalData;
@@ -782,7 +782,7 @@ class RoutingClass {
         params[`${modalParamName}Params`] = JSON.stringify(modalParams);
       }
       if (hashRoutingActive) {
-        const queryParamIndex = location.hash.indexOf(queryParamSeparator);
+        const queryParamIndex = window.location.hash.indexOf(queryParamSeparator);
         if (queryParamIndex !== -1) {
           url.hash = url.hash.slice(0, queryParamIndex);
         }
@@ -814,7 +814,7 @@ class RoutingClass {
   removeModalDataFromUrl(isClosedInternal) {
     const params = RoutingHelpers.getQueryParams();
     const modalParamName = RoutingHelpers.getModalViewParamName();
-    let url = new URL(location.href);
+    let url = new URL(window.location.href);
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     if (hashRoutingActive) {
       let modalParamsObj = {};

@@ -9,18 +9,7 @@ import { LuigiAuth } from '../../../src/core-api';
 describe('Auth-helpers', function() {
   jest.retryTimes(2);
 
-  let windowLocationImplementation;
-  beforeEach(() => {
-    windowLocationImplementation = window.location;
-    delete window.location;
-    window.location = {
-      search: function() {
-        return '';
-      }
-    };
-  });
   afterEach(() => {
-    window.location = windowLocationImplementation;
     sinon.restore();
   });
 

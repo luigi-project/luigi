@@ -6,25 +6,9 @@ const assert = chai.assert;
 const sinon = require('sinon');
 
 describe('Generic-helpers', () => {
-  let windowLocationImplementation;
-
-  beforeAll(() => {
-    windowLocationImplementation = window.location;
-    delete window.location;
-    window.location = {
-      search: function () {
-        return '';
-      }
-    };
-  });
-
-  afterAll(() => {
-    window.location = windowLocationImplementation;
-  });
-
   it('getUrlParameter', () => {
     const setLocationSearch = (url) => {
-      sinon.stub(window.location, 'search').get(() => url);
+      window.location.search = url;
     };
     const catName = 'spencer';
 

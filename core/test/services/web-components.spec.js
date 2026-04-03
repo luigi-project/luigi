@@ -150,7 +150,7 @@ describe('WebComponentService', function () {
           return myEl;
         });
       sb.stub(container, 'replaceChild').callsFake(() => {});
-      sb.stub(window, 'location').value({ origin: 'http://localhost' });
+      window.location.href = 'http://localhost';
 
       container.appendChild(itemPlaceholder);
       WebComponentService.attachWC(wc_id, itemPlaceholder, container, extendedContext, 'http://localhost:8080/');

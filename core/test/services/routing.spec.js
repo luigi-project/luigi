@@ -71,10 +71,7 @@ describe('Routing', function() {
   });
 
   describe('navigateTo', () => {
-    let locationSpy;
-
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
       window.history.replaceState = sinon.spy();
       window.history.pushState = sinon.spy();
       window.dispatchEvent = sinon.spy();
@@ -84,19 +81,12 @@ describe('Routing', function() {
       sinon.stub(GenericHelpers, 'trimLeadingSlash').returnsArg(0);
       sinon.stub(GenericHelpers, 'isIE').returns(false);
     });
-    afterEach(() => {
-      locationSpy.mockRestore();
-    });
 
     it('with path routing, does a browser history replace', async () => {
       // given
       const path = '/projects/teams';
-      locationSpy.mockImplementation(() => {
-        return {
-          href: `http://some.url.de${path}`,
-          pathname: path
-        };
-      });
+      window.location.href = `http://some.url.de${path}`;
+      window.location.pathname = path;
 
       // when
       await Routing.navigateTo(path, { keepBrowserHistory: false });
@@ -303,7 +293,7 @@ describe('Routing', function() {
         ]);
     });
     it('returns hash path from default param', () => {
-      sinon.stub(window, 'location').value({ hash: '#/projects/pr3' });
+      window.location.hash = '#/projects/pr3';
       const actual = Routing.getHashPath();
       const expected = 'projects/pr3';
       assert.equal(actual, expected);
@@ -352,7 +342,7 @@ describe('Routing', function() {
       LuigiConfig.getConfigValue.returns(true);
 
       // when
-      sinon.stub(window, 'location').value({ hash: '/parent-node' });
+      window.location.hash = '/parent-node';
       const route = Routing.buildFromRelativePath(nodeWithParent);
 
       // then
@@ -365,7 +355,7 @@ describe('Routing', function() {
       LuigiConfig.getConfigValue.returns(true);
 
       // when
-      sinon.stub(window, 'location').value({ hash: '/parent-node/a/b' });
+      window.location.hash = '/parent-node/a/b';
       const route = Routing.buildFromRelativePath(nodeWithLink);
 
       // then
@@ -378,7 +368,7 @@ describe('Routing', function() {
       LuigiConfig.getConfigValue.returns(true);
 
       // when
-      sinon.stub(window, 'location').value({ hash: '/parent-node/different-node' });
+      window.location.hash = '/parent-node/different-node';
       const route = Routing.buildFromRelativePath(nodeWithParent);
 
       // then
@@ -1045,19 +1035,15 @@ describe('Routing', function() {
     it('without state, falls back to location', () => {
       const mockPathName = 'projects';
       sinon.stub(window.history, 'state').returns(null);
-      sinon.stub(window, 'location').value({
-        pathname: '/' + mockPathName
-      });
+      window.location.pathname = '/' + mockPathName;
       assert.equal(Routing.getModifiedPathname(), mockPathName);
     });
 
     it('without state and with query params', () => {
       const mockPathName = 'projects?~test=param';
       sinon.stub(window.history, 'state').returns(null);
-      sinon.stub(window, 'location').value({
-        pathname: '/projects',
-        search: '?~test=param'
-      });
+      window.location.pathname = '/projects';
+      window.location.search = '?~test=param';
       assert.equal(Routing.getModifiedPathname(), mockPathName);
     });
 
@@ -1069,27 +1055,27 @@ describe('Routing', function() {
     });
 
     it('from intent based link with params', () => {
-      sinon.stub(window, 'location').value({ hash: '#?intent=Sales-settings?param1=luigi&param2=mario' });
+      window.location.hash = '#?intent=Sales-settings?param1=luigi&param2=mario';
       assert.equal(Routing.getModifiedPathname(), '/projects/pr2/settings?~param1=luigi&~param2=mario');
     });
 
     it('from intent based link without params', () => {
-      sinon.stub(window, 'location').value({ hash: '#?intent=Sales-settings' });
+      window.location.hash = '#?intent=Sales-settings';
       assert.equal(Routing.getModifiedPathname(), '/projects/pr2/settings');
     });
 
     it('from intent based link with case insensitive pattern', () => {
-      sinon.stub(window, 'location').value({ hash: '#?inTeNT=Sales-settings' });
+      window.location.hash = '#?inTeNT=Sales-settings';
       assert.equal(Routing.getModifiedPathname(), '/projects/pr2/settings');
     });
 
     it('from faulty intent based link', () => {
-      sinon.stub(window, 'location').value({ hash: '#?intent=Sales-sett-ings' });
+      window.location.hash = '#?intent=Sales-sett-ings';
       assert.equal(Routing.getModifiedPathname(), '/');
     });
 
     it('from intent based link with illegal characters', () => {
-      sinon.stub(window, 'location').value({ hash: '#?intent=Sales-sett$ings' });
+      window.location.hash = '#?intent=Sales-sett$ings';
       assert.equal(Routing.getModifiedPathname(), '/');
     });
   });
@@ -1210,6 +1196,7 @@ describe('Routing', function() {
       sinon.assert.notCalled(RoutingHelpers.showRouteNotFoundAlert);
     });
   });
+
   describe('dynamicNode', () => {
     const nodeData = {
       pathParam: {
@@ -1277,6 +1264,7 @@ describe('Routing', function() {
       sinon.assert.calledWithExactly(LuigiNavigation.openAsModal, modalPath, modalParams);
     });
   });
+
   describe('append and remove modal data from URL using path routing', () => {
     const sb = sinon.createSandbox();
     let modalPath = encodeURIComponent('/project-modal');
@@ -1285,10 +1273,8 @@ describe('Routing', function() {
       '~luigi': 'mario'
     };
     const modalParamName = 'mySpecialModal';
-    let locationSpy;
 
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
       history.replaceState = sinon.spy();
       history.pushState = sinon.spy();
       sinon.stub(RoutingHelpers, 'getModalPathFromPath').returns(modalPath);
@@ -1303,18 +1289,12 @@ describe('Routing', function() {
 
     afterEach(() => {
       sinon.restore();
-      locationSpy.mockRestore();
     });
 
     it('append modal data to url with path routing', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings'
-        };
-      });
+      window.location.href = 'http://some.url.de/settings';
       window.state = {};
-      const mockURL = new URL(global.location.href);
       sinon
         .stub(LuigiConfig, 'getConfigBooleanValue')
         .withArgs('routing.useHashRouting')
@@ -1342,13 +1322,8 @@ describe('Routing', function() {
 
     it('remove modal data from url with path routing', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href:
-            'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          search: '?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
-        };
-      });
+      window.location.href = 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D';
+      window.location.search = '?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D';
       window.state = {};
       sinon
         .stub(LuigiConfig, 'getConfigBooleanValue')
@@ -1364,11 +1339,7 @@ describe('Routing', function() {
 
     it('should update path of the modal when changing template in the modal, save history', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings'
-        };
-      });
+      window.location.href = 'http://some.url.de/settings';
       window.state = {};
       const addHistoryEntry = true;
       sinon
@@ -1392,11 +1363,7 @@ describe('Routing', function() {
 
     it('should update path of the modal when changing template in the modal, do not save history', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings'
-        };
-      });
+      window.location.href = 'http://some.url.de/settings';
       window.state = {};
       const addHistoryEntry = false;
       sinon
@@ -1426,10 +1393,8 @@ describe('Routing', function() {
       '~luigi': 'mario'
     };
     const modalParamName = 'mySpecialModal';
-    let locationSpy;
 
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
       history.replaceState = sinon.spy();
       history.pushState = sinon.spy();
       sinon.stub(RoutingHelpers, 'getModalPathFromPath').returns(modalPath);
@@ -1444,18 +1409,12 @@ describe('Routing', function() {
 
     afterEach(() => {
       sinon.restore();
-      locationSpy.mockRestore();
     });
 
     it('append modal data to url with hash routing', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/#/settings',
-          hash: '#/settings'
-        };
-      });
-      const mockURL = new URL(global.location.href);
+      window.location.href = 'http://some.url.de/#/settings';
+      window.location.hash = '#/settings';
       window.state = {};
       sinon
         .stub(LuigiConfig, 'getConfigBooleanValue')
@@ -1483,14 +1442,8 @@ describe('Routing', function() {
 
     it('remove modal data from url with hash routing', () => {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href:
-            'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          hash:
-            '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
-        };
-      });
+      window.location.href = 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D';
+      window.location.hash = '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D';
       window.state = {};
       sinon
         .stub(LuigiConfig, 'getConfigBooleanValue')
@@ -1521,6 +1474,7 @@ describe('Routing', function() {
       assert.equal(path, 'bla/x/?~a=b&~c=d#/something?~e=f&~g=h');
     });
   });
+
   describe('concatenate path', () => {
     it('concatenate path', () => {
       assert.equal(Routing.concatenatePath('/home/overview', 'settings'), 'home/overview/settings');
@@ -1535,34 +1489,20 @@ describe('Routing', function() {
   });
 
   describe('shouldSkipRoutingForUrlPatterns()', () => {
-    let locationSpy;
-
-    beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
-    });
-
     afterEach(() => {
       sinon.restore();
       sinon.reset();
-      locationSpy.mockRestore();
     });
+
     it('should return true if path matches default patterns', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?access_token=bar'
-        };
-      });
+      window.location.href = 'http://some.url.de?access_token=bar';
       const actual = Routing.shouldSkipRoutingForUrlPatterns();
       const expect = true;
 
       assert.equal(actual, expect);
     });
     it('should return true if path matches default patterns', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?id_token=foo'
-        };
-      });
+      window.location.href = 'http://some.url.de?id_token=foo';
       const actual = Routing.shouldSkipRoutingForUrlPatterns();
       const expect = true;
 
@@ -1574,22 +1514,14 @@ describe('Routing', function() {
         .stub(LuigiConfig, 'getConfigValue')
         .withArgs('routing.skipRoutingForUrlPatterns')
         .returns(['foo_bar']);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?foo_bar'
-        };
-      });
+      window.location.href = 'http://some.url.de?foo_bar';
       const actual = Routing.shouldSkipRoutingForUrlPatterns();
       const expect = true;
 
       assert.equal(actual, expect);
     });
     it('should return false if path does not matche patterns', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings'
-        };
-      });
+      window.location.href = 'http://some.url.de/settings';
       const actual = Routing.shouldSkipRoutingForUrlPatterns();
       const expect = false;
 
