@@ -19,8 +19,7 @@ class LuigiRouting {
   getSearchParams() {
     const queryParams = {};
     const DENYLIST = ['__proto__', 'constructor', 'prototype'];
-
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     let entries;
 
     if (LuigiConfig.getConfigValue('routing.useHashRouting')) {
@@ -57,7 +56,7 @@ class LuigiRouting {
       console.log('Params argument must be an object');
       return;
     }
-    const url = new URL(location);
+    const url = new URL(window.location);
     if (LuigiConfig.getConfigValue('routing.useHashRouting')) {
       url.hash = RoutingHelpers.addParamsOnHashRouting(params, url.hash);
     } else {
@@ -77,7 +76,7 @@ class LuigiRouting {
     }
 
     const paramPrefix = RoutingHelpers.getContentViewParamPrefix();
-    const url = new URL(location);
+    const url = new URL(window.location);
     if (LuigiConfig.getConfigValue('routing.useHashRouting')) {
       url.hash = RoutingHelpers.addParamsOnHashRouting(params, url.hash, paramPrefix);
     } else {
@@ -89,7 +88,7 @@ class LuigiRouting {
   }
 
   sanitizeUrl(url) {
-    return new URL(location).origin === new URL(url).origin ? url : undefined;
+    return new URL(window.location).origin === new URL(url).origin ? url : undefined;
   }
 
   handleBrowserHistory(keepBrowserHistory, url) {
@@ -108,7 +107,7 @@ class LuigiRouting {
   }
 
   getAnchor() {
-    const { hash } = new URL(location);
+    const { hash } = new URL(window.location);
     const useHashRouting = LuigiConfig.getConfigValue('routing.useHashRouting');
 
     return useHashRouting && hash.split('#').length === 2 ? '' : hash.split('#').pop();
@@ -116,7 +115,7 @@ class LuigiRouting {
 
   setAnchor(value) {
     if (LuigiConfig.getConfigValue('routing.useHashRouting')) {
-      const { hash } = new URL(location);
+      const { hash } = new URL(window.location);
       const hashArray = hash.split('#');
       const hasExistingHash = hashArray.length > 2;
       const newHashArray = hasExistingHash ? hashArray.slice(0, -1) : hashArray;
