@@ -6,7 +6,7 @@ import { AuthHelpers, GenericHelpers } from '../../../src/utilities/helpers';
 import { AuthStoreSvc } from '../../../src/services';
 import { LuigiAuth } from '../../../src/core-api';
 
-describe('Auth-helpers', function() {
+describe('Auth-helpers', function () {
   jest.retryTimes(2);
 
   afterEach(() => {
@@ -81,12 +81,7 @@ describe('Auth-helpers', function() {
     });
 
     it('without error', () => {
-      sinon
-        .stub(GenericHelpers, 'getUrlParameter')
-        .onFirstCall()
-        .returns(undefined)
-        .onSecondCall()
-        .returns(undefined);
+      sinon.stub(GenericHelpers, 'getUrlParameter').onFirstCall().returns(undefined).onSecondCall().returns(undefined);
 
       assert.equal(AuthHelpers.parseUrlAuthErrors(), undefined);
 
