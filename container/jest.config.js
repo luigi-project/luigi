@@ -1,6 +1,7 @@
 module.exports = async () => {
   return {
     verbose: true,
+    setupFilesAfterEnv: ['./test/jest-setup.js'],
     testEnvironment: 'jsdom',
     roots: ['test'],
     collectCoverage: true,
