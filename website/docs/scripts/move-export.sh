@@ -38,10 +38,10 @@ mkdir -p $PUBLIC_DIR/assets
 mkdir -p $PUBLIC_DIR/images
 
 # copy luigi client to static dir for serving in development mode only
-cp $NODE_MODULES_CLIENT/* $STATIC_DIR/luigi-client
+cp -R $NODE_MODULES_CLIENT/* $STATIC_DIR/luigi-client
 
 # copy luigi client and luigi core to public folder or wherever needed, to avoid using extra dependencies on vite side
-cp $NODE_MODULES_CLIENT/* $LUIGI_CLIENT
+cp -R $NODE_MODULES_CLIENT/* $LUIGI_CLIENT
 cp $NODE_MODULES_CORE/* $LUIGI_CORE
 
 echo "----------------------------------------------------------------"
