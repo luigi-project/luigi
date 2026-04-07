@@ -731,7 +731,7 @@ export class NavigationService {
 
       if (this.luigi.getConfig().routing?.useHashRouting) {
         if (!withoutSync && method !== 'replaceState') {
-          location.hash = normalizedPath;
+          window.location.hash = normalizedPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 

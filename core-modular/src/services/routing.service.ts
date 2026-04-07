@@ -35,7 +35,7 @@ export class RoutingService {
     const defaultPattern: RegExp[] = [/access_token=/, /id_token=/];
     const patterns: any[] = this.luigi.getConfigValue('routing.skipRoutingForUrlPatterns') || defaultPattern;
 
-    return patterns.filter((pattern) => location.href.match(pattern)).length !== 0;
+    return patterns.filter((pattern) => window.location.href.match(pattern)).length !== 0;
   }
 
   /**
@@ -200,7 +200,7 @@ export class RoutingService {
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
     const prevModalPath = params[modalParamName];
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
     let historyState = history.state;
     let pathWithoutModalData;
@@ -226,7 +226,7 @@ export class RoutingService {
         params[`${modalParamName}Params`] = JSON.stringify(modalParams);
       }
       if (hashRoutingActive) {
-        const queryParamIndex = location.hash.indexOf(queryParamSeparator);
+        const queryParamIndex = window.location.hash.indexOf(queryParamSeparator);
         if (queryParamIndex !== -1) {
           url.hash = url.hash.slice(0, queryParamIndex);
         }
@@ -258,7 +258,7 @@ export class RoutingService {
   removeModalDataFromUrl(isClosedInternal: boolean): void {
     const params = RoutingHelpers.getQueryParams(this.luigi);
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
-    let url = new URL(location.href);
+    let url = new URL(window.location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
     if (hashRoutingActive) {
       let modalParamsObj: any = {};
@@ -373,10 +373,10 @@ export class RoutingService {
     if (modalParams && Object.keys(modalParams).length) {
       params[`${modalParamName}Params`] = JSON.stringify(modalParams);
     }
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
     if (hashRoutingActive) {
-      const queryParamIndex = location.hash.indexOf(queryParamSeparator);
+      const queryParamIndex = window.location.hash.indexOf(queryParamSeparator);
       if (queryParamIndex !== -1) {
         url.hash = url.hash.slice(0, queryParamIndex);
       }

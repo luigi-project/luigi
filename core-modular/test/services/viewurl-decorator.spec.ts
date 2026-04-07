@@ -1,6 +1,5 @@
 import { ViewUrlDecoratorSvc } from '../../src/services/viewurl-decorator';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
-import { Luigi } from '../../src/core-api/luigi';
 
 describe('View Decorator Service', () => {
   let viewUrlDecoratorService: ViewUrlDecoratorSvc;

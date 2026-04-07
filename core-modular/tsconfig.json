@@ -12,5 +12,6 @@
   "compilerOptions": {
     "module": "ESNext",
     "forceConsistentCasingInFileNames": true,
+    "types": ["jest"],
   },
 }

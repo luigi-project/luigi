@@ -59,7 +59,7 @@ describe('Auth', () => {
     cfgFnMock.mockImplementation(() => {
       return Promise.resolve(true);
     });
-    LuigiAuth.handleAuthEvent('onAuthWhatever', {}, undefined, '/redirect');
+    LuigiAuth.handleAuthEvent('onAuthWhatever', {}, undefined, 'http://some.url.de/redirect');
   });
 
   it('get store', () => {

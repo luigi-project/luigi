@@ -11,9 +11,8 @@ describe('Auth-Layer Service', () => {
   let auth_disableAutoLogin = false;
   let profileLogoutFn: unknown;
   let customIdpLogoutFn: unknown;
-  let locationMock = { search: '' };
   let providerInstanceSettings: Record<string, unknown> = {
-    logoutUrl: 'lo',
+    logoutUrl: 'http://some.url.de/lo',
     post_logout_redirect_uri: 'plor'
   };
   let getConfigValue: jest.Mock;
@@ -62,20 +61,15 @@ describe('Auth-Layer Service', () => {
     });
     onAuthConfigErrorFn = undefined;
     onAuthSuccessfulFn = undefined;
-    locationMock = { search: '' };
     auth_use = undefined;
     profileLogoutFn = undefined;
     customIdpLogoutFn = undefined;
     auth_disableAutoLogin = false;
     providerInstanceSettings = {
-      logoutUrl: 'lo',
+      logoutUrl: 'http://some.url.de/lo',
       post_logout_redirect_uri: 'plor'
     };
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: locationMock
-      } as Window & typeof globalThis;
-    });
+    window.location.search = '';
   });
 
   afterEach(() => {
@@ -117,7 +111,7 @@ describe('Auth-Layer Service', () => {
 
     it('init with url errors', async () => {
       auth_use = 'myProvider';
-      locationMock = { search: '?error=error&errorDescription=errorDescription' };
+      window.location.search = '?error=error&errorDescription=errorDescription';
       const handleAuthEventSpy = jest.spyOn(LuigiAuth, 'handleAuthEvent').mockImplementation();
 
       expect(AuthLayerSvc.init()).resolves.toEqual(undefined);
@@ -125,7 +119,7 @@ describe('Auth-Layer Service', () => {
         'onAuthError',
         providerInstanceSettings,
         { error: 'error', errorDescription: 'errorDescription' },
-        'lo?post_logout_redirect_uri=plor&error=error&errorDescription=errorDescription'
+        'http://some.url.de/lo?post_logout_redirect_uri=plor&error=error&errorDescription=errorDescription'
       );
     });
 

@@ -1,16 +1,10 @@
 import { GenericHelpers } from '../../../src/utilities/helpers/generic-helpers';
 
 describe('Generic-helpers', () => {
-  let locationSearchString: string;
-
   beforeAll(() => {
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: {
-          search: locationSearchString
-        },
-        crypto: globalThis.crypto
-      } as unknown as Window & typeof globalThis;
+    Object.defineProperty(window, 'crypto', {
+      value: globalThis.crypto,
+      writable: true
     });
   });
 
@@ -19,7 +13,7 @@ describe('Generic-helpers', () => {
   });
 
   beforeEach(() => {
-    locationSearchString = '';
+    window.location.search = '';
   });
 
   it('getRandomId', () => {
@@ -64,7 +58,7 @@ describe('Generic-helpers', () => {
   });
 
   it('getUrlParameter', () => {
-    locationSearchString = '?qp=val&qp2=val2';
+    window.location.search = '?qp=val&qp2=val2';
     expect(GenericHelpers.getUrlParameter('notThere')).toBeFalsy();
     expect(GenericHelpers.getUrlParameter('qp')).toEqual('val');
     expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');

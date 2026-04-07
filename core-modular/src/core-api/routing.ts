@@ -24,7 +24,7 @@ export class Routing {
       console.log('Params argument must be an object');
       return;
     }
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     if (this.luigi.getConfigValue('routing.useHashRouting')) {
       url.hash = RoutingHelpers.addParamsOnHashRouting(params, url.hash);
     } else {
@@ -46,7 +46,7 @@ export class Routing {
     const queryParams: Record<string, string> = {};
     const DENYLIST = ['__proto__', 'constructor', 'prototype'];
 
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     let entries;
 
     if (this.luigi.getConfigValue('routing.useHashRouting')) {
@@ -96,7 +96,7 @@ export class Routing {
    * @returns The original URL if it has the same origin as the current location; otherwise, returns `undefined`.
    */
   sanitizeUrl(url: string): string | undefined {
-    return new URL(location.href).origin === new URL(url).origin ? url : undefined;
+    return new URL(window.location.href).origin === new URL(url).origin ? url : undefined;
   }
 
   addNodeParams(params: Record<string, any>, keepBrowserHistory: boolean): void {
@@ -106,7 +106,7 @@ export class Routing {
     }
 
     const paramPrefix = RoutingHelpers.getContentViewParamPrefix(this.luigi);
-    const url = new URL(location.href);
+    const url = new URL(window.location.href);
     if (this.luigi.getConfigValue('routing.useHashRouting')) {
       url.hash = RoutingHelpers.addParamsOnHashRouting(params, url.hash, paramPrefix);
     } else {

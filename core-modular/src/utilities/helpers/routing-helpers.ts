@@ -154,11 +154,11 @@ export const RoutingHelpers = {
   getCurrentPath(hashRouting?: boolean): { path: string; query: string } {
     //TODO intentNavigation implementation
     if (hashRouting) {
-      const pathRaw = NavigationHelpers.normalizePath(location.hash);
+      const pathRaw = NavigationHelpers.normalizePath(window.location.hash);
       const [path, query] = pathRaw.split('?');
       return { path, query };
     } else {
-      return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
+      return { path: NavigationHelpers.normalizePath(window.location.pathname), query: window.location.search };
     }
   },
 
@@ -216,7 +216,7 @@ export const RoutingHelpers = {
    * @returns {Location} The current location object representing the URL of the document.
    */
   getLocation(): Location {
-    return location;
+    return window.location;
   },
 
   /**

@@ -28,6 +28,11 @@ describe('Auth-Store Service', () => {
       type: 'local'
     };
 
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true
+    });
+
     sessionStorageMock = {
       getItem: storageGetItemMock,
       setItem: storageSetItemMock,
@@ -35,11 +40,9 @@ describe('Auth-Store Service', () => {
       type: 'session'
     };
 
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        localStorage: localStorageMock,
-        sessionStorage: sessionStorageMock
-      } as unknown as Window & typeof globalThis;
+    Object.defineProperty(window, 'sessionStorage', {
+      value: sessionStorageMock,
+      writable: true
     });
   });
 

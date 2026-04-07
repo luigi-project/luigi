@@ -41,16 +41,11 @@ describe('AuthHelpers', () => {
   });
 
   it('parseUrlAuthErrors', () => {
-    const location = { search: '' };
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location
-      } as Window & typeof globalThis;
-    });
+    window.location.search = '';
 
     expect(AuthHelpers.parseUrlAuthErrors()).toBeUndefined();
 
-    location.search = '?error=ERROR&errorDescription=DESC';
+    window.location.search = '?error=ERROR&errorDescription=DESC';
 
     expect(AuthHelpers.parseUrlAuthErrors()).toEqual({ error: 'ERROR', errorDescription: 'DESC' });
   });

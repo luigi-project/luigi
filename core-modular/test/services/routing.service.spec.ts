@@ -118,35 +118,20 @@ describe('Routing Service', () => {
   });
 
   describe('shouldSkipRoutingForUrlPatterns', () => {
-    let locationSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
-    });
-
     afterEach(() => {
-      locationSpy.mockRestore();
       jest.restoreAllMocks();
       jest.resetAllMocks();
     });
 
     it('should return true if path matches default patterns', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?access_token=bar'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de?access_token=bar';
 
       const actual = routingService.shouldSkipRoutingForUrlPatterns();
       expect(actual).toBe(true);
     });
 
     it('should return true if path matches default patterns (id_token)', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?id_token=foo'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de?id_token=foo';
 
       const actual = routingService.shouldSkipRoutingForUrlPatterns();
       expect(actual).toBe(true);
@@ -160,11 +145,7 @@ describe('Routing Service', () => {
         return null;
       }));
 
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de?foo_bar'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de?foo_bar';
 
       const actual = routingService.shouldSkipRoutingForUrlPatterns();
       expect(actual).toBe(true);
@@ -173,11 +154,7 @@ describe('Routing Service', () => {
     });
 
     it('should return false if path does not match patterns', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de/settings';
 
       const actual = routingService.shouldSkipRoutingForUrlPatterns();
       expect(actual).toBe(false);
@@ -364,14 +341,11 @@ describe('Routing Service', () => {
   });
 
   describe('appendModalDataToUrl', () => {
-    let locationSpy: jest.SpyInstance;
     let historyPushSpy: jest.SpyInstance;
     let historyReplaceSpy: jest.SpyInstance;
     let mockUrl: any;
 
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
-
       // ensure pushState/replaceState are mockable
       historyPushSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       historyReplaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
@@ -411,13 +385,7 @@ describe('Routing Service', () => {
     });
 
     it('should update hash and push state when hashRoutingActive and modalPath changes', () => {
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            ...mockUrl,
-            hash: '#/home'
-          }) as any
-      );
+      window.location.hash = '#/home';
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'oldPath' });
 
@@ -433,13 +401,7 @@ describe('Routing Service', () => {
     });
 
     it('should update search and push state when not hashRoutingActive and modalPath changes', () => {
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            ...mockUrl,
-            search: ''
-          }) as any
-      );
+      window.location.search =  '';
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(false); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'oldPath' });
 
@@ -453,13 +415,7 @@ describe('Routing Service', () => {
     });
 
     it('should replace and push state when modalPath does not change (hashRoutingActive)', () => {
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            ...mockUrl,
-            hash: '#/home'
-          }) as any
-      );
+      window.location.hash = '#/home';
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'samePath' });
 
@@ -470,13 +426,7 @@ describe('Routing Service', () => {
     });
 
     it('should replace and push state when modalPath does not change (not hashRoutingActive)', () => {
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            ...mockUrl,
-            search: ''
-          }) as any
-      );
+      window.location.search = '';
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true);
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({ modalPath: 'samePath' });
 
@@ -487,13 +437,7 @@ describe('Routing Service', () => {
     });
 
     it('should not add modalPathParams if modalParams is empty', () => {
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            ...mockUrl,
-            hash: '#/home'
-          }) as any
-      );
+      window.location.hash = '#/home';
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({});
 
@@ -513,10 +457,8 @@ describe('Routing Service', () => {
       '~luigi': 'mario'
     };
     const modalParamName = 'mySpecialModal';
-    let locationSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
       // make history functions jest.fn so we can assert
       // assign directly to ensure they are mock functions
       // @ts-ignore
@@ -535,7 +477,6 @@ describe('Routing Service', () => {
     });
 
     afterEach(() => {
-      locationSpy.mockRestore();
       jest.restoreAllMocks();
       jest.resetAllMocks();
       jest.clearAllMocks();
@@ -543,12 +484,8 @@ describe('Routing Service', () => {
 
     it('append modal data to url with hash routing', () => {
       // jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue(params);
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/#/settings',
-          hash: '#/settings'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de/#/settings';
+      window.location.hash = '#/settings';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return true;
@@ -575,16 +512,10 @@ describe('Routing Service', () => {
         if (key === 'routing.useHashRouting') return false;
         return null;
       });
-      locationSpy.mockImplementation(
-        () =>
-          ({
-            href: 'http://some.url.de/settings',
-            hash: '',
-            origin: 'http://some.url.de',
-            pathname: '/settings',
-            search: ''
-          }) as any
-      );
+      window.location.href = 'http://some.url.de/settings';
+      window.location.hash = '';
+      window.location.pathname = '/settings';
+      window.location.search = '';
       window.state = {};
       const historyState = {
         modalHistoryLength: 1,
@@ -608,12 +539,8 @@ describe('Routing Service', () => {
         mySpecialModal: modalPath,
         mySpecialModalParams: JSON.stringify(modalParams)
       }));
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
-          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
+      window.location.hash = '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return true;
@@ -626,11 +553,7 @@ describe('Routing Service', () => {
     });
 
     it('remove modal data from url with path routing', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
@@ -644,7 +567,6 @@ describe('Routing Service', () => {
   });
 
   describe('updateModalDataInUrl', () => {
-    let locationSpy: jest.SpyInstance;
     const modalPath = encodeURIComponent('/project-modal');
     const modalParams = { title: 'world' };
     const params = {
@@ -652,7 +574,6 @@ describe('Routing Service', () => {
     };
     const modalParamName = 'mySpecialModal';
     beforeEach(() => {
-      locationSpy = jest.spyOn(window, 'location', 'get');
       // ensure pushState/replaceState are mock functions
       // @ts-ignore
       window.history.replaceState = jest.fn();
@@ -668,16 +589,11 @@ describe('Routing Service', () => {
     afterEach(() => {
       jest.restoreAllMocks();
       jest.resetAllMocks();
-      locationSpy.mockRestore();
     });
 
     it('should update modal data in url when hash routing is active', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal',
-          hash: '#/settings?mySpecialModal=%252Fproject-modal'
-        } as any;
-      });
+      window.location.href = 'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal';
+      window.location.hash = '#/settings?mySpecialModal=%252Fproject-modal';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return true;
@@ -694,12 +610,8 @@ describe('Routing Service', () => {
     });
 
     it('should update modal data in url when path routing is active', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal',
-          hash: '#/settings?mySpecialModal=%252Fproject-modal'
-        } as any;
-      });
+      window.location.hash = '#/settings?mySpecialModal=%252Fproject-modal';
+      window.location.href = 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
@@ -716,12 +628,8 @@ describe('Routing Service', () => {
     });
 
     it('should update modal data in url when modalParams change', () => {
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
-          hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
-        } as any;
-      });
+      window.location.hash = '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
+      window.location.href = 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
@@ -741,12 +649,8 @@ describe('Routing Service', () => {
     it('should remove previous modal data when it is not in updated modal data', () => {
       const mockModelSettings = { title: 'world' } as ModalSettings;
       routingService.modalSettings = mockModelSettings;
-      locationSpy.mockImplementation(() => {
-        return {
-          href: 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D',
-          hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
-        } as any;
-      });
+      window.location.hash = '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
+      window.location.href = 'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D';
       window.state = {};
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;

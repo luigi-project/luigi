@@ -9,14 +9,13 @@ describe('ConfigHelpers', () => {
     getConfigValue = jest.fn();
     getConfigValueAsync = jest.fn();
     getEngine = jest.fn();
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        Luigi: {
-          getConfigValue,
-          getConfigValueAsync,
-          getEngine
-        }
-      } as Window & typeof globalThis;
+    Object.defineProperty(window, 'Luigi', {
+      value: {
+        getConfigValue,
+        getConfigValueAsync,
+        getEngine
+      },
+      writable: true
     });
   });
 
