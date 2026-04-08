@@ -92,23 +92,46 @@ providers: [
 ]
  ```
 
+### Preload component
+This library offers a preload component which allows Luigi to preload Angular micro frontends in the background and improving navigation performance when switching between view groups.
+
+#### Add the preload route
+```javascript
+import { LuigiPreloadComponent } from '@luigi-project/client-support-angular';
+...
+{ path: 'luigi-client-support-preload', component: LuigiPreloadComponent }
+```
+#### Example Luigi config
+To enable it in luigi config it needs to be set like this:
+```javascript
+Luigi.setConfig({
+            navigation: {
+                preloadViewGroups: true,
+                viewGroupSettings: {
+                    vg1: {
+                        preloadUrl: 'https://path.to.angular.app#/luigi-client-support-preload'
+                    }
+                },
+                nodes: () => [...]
+            }
+})
+```
+Detailed information can be found [here](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=preloadviewgroups) and in the [advanced section](https://docs.luigi-project.io/docs/navigation-advanced?section=view-groups)
+
 ### LuigiAutoRoutingService
 
 This service cannot be used directly, but it provides useful features on how to synchronize your Angular application with Luigi navigation. 
 
 For example, when the user navigates through different pages within a micro frontend, you can use this feature to update Luigi accordingly. (You can also find more information about this process in the [micro frontend routing](https://docs.luigi-project.io/docs/microfrontend-routing) document.)
 
-### Preload component
-
-In your Angular route configuration, you can add in any of the following preload components:
-
+#### Examples
  ```javascript
-{path: 'luigi-client-support-preload',component: Sample1Component,data: { fromVirtualTreeRoot: true }}
-{path: 'luigi-client-support-preload',component: Sample1Component,data: { fromVirtualTreeRoot: : {"truncate": "*/projects"} }}
-{path: 'luigi-client-support-preload',component: Sample1Component,data: { fromVirtualTreeRoot: : {"truncate": "/projects"} }}
-{path: 'luigi-client-support-preload',component: Sample2Component,data: { luigiRoute: '/home/sample2' }}
-{path: 'luigi-client-support-preload',component: Sample2Component,data: { luigiRoute: '/home/sample2', fromContext: true}}
-{path: 'luigi-client-support-preload',component: Sample2Component,data: { luigiRoute: '/home/sample2', fromContext: 'localContext'}}
+{path: 'sample1',component: Sample1Component, data: { fromVirtualTreeRoot: true }}
+{path: 'sample2',component: Sample2Component, data: { fromVirtualTreeRoot: : {"truncate": "*/projects"} }}
+{path: 'sample3',component: Sample3Component, data: { fromVirtualTreeRoot: : {"truncate": "/projects"} }}
+{path: 'sample4',component: Sample4Component, data: { luigiRoute: '/home/sample4' }}
+{path: 'sample5',component: Sample5Component, data: { luigiRoute: '/home/sample5', fromContext: true}}
+{path: 'sample6',component: Sample6Component, data: { luigiRoute: '/home/sample6', fromContext: 'localContext'}}
  ```
 
 Under the hood, these components make use of Luigi's [linkManager](https://docs.luigi-project.io/docs/luigi-client-api?section=linkmanager) in the following way: 
@@ -124,21 +147,20 @@ For `data: { fromVirtualTreeRoot: true }`, once we load Sample1Component, this L
  ```
  In the above case, the specified string (e.g. `projects`) will be cut off from the beginning of the current micro frontend route before being sent to Luigi Core. This can be useful when the micro frontend is not served under the webroot, but under a subfolder. If the truncate string starts with `*`, the route will be truncated after the first occurrence of the string following `*`.
 
-For `data: { luigiRoute: '/home/sample2' }`, this Luigi Client API method is called:
+For `data: { luigiRoute: '/home/sample4' }`, this Luigi Client API method is called:
  ```javascript
   luigiClient.linkManager().withoutSync().navigate(data.luigiRoute);
  ```
 
-For `data: { luigiRoute: '/home/sample2', fromContext: true }`, this Luigi Client API method is called:
+For `data: { luigiRoute: '/home/sample5', fromContext: true }`, this Luigi Client API method is called:
  ```javascript
   luigiClient.linkManager().fromClosestContext().withoutSync().navigate(data.luigiRoute);
  ```
 
-For `data: { luigiRoute: '/home/sample2', fromContext: 'localContext' }`, this Luigi Client API method is called:
+For `data: { luigiRoute: '/home/sample6', fromContext: 'localContext' }`, this Luigi Client API method is called:
  ```javascript
   luigiClient.linkManager().fromContext('localContext').withoutSync().navigate(data.luigiRoute);
  ```
-
 
 ### LuigiRouteStrategy
 
