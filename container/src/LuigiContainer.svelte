@@ -1,6 +1,5 @@
 <svelte:options
   customElement={{
-    tag: null,
     shadow: 'none',
     props: {
       activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
@@ -80,7 +79,7 @@
   export let anchor: string;
   export let authData: any;
   export let clientPermissions: any;
-  export let context: string;
+  export let context: string | object;
   export let deferInit: boolean;
   export let dirtyStatus: boolean;
   export let documentTitle: string;
@@ -151,13 +150,14 @@
           (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
         } else {
           const internalObj = {
-            ...internal || {}, ...{
+            ...(internal || {}),
+            ...{
               activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
               currentLocale: thisComponent.locale,
               currentTheme: thisComponent.theme,
               userSettings: thisComponent.userSettings || null,
               cssVariables: thisComponent.cssVariables || {},
-              anchor: thisComponent.anchor || "",
+              anchor: thisComponent.anchor || '',
               drawer: thisComponent.drawer || false,
               modal: thisComponent.modal || false,
               viewStackSize: thisComponent.viewStackSize || 0,
@@ -181,7 +181,7 @@
             ContainerAPI.notifyAlertClosed(id, dismissKey, iframeHandle);
           }
         }
-      }
+      };
 
       thisComponent.notifyConfirmationModalClosed = (result) => {
         // check if thisComponent is in dom
@@ -192,7 +192,7 @@
             ContainerAPI.notifyConfirmationModalClosed(!!result, iframeHandle);
           }
         }
-      }
+      };
 
       containerService.registerContainer(thisComponent);
       webcomponentService.thisComponent = thisComponent;
@@ -237,7 +237,8 @@
       } else if (webcomponent) {
         (thisComponent.getNoShadow() ? thisComponent : mainComponent).addEventListener('wc_ready', () => {
           if (
-            !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent?.deferLuigiClientWCInit
+            !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent
+              ?.deferLuigiClientWCInit
           ) {
             thisComponent.initialized = true;
             webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
@@ -289,7 +290,7 @@
         title={label}
         allow={getAllowRules(allowRules)}
         sandbox={sandboxRules ? sandboxRules.join(' ') : undefined}
-      />
+      ></iframe>
     {/if}
   {/if}
 </main>

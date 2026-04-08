@@ -10,12 +10,9 @@ module.exports = {
     bundle: ['./src/main.js']
   },
   resolve: {
-    alias: {
-      svelte: path.resolve('node_modules', 'svelte/src/runtime')
-    },
+    conditionNames: ['require', 'module', 'svelte', 'browser'],
     extensions: ['.mjs', '.js', '.svelte'],
-    mainFields: ['svelte', 'browser', 'module', 'main'],
-    conditionNames: ['svelte']
+    mainFields: ['svelte', 'browser', 'module', 'main']
   },
   output: {
     path: path.join(__dirname, '/public'),
