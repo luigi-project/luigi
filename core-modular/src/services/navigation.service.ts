@@ -909,7 +909,7 @@ export class NavigationService {
    * Builds a path string by concatenating path segments from the virtual tree root or the incoming path.
    *
    * @param incomingPath - The incoming path segment to be appended.
-   * @param fromVirtualTreeRoot - A boolean indicating whether to build the path from the virtual tree root.
+   * @param options - The set of params related to navigation.
    * @returns The constructed path string.
    */
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
