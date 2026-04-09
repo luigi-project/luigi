@@ -224,7 +224,7 @@ class RoutingHelpersClass {
     }
 
     const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
-    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
   }
 
   calculateNodeHref(node, pathParams) {
