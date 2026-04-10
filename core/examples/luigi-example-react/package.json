@@ -13,11 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@luigi-project/client": "^2.28.0",
-    "@luigi-project/core": "^2.28.0",
+    "@luigi-project/client": "^2.29.0",
+    "@luigi-project/core": "^2.29.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
