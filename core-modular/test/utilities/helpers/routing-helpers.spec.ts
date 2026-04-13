@@ -13,8 +13,12 @@ describe('Routing-helpers', () => {
       getConfig: () => ({ routing: { contentViewParamPrefix: '~' } }),
       getEngine: () => ({}),
       setConfig: () => {},
-      navigation: () => ({ navigate: () => {} }),
+      navigation: () => ({
+        navigate: () => {},
+        navService: { extractDataFromPath: () => ({pathData: {pathParams: {virtualnode: 'virtualnode'}}}) }
+      }),
       routing: () => ({ getSearchParams: () => ({}) }),
+      i18n: () => ({ getTranslation: () => undefined }),
       uxManager: () => ({}),
       linkManager: () => ({}),
       getConfigValue: (key: string) => {
@@ -496,6 +500,73 @@ describe('Routing-helpers', () => {
       const pathParams = { id: '123', detail: 'info' };
       const result = RoutingHelpers.getSubPath(grandGrandChildNode, pathParams);
       expect(result).toBe('/home/123/details/info');
+    });
+  });
+
+  describe('mapPathToNode', () => {
+    let node;
+
+    beforeEach(() => {
+      node = {
+        pathSegment: ':id',
+        parent: {
+          pathSegment: 'home'
+        }
+      };
+    });
+
+    it('happy path', () => {
+      expect(RoutingHelpers.mapPathToNode('/home/234/subpage', node)).toEqual('/home/234');
+      expect(RoutingHelpers.mapPathToNode('/home/234/', node)).toEqual('/home/234');
+    });
+
+    it('node not an ancestor', () => {
+      expect(RoutingHelpers.mapPathToNode('/home2/234/subpage', node)).toEqual(undefined);
+      expect(RoutingHelpers.mapPathToNode('/home', node)).toEqual(undefined);
+    });
+
+    it('wrong input corner cases', () => {
+      expect(RoutingHelpers.mapPathToNode(undefined, undefined)).toEqual(undefined);
+      expect(RoutingHelpers.mapPathToNode('/home', undefined)).toEqual(undefined);
+      expect(RoutingHelpers.mapPathToNode(undefined, node)).toEqual(undefined);
+    });
+  });
+
+  describe('getNodeLabel', () => {
+    it('get correct node label', async () => {
+      const node = {
+        pathSegment: 'mynode',
+        label: 'myNode Luigi rocks!',
+        viewUrl: 'test.html',
+        _virtualTree: false
+      };
+      const result = await RoutingHelpers.getNodeLabel(node, luigi);
+
+      expect(result).toEqual('myNode Luigi rocks!');
+    });
+
+    it('get correct dynamic value', async () => {
+      const node = {
+        pathSegment: ':virtualnode',
+        label: 'myNode Luigi rocks!',
+        viewUrl: 'test.html',
+        _virtualTree: true
+      };
+      const result = await RoutingHelpers.getNodeLabel(node, luigi);
+
+      expect(result).toEqual('virtualnode');
+    });
+
+    it('get correct path segment', async () => {
+      const node = {
+        pathSegment: 'mynode',
+        label: 'myNode Luigi rocks!',
+        viewUrl: 'test.html',
+        _virtualTree: true
+      };
+      const result = await RoutingHelpers.getNodeLabel(node, luigi);
+
+      expect(result).toEqual('mynode');
     });
   });
 });

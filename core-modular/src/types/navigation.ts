@@ -121,7 +121,9 @@ export interface Node {
   parent?: Node;
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
+  showBreadcrumbs?: boolean;
   tabNav?: boolean;
+  titleResolver?: any;
   tooltipText?: string;
   userSettingsGroup?: string;
   viewUrl?: string;
@@ -162,6 +164,14 @@ export interface Category {
   tooltip?: string;
 }
 
+export interface BreadcrumbItem {
+  label: string;
+  last?: boolean;
+  node: Node;
+  pending?: boolean;
+  route: string | undefined;
+}
+
 export interface NavItem {
   altText?: string;
   category?: Category;
@@ -177,6 +187,12 @@ export interface TabNavData {
   items?: NavItem[];
   basePath?: string;
   navClick?: (item: NavItem) => void;
+}
+
+export interface BreadcrumbData {
+  basePath?: string;
+  items?: BreadcrumbItem[];
+  selectedNode?: Node;
 }
 
 export interface ModalSettings {

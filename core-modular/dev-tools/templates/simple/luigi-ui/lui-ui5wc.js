@@ -649,6 +649,37 @@ const connector = {
     });
   },
 
+  renderBreadcrumbs: (breadcrumbData) => {
+    const wrapper = document.querySelector('.breadcrumb-wrapper');
+
+    if (wrapper) {
+      wrapper.innerHTML = '';
+    }
+
+    if (!wrapper || !breadcrumbData?.items?.length) {
+      return;
+    }
+
+    const breadcrumbs = document.createElement('ui5-breadcrumbs');
+    const selectedNode = breadcrumbData.selectedNode;
+
+    breadcrumbData.items.forEach((item) => {
+      const el = document.createElement('ui5-breadcrumbs-item');
+
+      if (item.node) {
+        el.textContent = `${item.label}`;
+
+        if (item.node.label !== selectedNode.label && item.node.pathSegment !== selectedNode.pathSegment) {
+          el.setAttribute('href', item.route);
+        }
+
+        breadcrumbs.appendChild(el);
+      }
+    });
+
+    wrapper.appendChild(breadcrumbs);
+  },
+
   renderAlert(alertSettings, alertHandler) {
     const alertContainer = document.querySelector('.luigi-alert--overlay');
     const alertTypeMap = {

@@ -2,6 +2,8 @@ import type { Luigi } from '../core-api/luigi';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  BreadcrumbData,
+  BreadcrumbItem,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -564,6 +566,102 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+    };
+  }
+
+  async getBreadcrumbData(path: string, pData?: PathData): Promise<BreadcrumbData> {
+    const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
+    const pathData = pData ?? (await this.getPathData(path));
+    const nodesInPath = pathData?.nodesInPath || [];
+    const navItems: BreadcrumbItem[] = [];
+    let previousBreadcrumbs: Record<string, any> = {};
+    let showBreadcrumb;
+    let basePath = '';
+
+    if (!breadcrumbConfig || path === '' && nodesInPath?.[0].viewUrl) {
+      return {};
+    }
+
+    // if enabled in general, check node scope
+    nodesInPath.forEach((node: Node) => {
+      if (node.children) {
+        basePath += '/' + (node.pathSegment || '');
+      }
+
+      if (node.showBreadcrumbs === false) {
+        showBreadcrumb = false;
+      } else {
+        showBreadcrumb = true;
+      }
+    });
+
+    if (!showBreadcrumb) {
+      return {};
+    }
+
+    const addNavHrefForAnchor = GenericHelpers.getConfigBooleanValue(
+      this.luigi.getConfig(),
+      'navigation.addNavHrefs'
+    );
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const start = breadcrumbConfig.omitRoot ? 2 : 1;
+
+    for (let i = start; i < nodesInPath.length; i++) {
+      const node = nodesInPath[i];
+      let route = RoutingHelpers.mapPathToNode(currentPath.path, node);
+
+      if (route && hashRouting) {
+        route = '/#' + route;
+      }
+
+      if (route && previousBreadcrumbs[route]) {
+        navItems.push(previousBreadcrumbs[route]);
+      } else if (node.label || node.pathSegment || node.titleResolver) {
+        if (node.titleResolver) {
+          navItems.push({
+            label:
+              node.titleResolver.prerenderFallback && node.titleResolver.fallbackTitle
+                ? this.luigi.i18n().getTranslation(node.titleResolver.fallbackTitle)
+                : breadcrumbConfig.pendingItemLabel || '',
+            node: node,
+            route: route,
+            pending: true
+          });
+        } else {
+          const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+
+          if (label) {
+            navItems.push({ label: label, node: node, route: route });
+          }
+        }
+      }
+    }
+
+    // check if route has been changed in the meantime - if yes, do nothing
+    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+      if (navItems.length > 1) {
+        navItems[navItems.length - 1].last = true;
+      } else if (breadcrumbConfig.autoHide) {
+        navItems.length = 0;
+      }
+
+      previousBreadcrumbs = {};
+      navItems.map((item: BreadcrumbItem) => {
+        if (item.route) {
+          previousBreadcrumbs[item.route] = item;
+        }
+      });
+    }
+
+    if (hashRouting) {
+      basePath ='/#' + basePath;
+    }
+
+    return {
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      items: navItems,
+      selectedNode: pathData?.selectedNode || ({} as Node)
     };
   }
 

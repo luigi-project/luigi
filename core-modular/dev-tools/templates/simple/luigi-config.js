@@ -10,6 +10,11 @@ window.onload = () => {
           }
         }
       },
+      breadcrumbs: {
+        pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
+        omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
+        autoHide: false // hide breadcrumbs when navigating to root node
+      },
       appSwitcher: {
         showMainAppEntry: true,
         items: [
@@ -54,6 +59,7 @@ window.onload = () => {
         {
           pathSegment: 'home',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           anonymousAccess: 'exclusive',
           context: {
@@ -65,6 +71,7 @@ window.onload = () => {
         {
           pathSegment: 'home2',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {

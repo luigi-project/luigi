@@ -123,6 +123,7 @@ export class RoutingService {
     this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
     this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
+    this.luigi.getEngine()._connector?.renderBreadcrumbs(await this.getNavigationService().getBreadcrumbData(path, pathData));
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     if (currentNode) {
