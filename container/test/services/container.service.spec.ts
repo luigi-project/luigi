@@ -534,8 +534,11 @@ describe('dispatch', () => {
     service.dispatch(eventName, targetContainer, eventData);
 
     // Assert
-    const dispatchedEvent = new LuigiEvent(eventName, eventData);
-    expect(targetContainer.dispatchEvent).toHaveBeenCalledWith(dispatchedEvent);
+    // Happy-dom creates events with unique timestamps, so we check properties instead
+    expect(targetContainer.dispatchEvent).toHaveBeenCalledTimes(1);
+    const dispatchedEvent = (targetContainer.dispatchEvent as jest.Mock).mock.calls[0][0];
+    expect(dispatchedEvent.type).toBe(eventName);
+    expect(dispatchedEvent.detail).toEqual(eventData);
   });
 
   it('should execute the callback when provided', () => {
@@ -554,12 +557,12 @@ describe('dispatch', () => {
     service.dispatch(eventName, targetContainer, eventData, callbackFunction);
 
     // Assert
-    globalThis.CustomEvent = jest
-      .fn()
-      .mockImplementation((type, eventInit) => ({ isTrusted: false, callback: callbackFunction }));
-
-    const dispatchedEventMock = { isTrusted: false, callback: expect.any(Function) };
-    expect(targetContainer.dispatchEvent).toHaveBeenCalledWith(expect.objectContaining(dispatchedEventMock));
+    // Happy-dom creates events with unique timestamps, so check properties
+    expect(targetContainer.dispatchEvent).toHaveBeenCalledTimes(1);
+    const dispatchedEvent = (targetContainer.dispatchEvent as jest.Mock).mock.calls[0][0];
+    expect(dispatchedEvent.type).toBe(eventName);
+    expect(dispatchedEvent.detail).toEqual(eventData);
+    expect(dispatchedEvent.callbackFn).toBe(callbackFunction);
   });
 });
 

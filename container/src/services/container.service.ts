@@ -24,7 +24,12 @@ export class ContainerService {
    * @returns {boolean} `true` if the element is visible, otherwise `false`
    */
   isVisible(component: HTMLElement): boolean {
-    return !!(component.offsetWidth || component.offsetHeight || component.getClientRects().length);
+    // Happy-dom's getClientRects() returns length=1 even for hidden/zero-size elements
+    // So we check display style and dimensions instead
+    if (getComputedStyle(component).display === 'none') {
+      return false;
+    }
+    return !!(component.offsetWidth || component.offsetHeight);
   }
 
   /**
