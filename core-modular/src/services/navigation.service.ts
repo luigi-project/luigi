@@ -599,7 +599,6 @@ export class NavigationService {
       return {};
     }
 
-    const addNavHrefForAnchor = GenericHelpers.getConfigBooleanValue(this.luigi.getConfig(), 'navigation.addNavHrefs');
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
     const start = breadcrumbConfig.omitRoot ? 2 : 1;
@@ -614,24 +613,14 @@ export class NavigationService {
 
       if (route && previousBreadcrumbs[route]) {
         navItems.push(previousBreadcrumbs[route]);
-      } else if (node.label || node.pathSegment || node.titleResolver) {
-        if (node.titleResolver) {
-          navItems.push({
-            label:
-              node.titleResolver.prerenderFallback && node.titleResolver.fallbackTitle
-                ? this.luigi.i18n().getTranslation(node.titleResolver.fallbackTitle)
-                : breadcrumbConfig.pendingItemLabel || '',
-            node: node,
-            route: route,
-            pending: true
-          });
-        } else {
-          const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      } else if (node.label || node.pathSegment) {
+        let label = await RoutingHelpers.getNodeLabel(node, this.luigi);
 
-          if (label) {
-            navItems.push({ label: label, node: node, route: route });
-          }
+        if (!label) {
+          label = breadcrumbConfig.pendingItemLabel || '';
         }
+
+        navItems.push({ label: label, node: node, route: route });
       }
     }
 

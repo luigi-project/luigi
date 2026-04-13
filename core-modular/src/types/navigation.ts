@@ -123,7 +123,6 @@ export interface Node {
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
   tabNav?: boolean;
-  titleResolver?: any;
   tooltipText?: string;
   userSettingsGroup?: string;
   viewUrl?: string;
