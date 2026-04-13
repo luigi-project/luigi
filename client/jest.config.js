@@ -3,8 +3,8 @@ module.exports = async () => {
     verbose: true,
     testEnvironment: '@happy-dom/jest-environment',
     testEnvironmentOptions: {
-      url: 'http://localhost/',
+      url: 'http://localhost/'
     },
-    roots: ['test'],
+    roots: ['test']
   };
 };
