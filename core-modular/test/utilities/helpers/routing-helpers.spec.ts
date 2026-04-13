@@ -15,7 +15,7 @@ describe('Routing-helpers', () => {
       setConfig: () => {},
       navigation: () => ({
         navigate: () => {},
-        navService: { extractDataFromPath: () => ({pathData: {pathParams: {virtualnode: 'virtualnode'}}}) }
+        navService: { extractDataFromPath: () => ({ pathData: { pathParams: { virtualnode: 'virtualnode' } } }) }
       }),
       routing: () => ({ getSearchParams: () => ({}) }),
       i18n: () => ({ getTranslation: () => undefined }),

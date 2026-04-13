@@ -1387,7 +1387,7 @@ describe('NavigationService', () => {
       jest.clearAllMocks();
     });
 
-    it('should return breadcrumb data', async() => {
+    it('should return breadcrumb data', async () => {
       const result = await navigationService.getBreadcrumbData('/base', pathData);
 
       expect(result).toEqual({

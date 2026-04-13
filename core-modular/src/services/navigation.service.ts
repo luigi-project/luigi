@@ -578,7 +578,7 @@ export class NavigationService {
     let showBreadcrumb;
     let basePath = '';
 
-    if (!breadcrumbConfig || path === '' && nodesInPath?.[0].viewUrl) {
+    if (!breadcrumbConfig || (path === '' && nodesInPath?.[0].viewUrl)) {
       return {};
     }
 
@@ -599,10 +599,7 @@ export class NavigationService {
       return {};
     }
 
-    const addNavHrefForAnchor = GenericHelpers.getConfigBooleanValue(
-      this.luigi.getConfig(),
-      'navigation.addNavHrefs'
-    );
+    const addNavHrefForAnchor = GenericHelpers.getConfigBooleanValue(this.luigi.getConfig(), 'navigation.addNavHrefs');
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
     const start = breadcrumbConfig.omitRoot ? 2 : 1;
@@ -655,7 +652,7 @@ export class NavigationService {
     }
 
     if (hashRouting) {
-      basePath ='/#' + basePath;
+      basePath = '/#' + basePath;
     }
 
     return {
