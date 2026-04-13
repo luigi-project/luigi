@@ -71,10 +71,11 @@ describe('Auth-Layer Service', () => {
       logoutUrl: 'lo',
       post_logout_redirect_uri: 'plor'
     };
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: locationMock
-      } as Window & typeof globalThis;
+    // Happy-dom doesn't allow spying on window.window
+    // Use a getter so it always reads the current value of locationMock
+    Object.defineProperty(window, 'location', {
+      get: () => locationMock,
+      configurable: true
     });
   });
 
