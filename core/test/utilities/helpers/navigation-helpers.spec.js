@@ -1250,24 +1250,21 @@ describe('Navigation-helpers', () => {
   });
 
   describe('isCollapsedSuperCategory', () => {
-    let getItemSpy;
+    const COLLAPSED_KEY = 'luigi.preferences.navigation.collapsedSuperCategories';
 
-    beforeEach(() => {
-      getItemSpy = jest.spyOn(Storage.prototype, 'getItem');
-    });
-
-    afterAll(() => {
-      jest.restoreAllMocks();
+    afterEach(() => {
+      localStorage.removeItem(COLLAPSED_KEY);
     });
 
     it('when category key is present in the localStorage, should return true ', () => {
-      getItemSpy.mockReturnValueOnce(JSON.stringify(['category1', 'category2']));
+      // Happy-dom's localStorage doesn't allow Jest spying, so set the value directly
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify(['category1', 'category2']));
       const result = NavigationHelpers.isCollapsedSuperCategory('category2');
       expect(result).toBe(true);
     });
 
     it('when category key is not in the localStorage, should return false ', () => {
-      getItemSpy.mockReturnValueOnce(JSON.stringify(['category1']));
+      localStorage.setItem(COLLAPSED_KEY, JSON.stringify(['category1']));
       const result = NavigationHelpers.isCollapsedSuperCategory('category2');
       expect(result).toBe(false);
     });

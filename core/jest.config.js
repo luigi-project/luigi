@@ -3,7 +3,10 @@ const config = {
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.{js,mjs,ts,svelte}', '!**/node_modules/**', '!**/vendor/**', '!**/*.spec.{js,ts}'],
   roots: ['test'],
-  testEnvironment: 'jsdom',
+  testEnvironment: '@happy-dom/jest-environment',
+  testEnvironmentOptions: {
+    url: 'http://localhost/'
+  },
   transform: {
     '\\.[jt]sx?$': 'babel-jest'
   },

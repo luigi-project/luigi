@@ -113,9 +113,14 @@ describe('Routing', function() {
       // when
       await Routing.navigateTo('/projects');
 
-      const eventDetail = { detail: { preventContextUpdate: false, withoutSync: false } };
       // then
-      sinon.assert.calledWithExactly(window.dispatchEvent, new CustomEvent('popstate', eventDetail));
+      // Happy-dom creates new CustomEvent instances with unique timestamps,
+      // so we can't use calledWithExactly. Instead, check the call happened
+      // and verify the event properties.
+      sinon.assert.calledOnce(window.dispatchEvent);
+      const dispatchedEvent = window.dispatchEvent.getCall(0).args[0];
+      assert.equal(dispatchedEvent.type, 'popstate');
+      assert.deepEqual(dispatchedEvent.detail, { preventContextUpdate: false, withoutSync: false });
     });
   });
 
