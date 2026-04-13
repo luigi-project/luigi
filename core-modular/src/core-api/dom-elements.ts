@@ -77,12 +77,9 @@ export class Elements {
         }
       }
     }
-    // TODO drawer not implemented yet
-    // if(UIModule.drawerContainer) {
-    //   iframes.push(UIModule.drawerContainer.iframeHandle.iframe);
-    // }
-
-
+    if (UIModule.drawerContainer) {
+      iframes.push(UIModule.drawerContainer.iframeHandle.iframe);
+    }
     if (!containerWrapper) return null;
     for (const element of Array.from(containerWrapper.childNodes) as any[]) {
       if (element.tagName?.startsWith('LUIGI-') && element.iframeHandle?.iframe) {
