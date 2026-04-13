@@ -9,14 +9,14 @@ const chai = require('chai');
 const assert = chai.assert;
 const sinon = require('sinon');
 
-describe('Routing', function() {
+describe('Routing', function () {
   jest.retryTimes(2);
 
   let component;
   beforeEach(() => {
     const lastObj = {};
     component = {
-      set: obj => {
+      set: (obj) => {
         Object.assign(lastObj, obj);
       },
       get: () => lastObj,
@@ -29,7 +29,7 @@ describe('Routing', function() {
     Navigation.rootNode = undefined;
 
     sinon.stub(ViewUrlDecorator);
-    ViewUrlDecorator.applyDecorators.callsFake(url => url);
+    ViewUrlDecorator.applyDecorators.callsFake((url) => url);
   });
   afterEach(() => {
     if (document.createElement.restore) {
@@ -598,7 +598,7 @@ describe('Routing', function() {
         navigateOk: null
       };
       sinon.stub(Routing, 'navigateTo');
-      sinon.stub(GenericHelpers, 'isElementVisible').callsFake(element => element);
+      sinon.stub(GenericHelpers, 'isElementVisible').callsFake((element) => element);
     });
 
     afterEach(() => {
@@ -648,7 +648,7 @@ describe('Routing', function() {
 
       let savedObj = {};
       const componentSaved = {
-        set: obj => {
+        set: (obj) => {
           savedObj = GenericHelpers.deepMerge(savedObj, obj);
           componentSaved.get = () => {
             return savedObj;
@@ -668,10 +668,7 @@ describe('Routing', function() {
 
       // when
       const docMock = sinon.mock(document);
-      docMock
-        .expects('createElement')
-        .returns({ src: null })
-        .once();
+      docMock.expects('createElement').returns({ src: null }).once();
 
       await Routing.handleRouteChange(path, componentSaved, currentLuigiConfig.navigation.nodes()[0], config);
 
@@ -788,7 +785,7 @@ describe('Routing', function() {
       component.showAlert = sinon.spy();
       component.shouldShowUnsavedChangesModal = sinon.spy();
 
-      await Routing.handleRouteChange(path, component, node, config).catch(error => {
+      await Routing.handleRouteChange(path, component, node, config).catch((error) => {
         console.log(error);
       });
 
@@ -806,7 +803,7 @@ describe('Routing', function() {
       component.showAlert = sinon.spy();
       component.shouldShowUnsavedChangesModal = sinon.spy();
 
-      await Routing.handleRouteChange(path, component, node, config).catch(error => {
+      await Routing.handleRouteChange(path, component, node, config).catch((error) => {
         console.log(error);
       });
 
@@ -830,7 +827,7 @@ describe('Routing', function() {
       Iframe.switchActiveIframe = sinon.spy();
       Routing.navigateWebComponentCompound = sinon.spy();
 
-      await Routing.handleRouteChange(path, component, node, config).catch(error => {
+      await Routing.handleRouteChange(path, component, node, config).catch((error) => {
         console.log(error);
       });
 
@@ -856,7 +853,7 @@ describe('Routing', function() {
       Iframe.switchActiveIframe = sinon.spy();
       Routing.navigateWebComponent = sinon.spy();
 
-      await Routing.handleRouteChange(path, component, node, config).catch(error => {
+      await Routing.handleRouteChange(path, component, node, config).catch((error) => {
         console.log(error);
       });
 
@@ -1320,10 +1317,7 @@ describe('Routing', function() {
       });
       window.state = {};
       const mockURL = new URL(global.location.href);
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
       let historyState = {
         modalHistoryLength: 1,
         historygap: 1,
@@ -1349,16 +1343,12 @@ describe('Routing', function() {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
       locationSpy.mockImplementation(() => {
         return {
-          href:
-            'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
+          href: 'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
           search: '?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
         };
       });
       window.state = {};
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
       try {
         Routing.removeModalDataFromUrl();
       } catch (error) {
@@ -1376,10 +1366,7 @@ describe('Routing', function() {
       });
       window.state = {};
       const addHistoryEntry = true;
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
       try {
         modalPath = encodeURIComponent('/modalPath');
         Routing.updateModalDataInUrl(modalPath, modalParams, addHistoryEntry);
@@ -1404,10 +1391,7 @@ describe('Routing', function() {
       });
       window.state = {};
       const addHistoryEntry = false;
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
       try {
         modalPath = encodeURIComponent('/project-modal');
         Routing.updateModalDataInUrl(modalPath, modalParams, addHistoryEntry);
@@ -1462,10 +1446,7 @@ describe('Routing', function() {
       });
       const mockURL = new URL(global.location.href);
       window.state = {};
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(true);
       let historyState = {
         modalHistoryLength: 1,
         historygap: 1,
@@ -1490,17 +1471,12 @@ describe('Routing', function() {
       sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
       locationSpy.mockImplementation(() => {
         return {
-          href:
-            'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
-          hash:
-            '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
+          hash: '#/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
         };
       });
       window.state = {};
-      sinon
-        .stub(LuigiConfig, 'getConfigBooleanValue')
-        .withArgs('routing.useHashRouting')
-        .returns(true);
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(true);
       try {
         Routing.removeModalDataFromUrl();
       } catch (error) {
@@ -1575,10 +1551,7 @@ describe('Routing', function() {
     });
     it('should return true if path matches config patterns', () => {
       sinon.restore();
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.skipRoutingForUrlPatterns')
-        .returns(['foo_bar']);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.skipRoutingForUrlPatterns').returns(['foo_bar']);
       locationSpy.mockImplementation(() => {
         return {
           href: 'http://some.url.de?foo_bar'
@@ -1611,18 +1584,12 @@ describe('Routing', function() {
       sinon.restore();
     });
     it('handleBookmarkableModalPath should be triggered when showModalPathInUrl is true', () => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.showModalPathInUrl')
-        .returns(true);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.showModalPathInUrl').returns(true);
       Routing.shouldShowModalPathInUrl();
       sinon.assert.calledOnce(Routing.handleBookmarkableModalPath);
     });
     it('handleBookmarkableModalPath should not be triggered when showModalPathInUrl is false', () => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.showModalPathInUrl')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.showModalPathInUrl').returns(false);
       Routing.shouldShowModalPathInUrl();
       sinon.assert.notCalled(Routing.handleBookmarkableModalPath);
     });
