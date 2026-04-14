@@ -534,7 +534,6 @@ describe('dispatch', () => {
     service.dispatch(eventName, targetContainer, eventData);
 
     // Assert
-    // Happy-dom creates events with unique timestamps, so we check properties instead
     expect(targetContainer.dispatchEvent).toHaveBeenCalledTimes(1);
     const dispatchedEvent = (targetContainer.dispatchEvent as jest.Mock).mock.calls[0][0];
     expect(dispatchedEvent.type).toBe(eventName);
@@ -557,7 +556,6 @@ describe('dispatch', () => {
     service.dispatch(eventName, targetContainer, eventData, callbackFunction);
 
     // Assert
-    // Happy-dom creates events with unique timestamps, so check properties
     expect(targetContainer.dispatchEvent).toHaveBeenCalledTimes(1);
     const dispatchedEvent = (targetContainer.dispatchEvent as jest.Mock).mock.calls[0][0];
     expect(dispatchedEvent.type).toBe(eventName);

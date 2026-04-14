@@ -5,7 +5,6 @@ describe('Generic-helpers', () => {
   let originalLocation: Location;
 
   beforeAll(() => {
-    // Happy-dom doesn't allow spying on window.window
     // Save original and replace location with a getter that returns our mock
     originalLocation = window.location;
     Object.defineProperty(window, 'location', {

@@ -57,7 +57,6 @@ describe('attachWC', () => {
     expect(service.initWC).toHaveBeenCalled();
     expect(createElementSpy).toHaveBeenCalledWith(wc_id);
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    // Happy-dom calls dispatchEvent multiple times internally (event phases)
     expect(dispatchEventSpy).toHaveBeenCalled();
     expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
@@ -92,7 +91,6 @@ describe('attachWC', () => {
 
     // Assert
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    // Happy-dom calls dispatchEvent multiple times internally (event phases)
     expect(dispatchEventSpy).toHaveBeenCalled();
     expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
@@ -113,7 +111,6 @@ describe('attachWC', () => {
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
     expect((wc_container as any)._luigi_mfe_webcomponent).toEqual(innerWCElement);
 
-    // Happy-dom calls dispatchEvent multiple times internally (event phases)
     expect(dispatchEventSpy).toHaveBeenCalled();
     expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });

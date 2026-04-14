@@ -150,8 +150,6 @@ describe('WebComponentService', function () {
           return myEl;
         });
       sb.stub(container, 'replaceChild').callsFake(() => {});
-      // Don't stub entire window.location in happy-dom as it breaks document.baseURI
-      // sb.stub(window, 'location').value({ origin: 'http://localhost' });
 
       container.appendChild(itemPlaceholder);
       WebComponentService.attachWC(wc_id, itemPlaceholder, container, extendedContext, 'http://localhost:8080/');
@@ -507,7 +505,6 @@ describe('WebComponentService', function () {
           const target = compoundCnt.querySelector('[nodeId=' + listeners[0].wcElementId + ']');
           sb.spy(target, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          // Happy-dom calls dispatchEvent 3 times internally (event phases), so check 'called' instead of 'calledOnce'
           assert(target.dispatchEvent.called);
           // IntersectionObserver for lazy loading should not be instantiated
           expect(globalThis.IntersectionObserver.mock.instances).to.have.lengthOf(0);
@@ -544,7 +541,6 @@ describe('WebComponentService', function () {
           const evBus = compoundCnt.eventBus;
           sb.spy(compoundCnt, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          // Happy-dom calls dispatchEvent 3 times internally (event phases), so check 'called' instead of 'calledOnce'
           assert(compoundCnt.dispatchEvent.called);
 
           done();

@@ -114,9 +114,6 @@ describe('Routing', function () {
       await Routing.navigateTo('/projects');
 
       // then
-      // Happy-dom creates new CustomEvent instances with unique timestamps,
-      // so we can't use calledWithExactly. Instead, check the call happened
-      // and verify the event properties.
       sinon.assert.calledOnce(window.dispatchEvent);
       const dispatchedEvent = window.dispatchEvent.getCall(0).args[0];
       assert.equal(dispatchedEvent.type, 'popstate');

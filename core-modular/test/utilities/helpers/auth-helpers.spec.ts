@@ -42,7 +42,6 @@ describe('AuthHelpers', () => {
 
   it('parseUrlAuthErrors', () => {
     const location = { search: '' };
-    // Happy-dom doesn't allow spying on window.window
     Object.defineProperty(window, 'location', {
       value: location,
       writable: true,

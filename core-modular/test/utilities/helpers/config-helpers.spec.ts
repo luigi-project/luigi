@@ -9,7 +9,6 @@ describe('ConfigHelpers', () => {
     getConfigValue = jest.fn();
     getConfigValueAsync = jest.fn();
     getEngine = jest.fn();
-    // Happy-dom doesn't allow spying on window.window
     (window as any).Luigi = {
       getConfigValue,
       getConfigValueAsync,

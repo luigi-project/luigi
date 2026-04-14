@@ -1257,7 +1257,6 @@ describe('Navigation-helpers', () => {
     });
 
     it('when category key is present in the localStorage, should return true ', () => {
-      // Happy-dom's localStorage doesn't allow Jest spying, so set the value directly
       localStorage.setItem(COLLAPSED_KEY, JSON.stringify(['category1', 'category2']));
       const result = NavigationHelpers.isCollapsedSuperCategory('category2');
       expect(result).toBe(true);

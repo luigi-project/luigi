@@ -35,7 +35,6 @@ describe('Auth-Store Service', () => {
       type: 'session'
     };
 
-    // Happy-dom doesn't allow spying on window.window
     Object.defineProperty(window, 'localStorage', {
       value: localStorageMock,
       writable: true,
