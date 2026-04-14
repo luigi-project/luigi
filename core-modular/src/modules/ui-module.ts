@@ -359,9 +359,9 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);

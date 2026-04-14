@@ -566,6 +566,9 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
+  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+    connector.renderModal(lc, drawerSettings, onCloseCallback);
+  },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
@@ -593,10 +596,13 @@ const connector = {
     bar.appendChild(btn);
 
     document.body.appendChild(dialog);
-    onCloseRequest().then(() => {
-      dialog.open = false;
-      document.body.removeChild(dialog);
-    });
+
+    if (onCloseRequest) {
+      onCloseRequest().then(() => {
+        dialog.open = false;
+        document.body.removeChild(dialog);
+      });
+    }
 
     dialog.open = true;
   },

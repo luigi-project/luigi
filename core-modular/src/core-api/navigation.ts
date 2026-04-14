@@ -80,14 +80,14 @@ export class Navigation {
     this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
   };
 
-  openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openAsDrawer = async (path: string, drawerSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
-    const settings = modalSettings || {};
+    const settings = drawerSettings || {};
     if (!settings.title) {
-      settings.title = node?.label;
+      settings.title = node?.label || '';
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
   };
