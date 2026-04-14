@@ -1,15 +1,14 @@
 import { UIModule } from "../../modules/ui-module";
 import { GenericHelpers } from "./generic-helpers";
 import type { Luigi } from "../../core-api/luigi";
-import { get } from "lodash";
 
-type MicrofrontendEntry = {
+export type MicrofrontendEntry = {
     iframe: HTMLElement;
     id: string;
     active: boolean
 };
 
-type MicrofrontendInDom = {
+export type MicrofrontendInDom = {
     container: HTMLElement;
     active: boolean;
     type: 'main' | 'modal' | 'drawer';

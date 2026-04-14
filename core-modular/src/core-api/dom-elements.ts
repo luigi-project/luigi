@@ -1,6 +1,6 @@
 import { UIModule } from '../modules/ui-module';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
-import { LuigiContainerHelpers } from '../utilities/helpers/luigi-container-helpers';
+import { LuigiContainerHelpers, type MicrofrontendInDom } from '../utilities/helpers/luigi-container-helpers';
 import { Luigi } from './luigi';
 export class Elements {
   luigi: Luigi;
@@ -51,12 +51,12 @@ export class Elements {
 
   /**
    * Returns a list of all available micro frontends.
-   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'split-view'|'modal'}>} list of objects defining all micro frontends from the DOM
+   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'drawer'|'modal'}>} list of objects defining all micro frontends from the DOM
    * @memberof Elements
    * @example
    * Luigi.elements().getMicrofrontends();
    */
-  getMicrofrontends() {
+  getMicrofrontends(): MicrofrontendInDom[] {
     return LuigiContainerHelpers.getMicrofrontendsInDom(this.luigi);
   }
 
