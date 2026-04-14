@@ -57,6 +57,14 @@ window.onload = () => {
       },
       nodes: [
         {
+          pathSegment: '404',
+          label: '404',
+          viewUrl: '/404.html',
+          anonymousAccess: true,
+          loadingIndicator: { enabled: false },
+          hideFromNav: true
+        },
+        {
           pathSegment: 'home',
           icon: 'home',
           showBreadcrumbs: false,
@@ -298,6 +306,13 @@ window.onload = () => {
       }
     },
     routing: {
+      pageNotFoundHandler: function (notFoundPath, isAnyPathMatched) {
+        return {
+          redirectTo: '/404',
+          keepURL: false,
+          ignoreLuigiErrorHandling: false
+        };
+      },
       useHashRouting: true
       //showModalPathInUrl: true
     },
