@@ -71,7 +71,7 @@ describe('Auth-Layer Service', () => {
       logoutUrl: 'lo',
       post_logout_redirect_uri: 'plor'
     };
-    
+
     Object.defineProperty(window, 'location', {
       get: () => locationMock,
       configurable: true
