@@ -71,10 +71,10 @@ describe('Auth-Layer Service', () => {
       logoutUrl: 'lo',
       post_logout_redirect_uri: 'plor'
     };
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: locationMock
-      } as Window & typeof globalThis;
+
+    Object.defineProperty(window, 'location', {
+      get: () => locationMock,
+      configurable: true
     });
   });
 
