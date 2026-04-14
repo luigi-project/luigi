@@ -697,6 +697,28 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
+  getVirtualTreePath(viewUrl: string): string {
+    const virtualTreePath = '{virtualTreePath}';
+    if (!viewUrl || !viewUrl.includes(virtualTreePath)) {
+      return viewUrl;
+    }
+
+    const [basePart, queryString] = viewUrl.split('?');
+    const virtualSegmentPattern = /\/:virtualSegment_\d+/g;
+
+    const virtualSegmentsFromQuery = (queryString || '').match(virtualSegmentPattern) || [];
+    const virtualPathInsert = virtualSegmentsFromQuery.join('');
+
+    const cleanedQuery = (queryString || '')
+      .split('&')
+      .map(param => param.replace(virtualSegmentPattern, ''))
+      .filter(param => param.includes('=') && param.split('=')[1] !== '')
+      .join('&');
+
+    const newBase = basePart.replace(virtualTreePath, virtualPathInsert);
+    return cleanedQuery ? `${newBase}?${cleanedQuery}` : newBase;
+  },
+
   substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
     //TODO issue nr 4575
     //currently minimal requirement for this task
@@ -704,6 +726,7 @@ export const RoutingHelpers = {
     // const nodeParamsVarPrefix = 'nodeParams.';
     // const searchQuery = 'routing.queryParams';
 
+    viewUrl = this.getVirtualTreePath(viewUrl);
     viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);

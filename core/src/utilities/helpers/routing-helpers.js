@@ -317,6 +317,28 @@ class RoutingHelpersClass {
     return this.isDynamicNode(node) ? pathParams[node.pathSegment.substring(1)] : undefined;
   }
 
+  getVirtualTreePath(viewUrl) {
+    const virtualTreePath = '{virtualTreePath}';
+    if (!viewUrl || !viewUrl.includes(virtualTreePath)) {
+      return viewUrl;
+    }
+
+    const [basePart, queryString] = viewUrl.split('?');
+    const virtualSegmentPattern = /\/:virtualSegment_\d+/g;
+
+    const virtualSegmentsFromQuery = (queryString || '').match(virtualSegmentPattern) || [];
+    const virtualPathInsert = virtualSegmentsFromQuery.join('');
+
+    const cleanedQuery = (queryString || '')
+      .split('&')
+      .map(param => param.replace(virtualSegmentPattern, ''))
+      .filter(param => param.includes('=') && param.split('=')[1] !== '')
+      .join('&');
+
+    const newBase = basePart.replace(virtualTreePath, virtualPathInsert);
+    return cleanedQuery ? `${newBase}?${cleanedQuery}` : newBase;
+  }
+
   /**
    * Returns the viewUrl with current locale, e.g. luigi/{i18n.currentLocale}/ -> luigi/en
    * if viewUrl contains {i18n.currentLocale} term, it will be replaced by current locale
@@ -335,6 +357,7 @@ class RoutingHelpersClass {
     const nodeParamsVarPrefix = 'nodeParams.';
     const searchQuery = 'routing.queryParams';
 
+    viewUrl = this.getVirtualTreePath(viewUrl);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.pathParams, ':', false);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.context, contextVarPrefix);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.nodeParams, nodeParamsVarPrefix);
