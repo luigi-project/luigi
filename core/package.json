@@ -5,7 +5,9 @@
   "devDependencies": {
     "@babel/node": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-node-resolve": "^15.3.1",
+    "@rollup/plugin-terser": "^1.0.0",
     "babel-jest": "^29.7.0",
     "chai": "^4.3.6",
     "css-tree": "^2.3.1",
@@ -19,20 +21,23 @@
     "lodash": "^4.18.1",
     "mock-local-storage": "^1.1.23",
     "node-fetch": "2.6.7",
+    "rollup": "^4.60.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-svelte": "^7.2.3",
     "sass": "^1.59.3",
     "sinon": "^14.0.0",
     "svelte": "^4.2.20",
     "svelte-preprocess": "^5.1.4",
     "terser": "^5.46.1",
-    "typescript": "^5.0.0",
-    "vite": "6.4.2"
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "test": "jest",
-    "build": "vite build",
-    "bundle-develop": "vite build --watch",
+    "build": "rollup -c",
+    "bundle-develop": "rollup -c -w",
     "bundle": "npm run build",
-    "simpledev": "node ./dev-tools/simpledev-vite.mjs"
+    "simpledev": "node ./dev-tools/simpledev-rollup.mjs"
   },
   "repository": {
     "type": "git",
