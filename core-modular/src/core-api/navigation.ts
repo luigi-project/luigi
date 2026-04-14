@@ -10,6 +10,7 @@ import type {
   RunTimeErrorHandler
 } from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
 
@@ -63,10 +64,14 @@ export class Navigation {
       await this.modalService.closeModals();
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath);
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+
+    if (!redirectPath) return;
+
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
-      settings.title = node.label;
+      settings.title = node?.label;
     }
     // Append modal data to URL only if configured and if no other modals are open
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
@@ -77,17 +82,19 @@ export class Navigation {
 
   openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath);
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+    if (!redirectPath) return;
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
-      settings.title = node.label;
+      settings.title = node?.label;
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
     const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
-    const currentNode: Node = await this.navService.getCurrentNode(path);
+    const currentNode: Node | undefined = await this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
     );
@@ -103,8 +110,25 @@ export class Navigation {
   };
 
   /**
+   * Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
+   * @param {string} path - path which existence you want to check
+   * @returns {Promise<boolean>} A promise which resolves to a boolean variable specifying whether the path exists or not
+   * @example
+   *  let pathExists;
+   *  Luigi
+   *  .navigation()
+   *  .pathExists('projects/pr2')
+   *  .then(
+   *    (pathExists) => {  }
+   *  );
+   */
+  pathExists = async (path: string): Promise<boolean> => {
+    return await RoutingHelpers.pathExists(path, this.luigi);
+  };
+
+  /**
    * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    * @example
    * Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
    */
@@ -119,7 +143,7 @@ export class Navigation {
   /**
    * Allows navigation from the node which has the navigation context set.
    * @param navigationContext
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    */
   fromContext(navigationContext: string): Navigation {
     this.options.fromContext = navigationContext;
@@ -128,7 +152,7 @@ export class Navigation {
 
   /**
    * Allows navigation from the closest node which has the navigation context set. If there are multiple nodes with the same navigation context, the closest one will be used as the navigation base.
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    */
   fromClosestContext(): Navigation {
     this.options.fromContext = null;

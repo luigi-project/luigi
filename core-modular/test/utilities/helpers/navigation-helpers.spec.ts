@@ -120,6 +120,23 @@ describe('Navigation-helpers', () => {
     expect(NavigationHelpers.prepareForTests('Whatever It', 'Takes')).toEqual('whateverit_takes');
   });
 
+  describe('applyContext', () => {
+    it('should return provided context when no additional data is present', () => {
+      const mockedContext = { data: 'store' };
+      const result = NavigationHelpers.applyContext(mockedContext, null, null);
+
+      expect(result).toEqual(mockedContext);
+    });
+
+    it('should return provided context when additional data is present', () => {
+      const mockedContext = { data: 'store' };
+      const mockedAddition = { foo: 'bar' };
+      const result = NavigationHelpers.applyContext(mockedContext, mockedAddition, null);
+
+      expect(result).toEqual({ ...mockedContext, ...mockedAddition });
+    });
+  });
+
   describe('findVirtualTreeRootNode', () => {
     it('should return the node itself if it is a virtual tree root', () => {
       const node: Node = { pathSegment: 'root', virtualTree: true };
