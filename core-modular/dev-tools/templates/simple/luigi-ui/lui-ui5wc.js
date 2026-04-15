@@ -653,7 +653,7 @@ const connector = {
   renderBreadcrumbs: (breadcrumbData) => {
     const wrapper = document.querySelector('.breadcrumb-wrapper');
 
-    if (wrapper) {
+    if (wrapper && breadcrumbData?.clearBeforeRender) {
       wrapper.innerHTML = '';
     }
 

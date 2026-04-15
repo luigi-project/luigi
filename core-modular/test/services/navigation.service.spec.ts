@@ -1383,6 +1383,7 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       luigiMock.getConfigValue.mockReturnValue({
+        clearBeforeRender: true,
         pendingItemLabel: 'not loaded yet',
         omitRoot: false,
         autoHide: false
@@ -1397,6 +1398,7 @@ describe('NavigationService', () => {
       const result = await navigationService.getBreadcrumbData('/base', pathData);
 
       expect(result).toEqual({
+        clearBeforeRender: true,
         basePath: '',
         items: [
           {

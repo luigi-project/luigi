@@ -11,6 +11,7 @@ window.onload = () => {
         }
       },
       breadcrumbs: {
+        clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
         pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
         omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
         autoHide: false, // hide breadcrumbs when navigating to root node

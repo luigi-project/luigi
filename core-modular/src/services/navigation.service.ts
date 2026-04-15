@@ -648,6 +648,7 @@ export class NavigationService {
 
     return {
       basePath: basePath.replace(/\/\/+/g, '/'),
+      clearBeforeRender: breadcrumbConfig.clearBeforeRender,
       items: navItems,
       renderer: breadcrumbConfig.renderer,
       selectedNode: pathData?.selectedNode || ({} as Node)
