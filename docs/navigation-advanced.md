@@ -195,6 +195,19 @@ If you are using [localization](https://docs.luigi-project.io/docs/i18n) and tra
 
  The **{i18n.currentLocale}** parameter will be replaced by the value of `LuigiI18N.getCurrentLocale()`, for example `https://example.com/en/microfrontend.html`
 
+ If you are using [virtualTree](https://docs.luigi-project.io/docs/navigation-parameters-reference?section=virtualtree) and your viewUrl contains {virtualTreePath}, Luigi replaces this template with the virtual tree path.
+ Note that `{virtualTreePath}` does **not** include a leading slash — you must add it yourself in the configuration.
+ For example, if the node's **viewUrl** is configured as:
+
+```javascript
+{
+  pathSegment: ':virtualSegment_1',
+  viewUrl: 'https://example.com/{virtualTreePath}?luigi=super',
+  virtualTree: true
+}
+```
+Luigi will transform the URL to `https://example.com/home/overview?luigi=super`,
+
 In all these cases, the parameter is automatically replaced by the real value.
 
 ### Dynamic Node parameters
