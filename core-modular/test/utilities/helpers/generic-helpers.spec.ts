@@ -2,20 +2,26 @@ import { GenericHelpers } from '../../../src/utilities/helpers/generic-helpers';
 
 describe('Generic-helpers', () => {
   let locationSearchString: string;
+  let originalLocation: Location;
 
   beforeAll(() => {
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: {
-          search: locationSearchString
-        },
-        crypto: globalThis.crypto
-      } as unknown as Window & typeof globalThis;
+    // Save original and replace location with a getter that returns our mock
+    originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      get: () => ({
+        search: locationSearchString
+      }),
+      configurable: true
     });
   });
 
   afterAll(() => {
-    jest.restoreAllMocks();
+    // Restore original location
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true
+    });
   });
 
   beforeEach(() => {

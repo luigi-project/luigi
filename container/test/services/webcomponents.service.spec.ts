@@ -57,7 +57,8 @@ describe('attachWC', () => {
     expect(service.initWC).toHaveBeenCalled();
     expect(createElementSpy).toHaveBeenCalledWith(wc_id);
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 
   it('wc_container does NOT contain wcItemPlaceholder', () => {
@@ -90,7 +91,8 @@ describe('attachWC', () => {
 
     // Assert
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 
   it('_luigi_node provided', () => {
@@ -109,7 +111,8 @@ describe('attachWC', () => {
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
     expect((wc_container as any)._luigi_mfe_webcomponent).toEqual(innerWCElement);
 
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 });
 

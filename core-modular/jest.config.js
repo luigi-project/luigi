@@ -1,7 +1,10 @@
 module.exports = async () => {
   return {
     verbose: true,
-    testEnvironment: 'jsdom',
+    testEnvironment: '@happy-dom/jest-environment',
+    testEnvironmentOptions: {
+      url: 'http://localhost/'
+    },
     roots: ['test'],
     collectCoverage: true,
     transform: {
