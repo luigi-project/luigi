@@ -708,7 +708,7 @@ export const RoutingHelpers = {
    * @param {string} viewUrl - The absolute view URL, potentially containing `{virtualTreePath}` and `:virtualSegment_N` query values.
    * @returns {string} The resolved URL with virtual segments moved into the path, or the original URL if no placeholder is present.
    */
-  getVirtualTreePath(viewUrl: string): string {
+  replaceVirtualTreePath(viewUrl: string): string {
     const virtualTreePath = '{virtualTreePath}';
     if (!viewUrl || !viewUrl.includes(virtualTreePath)) {
       return viewUrl;
@@ -740,7 +740,7 @@ export const RoutingHelpers = {
     // const nodeParamsVarPrefix = 'nodeParams.';
     // const searchQuery = 'routing.queryParams';
 
-    viewUrl = this.getVirtualTreePath(viewUrl);
+    viewUrl = this.replaceVirtualTreePath(viewUrl);
     viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);

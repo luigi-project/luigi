@@ -638,29 +638,29 @@ describe('Routing-helpers', () => {
     });
   });
 
-  describe('getVirtualTreePath', () => {
+  describe('replaceVirtualTreePath', () => {
     it('moves virtual segments from query string into path and keeps remaining query params', () => {
       const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?q=v/:virtualSegment_1/:virtualSegment_2';
-      expect(RoutingHelpers.getVirtualTreePath(viewUrl)).toEqual(
+      expect(RoutingHelpers.replaceVirtualTreePath(viewUrl)).toEqual(
         'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2?q=v'
       );
     });
 
     it('returns viewUrl unchanged if {virtualTreePath} is not present', () => {
       const viewUrl = 'https://www.luigi-project.io/some/path?q=v';
-      expect(RoutingHelpers.getVirtualTreePath(viewUrl)).toEqual(viewUrl);
+      expect(RoutingHelpers.replaceVirtualTreePath(viewUrl)).toEqual(viewUrl);
     });
 
     it('handles a single virtual segment', () => {
       const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?q=v/:virtualSegment_1';
-      expect(RoutingHelpers.getVirtualTreePath(viewUrl)).toEqual(
+      expect(RoutingHelpers.replaceVirtualTreePath(viewUrl)).toEqual(
         'https://www.luigi-project.io/:virtualSegment_1?q=v'
       );
     });
 
     it('removes query param entirely when the value consists only of virtual segments', () => {
       const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?path=/:virtualSegment_1/:virtualSegment_2';
-      expect(RoutingHelpers.getVirtualTreePath(viewUrl)).toEqual(
+      expect(RoutingHelpers.replaceVirtualTreePath(viewUrl)).toEqual(
         'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2'
       );
     });
@@ -668,7 +668,7 @@ describe('Routing-helpers', () => {
     it('handles multiple query params alongside virtual segments', () => {
       const viewUrl =
         'https://www.luigi-project.io/{virtualTreePath}?foo=bar&q=v/:virtualSegment_1/:virtualSegment_2&baz=qux';
-      expect(RoutingHelpers.getVirtualTreePath(viewUrl)).toEqual(
+      expect(RoutingHelpers.replaceVirtualTreePath(viewUrl)).toEqual(
         'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2?foo=bar&q=v&baz=qux'
       );
     });
