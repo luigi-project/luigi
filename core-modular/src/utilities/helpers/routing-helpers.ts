@@ -697,26 +697,40 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
+  /**
+   * Resolves the `{virtualTreePath}` placeholder in a viewUrl by extracting
+   * `:virtualSegment_N` values from query parameters and inserting them into the path.
+   *
+   * @example
+   * // https://example.com/{virtualTreePath}?q=v/:virtualSegment_1/:virtualSegment_2
+   * // → https://example.com/:virtualSegment_1/:virtualSegment_2?q=v
+   *
+   * @param {string} viewUrl - The absolute view URL, potentially containing `{virtualTreePath}` and `:virtualSegment_N` query values.
+   * @returns {string} The resolved URL with virtual segments moved into the path, or the original URL if no placeholder is present.
+   */
   getVirtualTreePath(viewUrl: string): string {
     const virtualTreePath = '{virtualTreePath}';
     if (!viewUrl || !viewUrl.includes(virtualTreePath)) {
       return viewUrl;
     }
 
-    const [basePart, queryString] = viewUrl.split('?');
     const virtualSegmentPattern = /\/:virtualSegment_\d+/g;
+    const url = new URL(viewUrl);
 
-    const virtualSegmentsFromQuery = (queryString || '').match(virtualSegmentPattern) || [];
-    const virtualPathInsert = virtualSegmentsFromQuery.join('').replace(/^\//, '');
+    let virtualPathInsert = '';
+    for (const [key, value] of [...url.searchParams]) {
+      const segments = value.match(virtualSegmentPattern);
+      if (!segments) continue;
 
-    const cleanedQuery = (queryString || '')
-      .split('&')
-      .map(param => param.replace(virtualSegmentPattern, ''))
-      .filter(param => param.includes('=') && param.split('=')[1] !== '')
-      .join('&');
+      virtualPathInsert += segments.join('');
+      const cleaned = value.replace(virtualSegmentPattern, '');
+      cleaned ? url.searchParams.set(key, cleaned) : url.searchParams.delete(key);
+    }
 
-    const newBase = basePart.replace(virtualTreePath, virtualPathInsert);
-    return cleanedQuery ? `${newBase}?${cleanedQuery}` : newBase;
+    url.pathname = decodeURIComponent(url.pathname)
+      .replace(virtualTreePath, virtualPathInsert.replace(/^\//, ''));
+
+    return url.href;
   },
 
   substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
