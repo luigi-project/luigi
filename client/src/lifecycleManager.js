@@ -1,5 +1,6 @@
 import { LuigiClientBase } from './baseClass';
 import { helpers } from './helpers';
+import * as pkg from '../public_root/package.json';
 
 /**
  * @summary Use the functions and parameters to define the Lifecycle of listeners, navigation nodes, and Event data.
@@ -146,7 +147,7 @@ class LifecycleManager extends LuigiClientBase {
     window.parent.postMessage(
       {
         msg: 'luigi.get-context',
-        clientVersion: require('../public/package.json').version
+        clientVersion: pkg.version
       },
       '*'
     );
@@ -489,21 +490,22 @@ class LifecycleManager extends LuigiClientBase {
   }
 
   /**
-   * <!-- label-success: Web App API only  -->
    * Sends search query parameters to Luigi Core. The search parameters will be added to the URL if they are first allowed on a node level using {@link navigation-parameters-reference.md#clientpermissionsurlparameters clientPermissions.urlParameters}.
 
    * @param {Object} searchParams
    * @param {boolean} keepBrowserHistory
+   * @param {boolean} preventLuigiConfigUpdate - If true, the configChanged function will be triggered (since 2.29.0). By default it is set to `false`.
    * @memberof Lifecycle
    * @example
    * LuigiClient.addCoreSearchParams({luigi:'rocks'}, false);
    */
-  addCoreSearchParams(searchParams, keepBrowserHistory = true) {
+  addCoreSearchParams(searchParams, keepBrowserHistory = true, preventLuigiConfigUpdate = false) {
     if (searchParams) {
       helpers.sendPostMessageToLuigiCore({
         msg: 'luigi.addSearchParams',
         data: searchParams,
-        keepBrowserHistory
+        keepBrowserHistory,
+        preventLuigiConfigUpdate
       });
     }
   }

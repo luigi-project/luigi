@@ -10,6 +10,7 @@ import { NodeDataManagementService } from '../services/node-data-management.serv
 import type { ModalSettings, Node } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 
 const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -83,6 +84,7 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
+    (lc as any).luigiMfId = GenericHelpers.getRandomId();
     return lc;
   }
 };
@@ -134,6 +136,8 @@ export const UIModule = {
   navService: undefined as unknown as NavigationService,
   routingService: undefined as unknown as RoutingService,
   luigi: undefined as unknown as Luigi,
+  modalContainer: [] as any,
+  drawerContainer: undefined as any,
   init: (luigi: Luigi) => {
     console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
@@ -282,6 +286,7 @@ export const UIModule = {
   },
   openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
+    UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
 
@@ -359,9 +364,10 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    UIModule.drawerContainer = lc;
+    luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);

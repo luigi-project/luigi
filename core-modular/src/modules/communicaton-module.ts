@@ -19,6 +19,7 @@ export const CommunicationModule = {
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       const {
+        drawer,
         link,
         preserveView,
         modal,
@@ -29,9 +30,12 @@ export const CommunicationModule = {
         fromVirtualTreeRoot,
         fromContext,
         fromClosestContext,
-        fromParent
+        fromParent,
+        relative,
+        nodeParams
       } = event.detail;
       const navRequestParams: NavigationRequestParams = {
+        drawerSettings: drawer,
         modalSettings: modal,
         newTab,
         path: link,
@@ -41,12 +45,13 @@ export const CommunicationModule = {
           fromVirtualTreeRoot,
           fromContext,
           fromClosestContext,
-          fromParent
+          fromParent,
+          relative,
+          nodeParams
         },
         preventHistoryEntry,
         withoutSync
       };
-
       serviceRegistry.get(NavigationService).handleNavigationRequest(navRequestParams, event.callbackFn);
     });
     containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
