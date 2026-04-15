@@ -1397,7 +1397,7 @@ describe('NavigationService', () => {
       const result = await navigationService.getBreadcrumbData('/base', pathData);
 
       expect(result).toEqual({
-        basePath: '/#',
+        basePath: '',
         items: [
           {
             label: 'parent',
@@ -1417,6 +1417,7 @@ describe('NavigationService', () => {
             route: undefined
           }
         ],
+        renderer: undefined,
         selectedNode: {}
       });
     });

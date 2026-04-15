@@ -615,11 +615,7 @@ export class NavigationService {
 
     for (let i = start; i < nodesInPath.length; i++) {
       const node = nodesInPath[i];
-      let route = RoutingHelpers.mapPathToNode(currentPath.path, node);
-
-      if (route && hashRouting) {
-        route = '/#' + route;
-      }
+      const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
 
       if (route && previousBreadcrumbs[route]) {
         navItems.push(previousBreadcrumbs[route]);
@@ -650,13 +646,10 @@ export class NavigationService {
       });
     }
 
-    if (hashRouting) {
-      basePath = '/#' + basePath;
-    }
-
     return {
       basePath: basePath.replace(/\/\/+/g, '/'),
       items: navItems,
+      renderer: breadcrumbConfig.renderer,
       selectedNode: pathData?.selectedNode || ({} as Node)
     };
   }

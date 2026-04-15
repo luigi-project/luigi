@@ -193,6 +193,7 @@ export interface TabNavData {
 export interface BreadcrumbData {
   basePath?: string;
   items?: BreadcrumbItem[];
+  renderer?: any;
   selectedNode?: Node;
 }
 

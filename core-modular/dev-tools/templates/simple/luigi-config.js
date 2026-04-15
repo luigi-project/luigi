@@ -13,7 +13,29 @@ window.onload = () => {
       breadcrumbs: {
         pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
         omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
-        autoHide: false // hide breadcrumbs when navigating to root node
+        autoHide: false, // hide breadcrumbs when navigating to root node
+        renderer: (containerElement, nodeItems, clickHandler) => {
+          const ui5breadcrumbs = document.createElement('ui5-breadcrumbs');
+
+          nodeItems.forEach((item) => {
+            if (item.label) {
+              const itemCmp = document.createElement('ui5-breadcrumbs-item');
+
+              itemCmp.textContent = `${item.label}`;
+              itemCmp._item = item;
+              ui5breadcrumbs.appendChild(itemCmp);
+            }
+          });
+
+          ui5breadcrumbs.addEventListener('item-click', (event) => {
+            event.preventDefault();
+            clickHandler(event.detail.item._item);
+          });
+
+          containerElement.appendChild(ui5breadcrumbs);
+
+          return ui5breadcrumbs;
+        }
       },
       appSwitcher: {
         showMainAppEntry: true,
