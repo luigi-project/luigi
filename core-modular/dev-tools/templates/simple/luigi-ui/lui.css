@@ -56,6 +56,14 @@ ui5-side-navigation {
   max-height: none;
 }
 
+.lui-drawer {
+  height: calc(100% - var(--_ui5-v2-12-0_shellbar_root_height));
+  bottom: 0;
+  left: auto !important;
+  right: 0;
+  top: var(--_ui5-v2-12-0_shellbar_root_height) !important;
+}
+
 ui5-shellbar::part(root) {
     padding-inline-start: 0.75rem;
     padding-inline-end: 1.25rem;

@@ -780,6 +780,7 @@ export class NavigationService {
     const {
       path,
       preserveView,
+      drawerSettings,
       modalSettings,
       newTab,
       withoutSync,
@@ -791,12 +792,16 @@ export class NavigationService {
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
-    if (modalSettings) {
-      if (!modalSettings.keepPrevious) {
-        this.getModalService().closeModals();
-      }
+    if (drawerSettings || modalSettings) {
+      if (drawerSettings) {
+        this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
+      } else {
+        if (!modalSettings.keepPrevious) {
+          this.getModalService().closeModals();
+        }
 
-      this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+        this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+      }
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
