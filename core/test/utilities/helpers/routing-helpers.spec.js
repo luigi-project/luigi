@@ -966,7 +966,7 @@ describe('Routing-helpers', () => {
 
   describe('getVirtualTreePath', () => {
     it('moves virtual segments from query string into path and keeps remaining query params', () => {
-      const viewUrl = 'https://www.luigi-project.io{virtualTreePath}?q=v/:virtualSegment_1/:virtualSegment_2';
+      const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?q=v/:virtualSegment_1/:virtualSegment_2';
       const expected = 'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2?q=v';
       assert.equal(RoutingHelpers.getVirtualTreePath(viewUrl), expected);
     });
@@ -977,20 +977,20 @@ describe('Routing-helpers', () => {
     });
 
     it('handles a single virtual segment', () => {
-      const viewUrl = 'https://www.luigi-project.io{virtualTreePath}?q=v/:virtualSegment_1';
+      const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?q=v/:virtualSegment_1';
       const expected = 'https://www.luigi-project.io/:virtualSegment_1?q=v';
       assert.equal(RoutingHelpers.getVirtualTreePath(viewUrl), expected);
     });
 
     it('removes query param entirely when the value consists only of virtual segments', () => {
-      const viewUrl = 'https://www.luigi-project.io{virtualTreePath}?path=/:virtualSegment_1/:virtualSegment_2';
+      const viewUrl = 'https://www.luigi-project.io/{virtualTreePath}?path=/:virtualSegment_1/:virtualSegment_2';
       const expected = 'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2';
       assert.equal(RoutingHelpers.getVirtualTreePath(viewUrl), expected);
     });
 
     it('handles multiple query params alongside virtual segments', () => {
       const viewUrl =
-        'https://www.luigi-project.io{virtualTreePath}?foo=bar&q=v/:virtualSegment_1/:virtualSegment_2&baz=qux';
+        'https://www.luigi-project.io/{virtualTreePath}?foo=bar&q=v/:virtualSegment_1/:virtualSegment_2&baz=qux';
       const expected = 'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2?foo=bar&q=v&baz=qux';
       assert.equal(RoutingHelpers.getVirtualTreePath(viewUrl), expected);
     });

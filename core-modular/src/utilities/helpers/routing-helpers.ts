@@ -707,7 +707,7 @@ export const RoutingHelpers = {
     const virtualSegmentPattern = /\/:virtualSegment_\d+/g;
 
     const virtualSegmentsFromQuery = (queryString || '').match(virtualSegmentPattern) || [];
-    const virtualPathInsert = virtualSegmentsFromQuery.join('');
+    const virtualPathInsert = virtualSegmentsFromQuery.join('').replace(/^\//, '');
 
     const cleanedQuery = (queryString || '')
       .split('&')

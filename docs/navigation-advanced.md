@@ -197,17 +197,19 @@ If you are using [localization](https://docs.luigi-project.io/docs/i18n) and tra
 
 You can also use **{virtualTreePath}** in combination with a [virtual tree](navigation-advanced.md#virtual-tree) node. When the viewUrl contains `{virtualTreePath}`, Luigi restructures the URL so that any `:virtualSegment_N` parameters found in query string values are moved into the path at the position of the placeholder, and the query string is cleaned up accordingly.
 
+Note that `{virtualTreePath}` does **not** include a leading slash — you must add it yourself in the configuration.
+
 For example, if the node's **viewUrl** is configured as:
 
 ```javascript
 {
   pathSegment: ':virtualSegment_1',
-  viewUrl: 'https://example.com{virtualTreePath}?luigi=super',
+  viewUrl: 'https://example.com/{virtualTreePath}?luigi=super',
   virtualTree: true
 }
 ```
 
-Luigi will transform the URL to `https://example.com/overview?luigi=super`, moving the virtual path segments from the query string into the path where `{virtualTreePath}` was placed.
+Luigi will transform the URL to `https://example.com/home/overview?luigi=super`, moving the virtual path segments from the query string into the path where `{virtualTreePath}` was placed.
 
 In all these cases, the parameter is automatically replaced by the real value.
 
