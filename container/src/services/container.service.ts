@@ -24,7 +24,10 @@ export class ContainerService {
    * @returns {boolean} `true` if the element is visible, otherwise `false`
    */
   isVisible(component: HTMLElement): boolean {
-    return !!(component.offsetWidth || component.offsetHeight || component.getClientRects().length);
+    if (getComputedStyle(component).display === 'none') {
+      return false;
+    }
+    return !!(component.offsetWidth || component.offsetHeight);
   }
 
   /**
