@@ -606,7 +606,9 @@ export class NavigationService {
     });
 
     if (!showBreadcrumb) {
-      return {};
+      return {
+        clearBeforeRender: true
+      };
     }
 
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');

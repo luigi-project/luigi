@@ -1394,7 +1394,7 @@ describe('NavigationService', () => {
       jest.clearAllMocks();
     });
 
-    it('should return breadcrumb data', async () => {
+    it('should return full breadcrumb data', async () => {
       const result = await navigationService.getBreadcrumbData('/base', pathData);
 
       expect(result).toEqual({
@@ -1421,6 +1421,16 @@ describe('NavigationService', () => {
         ],
         renderer: undefined,
         selectedNode: {}
+      });
+    });
+
+    it('should return limited breadcrumb data', async () => {
+      pathData.nodesInPath[2].showBreadcrumbs = false;
+
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true
       });
     });
   });
