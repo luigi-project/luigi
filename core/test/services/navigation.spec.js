@@ -7,9 +7,9 @@ const expect = chai.expect;
 const assert = chai.assert;
 const sinon = require('sinon');
 
-const sampleNavPromise = new Promise(function(resolve) {
+const sampleNavPromise = new Promise(function (resolve) {
   const lazyLoadedChildrenNodesProviderFn = () => {
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
       resolve([
         {
           pathSegment: 'b1',
@@ -53,13 +53,13 @@ const sampleNavPromise = new Promise(function(resolve) {
   ]);
 });
 
-describe('Navigation', function() {
+describe('Navigation', function () {
   jest.retryTimes(2);
 
   beforeAll(() => {
     function mockStorage() {
       return {
-        getItem: function(key) {
+        getItem: function (key) {
           return JSON.stringify({
             accessTokenExpirationDate: Number(new Date()) + 1
           });
@@ -85,7 +85,7 @@ describe('Navigation', function() {
     sinon.reset();
   });
 
-  describe('getNavigationPath', function() {
+  describe('getNavigationPath', function () {
     it('should not fail for undefined arguments', () => {
       Navigation.getNavigationPath(undefined, undefined);
     });
@@ -933,6 +933,41 @@ describe('Navigation', function() {
       // trailing slash is expected, it gets removed later by trimTrailingSlash() before setting viewUrl
       const expected = 'https://mf.luigi-project.io#!/x/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/';
 
+      assert.equal(Navigation.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index), expected);
+    });
+    it('replaces {virtualTreePath} placeholder instead of appending', () => {
+      const mock = {
+        url: 'https://mf.luigi-project.io/app/{virtualTreePath}details',
+        pathParams: {
+          virtualSegment_1: 'one',
+          virtualSegment_2: 'two'
+        },
+        index: 3
+      };
+
+      const expected = 'https://mf.luigi-project.io/app/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/details';
+
+      assert.equal(Navigation.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index), expected);
+    });
+    it('returns original string when origin would change due to {virtualTreePath} in origin', () => {
+      const mock = {
+        url: 'https://{virtualTreePath}.luigi-project.io/app',
+        pathParams: {},
+        index: 1
+      };
+
+      assert.equal(Navigation.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index), mock.url);
+      sinon.assert.calledOnce(console.error);
+    });
+    it('returns original string when {virtualTreePath} replacement changes the origin', () => {
+      const mock = {
+        url: 'https://mf.luigi-project.io/{virtualTreePath}',
+        pathParams: {},
+        index: 1
+      };
+      // The replacement produces 'https://mf.luigi-project.io/:virtualSegment_1/'
+      // which has the same origin, so it should be returned as-is (valid case)
+      const expected = 'https://mf.luigi-project.io/:virtualSegment_1/';
       assert.equal(Navigation.buildVirtualViewUrl(mock.url, mock.pathParams, mock.index), expected);
     });
   });

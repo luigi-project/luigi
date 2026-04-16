@@ -104,6 +104,23 @@ describe('Routing-helpers', () => {
       expect(RoutingHelpers.getI18nViewUrl(viewUrl)).to.equal(expected);
     });
 
+    it('substituteViewUrl - removes {virtualTreePath} placeholder when currentNode has virtualTree=true', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+      const expected = 'https://mf.luigi-project.io/app/details';
+
+      expect(
+        RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: { virtualTree: true }, pathParams: {} })
+      ).to.equal(expected);
+    });
+
+    it('substituteViewUrl - keeps {virtualTreePath} placeholder when currentNode has no virtualTree', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+
+      const result = RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: {}, pathParams: {} });
+
+      expect(result).to.include('{virtualTreePath}');
+    });
+
     it('substituteViewUrl - substitutes {i18n.currentLocale} variable to current locale', () => {
       const viewUrl = '/{i18n.currentLocale}/microfrontend.html';
       const expected = '/en/microfrontend.html';
