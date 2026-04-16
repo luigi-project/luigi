@@ -7,7 +7,7 @@
     "@babel/preset-typescript": "7.28.5",
     "@eslint/js": "9.39.3",
     "@happy-dom/jest-environment": "20.8.9",
-    "@luigi-project/container": "1.7.6",
+    "@luigi-project/container": "^1.7.6",
     "@sveltejs/vite-plugin-svelte": "6.2.4",
     "@tsconfig/svelte": "5.0.8",
     "@types/jest": "30.0.0",
