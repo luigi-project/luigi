@@ -27,6 +27,8 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NodeDataManagementService } from './node-data-management.service';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
+import { get, writable } from '../utilities/store';
+import type { LuigiStore } from '../utilities/store';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
@@ -34,8 +36,19 @@ import { ModalService } from './modal.service';
 export class NavigationService {
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
+  private _breadcrumbStore: LuigiStore;
 
-  constructor(private luigi: Luigi) {}
+  constructor(private luigi: Luigi) {
+    this._breadcrumbStore = writable({});
+  }
+
+  private setBreadcrumbStore(data: Record<string, BreadcrumbItem>) {
+    this._breadcrumbStore.set(data);
+  }
+
+  private getBreadcrumbStore(): Record<string, BreadcrumbItem> {
+    return get(this._breadcrumbStore);
+  }
 
   private getModalService(): ModalService {
     if (!this.modalService) {
@@ -580,11 +593,11 @@ export class NavigationService {
   }
 
   async getBreadcrumbData(path: string, pData?: PathData): Promise<BreadcrumbData> {
+    const previousBreadcrumbs: Record<string, BreadcrumbItem> = this.getBreadcrumbStore();
     const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
     const pathData = pData ?? (await this.getPathData(path));
     const nodesInPath = pathData?.nodesInPath || [];
     const navItems: BreadcrumbItem[] = [];
-    let previousBreadcrumbs: Record<string, any> = {};
     let showBreadcrumb;
     let basePath = '';
 
@@ -634,18 +647,20 @@ export class NavigationService {
 
     // check if route has been changed in the meantime - if yes, do nothing
     if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+      const breadcrumbCache: Record<string, BreadcrumbItem> = {};
+
       if (navItems.length > 1) {
         navItems[navItems.length - 1].last = true;
       } else if (breadcrumbConfig.autoHide) {
         navItems.length = 0;
       }
 
-      previousBreadcrumbs = {};
       navItems.map((item: BreadcrumbItem) => {
         if (item.route) {
-          previousBreadcrumbs[item.route] = item;
+          breadcrumbCache[item.route] = item;
         }
       });
+      this.setBreadcrumbStore(breadcrumbCache);
     }
 
     return {
