@@ -24,6 +24,7 @@ describe('Routing Service', () => {
 
   beforeEach(() => {
     mockConnector = {
+      renderBreadcrumbs: jest.fn(),
       renderTopNav: jest.fn(),
       renderLeftNav: jest.fn(),
       renderTabNav: jest.fn(),
@@ -65,6 +66,7 @@ describe('Routing Service', () => {
     mockNavService = {
       getCurrentNode: jest.fn(),
       onNodeChange: jest.fn(),
+      getBreadcrumbData: jest.fn(),
       getTopNavData: jest.fn(),
       getLeftNavData: jest.fn(),
       getTabNavData: jest.fn(),
