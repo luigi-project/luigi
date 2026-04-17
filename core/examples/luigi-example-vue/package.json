@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@luigi-project/client": "^2.29.0",
-    "vue": "^3.5.31",
-    "vue-router": "^5.0.4"
+    "vue": "3.5.31",
+    "vue-router": "5.0.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.5",
-    "vite": "^7.3.2"
+    "@vitejs/plugin-vue": "6.0.5",
+    "vite": "7.3.2"
   },
   "browserslist": [
     "> 1%",
