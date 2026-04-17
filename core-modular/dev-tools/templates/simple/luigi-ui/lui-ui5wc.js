@@ -340,6 +340,30 @@ function renderNodeOrCategory(item, leftNavData) {
   return frag;
 }
 
+function handleOpenAlerts() {
+  const alerts = document.querySelectorAll('ui5-message-strip');
+
+  if (!alerts?.length) return;
+
+  alerts.forEach((alert) => {
+    const openFromClient = alert.getAttribute('openfromclient');
+    const ttl = alert.getAttribute('ttl');
+
+    if (alert && openFromClient === 'false' && ttl !== 'undefined') {
+      let ttlValue = Number(ttl);
+
+      if (ttlValue === 0) {
+        // TTL value dropped down to 0, remove this alert
+        alert.dispatchEvent(new Event('close'));
+      } else {
+        // TTL is not 0, reduce it
+        ttlValue--;
+        alert.setAttribute('ttl', ttlValue);
+      }
+    }
+  });
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -670,6 +694,8 @@ const connector = {
     };
     const messageStrip = document.createElement('ui5-message-strip');
     messageStrip.setAttribute('design', `${alertTypeMap[alertSettings.type]}`);
+    messageStrip.setAttribute('openfromclient', `${!!alertHandler.openFromClient}`);
+    messageStrip.setAttribute('ttl', `${alertSettings.ttl || undefined}`);
     messageStrip.innerHTML = replacePlaceholdersWithUI5Links(alertSettings.text, alertSettings.links);
 
     alertContainer?.appendChild(messageStrip);
@@ -975,3 +1001,7 @@ window.addEventListener(
   },
   false
 );
+
+window.addEventListener('popstate', () => {
+  handleOpenAlerts();
+});
