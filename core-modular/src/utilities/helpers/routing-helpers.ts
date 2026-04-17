@@ -697,13 +697,21 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
-  substituteViewUrl(viewUrl: string, pathParams: Record<string, string>, luigi: Luigi): string {
+  substituteViewUrl(node: Node, pathParams: Record<string, string>, luigi: Luigi): string {
+    if (!node.viewUrl) {
+      return '';
+    }
+
+    let viewUrl = node.viewUrl;
     //TODO issue nr 4575
     //currently minimal requirement for this task
     // const contextVarPrefix = 'context.';
     // const nodeParamsVarPrefix = 'nodeParams.';
     // const searchQuery = 'routing.queryParams';
 
+    if (node.virtualTree) {
+      viewUrl = viewUrl.replace('{virtualTreePath}', '');
+    }
     viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
     // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);

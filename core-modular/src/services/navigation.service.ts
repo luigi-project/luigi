@@ -702,6 +702,7 @@ export class NavigationService {
     const {
       path,
       preserveView,
+      drawerSettings,
       modalSettings,
       newTab,
       withoutSync,
@@ -713,12 +714,16 @@ export class NavigationService {
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
-    if (modalSettings) {
-      if (!modalSettings.keepPrevious) {
-        this.getModalService().closeModals();
-      }
+    if (drawerSettings || modalSettings) {
+      if (drawerSettings) {
+        this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
+      } else {
+        if (!modalSettings.keepPrevious) {
+          this.getModalService().closeModals();
+        }
 
-      this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+        this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+      }
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
@@ -902,7 +907,20 @@ export class NavigationService {
       return str;
     }
     newStr += ':virtualSegment_' + _virtualPathIndex + '/';
-    return str + '/' + newStr;
+    let vViewUrl = str;
+    if (str.includes('{virtualTreePath}')) {
+      vViewUrl = str.replace('{virtualTreePath}', newStr);
+    } else {
+      vViewUrl = str + '/' + newStr;
+    }
+    try {
+      if (new URL(vViewUrl, 'http://dummy-base').origin === new URL(str, 'http://dummy-base').origin) {
+        return vViewUrl;
+      }
+    } catch (err) {
+      console.error('Error building virtual view URL -- make sure virtualTreePath is not part of origin.', err);
+    }
+    return str;
   }
 
   /**

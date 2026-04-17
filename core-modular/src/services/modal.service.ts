@@ -1,4 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
+import { UIModule } from '../modules/ui-module';
 import type { ModalSettings } from '../types/navigation';
 
 export interface ModalPromiseObject {
@@ -91,6 +92,7 @@ export class ModalService {
    * Removes the last modal from the stack.
    */
   removeLastModalFromStack(): void {
+    UIModule.modalContainer.pop();
     this._modalStack.pop();
   }
 }

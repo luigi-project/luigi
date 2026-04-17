@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
+          node-version: '24.x'
 
       - name: Build Luigi Client
         run: cd ./client && npm i && npm run bundle
@@ -32,7 +32,7 @@ jobs:
         run: cd ./container && npm run coverage-summary
 
       - name: Upload coverage summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           path: ./container/coverage-summary/index.html
           name: coverage-summary
