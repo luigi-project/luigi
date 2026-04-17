@@ -708,4 +708,37 @@ describe('Routing-helpers', () => {
       expect(result).toEqual('mynode');
     });
   });
+
+  describe('substituteViewUrl', () => {
+    it('should remove {virtualTreePath} placeholder when node has virtualTree=true', () => {
+      const node = {
+        pathSegment: 'virtual',
+        virtualTree: true,
+        viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toBe('https://mf.luigi-project.io/app/details');
+    });
+
+    it('should keep {virtualTreePath} placeholder when node has no virtualTree', () => {
+      const node = {
+        pathSegment: 'static',
+        viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toContain('{virtualTreePath}');
+    });
+
+    it('should return empty string when node has no viewUrl', () => {
+      const node = { pathSegment: 'empty' };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toBe('');
+    });
+  });
 });
