@@ -27,6 +27,7 @@
       <button onclick="showModal()">show MF2 in modal</button>
       <button onclick="showModal('c3')">show MF3 in modal</button>
       <button onclick="showModal('c4', 's', true)">show MF4 and keep previous</button>
+      <button onclick="openAsDrawer()">openAsDrawer</button>
       <button onclick="showLoadingIndicator()">show loading indicator</button>
       <button onclick="hideLoadingIndicator()">hide loading indicator</button>
       <button onclick="addBackdrop()">add backdrop</button>
@@ -83,6 +84,14 @@
           keepPrevious,
         });
       }
+
+      function openAsDrawer() {
+        LuigiClient.linkManager().openAsDrawer('home2/c1', {
+          header: true,
+          backdrop: true,
+          size: 'm',
+        });
+      };
 
       function showLoadingIndicator() {
         LuigiClient.uxManager().showLoadingIndicator();
