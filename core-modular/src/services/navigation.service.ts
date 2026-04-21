@@ -27,8 +27,6 @@ import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { NodeDataManagementService } from './node-data-management.service';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
-import { get, writable } from '../utilities/store';
-import type { LuigiStore } from '../utilities/store';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
@@ -36,19 +34,9 @@ import { ModalService } from './modal.service';
 export class NavigationService {
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
-  private _breadcrumbStore: LuigiStore;
+  private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
-  constructor(private luigi: Luigi) {
-    this._breadcrumbStore = writable({});
-  }
-
-  private setBreadcrumbStore(data: Record<string, BreadcrumbItem>) {
-    this._breadcrumbStore.set(data);
-  }
-
-  private getBreadcrumbStore(): Record<string, BreadcrumbItem> {
-    return get(this._breadcrumbStore);
-  }
+  constructor(private luigi: Luigi) {}
 
   private getModalService(): ModalService {
     if (!this.modalService) {
@@ -593,7 +581,6 @@ export class NavigationService {
   }
 
   async getBreadcrumbData(path: string, pData?: PathData): Promise<BreadcrumbData> {
-    const previousBreadcrumbs: Record<string, BreadcrumbItem> = this.getBreadcrumbStore();
     const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
     const pathData = pData ?? (await this.getPathData(path));
     const nodesInPath = pathData?.nodesInPath || [];
@@ -632,8 +619,8 @@ export class NavigationService {
       const node = nodesInPath[i];
       const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
 
-      if (route && previousBreadcrumbs[route]) {
-        navItems.push(previousBreadcrumbs[route]);
+      if (route && this.previousBreadcrumbs[route]) {
+        navItems.push(this.previousBreadcrumbs[route]);
       } else if (node.label || node.pathSegment) {
         let label = await RoutingHelpers.getNodeLabel(node, this.luigi);
 
@@ -660,7 +647,8 @@ export class NavigationService {
           breadcrumbCache[item.route] = item;
         }
       });
-      this.setBreadcrumbStore(breadcrumbCache);
+
+      this.previousBreadcrumbs = breadcrumbCache;
     }
 
     return {
