@@ -19,6 +19,7 @@ export const CommunicationModule = {
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       const {
+        drawer,
         link,
         preserveView,
         modal,
@@ -34,6 +35,7 @@ export const CommunicationModule = {
         nodeParams
       } = event.detail;
       const navRequestParams: NavigationRequestParams = {
+        drawerSettings: drawer,
         modalSettings: modal,
         newTab,
         path: link,

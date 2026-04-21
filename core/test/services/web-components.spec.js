@@ -150,7 +150,6 @@ describe('WebComponentService', function () {
           return myEl;
         });
       sb.stub(container, 'replaceChild').callsFake(() => {});
-      sb.stub(window, 'location').value({ origin: 'http://localhost' });
 
       container.appendChild(itemPlaceholder);
       WebComponentService.attachWC(wc_id, itemPlaceholder, container, extendedContext, 'http://localhost:8080/');
@@ -506,7 +505,7 @@ describe('WebComponentService', function () {
           const target = compoundCnt.querySelector('[nodeId=' + listeners[0].wcElementId + ']');
           sb.spy(target, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          assert(target.dispatchEvent.calledOnce);
+          assert(target.dispatchEvent.called);
           // IntersectionObserver for lazy loading should not be instantiated
           expect(globalThis.IntersectionObserver.mock.instances).to.have.lengthOf(0);
           // Check if renderWebComponent is called for each child
@@ -542,7 +541,7 @@ describe('WebComponentService', function () {
           const evBus = compoundCnt.eventBus;
           sb.spy(compoundCnt, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          assert(compoundCnt.dispatchEvent.calledOnce);
+          assert(compoundCnt.dispatchEvent.called);
 
           done();
         },

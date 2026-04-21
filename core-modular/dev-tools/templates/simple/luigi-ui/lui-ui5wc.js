@@ -566,10 +566,18 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
+  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+    drawerSettings.isDrawer = true;
+    connector.renderModal(lc, drawerSettings, onCloseCallback);
+  },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
-    dialog.classList.add('lui-modal');
+    if (modalSettings.isDrawer) {
+      dialog.classList.add('lui-drawer');
+    } else {
+      dialog.classList.add('lui-modal');
+    }
     dialog.setAttribute('header-text', modalSettings?.title);
     setDialogSize(dialog, modalSettings);
     dialog.appendChild(lc);
@@ -593,10 +601,13 @@ const connector = {
     bar.appendChild(btn);
 
     document.body.appendChild(dialog);
-    onCloseRequest().then(() => {
-      dialog.open = false;
-      document.body.removeChild(dialog);
-    });
+
+    if (onCloseRequest) {
+      onCloseRequest().then(() => {
+        dialog.open = false;
+        document.body.removeChild(dialog);
+      });
+    }
 
     dialog.open = true;
   },

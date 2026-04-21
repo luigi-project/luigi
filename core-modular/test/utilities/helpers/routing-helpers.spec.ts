@@ -23,7 +23,13 @@ describe('Routing-helpers', () => {
         }
         return null;
       },
-      getActiveFeatureToggles: () => []
+      getActiveFeatureToggles: () => [],
+      i18n: jest.fn().mockReturnValue({
+        getTranslation: (key: string) => key
+      }),
+      ux: jest.fn().mockReturnValue({
+        showAlert: jest.fn()
+      })
     };
   });
 
@@ -357,6 +363,136 @@ describe('Routing-helpers', () => {
     });
   });
 
+  describe('getPageNotFoundRedirectResult', () => {
+    it('with custom pageNotFoundHandler defined redirectTo path', async () => {
+      const customRedirect = 'somecustompath';
+
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return () => ({
+            redirectTo: customRedirect
+          });
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi).path;
+
+      expect(customRedirect).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined keepURL', async () => {
+      const customKeepURL = true;
+      const somePath = 'somePath';
+      const ignoreLuigiErrorHandling = undefined;
+
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return () => ({
+            redirectTo: somePath,
+            keepURL: customKeepURL,
+            ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+          });
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('', false, luigi);
+
+      expect({
+        path: somePath,
+        keepURL: customKeepURL,
+        ignoreLuigiErrorHandling: ignoreLuigiErrorHandling
+      }).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler not defined', async () => {
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return undefined;
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi);
+
+      expect({}).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler not a function', async () => {
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.pageNotFoundHandler') {
+          return { thisObject: 'should be function instead' };
+        }
+        return null;
+      });
+
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', false, luigi).path;
+
+      expect(undefined).toEqual(expected);
+    });
+  });
+
+  describe('handlePageNotFoundAndRetrieveRedirectPath', () => {
+    it('when path exists should return path itself', async () => {
+      const path = 'existingpath';
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, true, luigi);
+
+      expect(path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler defined', async () => {
+      const path = 'somepathtoredirect';
+      const redirectPath = { path };
+      // define pageNotFoundHandler return value with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue(redirectPath);
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(redirectPath.path).toEqual(expected);
+    });
+
+    it('with custom pageNotFoundHandler as not defined', async () => {
+      const path = 'notFoundPath';
+      const consoleWarnSpy = jest.spyOn(console, 'warn');
+      const showRouteNotFoundAlertSpy = jest.spyOn(RoutingHelpers, 'showRouteNotFoundAlert');
+      // set pageNotFoundHandler as undefined with stub
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+      // call function being tested
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, false, luigi);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(`Could not find the requested route: ${path}`);
+      expect(showRouteNotFoundAlertSpy).toHaveBeenCalled();
+      expect(undefined).toEqual(expected);
+    });
+  });
+
+  describe('showRouteNotFoundAlert', () => {
+    it('should show error alert when no path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', false, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.requestedRouteNotFound',
+        type: 'error',
+        ttl: 1
+      });
+    });
+
+    it('should show error alert when path is matched', () => {
+      const showAlertSpy = jest.spyOn(luigi.ux(), 'showAlert');
+
+      RoutingHelpers.showRouteNotFoundAlert('some/path', true, luigi);
+
+      expect(showAlertSpy).toHaveBeenCalledWith({
+        text: 'luigi.notExactTargetNode',
+        type: 'error',
+        ttl: 1
+      });
+    });
+  });
+
   describe('buildRoute', () => {
     it('should return path with params if node has no parent (root node)', () => {
       const rootNode = {
@@ -420,6 +556,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(childNode);
       expect(result).toBe('/home/child');
     });
+
     it('should return full path for deeply nested nodes', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };
@@ -427,6 +564,7 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.getNodePath(grandChildNode);
       expect(result).toBe('/home/child/grandchild');
     });
+
     it('should return full path with params', () => {
       const rootNode = { pathSegment: 'home' };
       const childNode = { pathSegment: 'child', parent: rootNode };
@@ -466,6 +604,7 @@ describe('Routing-helpers', () => {
       expect(result).toBe('base/path/relative/path/');
     });
   });
+
   describe('RoutingHelpers.getSubPath', () => {
     it('should replace variables in the node path with values from pathParams', () => {
       const node = { pathSegment: ':id' };
@@ -496,6 +635,39 @@ describe('Routing-helpers', () => {
       const pathParams = { id: '123', detail: 'info' };
       const result = RoutingHelpers.getSubPath(grandGrandChildNode, pathParams);
       expect(result).toBe('/home/123/details/info');
+    });
+  });
+
+  describe('substituteViewUrl', () => {
+    it('should remove {virtualTreePath} placeholder when node has virtualTree=true', () => {
+      const node = {
+        pathSegment: 'virtual',
+        virtualTree: true,
+        viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toBe('https://mf.luigi-project.io/app/details');
+    });
+
+    it('should keep {virtualTreePath} placeholder when node has no virtualTree', () => {
+      const node = {
+        pathSegment: 'static',
+        viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toContain('{virtualTreePath}');
+    });
+
+    it('should return empty string when node has no viewUrl', () => {
+      const node = { pathSegment: 'empty' };
+
+      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+
+      expect(result).toBe('');
     });
   });
 });
