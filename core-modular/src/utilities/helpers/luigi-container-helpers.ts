@@ -1,6 +1,7 @@
 import { UIModule } from "../../modules/ui-module";
 import { GenericHelpers } from "./generic-helpers";
 import type { Luigi } from "../../core-api/luigi";
+import type LuigiContainer from "@luigi-project/container/LuigiContainer.svelte";
 
 export type MicrofrontendEntry = {
     iframe: HTMLElement;
@@ -72,7 +73,7 @@ export const LuigiContainerHelpers = {
     },
 
     getDrawerMicrofrontends(): MicrofrontendEntry {
-        if(!UIModule.drawerContainer) return {} as MicrofrontendEntry;
+        if (!UIModule.drawerContainer) return {} as MicrofrontendEntry;
         if (UIModule.drawerContainer.iframeHandle?.iframe) {
             return { iframe: UIModule.drawerContainer.iframeHandle.iframe, id: UIModule.drawerContainer.luigiMfId, active: GenericHelpers.isElementVisible(UIModule.drawerContainer) };
         } else {
@@ -82,5 +83,24 @@ export const LuigiContainerHelpers = {
             }
         }
         return {} as MicrofrontendEntry;
+    },
+
+    getAllLuigiContainerIframe(luigi: Luigi): LuigiContainer[] | undefined {
+        const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+        if (!containerWrapper) return undefined;
+        const containers = [...containerWrapper.children].filter(
+            element => element.tagName?.indexOf('LUIGI-CONTAINER') === 0 && (element as any).iframeHandle?.iframe
+        ) as LuigiContainer[];
+        for (const element of UIModule.modalContainer as any) {
+            if (element.iframeHandle?.iframe) {
+                containers.push(element as LuigiContainer);
+            }
+        }
+        if (UIModule.drawerContainer) {
+            if (UIModule.drawerContainer.iframeHandle?.iframe) {
+                containers.push(UIModule.drawerContainer as LuigiContainer);
+            }
+        }
+        return containers.length > 0 ? containers : undefined;
     }
 }
