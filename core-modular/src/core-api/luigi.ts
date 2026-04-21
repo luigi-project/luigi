@@ -154,7 +154,6 @@ export class Luigi {
     return this._customMessages;
   };
 
-
   i18n = (): i18nService => {
     if (!this._i18n) {
       this._i18n = new i18nService(this);
