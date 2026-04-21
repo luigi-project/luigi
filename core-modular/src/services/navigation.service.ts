@@ -589,6 +589,7 @@ export class NavigationService {
     let basePath = '';
 
     if (!breadcrumbConfig || (path === '' && nodesInPath?.[0].viewUrl)) {
+      this.previousBreadcrumbs = {};
       return {};
     }
 
