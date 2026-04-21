@@ -60,7 +60,9 @@ describe('CustomMessages', () => {
 
       customMessages.sendToAll({ data: 'hello' });
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Message object must contain an "id" property to specify the message type.');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Message object must contain an "id" property to specify the message type.'
+      );
     });
 
     it('warns when container does not support sendCustomMessage', () => {
@@ -116,7 +118,9 @@ describe('CustomMessages', () => {
 
       customMessages.send('mf1', { data: 'hello' });
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Message object must contain an "id" property to specify the message type.');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Message object must contain an "id" property to specify the message type.'
+      );
     });
 
     it('warns when no container matches the microfrontend ID', () => {
