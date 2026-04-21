@@ -342,10 +342,10 @@ function renderNodeOrCategory(item, leftNavData) {
 
 function updateOverlays() {
   const alertContainer = document.querySelector('.luigi-alert--overlay');
-    alertContainer.hidePopover();
-    alertContainer.showPopover();
+  alertContainer.hidePopover();
+  alertContainer.showPopover();
 
-    // TODO: confirmation modal ...
+  // TODO: confirmation modal ...
 }
 
 /** @type {LuigiConnector} */
