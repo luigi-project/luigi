@@ -95,10 +95,11 @@ ui5-shellbar {
 }
 
 .luigi-alert--overlay{
+    background-color: transparent;
+    overflow: visible;
+    border: none;
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 28px;
 }
 
 .luigi-alert--overlay ui5-message-strip{
