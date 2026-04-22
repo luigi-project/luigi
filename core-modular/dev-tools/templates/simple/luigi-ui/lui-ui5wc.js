@@ -250,7 +250,7 @@ function renderProfilePopover(profileObj, avatar) {
 
   profileObj.onUserInfoUpdate((userInfo) => {
     uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
-    uInfoWrapper.innerHTML += /*html*/ `      
+    uInfoWrapper.innerHTML += /*html*/ `
       <div>${userInfo.name}</div>
       <div>${userInfo.email}</div>
       <div>${userInfo.description}</div>
@@ -340,6 +340,14 @@ function renderNodeOrCategory(item, leftNavData) {
   return frag;
 }
 
+function updateOverlays() {
+  const alertContainer = document.querySelector('.luigi-alert--overlay');
+  alertContainer.hidePopover();
+  alertContainer.showPopover();
+
+  // TODO: confirmation modal ...
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -356,7 +364,7 @@ const connector = {
             <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           </div>
         </div>
-        <div class="luigi-alert--overlay"><div>
+        <div class="luigi-alert--overlay" popover="manual"><div>
         <div class="luigi-confirmation-modal--overlay"><div>
       `;
       document.body.appendChild(appRoot);
@@ -618,6 +626,7 @@ const connector = {
     setTimeout(() => {
       loader.active = false;
     }, 3000);
+    updateOverlays();
   },
 
   updateModalSettings: (modalSettings) => {
@@ -702,6 +711,8 @@ const connector = {
         }
       }, alertSettings.closeAfter);
     }
+
+    updateOverlays();
   },
   renderConfirmationModal(settings, handler) {
     const iconMapping = {
