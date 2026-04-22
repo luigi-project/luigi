@@ -1402,4 +1402,71 @@ describe('NavigationService', () => {
       expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
     });
   });
+
+  describe('getBreadcrumbData', () => {
+    const pathData = {
+      selectedNode: undefined,
+      selectedNodeChildren: [],
+      nodesInPath: [
+        { pathSegment: '', virtualTree: false },
+        { pathSegment: 'parent', virtualTree: false },
+        { pathSegment: 'child', virtualTree: false }
+      ],
+      rootNodes: [],
+      pathParams: {}
+    };
+
+    beforeEach(() => {
+      luigiMock.getConfigValue.mockReturnValue({
+        clearBeforeRender: true,
+        pendingItemLabel: 'not loaded yet',
+        omitRoot: false,
+        autoHide: false
+      });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return full breadcrumb data', async () => {
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true,
+        basePath: '',
+        items: [
+          {
+            label: 'parent',
+            node: {
+              pathSegment: 'parent',
+              virtualTree: false
+            },
+            route: undefined
+          },
+          {
+            label: 'child',
+            last: true,
+            node: {
+              pathSegment: 'child',
+              virtualTree: false
+            },
+            route: undefined
+          }
+        ],
+        renderer: undefined,
+        selectedNode: {}
+      });
+    });
+
+    it('should return limited breadcrumb data', async () => {
+      pathData.nodesInPath[2].showBreadcrumbs = false;
+
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true
+      });
+    });
+  });
 });
