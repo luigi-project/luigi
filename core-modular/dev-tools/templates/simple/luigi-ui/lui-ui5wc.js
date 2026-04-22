@@ -385,6 +385,7 @@ const connector = {
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content">
+            <div class="breadcrumb-wrapper"></div>
             <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           </div>
         </div>
@@ -691,6 +692,26 @@ const connector = {
         });
       }
       tabcontainer?.appendChild(tab);
+    });
+  },
+
+  renderBreadcrumbs: (breadcrumbData) => {
+    const wrapper = document.querySelector('.breadcrumb-wrapper');
+
+    if (wrapper && breadcrumbData?.clearBeforeRender) {
+      wrapper.innerHTML = '';
+    }
+
+    if (!wrapper || !breadcrumbData?.items?.length || !breadcrumbData?.renderer) {
+      return;
+    }
+
+    const selectedNode = breadcrumbData.selectedNode;
+
+    breadcrumbData.renderer(wrapper, breadcrumbData.items, (item) => {
+      if (item.node.label !== selectedNode.label && item.node.pathSegment !== selectedNode.pathSegment) {
+        globalThis.Luigi.navigation().navigate(item.route);
+      }
     });
   },
 
