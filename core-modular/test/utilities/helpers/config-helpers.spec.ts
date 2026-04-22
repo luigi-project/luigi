@@ -9,19 +9,15 @@ describe('ConfigHelpers', () => {
     getConfigValue = jest.fn();
     getConfigValueAsync = jest.fn();
     getEngine = jest.fn();
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        Luigi: {
-          getConfigValue,
-          getConfigValueAsync,
-          getEngine
-        }
-      } as Window & typeof globalThis;
-    });
+    (window as any).Luigi = {
+      getConfigValue,
+      getConfigValueAsync,
+      getEngine
+    };
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    delete (window as any).Luigi;
   });
 
   it('getConfigValue', () => {

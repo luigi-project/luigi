@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_name == 'main'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
+          node-version: '24.x'
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_LUI_AUTH_TOKEN" > ~/.npmrc
       - run: bash ./scripts/npmPublish.sh cra-release
       - run: echo "" > ~/.npmrc

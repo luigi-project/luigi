@@ -335,6 +335,9 @@ class RoutingHelpersClass {
     const nodeParamsVarPrefix = 'nodeParams.';
     const searchQuery = 'routing.queryParams';
 
+    if (componentData?.currentNode?.virtualTree) {
+      viewUrl = viewUrl.replace('{virtualTreePath}', '');
+    }
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.pathParams, ':', false);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.context, contextVarPrefix);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.nodeParams, nodeParamsVarPrefix);

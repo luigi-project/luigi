@@ -76,11 +76,13 @@ export interface LeftNavData {
 }
 
 export interface PathData {
+  context?: Record<string, any>;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;
+  matchedPath: string;
 }
 
 export interface RootNode {
@@ -230,6 +232,7 @@ export interface NavigationRequestBase {
 }
 
 export interface NavigationRequestParams extends NavigationRequestBase {
+  drawerSettings?: any;
   modalSettings?: any;
   newTab?: boolean;
   path: string;

@@ -2,20 +2,26 @@ import { GenericHelpers } from '../../../src/utilities/helpers/generic-helpers';
 
 describe('Generic-helpers', () => {
   let locationSearchString: string;
+  let originalLocation: Location;
 
   beforeAll(() => {
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location: {
-          search: locationSearchString
-        },
-        crypto: globalThis.crypto
-      } as unknown as Window & typeof globalThis;
+    // Save original and replace location with a getter that returns our mock
+    originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      get: () => ({
+        search: locationSearchString
+      }),
+      configurable: true
     });
   });
 
   afterAll(() => {
-    jest.restoreAllMocks();
+    // Restore original location
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true
+    });
   });
 
   beforeEach(() => {
@@ -58,6 +64,10 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.trimTrailingSlash('luigi/')).toEqual('luigi');
   });
 
+  it('addLeadingSlash', () => {
+    expect(GenericHelpers.addLeadingSlash('luigi')).toEqual('/luigi');
+  });
+
   it('getNodeList', () => {
     expect(GenericHelpers.getNodeList('body').length).toEqual(1);
     expect(GenericHelpers.getNodeList('luigi-container').length).toEqual(0);
@@ -68,6 +78,19 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.getUrlParameter('notThere')).toBeFalsy();
     expect(GenericHelpers.getUrlParameter('qp')).toEqual('val');
     expect(GenericHelpers.getUrlParameter('qp2')).toEqual('val2');
+  });
+
+  it('hasHash', () => {
+    const path = '#luigi/tets/something';
+    const includingHash = GenericHelpers.hasHash(path);
+
+    expect(includingHash).toBeTruthy();
+  });
+
+  it('getPathWithoutHash', () => {
+    const path = '#/tets';
+
+    expect(GenericHelpers.getPathWithoutHash(path)).toEqual('tets');
   });
 });
 
