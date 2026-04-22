@@ -351,9 +351,9 @@ const connector = {
         <ui5-shellbar slot="header"></ui5-shellbar>
         <ui5-side-navigation slot="sideContent"></ui5-side-navigation>
         <div class="content-wrapper">
-          <div class="breadcrumb-wrapper"></div>
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content">
+            <div class="breadcrumb-wrapper"></div>
             <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           </div>
         </div>
