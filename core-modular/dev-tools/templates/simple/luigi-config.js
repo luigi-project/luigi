@@ -10,6 +10,34 @@ window.onload = () => {
           }
         }
       },
+      breadcrumbs: {
+        clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
+        pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
+        omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
+        autoHide: false, // hide breadcrumbs when navigating to root node
+        renderer: (containerElement, nodeItems, clickHandler) => {
+          const ui5breadcrumbs = document.createElement('ui5-breadcrumbs');
+
+          nodeItems.forEach((item) => {
+            if (item.label) {
+              const itemCmp = document.createElement('ui5-breadcrumbs-item');
+
+              itemCmp.textContent = `${item.label}`;
+              itemCmp._item = item;
+              ui5breadcrumbs.appendChild(itemCmp);
+            }
+          });
+
+          ui5breadcrumbs.addEventListener('item-click', (event) => {
+            event.preventDefault();
+            clickHandler(event.detail.item._item);
+          });
+
+          containerElement.appendChild(ui5breadcrumbs);
+
+          return ui5breadcrumbs;
+        }
+      },
       appSwitcher: {
         showMainAppEntry: true,
         items: [
@@ -62,6 +90,7 @@ window.onload = () => {
         {
           pathSegment: 'home',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           anonymousAccess: 'exclusive',
           context: {
@@ -73,6 +102,7 @@ window.onload = () => {
         {
           pathSegment: 'home2',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {

@@ -2,6 +2,8 @@ import type { Luigi } from '../core-api/luigi';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  BreadcrumbData,
+  BreadcrumbItem,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -32,6 +34,7 @@ import { ModalService } from './modal.service';
 export class NavigationService {
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
+  private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
   constructor(private luigi: Luigi) {}
 
@@ -574,6 +577,87 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+    };
+  }
+
+  async getBreadcrumbData(path: string, pData?: PathData): Promise<BreadcrumbData> {
+    const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
+    const pathData = pData ?? (await this.getPathData(path));
+    const nodesInPath = pathData?.nodesInPath || [];
+    const navItems: BreadcrumbItem[] = [];
+    let showBreadcrumb;
+    let basePath = '';
+
+    if (!breadcrumbConfig || (path === '' && nodesInPath?.[0].viewUrl)) {
+      this.previousBreadcrumbs = {};
+      return {};
+    }
+
+    // if enabled in general, check node scope
+    nodesInPath.forEach((node: Node) => {
+      if (node.children) {
+        basePath += '/' + (node.pathSegment || '');
+      }
+
+      if (node.showBreadcrumbs === false) {
+        showBreadcrumb = false;
+      } else {
+        showBreadcrumb = true;
+      }
+    });
+
+    if (!showBreadcrumb) {
+      return {
+        clearBeforeRender: true
+      };
+    }
+
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const start = breadcrumbConfig.omitRoot ? 2 : 1;
+
+    for (let i = start; i < nodesInPath.length; i++) {
+      const node = nodesInPath[i];
+      const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
+
+      if (route && this.previousBreadcrumbs[route]) {
+        navItems.push(this.previousBreadcrumbs[route]);
+      } else if (node.label || node.pathSegment) {
+        let label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+
+        if (!label) {
+          label = breadcrumbConfig.pendingItemLabel || '';
+        }
+
+        navItems.push({ label: label, node: node, route: route });
+      }
+    }
+
+    // check if route has been changed in the meantime - if yes, do nothing
+    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+      const breadcrumbCache: Record<string, BreadcrumbItem> = {};
+
+      if (navItems.length > 1) {
+        navItems[navItems.length - 1].last = true;
+      } else if (breadcrumbConfig.autoHide) {
+        navItems.length = 0;
+      }
+
+      navItems.map((item: BreadcrumbItem) => {
+        if (item.route) {
+          breadcrumbCache[item.route] = item;
+        }
+      });
+
+      this.previousBreadcrumbs = breadcrumbCache;
+    }
+
+    return {
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      clearBeforeRender: breadcrumbConfig.clearBeforeRender,
+      items: navItems,
+      renderer: breadcrumbConfig.renderer,
+      selectedNode: pathData?.selectedNode || ({} as Node)
     };
   }
 
