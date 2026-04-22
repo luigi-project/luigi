@@ -11,6 +11,7 @@ import type { ModalSettings, Node } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
 const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -62,6 +63,7 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
+    lc.authData = AuthHelpers.getStoredAuthData();
     lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = nodeParams;
@@ -183,9 +185,6 @@ export const UIModule = {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
-      UIModule.luigi
-        .getEngine()
-        ._connector?.renderBreadcrumbs(await UIModule.navService.getBreadcrumbData(croute.path));
     }
     if (
       noScopes ||
