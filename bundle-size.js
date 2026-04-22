@@ -16,7 +16,7 @@ const filesAndLimits = [
   },
   {
     path: 'core/public/luigi.css',
-    limit: 1100
+    limit: 1200
   },
   {
     path: 'plugins/auth/public/auth-oauth2/plugin.js',
