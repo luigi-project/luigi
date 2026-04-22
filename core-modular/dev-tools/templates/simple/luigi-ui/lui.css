@@ -74,6 +74,15 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
+.breadcrumb-wrapper {
+    clear: both;
+    padding: 1rem 1.5rem 0;
+}
+
+.breadcrumb-wrapper:empty {
+    display: none;
+}
+
 .content {
     position: relative;
     height: 100%;
@@ -95,10 +104,11 @@ ui5-shellbar {
 }
 
 .luigi-alert--overlay{
+    background-color: transparent;
+    overflow: visible;
+    border: none;
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 28px;
 }
 
 .luigi-alert--overlay ui5-message-strip{
