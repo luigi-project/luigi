@@ -22,7 +22,7 @@ function makeLuigiMock(containerChildren: any[]) {
   return {
     getEngine: () => ({
       _connector: {
-        getContainerWrapper: () => ({ childNodes: containerChildren })
+        getContainerWrapper: () => ({ childNodes: containerChildren, children: containerChildren })
       }
     })
   } as any;
@@ -204,6 +204,124 @@ describe('LuigiContainerHelpers', () => {
       mockUIModule.drawerContainer = null;
 
       expect(LuigiContainerHelpers.getMicrofrontendsInDom(luigi)).toEqual([]);
+    });
+  });
+
+  describe('getAllLuigiContainerIframe', () => {
+    it('returns undefined if containerWrapper is not available', () => {
+      const luigi = { getEngine: () => ({ _connector: { getContainerWrapper: () => null } }) } as any;
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('returns undefined if connector is not available', () => {
+      const luigi = { getEngine: () => ({ _connector: null }) } as any;
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('returns undefined if no matching containers found', () => {
+      const luigi = makeLuigiMock([{ tagName: 'DIV', iframeHandle: { iframe: document.createElement('iframe') } }]);
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('returns LUIGI-CONTAINER elements with iframeHandle', () => {
+      const iframe = document.createElement('iframe');
+      const container = { tagName: 'LUIGI-CONTAINER', iframeHandle: { iframe }, luigiMfId: 'mf1' };
+      const luigi = makeLuigiMock([container]);
+
+      const result = LuigiContainerHelpers.getAllLuigiContainerIframe(luigi);
+
+      expect(result).toHaveLength(1);
+      expect(result![0]).toBe(container);
+    });
+
+    it('skips LUIGI-CONTAINER elements without iframeHandle', () => {
+      const container = { tagName: 'LUIGI-CONTAINER', iframeHandle: null, luigiMfId: 'mf1' };
+      const luigi = makeLuigiMock([container]);
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('skips non-LUIGI-CONTAINER elements', () => {
+      const iframe = document.createElement('iframe');
+      const element = { tagName: 'LUIGI-WC', iframeHandle: { iframe }, luigiMfId: 'mf1' };
+      const luigi = makeLuigiMock([element]);
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('includes modal containers with iframeHandle', () => {
+      const modalIframe = document.createElement('iframe');
+      const modalElement = { iframeHandle: { iframe: modalIframe }, luigiMfId: 'modal1' };
+      mockUIModule.modalContainer = [modalElement] as any;
+      const luigi = makeLuigiMock([]);
+
+      const result = LuigiContainerHelpers.getAllLuigiContainerIframe(luigi);
+
+      expect(result).toHaveLength(1);
+      expect(result![0]).toBe(modalElement);
+    });
+
+    it('skips modal containers without iframeHandle', () => {
+      const modalElement = { iframeHandle: null, luigiMfId: 'modal1' };
+      mockUIModule.modalContainer = [modalElement] as any;
+      const luigi = makeLuigiMock([]);
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('includes drawer container with iframeHandle', () => {
+      const drawerIframe = document.createElement('iframe');
+      mockUIModule.drawerContainer = { iframeHandle: { iframe: drawerIframe }, luigiMfId: 'drawer1' } as any;
+      const luigi = makeLuigiMock([]);
+
+      const result = LuigiContainerHelpers.getAllLuigiContainerIframe(luigi);
+
+      expect(result).toHaveLength(1);
+      expect(result![0]).toBe(mockUIModule.drawerContainer);
+    });
+
+    it('skips drawer container without iframeHandle', () => {
+      mockUIModule.drawerContainer = { iframeHandle: null, luigiMfId: 'drawer1' } as any;
+      const luigi = makeLuigiMock([]);
+
+      expect(LuigiContainerHelpers.getAllLuigiContainerIframe(luigi)).toBeUndefined();
+    });
+
+    it('aggregates main, modal, and drawer containers', () => {
+      const mainIframe = document.createElement('iframe');
+      const modalIframe = document.createElement('iframe');
+      const drawerIframe = document.createElement('iframe');
+
+      const mainContainer = { tagName: 'LUIGI-CONTAINER', iframeHandle: { iframe: mainIframe }, luigiMfId: 'main1' };
+      const modalElement = { iframeHandle: { iframe: modalIframe }, luigiMfId: 'modal1' };
+      mockUIModule.modalContainer = [modalElement] as any;
+      mockUIModule.drawerContainer = { iframeHandle: { iframe: drawerIframe }, luigiMfId: 'drawer1' } as any;
+
+      const luigi = makeLuigiMock([mainContainer]);
+
+      const result = LuigiContainerHelpers.getAllLuigiContainerIframe(luigi);
+
+      expect(result).toHaveLength(3);
+      expect(result![0]).toBe(mainContainer);
+      expect(result![1]).toBe(modalElement);
+      expect(result![2]).toBe(mockUIModule.drawerContainer);
+    });
+
+    it('returns multiple main containers', () => {
+      const iframe1 = document.createElement('iframe');
+      const iframe2 = document.createElement('iframe');
+      const container1 = { tagName: 'LUIGI-CONTAINER', iframeHandle: { iframe: iframe1 }, luigiMfId: 'mf1' };
+      const container2 = { tagName: 'LUIGI-CONTAINER', iframeHandle: { iframe: iframe2 }, luigiMfId: 'mf2' };
+      const luigi = makeLuigiMock([container1, container2]);
+
+      const result = LuigiContainerHelpers.getAllLuigiContainerIframe(luigi);
+
+      expect(result).toHaveLength(2);
+      expect(result![0]).toBe(container1);
+      expect(result![1]).toBe(container2);
     });
   });
 });
