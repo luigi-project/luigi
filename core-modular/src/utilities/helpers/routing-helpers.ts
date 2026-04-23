@@ -81,6 +81,60 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Maps a path to the nodes route, replacing all dynamic pathSegments with the concrete values in path.
+   * Example: path='/object/234/subobject/378/some/node', node with path '/object/:id/subobject/:subid' results in
+   * '/object/234/subobject/378/'.
+   * @param {String} path - a concrete node path, typically the current app route
+   * @param {Node} node - a node which must be an ancestor of the resolved node from path
+   * @returns a string with the route or undefined, if node is not an ancestor of path-node
+   */
+  mapPathToNode(path: string, node: Node): string | undefined {
+    if (!path || !node) {
+      return;
+    }
+
+    const pathSegments = GenericHelpers.trimLeadingSlash(path).split('/');
+    const nodeRoute = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    const nodeRouteSegments = GenericHelpers.trimLeadingSlash(nodeRoute).split('/');
+
+    if (pathSegments.length < nodeRouteSegments.length) {
+      return;
+    }
+
+    let resultingRoute = '';
+
+    for (let i = 0; i < nodeRouteSegments.length; i++) {
+      if (pathSegments[i] !== nodeRouteSegments[i] && nodeRouteSegments[i].indexOf(':') !== 0) {
+        return;
+      }
+
+      resultingRoute += '/' + pathSegments[i];
+    }
+
+    return resultingRoute;
+  },
+
+  async getNodeLabel(node: Node, luigi: Luigi): Promise<string> {
+    if (node.label && !node._virtualTree) {
+      return luigi.i18n().getTranslation(node.label) || node.label;
+    }
+
+    if (node.pathSegment && node.pathSegment.indexOf(':') === 0) {
+      const hash = luigi.getConfig().routing?.useHashRouting;
+      const route = RoutingHelpers.mapPathToNode(RoutingHelpers.getCurrentPath(hash)?.path, node) || '';
+      const data = await luigi.navigation().navService.extractDataFromPath(route);
+
+      return RoutingHelpers.getDynamicNodeValue(node, data.pathData.pathParams) || '';
+    }
+
+    if (node.pathSegment) {
+      return node.pathSegment;
+    }
+
+    return '';
+  },
+
+  /**
    * Retrieves the content view parameter prefix from the Luigi configuration.
    *
    * This method attempts to obtain the prefix value from the Luigi configuration using the key
