@@ -5,7 +5,15 @@ import type {
   ConfirmationModalSettings,
   UserSettings
 } from '../modules/ux-module';
-import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData, BreadcrumbData, DrawerSettings } from './navigation';
+import type {
+  ModalSettings,
+  LeftNavData,
+  Node,
+  TopNavData,
+  TabNavData,
+  BreadcrumbData,
+  DrawerSettings
+} from './navigation';
 
 export interface LuigiConnector {
   renderMainLayout(): void;
