@@ -5,7 +5,7 @@ import type {
   ConfirmationModalSettings,
   UserSettings
 } from '../modules/ux-module';
-import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData, BreadcrumbData } from './navigation';
+import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData, BreadcrumbData, DrawerSettings } from './navigation';
 
 export interface LuigiConnector {
   renderMainLayout(): void;
@@ -23,7 +23,7 @@ export interface LuigiConnector {
     onCloseRequest?: () => void
   ): any;
 
-  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: () => void): any;
+  renderDrawer(content: HTMLElement, modalSettings: DrawerSettings, onCloseCallback?: () => void): any;
 
   renderTabNav(data: TabNavData): void;
 

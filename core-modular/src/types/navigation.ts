@@ -198,6 +198,13 @@ export interface BreadcrumbData {
   selectedNode?: Node;
 }
 
+export interface DrawerSettings {
+  backdrop?: boolean;
+  header?: any;
+  overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
+}
+
 export interface ModalSettings {
   size?: 'fullscreen' | 'l' | 'm' | 's';
   width?: string;
