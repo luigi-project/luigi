@@ -1,6 +1,7 @@
+import { get } from 'lodash';
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { AppSwitcher, Node, PathData } from '../../types/navigation';
+import type { AppSwitcher, Node, PathData, TitleResolver } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 import { RoutingHelpers } from './routing-helpers';
@@ -218,5 +219,96 @@ export const NavigationHelpers = {
     const pathExist = await RoutingHelpers.pathExists(path, luigi);
     const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, luigi);
     return redirectPath || undefined;
+  },
+
+  async fetchNodeTitleData(node: Node, context: any): Promise<{ label: string; icon?: string }> {
+    return new Promise<{ label: string; icon?: string }>((resolve, reject) => {
+      if (!node.titleResolver) {
+        reject(new Error('No title resolver defined at node'));
+        return;
+      }
+      const strippedResolver = { ...node.titleResolver };
+      delete strippedResolver._cache;
+
+      const resolver = this.substituteVars(strippedResolver, context);
+      const resolverString = JSON.stringify(resolver);
+      if (node.titleResolver._cache) {
+        if (node.titleResolver._cache.key === resolverString) {
+          resolve(node.titleResolver._cache.value);
+          return;
+        }
+      }
+
+      const requestOptions = resolver.request;
+
+      // TODO: Remove - temp delay for testing
+      setTimeout(() => {
+        this._fetch(requestOptions.url, {
+          method: requestOptions.method,
+          headers: requestOptions.headers,
+          body: JSON.stringify(requestOptions.body)
+        })
+          .then((response) => {
+            response.json().then((data) => {
+              try {
+                const titleData = this.processTitleData(data, resolver);
+                node.titleResolver!._cache = {
+                  key: resolverString,
+                  value: titleData
+                };
+                resolve(titleData);
+              } catch (e) {
+                reject(e);
+              }
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      }, 3000);
+    });
+  },
+
+  /**
+   * Returns a nested property value defined by a chain string
+   * @param {*} obj - the object
+   * @param {*} propChain - a string defining the property chain
+   * @param {*} fallback - fallback value if resolution fails
+   * @returns the value or fallback
+   */
+  getPropertyChainValue(obj: any, propChain?: string, fallback?: any) {
+    if (!propChain || !obj) {
+      return fallback;
+    }
+    return get(obj, propChain, fallback);
+  },
+
+  substituteVars(resolver: TitleResolver, context: any) {
+    const resolverString = JSON.stringify(resolver);
+    const resString = resolverString.replace(/\$\{[a-zA-Z0-9$_.]+\}/g, (match) => {
+      const chain = match.substr(2, match.length - 3);
+      return this.getPropertyChainValue(context, chain) || match;
+    });
+    return JSON.parse(resString);
+  },
+
+  _fetch(url: string, options: RequestInit): Promise<Response> {
+    return fetch(url, options);
+  },
+
+  processTitleData(data: any, resolver: TitleResolver) {
+    let label = this.getPropertyChainValue(data, resolver.titlePropertyChain);
+    if (label) {
+      label = label.trim();
+    }
+    if (label && resolver.titleDecorator) {
+      label = resolver.titleDecorator.replace('%s', label);
+    }
+    const titleData = {
+      label: label || resolver.fallbackTitle,
+      icon: this.getPropertyChainValue(data, resolver.iconPropertyChain, resolver.fallbackIcon)
+    };
+
+    return titleData;
   }
 };

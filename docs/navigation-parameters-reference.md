@@ -815,6 +815,47 @@ navigation: {
 tooltipText: 'Useful links'
 ```
 
+### titleResolver
+- **type**: object
+- **description**: dynamically resolves the title and icon of a navigation node via an HTTP request. Use this instead of a static **label** when the node title depends on runtime data (for example, a resource name fetched from an API). The response is cached per resolved request configuration, so repeated navigation to the same node does not trigger additional requests. Variable substitution using `${varName}` syntax is supported in `request.url`, `request.headers`, and `request.body`, where variable values are taken from the current navigation context.
+- **since**: v1.19.0
+- **attributes**:
+  - **request** (object, required): HTTP request configuration.
+    - **method** (string): HTTP method, for example `'GET'` or `'POST'`.
+    - **url** (string): endpoint URL. Supports `${varName}` substitution from the navigation context.
+    - **headers** (object): optional request headers. Supports `${varName}` substitution.
+    - **body** (object): optional request body. Supports `${varName}` substitution.
+  - **titlePropertyChain** (string): dot-notation path to extract the title value from the response object, for example `'data.project.displayName'`.
+  - **iconPropertyChain** (string): dot-notation path to extract the icon value from the response object.
+  - **titleDecorator** (string): format string applied to the resolved title. Use `%s` as a placeholder for the title value, for example `'Project: %s'`.
+  - **fallbackTitle** (string): title shown when the resolved value is empty or the request fails. Supports i18n keys.
+  - **fallbackIcon** (string): icon shown when the resolved icon value is empty or the request fails.
+  - **prerenderFallback** (boolean): if `true`, the **fallbackTitle** is displayed in the breadcrumb immediately while the request is still pending. If `false` or omitted, the breadcrumb shows `navigation.breadcrumbs.pendingItemLabel` during the pending state. Defaults to `false`.
+- **example**:
+```javascript
+{
+  pathSegment: 'project',
+  titleResolver: {
+    request: {
+      method: 'POST',
+      url: '/api/projects',
+      headers: {
+        authorization: 'Bearer ${token}'
+      },
+      body: {
+        variables: { projectId: '${projectId}' }
+      }
+    },
+    titlePropertyChain: 'data.project.displayName',
+    iconPropertyChain: 'data.project.icon',
+    titleDecorator: 'Project: %s',
+    fallbackTitle: 'navigation.project.fallback',
+    fallbackIcon: 'folder',
+    prerenderFallback: true
+  }
+}
+```
+
 ### topNav
 - **type**: boolean
 - **description** children of the root node will not be rendered in the top navigation if this value is set to `false`. Instead, the children will be rendered in the left navigation (default) or in the horizontal navigation ([tabNav](#tabNav)) if this is configured on the node. This feature only works if the [nodes](#nodes) property is an object instead of an array. In that case, the root node will not be reflected in the URL.
