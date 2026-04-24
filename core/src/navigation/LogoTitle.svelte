@@ -353,6 +353,7 @@
   .lui-customlogo {
     display: flex;
     align-items: center;
+    min-height: 24px;
   }
 
   .fd-shellbar__logo,
