@@ -2,8 +2,8 @@ import { serviceRegistry } from '../../src/services/service-registry';
 import { NavigationService } from '../../src/services/navigation.service';
 import type { NavigationRequestParams, Node, PathData } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
-import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -150,7 +150,7 @@ describe('NavigationService', () => {
 
       await navigationService.openViewInNewTab(nodepath);
 
-      expect(windowOpenSpy).toHaveBeenCalledWith(nodepath, '_blank', 'noopener,noreferrer');
+      expect(windowOpenSpy).toHaveBeenCalledWith(window.location.origin + nodepath, '_blank', 'noopener,noreferrer');
     });
 
     it('should not open view in new tab if navigation is prevented', async () => {
@@ -219,6 +219,7 @@ describe('NavigationService', () => {
       expect(matchingNode).toBeUndefined();
     });
   });
+
   describe('NavigationService.getPathData', () => {
     it('should return path data with pathParams included', async () => {
       const cfg = {
@@ -532,7 +533,12 @@ describe('NavigationService', () => {
       expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('NavigationService.handleNavigationRequest', () => {
+    beforeEach(() => {
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+    });
+
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/modal/path');
@@ -861,7 +867,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.getExpandStructuralPathSegment', () => {
+  describe('navigationService.getExpandStructuralPathSegment', () => {
     it('should expand structural path segment', async () => {
       const node: Node = {
         pathSegment: 'node',
@@ -884,7 +890,7 @@ describe('NavigationService', () => {
     });
   });
 
-  describe('Navigation.bindChildToParent', () => {
+  describe('navigationService.bindChildToParent', () => {
     it('should bind child to parent node', () => {
       const childNode: Node = {
         pathSegment: 'child',
@@ -1149,6 +1155,41 @@ describe('NavigationService', () => {
 
       expect(result).toBe('/base/:virtualSegment_1/');
     });
+
+    it('should replace {virtualTreePath} placeholder instead of appending', () => {
+      const result = navigationService.buildVirtualViewUrl(
+        'https://mf.luigi-project.io/app/{virtualTreePath}details',
+        {
+          virtualSegment_1: 'foo',
+          virtualSegment_2: 'bar'
+        },
+        3
+      );
+
+      expect(result).toBe(
+        'https://mf.luigi-project.io/app/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/details'
+      );
+    });
+
+    it('should replace {virtualTreePath} placeholder with only the new index segment when no prior virtualSegments exist', () => {
+      const result = navigationService.buildVirtualViewUrl('https://mf.luigi-project.io/{virtualTreePath}view', {}, 1);
+
+      expect(result).toBe('https://mf.luigi-project.io/:virtualSegment_1/view');
+    });
+
+    it('should return original string and log error when {virtualTreePath} is part of the origin', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const str = 'https://{virtualTreePath}.luigi-project.io/app';
+
+      const result = navigationService.buildVirtualViewUrl(str, {}, 1);
+
+      expect(result).toBe(str);
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error building virtual view URL -- make sure virtualTreePath is not part of origin.',
+        expect.any(Error)
+      );
+      errorSpy.mockRestore();
+    });
   });
 
   describe('buildVirtualTree', () => {
@@ -1359,6 +1400,73 @@ describe('NavigationService', () => {
       expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
       expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
       expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+  });
+
+  describe('getBreadcrumbData', () => {
+    const pathData = {
+      selectedNode: undefined,
+      selectedNodeChildren: [],
+      nodesInPath: [
+        { pathSegment: '', virtualTree: false },
+        { pathSegment: 'parent', virtualTree: false },
+        { pathSegment: 'child', virtualTree: false }
+      ],
+      rootNodes: [],
+      pathParams: {}
+    };
+
+    beforeEach(() => {
+      luigiMock.getConfigValue.mockReturnValue({
+        clearBeforeRender: true,
+        pendingItemLabel: 'not loaded yet',
+        omitRoot: false,
+        autoHide: false
+      });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return full breadcrumb data', async () => {
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true,
+        basePath: '',
+        items: [
+          {
+            label: 'parent',
+            node: {
+              pathSegment: 'parent',
+              virtualTree: false
+            },
+            route: undefined
+          },
+          {
+            label: 'child',
+            last: true,
+            node: {
+              pathSegment: 'child',
+              virtualTree: false
+            },
+            route: undefined
+          }
+        ],
+        renderer: undefined,
+        selectedNode: {}
+      });
+    });
+
+    it('should return limited breadcrumb data', async () => {
+      pathData.nodesInPath[2].showBreadcrumbs = false;
+
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true
+      });
     });
   });
 });

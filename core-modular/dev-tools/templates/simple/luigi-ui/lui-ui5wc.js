@@ -250,7 +250,7 @@ function renderProfilePopover(profileObj, avatar) {
 
   profileObj.onUserInfoUpdate((userInfo) => {
     uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
-    uInfoWrapper.innerHTML += /*html*/ `      
+    uInfoWrapper.innerHTML += /*html*/ `
       <div>${userInfo.name}</div>
       <div>${userInfo.email}</div>
       <div>${userInfo.description}</div>
@@ -340,6 +340,38 @@ function renderNodeOrCategory(item, leftNavData) {
   return frag;
 }
 
+function handleOpenAlerts() {
+  const alerts = document.querySelectorAll('ui5-message-strip');
+
+  if (!alerts?.length) return;
+
+  alerts.forEach((alert) => {
+    const openFromClient = alert.getAttribute('openfromclient');
+    const ttl = alert.getAttribute('ttl');
+
+    if (alert && openFromClient === 'false' && ttl !== 'undefined') {
+      let ttlValue = Number(ttl);
+
+      if (ttlValue === 0) {
+        // TTL value dropped down to 0, remove this alert
+        alert.dispatchEvent(new Event('close'));
+      } else {
+        // TTL is not 0, reduce it
+        ttlValue--;
+        alert.setAttribute('ttl', ttlValue);
+      }
+    }
+  });
+}
+
+function updateOverlays() {
+  const alertContainer = document.querySelector('.luigi-alert--overlay');
+  alertContainer.hidePopover();
+  alertContainer.showPopover();
+
+  // TODO: confirmation modal ...
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -353,10 +385,11 @@ const connector = {
         <div class="content-wrapper">
           <ui5-tabcontainer collapsed fixed></ui5-tabcontainer>
           <div class="content">
+            <div class="breadcrumb-wrapper"></div>
             <ui5-busy-indicator class="luigi-busy-indicator"></ui5-busy-indicator>
           </div>
         </div>
-        <div class="luigi-alert--overlay"><div>
+        <div class="luigi-alert--overlay" popover="manual"><div>
         <div class="luigi-confirmation-modal--overlay"><div>
       `;
       document.body.appendChild(appRoot);
@@ -566,10 +599,18 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
+  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+    drawerSettings.isDrawer = true;
+    connector.renderModal(lc, drawerSettings, onCloseCallback);
+  },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
     dialog.classList.add('lui-dialog');
-    dialog.classList.add('lui-modal');
+    if (modalSettings.isDrawer) {
+      dialog.classList.add('lui-drawer');
+    } else {
+      dialog.classList.add('lui-modal');
+    }
     dialog.setAttribute('header-text', modalSettings?.title);
     setDialogSize(dialog, modalSettings);
     dialog.appendChild(lc);
@@ -593,12 +634,17 @@ const connector = {
     bar.appendChild(btn);
 
     document.body.appendChild(dialog);
-    onCloseRequest().then(() => {
-      dialog.open = false;
-      document.body.removeChild(dialog);
-    });
+
+    if (onCloseRequest) {
+      onCloseRequest().then(() => {
+        dialog.open = false;
+        document.body.removeChild(dialog);
+      });
+    }
 
     dialog.open = true;
+
+    updateOverlays();
   },
 
   updateModalSettings: (modalSettings) => {
@@ -649,6 +695,26 @@ const connector = {
     });
   },
 
+  renderBreadcrumbs: (breadcrumbData) => {
+    const wrapper = document.querySelector('.breadcrumb-wrapper');
+
+    if (wrapper && breadcrumbData?.clearBeforeRender) {
+      wrapper.innerHTML = '';
+    }
+
+    if (!wrapper || !breadcrumbData?.items?.length || !breadcrumbData?.renderer) {
+      return;
+    }
+
+    const selectedNode = breadcrumbData.selectedNode;
+
+    breadcrumbData.renderer(wrapper, breadcrumbData.items, (item) => {
+      if (item.node.label !== selectedNode.label && item.node.pathSegment !== selectedNode.pathSegment) {
+        globalThis.Luigi.navigation().navigate(item.route);
+      }
+    });
+  },
+
   renderAlert(alertSettings, alertHandler) {
     const alertContainer = document.querySelector('.luigi-alert--overlay');
     const alertTypeMap = {
@@ -659,6 +725,8 @@ const connector = {
     };
     const messageStrip = document.createElement('ui5-message-strip');
     messageStrip.setAttribute('design', `${alertTypeMap[alertSettings.type]}`);
+    messageStrip.setAttribute('openfromclient', `${!!alertHandler.openFromClient}`);
+    messageStrip.setAttribute('ttl', `${alertSettings.ttl || undefined}`);
     messageStrip.innerHTML = replacePlaceholdersWithUI5Links(alertSettings.text, alertSettings.links);
 
     alertContainer?.appendChild(messageStrip);
@@ -683,6 +751,8 @@ const connector = {
         }
       }, alertSettings.closeAfter);
     }
+
+    updateOverlays();
   },
   renderConfirmationModal(settings, handler) {
     const iconMapping = {
@@ -964,3 +1034,7 @@ window.addEventListener(
   },
   false
 );
+
+window.addEventListener('popstate', () => {
+  handleOpenAlerts();
+});

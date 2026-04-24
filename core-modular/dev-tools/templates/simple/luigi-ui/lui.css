@@ -56,6 +56,14 @@ ui5-side-navigation {
   max-height: none;
 }
 
+.lui-drawer {
+  height: calc(100% - var(--_ui5-v2-12-0_shellbar_root_height));
+  bottom: 0;
+  left: auto !important;
+  right: 0;
+  top: var(--_ui5-v2-12-0_shellbar_root_height) !important;
+}
+
 ui5-shellbar::part(root) {
     padding-inline-start: 0.75rem;
     padding-inline-end: 1.25rem;
@@ -64,6 +72,15 @@ ui5-shellbar::part(root) {
 ui5-shellbar {
     grid-column: 1 / span 2;
     grid-row: 1 / 2;
+}
+
+.breadcrumb-wrapper {
+    clear: both;
+    padding: 1rem 1.5rem 0;
+}
+
+.breadcrumb-wrapper:empty {
+    display: none;
 }
 
 .content {
@@ -87,10 +104,11 @@ ui5-shellbar {
 }
 
 .luigi-alert--overlay{
+    background-color: transparent;
+    overflow: visible;
+    border: none;
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 28px;
 }
 
 .luigi-alert--overlay ui5-message-strip{

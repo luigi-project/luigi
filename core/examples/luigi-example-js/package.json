@@ -9,7 +9,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "cross-spawn": "^7.0.6",
-    "serve": "^14.2.6"
+    "cross-spawn": "7.0.6",
+    "serve": "14.2.6"
   }
 }

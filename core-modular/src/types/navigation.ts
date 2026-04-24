@@ -76,11 +76,13 @@ export interface LeftNavData {
 }
 
 export interface PathData {
+  context?: Record<string, any>;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;
+  matchedPath: string;
 }
 
 export interface RootNode {
@@ -121,6 +123,7 @@ export interface Node {
   parent?: Node;
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
+  showBreadcrumbs?: boolean;
   tabNav?: boolean;
   tooltipText?: string;
   userSettingsGroup?: string;
@@ -162,6 +165,14 @@ export interface Category {
   tooltip?: string;
 }
 
+export interface BreadcrumbItem {
+  label: string;
+  last?: boolean;
+  node: Node;
+  pending?: boolean;
+  route: string | undefined;
+}
+
 export interface NavItem {
   altText?: string;
   category?: Category;
@@ -177,6 +188,14 @@ export interface TabNavData {
   items?: NavItem[];
   basePath?: string;
   navClick?: (item: NavItem) => void;
+}
+
+export interface BreadcrumbData {
+  basePath?: string;
+  clearBeforeRender?: boolean;
+  items?: BreadcrumbItem[];
+  renderer?: any;
+  selectedNode?: Node;
 }
 
 export interface ModalSettings {
@@ -230,6 +249,7 @@ export interface NavigationRequestBase {
 }
 
 export interface NavigationRequestParams extends NavigationRequestBase {
+  drawerSettings?: any;
   modalSettings?: any;
   newTab?: boolean;
   path: string;
