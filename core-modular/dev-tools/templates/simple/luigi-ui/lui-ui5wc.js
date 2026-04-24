@@ -616,6 +616,7 @@ const connector = {
 
     const loader = document.createElement('ui5-busy-indicator');
     loader.classList.add('lui-dialog-busy-indicator');
+    loader.setAttribute('active', 'true');
 
     const bar = document.createElement('ui5-bar');
     bar.setAttribute('slot', 'header');
@@ -649,8 +650,10 @@ const connector = {
 
     dialog.open = true;
     setTimeout(() => {
-      loader.active = false;
-    }, 3000);
+      if (loader?.active) {
+        loader.active = false;
+      }
+    }, 4000);
     updateOverlays();
   },
 
@@ -935,7 +938,9 @@ const connector = {
     const loadingIndicator = wrapper.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
-      loadingIndicator.active = false;
+      setTimeout(() => {
+        loadingIndicator.active = false;
+      }, 2000);
     }
   },
 
