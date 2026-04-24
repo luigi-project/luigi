@@ -6,6 +6,12 @@
 
 set -e
 
+if ! command -v claude &> /dev/null; then
+  echo "Warning: 'claude' CLI not found. Skipping blog post generation."
+  echo "Install Claude Code to enable this feature: https://claude.ai/code"
+  exit 0
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE="$SCRIPT_DIR/../../.."
 CHANGELOG="$BASE/CHANGELOG.md"
@@ -51,7 +57,7 @@ Use this exact format:
 title: Luigi v${VERSION}
 seoMetaDescription: Release notes for Luigi v${VERSION}
 author:
-  - Johannes Doberer
+  - AI Generated
 layout: blog
 ---
 
@@ -86,10 +92,6 @@ fi
 
 echo "$BLOG_CONTENT" > "$OUTPUT_PATH"
 
-echo ""
+
 echo "Blog post written to: blog/$FILENAME"
-echo ""
-echo "Next steps:"
-echo "  1. Review the generated blog post"
-echo "  2. Adjust descriptions and documentation links as needed"
-echo "  3. Commit the file"
+
