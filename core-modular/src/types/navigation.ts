@@ -104,7 +104,7 @@ export interface Node {
   };
   compound?: CompoundConfig;
   context?: Record<string, any>;
-  drawer?: ModalSettings;
+  drawer?: DrawerSettings;
   decodeViewUrl?: boolean;
   externalLink?: ExternalLink;
   hideFromNav?: boolean;
