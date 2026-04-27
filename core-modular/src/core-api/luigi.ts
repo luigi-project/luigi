@@ -14,9 +14,11 @@ import { serviceRegistry } from '../services/service-registry';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
+import { CustomMessages } from './custom-messages';
 
 export class Luigi {
   config: any;
+  _customMessages?: CustomMessages;
   _store: any;
   _featureToggles?: FeatureToggles;
   _i18n!: i18nService;
@@ -144,6 +146,13 @@ export class Luigi {
     }
     this.configChanged();
   }
+
+  customMessages = (): CustomMessages => {
+    if (!this._customMessages) {
+      this._customMessages = new CustomMessages(this);
+    }
+    return this._customMessages;
+  };
 
   i18n = (): i18nService => {
     if (!this._i18n) {
