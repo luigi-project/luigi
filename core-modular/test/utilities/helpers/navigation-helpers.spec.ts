@@ -267,9 +267,7 @@ describe('Navigation-helpers', () => {
     it('should reject if node has no titleResolver', async () => {
       const node: Node = { pathSegment: 'test' };
 
-      await expect(NavigationHelpers.fetchNodeTitleData(node, {})).rejects.toThrow(
-        'No title resolver defined at node'
-      );
+      await expect(NavigationHelpers.fetchNodeTitleData(node, {})).rejects.toThrow('No title resolver defined at node');
     });
 
     it('should return cached value if cache key matches', async () => {
