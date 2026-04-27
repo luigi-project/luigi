@@ -104,7 +104,7 @@ export interface Node {
   };
   compound?: CompoundConfig;
   context?: Record<string, any>;
-  drawer?: ModalSettings;
+  drawer?: DrawerSettings;
   decodeViewUrl?: boolean;
   externalLink?: ExternalLink;
   hideFromNav?: boolean;
@@ -196,6 +196,13 @@ export interface BreadcrumbData {
   items?: BreadcrumbItem[];
   renderer?: any;
   selectedNode?: Node;
+}
+
+export interface DrawerSettings {
+  backdrop?: boolean;
+  header?: any;
+  overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
 }
 
 export interface ModalSettings {
