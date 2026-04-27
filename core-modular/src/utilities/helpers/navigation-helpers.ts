@@ -276,14 +276,14 @@ export const NavigationHelpers = {
    * @param {*} fallback - fallback value if resolution fails
    * @returns the value or fallback
    */
-  getPropertyChainValue(obj: any, propChain?: string, fallback?: any) {
+  getPropertyChainValue(obj: Record<string, unknown>, propChain?: string, fallback?: any): any {
     if (!propChain || !obj) {
       return fallback;
     }
     return get(obj, propChain, fallback);
   },
 
-  substituteVars(resolver: TitleResolver, context: any) {
+  substituteVars(resolver: TitleResolver, context: Record<string, unknown>): TitleResolver {
     const resolverString = JSON.stringify(resolver);
     const resString = resolverString.replace(/\$\{[a-zA-Z0-9$_.]+\}/g, (match) => {
       const chain = match.substr(2, match.length - 3);
@@ -296,7 +296,7 @@ export const NavigationHelpers = {
     return fetch(url, options);
   },
 
-  processTitleData(data: any, resolver: TitleResolver) {
+  processTitleData(data: Record<string, unknown>, resolver: TitleResolver): { label: string; icon?: string } {
     let label = this.getPropertyChainValue(data, resolver.titlePropertyChain);
     if (label) {
       label = label.trim();
@@ -304,11 +304,9 @@ export const NavigationHelpers = {
     if (label && resolver.titleDecorator) {
       label = resolver.titleDecorator.replace('%s', label);
     }
-    const titleData = {
+    return {
       label: label || resolver.fallbackTitle,
       icon: this.getPropertyChainValue(data, resolver.iconPropertyChain, resolver.fallbackIcon)
     };
-
-    return titleData;
   }
 };

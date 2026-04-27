@@ -122,10 +122,10 @@ export class RoutingService {
       return;
     }
     // render top nav even if requested route cannot be found or/and `ignoreLuigiErrorHandling` is set
-    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
     const connector = this.luigi.getEngine()._connector;
+    connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
+    connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+    connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
     connector?.renderBreadcrumbs(
       await this.getNavigationService().getBreadcrumbData(path, pathData, (resolved) => {
         connector?.renderBreadcrumbs(resolved);
