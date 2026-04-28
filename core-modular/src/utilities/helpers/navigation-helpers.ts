@@ -241,7 +241,6 @@ export const NavigationHelpers = {
 
       const requestOptions = resolver.request;
 
-      // TODO: Remove - temp delay for testing
       this._fetch(requestOptions.url, {
         method: requestOptions.method,
         headers: requestOptions.headers,
