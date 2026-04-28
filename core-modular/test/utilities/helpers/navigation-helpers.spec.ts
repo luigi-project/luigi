@@ -157,4 +157,185 @@ describe('Navigation-helpers', () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe('getPropertyChainValue', () => {
+    it('should return nested value from object', () => {
+      const obj = { data: { product: { name: 'Test' } } };
+      expect(NavigationHelpers.getPropertyChainValue(obj, 'data.product.name')).toBe('Test');
+    });
+
+    it('should return fallback if propChain is undefined', () => {
+      expect(NavigationHelpers.getPropertyChainValue({ a: 1 }, undefined, 'fallback')).toBe('fallback');
+    });
+
+    it('should return fallback if obj is falsy', () => {
+      expect(NavigationHelpers.getPropertyChainValue(null, 'a.b', 'fallback')).toBe('fallback');
+    });
+
+    it('should return fallback if path does not exist', () => {
+      expect(NavigationHelpers.getPropertyChainValue({ a: 1 }, 'b.c', 'fallback')).toBe('fallback');
+    });
+  });
+
+  describe('substituteVars', () => {
+    it('should replace ${...} placeholders with context values', () => {
+      const resolver = {
+        request: { method: 'GET', url: '/api/${productId}' },
+        titlePropertyChain: 'name'
+      } as any;
+      const context = { productId: '42' };
+
+      const result = NavigationHelpers.substituteVars(resolver, context);
+
+      expect(result.request.url).toBe('/api/42');
+    });
+
+    it('should keep placeholder if context value is missing', () => {
+      const resolver = {
+        request: { method: 'GET', url: '/api/${missing}' },
+        titlePropertyChain: 'name'
+      } as any;
+
+      const result = NavigationHelpers.substituteVars(resolver, {});
+
+      expect(result.request.url).toBe('/api/${missing}');
+    });
+  });
+
+  describe('processTitleData', () => {
+    it('should extract label from data using titlePropertyChain', () => {
+      const data = { product: { name: '  Luigi Framework  ' } };
+      const resolver = { titlePropertyChain: 'product.name' } as any;
+
+      const result = NavigationHelpers.processTitleData(data, resolver);
+
+      expect(result.label).toBe('Luigi Framework');
+    });
+
+    it('should apply titleDecorator', () => {
+      const data = { name: 'Luigi' };
+      const resolver = {
+        titlePropertyChain: 'name',
+        titleDecorator: 'Product: %s'
+      } as any;
+
+      const result = NavigationHelpers.processTitleData(data, resolver);
+
+      expect(result.label).toBe('Product: Luigi');
+    });
+
+    it('should use fallbackTitle when label is not found', () => {
+      const data = {};
+      const resolver = {
+        titlePropertyChain: 'nonexistent',
+        fallbackTitle: 'Fallback'
+      } as any;
+
+      const result = NavigationHelpers.processTitleData(data, resolver);
+
+      expect(result.label).toBe('Fallback');
+    });
+
+    it('should extract icon from data', () => {
+      const data = { name: 'Test', icon: 'product' };
+      const resolver = {
+        titlePropertyChain: 'name',
+        iconPropertyChain: 'icon',
+        fallbackIcon: 'default-icon'
+      } as any;
+
+      const result = NavigationHelpers.processTitleData(data, resolver);
+
+      expect(result.icon).toBe('product');
+    });
+
+    it('should use fallbackIcon when icon is not found', () => {
+      const data = { name: 'Test' };
+      const resolver = {
+        titlePropertyChain: 'name',
+        iconPropertyChain: 'nonexistent',
+        fallbackIcon: 'default-icon'
+      } as any;
+
+      const result = NavigationHelpers.processTitleData(data, resolver);
+
+      expect(result.icon).toBe('default-icon');
+    });
+  });
+
+  describe('fetchNodeTitleData', () => {
+    it('should reject if node has no titleResolver', async () => {
+      const node: Node = { pathSegment: 'test' };
+
+      await expect(NavigationHelpers.fetchNodeTitleData(node, {})).rejects.toThrow('No title resolver defined at node');
+    });
+
+    it('should return cached value if cache key matches', async () => {
+      const cachedValue = { label: 'Cached Title', icon: 'cached-icon' };
+      const titleResolver = {
+        request: { method: 'GET', url: '/api/test' },
+        titlePropertyChain: 'name',
+        _cache: {
+          key: JSON.stringify({
+            request: { method: 'GET', url: '/api/test' },
+            titlePropertyChain: 'name'
+          }),
+          value: cachedValue
+        }
+      };
+      const node: Node = { pathSegment: 'test', titleResolver } as any;
+
+      const result = await NavigationHelpers.fetchNodeTitleData(node, {});
+
+      expect(result).toBe(cachedValue);
+    });
+
+    it('should fetch and resolve title data from API', async () => {
+      jest.useFakeTimers();
+
+      const apiResponse = { product: { name: 'Fetched Title' } };
+      const mockResponse = {
+        json: () => Promise.resolve(apiResponse)
+      };
+      jest.spyOn(NavigationHelpers, '_fetch').mockResolvedValue(mockResponse as any);
+
+      const titleResolver = {
+        request: { method: 'GET', url: '/api/test' },
+        titlePropertyChain: 'product.name'
+      };
+      const node: Node = { pathSegment: 'test', titleResolver } as any;
+
+      const promise = NavigationHelpers.fetchNodeTitleData(node, {});
+      jest.advanceTimersByTime(3000);
+
+      const result = await promise;
+
+      expect(result.label).toBe('Fetched Title');
+      expect(node.titleResolver!._cache).toEqual({
+        key: expect.any(String),
+        value: result
+      });
+
+      jest.useRealTimers();
+    });
+
+    it('should reject on fetch error', async () => {
+      jest.useFakeTimers();
+
+      jest.spyOn(NavigationHelpers, '_fetch').mockRejectedValue(new Error('Network error'));
+
+      const titleResolver = {
+        request: { method: 'GET', url: '/api/fail' },
+        titlePropertyChain: 'name'
+      };
+      const node: Node = { pathSegment: 'test', titleResolver } as any;
+
+      const promise = NavigationHelpers.fetchNodeTitleData(node, {});
+      jest.advanceTimersByTime(3000);
+
+      await expect(promise).rejects.toThrow('Network error');
+
+      jest.useRealTimers();
+    });
+  });
 });

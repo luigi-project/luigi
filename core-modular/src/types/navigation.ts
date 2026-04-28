@@ -125,6 +125,7 @@ export interface Node {
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
   tabNav?: boolean;
+  titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
   viewUrl?: string;
@@ -481,6 +482,32 @@ export interface RendererConfig {
     minWidth?: number;
     maxWidth?: number;
   }>;
+}
+
+export interface TitleResolverCache {
+  key: string;
+  value: {
+    label: string;
+    icon?: string;
+  };
+}
+
+export interface TitleResolver {
+  request: {
+    method: string;
+    url: string;
+    headers?: Record<string, string>;
+    body?: any;
+  };
+  titlePropertyChain: string;
+  titleDecorator?: string;
+  iconPropertyChain?: string;
+  prerenderFallback?: boolean;
+  responsePath?: string;
+  fallbackTitle?: string;
+  fallbackIcon?: string;
+  /** @internal runtime cache – not user-configured */
+  _cache?: TitleResolverCache;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';

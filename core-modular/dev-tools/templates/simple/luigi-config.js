@@ -163,7 +163,41 @@ window.onload = () => {
               label: 'MFE4',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child4',
-              category: 'cat'
+              category: 'cat',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'Detail',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#detail',
+                  icon: 'product',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    prerenderFallback: true,
+                    fallbackTitle: 'Loading... fallbacktitle',
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name',
+                    iconPropertyChain: 'data.product.icon',
+                    titleDecorator: 'Product: %s'
+                  }
+                },
+                {
+                  pathSegment: 'info',
+                  label: 'Info',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#info',
+                  icon: 'hint',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name'
+                  }
+                }
+              ]
             },
             {
               pathSegment: 'c3s',
