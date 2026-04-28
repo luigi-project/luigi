@@ -3,6 +3,7 @@ import { NavigationService } from '../../src/services/navigation.service';
 import type { NavigationRequestParams, Node, PathData } from '../../src/types/navigation';
 import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
+import { NavigationHelpers } from '../../src/utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('NavigationService', () => {
@@ -1423,6 +1424,7 @@ describe('NavigationService', () => {
         omitRoot: false,
         autoHide: false
       });
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
     });
 
     afterEach(() => {
@@ -1466,6 +1468,183 @@ describe('NavigationService', () => {
 
       expect(result).toEqual({
         clearBeforeRender: true
+      });
+    });
+
+    it('should only toggle showBreadcrumb on explicit true/false', async () => {
+      const pd = {
+        selectedNode: undefined,
+        selectedNodeChildren: [],
+        nodesInPath: [
+          { pathSegment: '', children: [] },
+          { pathSegment: 'a', showBreadcrumbs: false },
+          { pathSegment: 'b' }
+        ],
+        rootNodes: [],
+        pathParams: {}
+      };
+
+      const result = await navigationService.getBreadcrumbData('/base', pd);
+
+      expect(result).toEqual({ clearBeforeRender: true });
+    });
+
+    describe('titleResolver', () => {
+      const i18nMock = { getTranslation: (key: string) => key };
+
+      beforeEach(() => {
+        luigiMock.i18n = jest.fn().mockReturnValue(i18nMock);
+        luigiMock.navigation = jest.fn().mockReturnValue({
+          navService: {
+            extractDataFromPath: jest.fn().mockResolvedValue({ pathData: { context: {}, pathParams: {} } })
+          }
+        });
+        jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
+        jest.spyOn(RoutingHelpers, 'mapPathToNode').mockReturnValue('/some/route');
+      });
+
+      it('should create pending item with pendingItemLabel when no prerenderFallback', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            {
+              pathSegment: ':id',
+              titleResolver: {
+                request: { method: 'GET', url: '/api/test' },
+                titlePropertyChain: 'name'
+              }
+            }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        const pendingItem = result.items?.find((i) => i.pending);
+        expect(pendingItem).toBeDefined();
+        expect(pendingItem!.label).toBe('not loaded yet');
+        expect(pendingItem!.pending).toBe(true);
+      });
+
+      it('should create pending item with fallbackTitle when prerenderFallback is true', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            {
+              pathSegment: ':id',
+              titleResolver: {
+                prerenderFallback: true,
+                fallbackTitle: 'Loading...',
+                request: { method: 'GET', url: '/api/test' },
+                titlePropertyChain: 'name'
+              }
+            }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        const pendingItem = result.items?.find((i) => i.pending);
+        expect(pendingItem).toBeDefined();
+        expect(pendingItem!.label).toBe('Loading...');
+      });
+
+      it('should return pre-render data immediately and call onResolve with resolved data', async () => {
+        const titleResolver = {
+          request: { method: 'GET', url: '/api/test' },
+          titlePropertyChain: 'name'
+        };
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: ':id', titleResolver }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        jest.spyOn(NavigationHelpers, 'fetchNodeTitleData').mockResolvedValue({ label: 'Resolved Title' });
+        navigationService.extractDataFromPath = jest.fn().mockResolvedValue({
+          pathData: { context: {}, pathParams: {} }
+        });
+        jest.spyOn(RoutingHelpers, 'substituteDynamicParamsInObject').mockReturnValue({});
+
+        const onResolve = jest.fn();
+        const preRenderResult = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        expect(preRenderResult.items?.some((i) => i.pending)).toBe(true);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).toHaveBeenCalledTimes(1);
+        const resolvedData = onResolve.mock.calls[0][0];
+        expect(resolvedData.items?.some((i: any) => i.label === 'Resolved Title')).toBe(true);
+        expect(resolvedData.items?.some((i: any) => i.pending)).toBeFalsy();
+      });
+
+      it('should fall back to getNodeLabel when fetchNodeTitleData rejects', async () => {
+        const titleResolver = {
+          request: { method: 'GET', url: '/api/fail' },
+          titlePropertyChain: 'name'
+        };
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: 'fallback-node', label: 'Fallback Label', titleResolver }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        jest.spyOn(NavigationHelpers, 'fetchNodeTitleData').mockRejectedValue(new Error('API error'));
+        navigationService.extractDataFromPath = jest.fn().mockResolvedValue({
+          pathData: { context: {}, pathParams: {} }
+        });
+        jest.spyOn(RoutingHelpers, 'substituteDynamicParamsInObject').mockReturnValue({});
+        jest.spyOn(RoutingHelpers, 'getNodeLabel').mockResolvedValue('Fallback Label');
+
+        const onResolve = jest.fn();
+        await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).toHaveBeenCalledTimes(1);
+        const resolvedData = onResolve.mock.calls[0][0];
+        expect(resolvedData.items?.some((i: any) => i.label === 'Fallback Label')).toBe(true);
+      });
+
+      it('should not call onResolve when there are no pending items', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: 'child', label: 'Static Label' }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).not.toHaveBeenCalled();
+        expect(result.items?.every((i) => !i.pending)).toBe(true);
       });
     });
   });
