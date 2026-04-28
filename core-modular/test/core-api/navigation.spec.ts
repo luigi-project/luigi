@@ -1,8 +1,10 @@
 import { Navigation } from '../../src/core-api/navigation';
 import { ModalService } from '../../src/services/modal.service';
-import { NavigationService, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
+import type { DrawerSettings, NavigationRequestParams, Node } from '../../src/types/navigation';
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('Navigation', () => {
   let luigiMock: any;
@@ -10,24 +12,39 @@ describe('Navigation', () => {
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
+  let options: {
+    fromContext?: any;
+    fromClosestContext?: boolean;
+    fromVirtualTreeRoot?: boolean;
+    fromParent?: boolean;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    mockNavService = {
+      getCurrentNode: jest.fn(),
+      openViewInNewTab: jest.fn(),
+      handleNavigationRequest: jest.fn(),
+      getPathData: jest.fn()
+    };
+
     luigiMock = {
       getConfig: jest.fn().mockReturnValue({ routing: { useHashRouting: false } }),
       getConfigValue: jest.fn(),
+      navigation: jest.fn(() => ({ navigate: jest.fn(), navService: mockNavService })),
       getEngine: jest.fn().mockReturnValue({
         _ui: {
           openModal: jest.fn(),
           openDrawer: jest.fn()
         }
+      }),
+      i18n: jest.fn().mockReturnValue({
+        getTranslation: (key: string) => key
+      }),
+      ux: jest.fn().mockReturnValue({
+        showAlert: jest.fn()
       })
-    };
-
-    mockNavService = {
-      getCurrentNode: jest.fn(),
-      openViewInNewTab: jest.fn(),
-      handleNavigationRequest: jest.fn()
     };
 
     modalServiceMock = {
@@ -56,10 +73,12 @@ describe('Navigation', () => {
     jest.restoreAllMocks();
   });
   describe('navigate with pathRouting enabled', () => {
-    it('should open a path as modal', async () => {
+    it('should open a path as modal with pathRouting enabled', async () => {
       // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ pathSegment: 'home', label: 'Test Modal', children: [] });
+      mockNavService.getPathData.mockResolvedValue({ isExistingRoute: true });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       const modalSettings = { title: 'Custom Modal Title' };
 
       await navigation.openAsModal('/modal/path', modalSettings); // await
@@ -71,16 +90,29 @@ describe('Navigation', () => {
         undefined
       );
     });
+    it('should not open modal with pathRouting enabled', async () => {
+      // make async
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ pathSegment: 'home', label: 'Test Modal', children: [] });
+      // mockNavService.getPathData.mockResolvedValue({ isExistingRoute: true });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(false);
+      const modalSettings = { title: 'Custom Modal Title' };
+
+      await navigation.openAsModal('/modal/path', modalSettings); // await
+
+      expect(openModalSpy).not.toHaveBeenCalled();
+    });
   });
   describe('navigate with hashRouting enabled', () => {
     beforeEach(() => {
       luigiMock.getConfig = jest.fn().mockReturnValue({ routing: { useHashRouting: true } });
       navigation = new Navigation(luigiMock);
     });
-    it('should open a path as modal', async () => {
+    it('should open a path as modal with hashRouting enabled', async () => {
       // make async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Test Modal', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       const modalSettings = { title: 'Custom Modal Title' };
 
       await navigation.openAsModal('/modal/hashpath', modalSettings); // await
@@ -98,7 +130,7 @@ describe('Navigation', () => {
       // async
       const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
-
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', {}); // await
 
       expect(openModalSpy).toHaveBeenCalledWith(
@@ -117,33 +149,36 @@ describe('Navigation', () => {
       const appendModalDataToUrlSpy = jest.spyOn(routingServiceMock, 'appendModalDataToUrl');
       mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
       navigation.routingService = routingServiceMock;
-
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
     });
   });
-  describe('openAsDrawer', () => {
-    it('should set drawer title from node label if not provided', () => {
-      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
 
-      navigation.openAsDrawer('/drawer/path', {});
+  describe('openAsDrawer', () => {
+    it('should set drawer title from node label if not provided', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      await navigation.openAsDrawer('/drawer/path', {});
 
       expect(openDrawerSpy).toHaveBeenCalled();
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label' },
+        { header: { title: 'Node Label' }, overlap: true },
         undefined
       );
     });
-    it('should open drawer with provided settings', () => {
-      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
-      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
-      const drawerSettings = { title: 'Custom Drawer Title' };
 
-      navigation.openAsDrawer('/drawer/path', drawerSettings);
+    it('should open drawer with provided settings', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' } };
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsDrawer('/drawer/path', drawerSettings);
       expect(openDrawerSpy).toHaveBeenCalled();
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
@@ -152,10 +187,20 @@ describe('Navigation', () => {
         undefined
       );
     });
+
+    it('should not open drawer, path does not exist', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' } };
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(false);
+
+      await navigation.openAsDrawer('/drawer/path', drawerSettings);
+      expect(openDrawerSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('runTimeErrorHandler', () => {
-    it('should trigger runtime error handler when it is set for current node', () => {
+    it('should trigger runtime error handler when it is set for current node', async () => {
       const currentNode = {
         label: 'Node Label',
         runTimeErrorHandler: {
@@ -168,19 +213,19 @@ describe('Navigation', () => {
       const errorFnSpy = jest.spyOn(currentNode.runTimeErrorHandler, 'errorFn');
       const errorObj = { msg: 'error' };
 
-      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      await mockNavService.getCurrentNode.mockReturnValue(currentNode);
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
         return null;
       });
 
-      navigation.runTimeErrorHandler(errorObj);
+      await navigation.runTimeErrorHandler(errorObj);
 
       expect(errorFnSpy).toHaveBeenCalled();
       expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error' }, currentNode);
     });
 
-    it('should trigger runtime error handler when it is not set for current node, but config fallback exists', () => {
+    it('should trigger runtime error handler when it is not set for current node, but config fallback exists', async () => {
       const currentNode = { label: 'Node Label' };
       const defaultRunTimeErrorHandler = {
         errorFn: (obj: any, node: Node) => {
@@ -190,13 +235,13 @@ describe('Navigation', () => {
       const errorFnSpy = jest.spyOn(defaultRunTimeErrorHandler, 'errorFn');
       const errorObj = { msg: 'error2' };
 
-      mockNavService.getCurrentNode.mockReturnValue(currentNode);
+      await mockNavService.getCurrentNode.mockReturnValue(currentNode);
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'navigation.defaults.runTimeErrorHandler') return defaultRunTimeErrorHandler;
         return null;
       });
 
-      navigation.runTimeErrorHandler(errorObj);
+      await navigation.runTimeErrorHandler(errorObj);
 
       expect(errorFnSpy).toHaveBeenCalled();
       expect(errorFnSpy).toHaveBeenCalledWith({ msg: 'error2' }, currentNode);
@@ -206,6 +251,23 @@ describe('Navigation', () => {
   describe('navigate', () => {
     it('check parameter for navigate function', () => {
       const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: { title: 'Modal Title' },
+        newTab: false,
+        path: '/test/path',
+        preserveView: 'preserveViewValue',
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false,
+        options: {
+          fromVirtualTreeRoot: false,
+          fromContext: null,
+          fromClosestContext: false,
+          fromParent: false,
+          nodeParams: {},
+          relative: false
+        }
+      };
 
       navigation.navigate(
         '/test/path',
@@ -215,13 +277,7 @@ describe('Navigation', () => {
         { drawer: true }
       );
 
-      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(
-        '/test/path',
-        'preserveViewValue',
-        { title: 'Modal Title' },
-        false,
-        undefined
-      );
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(navRequestParams, undefined);
     });
   });
 });

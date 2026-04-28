@@ -184,7 +184,7 @@ Check our [Advanced Scenarios](advanced-scenarios.md) page for an example.
 
 ### nodeChangeHook
 - **type**: function
-- **description**: allows you to invoke and execute a specific function on the global level when a request to navigate to the node occurs. The function receives two node objects as input parameters: the previous node and current node, as described in the configuration.
+- **description**: allows you to invoke and execute a specific function on the global level when a request to navigate to the node occurs. The function receives two node objects as input parameters: the previous node and current node, as described in the configuration. An additional third parameter contains an auxiliary data object with the property `currentContext`, containing the fully resolved context object that has been sent to the micro frontend.
 
 ### nodes
 - **type**: array | object
@@ -813,6 +813,43 @@ navigation: {
 - **example**:
 ```javascript
 tooltipText: 'Useful links'
+```
+
+### titleResolver
+- **type**: object
+- **description**: dynamically resolves the title and icon of a navigation node via an HTTP request. Use this instead of a static **label** when the node title depends on runtime data (for example, a resource name fetched from an API). The response is cached per resolved request configuration, so repeated navigation to the same node does not trigger additional requests. Variable substitution using `${varName}` syntax is supported in `request.url`, `request.headers`, and `request.body`, where variable values are taken from the current navigation context.
+- **since**: v1.19.0
+- **attributes**:
+  - **request** (object, required): HTTP request configuration.
+    - **method** (string): HTTP method, for example `'GET'` or `'POST'`.
+    - **url** (string): endpoint URL. Supports `${varName}` substitution from the navigation context.
+    - **headers** (object): optional request headers. Supports `${varName}` substitution.
+    - **body** (object): optional request body. Supports `${varName}` substitution.
+  - **titlePropertyChain** (string): dot-notation path to extract the title value from the response object, for example `'data.project.displayName'`.
+    - **titleDecorator** (string): format string applied to the resolved title. Use `%s` as a placeholder for the title value, for example `'Project: %s'`.
+  - **fallbackTitle** (string): title shown when the resolved value is empty or the request fails. Supports i18n keys.
+    - **prerenderFallback** (boolean): if `true`, the **fallbackTitle** is displayed in the breadcrumb immediately while the request is still pending. If `false` or omitted, the breadcrumb shows `navigation.breadcrumbs.pendingItemLabel` during the pending state. Defaults to `false`.
+- **example**:
+```javascript
+{
+  pathSegment: 'project',
+  titleResolver: {
+    request: {
+      method: 'POST',
+      url: '/api/projects',
+      headers: {
+        authorization: 'Bearer ${token}'
+      },
+      body: {
+        variables: { projectId: '${projectId}' }
+      }
+    },
+    titlePropertyChain: 'data.project.displayName',
+    titleDecorator: 'Project: %s',
+    fallbackTitle: 'navigation.project.fallback',
+    prerenderFallback: true
+  }
+}
 ```
 
 ### topNav

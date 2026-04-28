@@ -165,7 +165,7 @@
 
 <div
   class="fd-shellbar__branding"
-  aria-label={title}
+  aria-label={$getTranslation(title)}
   role="button"
   tabindex="0"
   on:keyup|preventDefault={(event) => {
@@ -350,13 +350,10 @@
 {/if}
 
 <style lang="scss">
-  // Force height because of base64 img src
-  .lui-customlogo img {
-    height: 24px;
-  }
-
-  .fd-shellbar__logo {
-    margin: 0 0.5rem;
+  .lui-customlogo {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
   }
 
   .fd-shellbar__logo,

@@ -1,18 +1,26 @@
 import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
-import { NavigationService, type ModalSettings } from '../services/navigation.service';
+import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
+import { NodeDataManagementService } from '../services/node-data-management.service';
+import type { DrawerSettings, ModalSettings, Node } from '../types/navigation';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
+import type { LuigiParams } from '../types/routing';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 
-const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> => {
+const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-  const userSettings = hasUserSettings ? userSettingGroups[node.userSettingsGroup] : null;
+  const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
+  const nodeParams = luigiParams?.nodeParams || {};
+  const pathParams = luigiParams?.pathParams || {};
+  const searchParams = luigiParams?.searchParams || {};
 
-  if (node.webcomponent && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
+  if (node.webcomponent && node.viewUrl && !RoutingHelpers.checkWCUrl(node.viewUrl, luigi)) {
     console.warn(`View URL '${node.viewUrl}' not allowed to be included`);
     return document.createElement('div');
   }
@@ -21,43 +29,56 @@ const createContainer = async (node: any, luigi: Luigi): Promise<HTMLElement> =>
     const lcc: LuigiCompoundContainer = document.createElement('luigi-compound-container') as LuigiCompoundContainer;
 
     lcc.setAttribute('lui_container', 'true');
-    lcc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
-    lcc.webcomponent = node.webcomponent;
+    lcc.viewurl = node.viewUrl
+      ? serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+      : '';
+    lcc.webcomponent = node.webcomponent ?? false;
     lcc.compoundConfig = node.compound;
-    lcc.context = node.context;
-    lcc.clientPermissions = node.clientPermissions;
-    lcc.nodeParams = node.nodeParams;
-    lcc.pathParams = node.pathParams;
+    (lcc as any).context = node.context;
+    lcc.clientPermissions = node.clientPermissions ?? {};
+    lcc.nodeParams = nodeParams;
+    lcc.pathParams = pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
-    lcc.searchParams = node.searchParams;
+    lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
     lcc.theme = luigi.theming().getCurrentTheme();
     (lcc as any).viewGroup = node.viewGroup;
+    (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
 
     lc.setAttribute('lui_container', 'true');
-    lc.viewurl = serviceRegistry.get(ViewUrlDecoratorSvc).applyDecorators(node.viewUrl, node.decodeViewUrl);
-    lc.webcomponent = node.webcomponent;
-    lc.context = node.context;
-    lc.clientPermissions = node.clientPermissions;
+    lc.viewurl = node.viewUrl
+      ? serviceRegistry
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+      : '';
+    lc.webcomponent = node.webcomponent ?? false;
+    (lc as any).context = node.context;
+    lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
-    lc.nodeParams = node.nodeParams;
-    lc.pathParams = node.pathParams;
+    lc.nodeParams = nodeParams;
+    lc.pathParams = pathParams;
     (lc as any).userSettingsGroup = node.userSettingsGroup;
     lc.userSettings = userSettings;
-    lc.searchParams = node.searchParams;
+    lc.searchParams = searchParams;
     lc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lc.locale = luigi.i18n().getCurrentLocale();
     lc.theme = luigi.theming().getCurrentTheme();
     (lc as any).viewGroup = node.viewGroup;
+    (lc as any).virtualTree = node.virtualTree || node._virtualTree;
+    (lc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     luigi.getEngine()._comm.addListeners(lc, luigi);
+    (lc as any).luigiMfId = GenericHelpers.getRandomId();
     return lc;
   }
 };
@@ -109,6 +130,8 @@ export const UIModule = {
   navService: undefined as unknown as NavigationService,
   routingService: undefined as unknown as RoutingService,
   luigi: undefined as unknown as Luigi,
+  modalContainer: [] as any,
+  drawerContainer: undefined as any,
   init: (luigi: Luigi) => {
     console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
@@ -116,7 +139,7 @@ export const UIModule = {
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
   },
-  update: (scopes?: string[]) => {
+  update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
     if (!croute) {
       return;
@@ -147,7 +170,7 @@ export const UIModule = {
       scopes.includes('navigation.contextSwitcher') ||
       scopes.includes('navigation.productSwitcher')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderTopNav(UIModule.navService.getTopNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
     if (
       noScopes ||
@@ -157,8 +180,15 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
-      UIModule.luigi.getEngine()._connector?.renderLeftNav(UIModule.navService.getLeftNavData(croute.path));
-      UIModule.luigi.getEngine()._connector?.renderTabNav(UIModule.navService.getTabNavData(croute.path));
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+      UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
+      UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
+      const uiConnector = UIModule.luigi.getEngine()._connector;
+      uiConnector?.renderBreadcrumbs(
+        await UIModule.navService.getBreadcrumbData(croute.path, undefined, (resolved) => {
+          uiConnector?.renderBreadcrumbs(resolved);
+        })
+      );
     }
     if (
       noScopes ||
@@ -167,56 +197,85 @@ export const UIModule = {
       scopes.includes('navigation.viewgroupdata') ||
       scopes.includes('settings.theming')
     ) {
-      UIModule.updateMainContent(croute.node, UIModule.luigi);
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+      if (croute.node) {
+        UIModule.updateMainContent(croute.node, UIModule.luigi);
+      }
     }
   },
-  updateMainContent: async (currentNode: any, luigi: Luigi) => {
+  updateMainContent: async (
+    currentNode: Node,
+    luigi: Luigi,
+    luigiParams?: LuigiParams,
+    withoutSync?: boolean,
+    preventContextUpdate?: boolean
+  ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
       currentNode.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-    const userSettings = hasUserSettings ? userSettingGroups[currentNode.userSettingsGroup] : null;
+    const userSettings =
+      hasUserSettings && currentNode.userSettingsGroup ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
     luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+    const nodeParams = luigiParams?.nodeParams || {};
+    const pathParams = luigiParams?.pathParams || {};
+    const searchParams = luigiParams?.searchParams || {};
 
     if (currentNode && containerWrapper) {
       let viewGroupContainer: any;
+      let currentVirtualTreeRootNode: any;
+
+      if (currentNode.virtualTree || currentNode._virtualTree) {
+        currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
+      }
 
       [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          if (element.viewGroup) {
-            if (currentNode.viewGroup === element.viewGroup) {
-              viewGroupContainer = element;
-            } else {
-              element.style.display = 'none';
-            }
+        if (element.tagName?.indexOf('LUIGI-') !== 0) return;
+
+        if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
+          element.style.display = 'none';
+        } else {
+          if (
+            element.viewGroup ||
+            (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
+          ) {
+            viewGroupContainer = element;
           } else {
             element.remove();
           }
         }
       });
-
       if (viewGroupContainer) {
-        viewGroupContainer.style.display = 'block';
-        viewGroupContainer.viewurl = serviceRegistry
-          .get(ViewUrlDecoratorSvc)
-          .applyDecorators(currentNode.viewUrl, currentNode.decodeViewUrl);
-        viewGroupContainer.nodeParams = currentNode.nodeParams;
-        viewGroupContainer.pathParams = currentNode.pathParams;
-        viewGroupContainer.clientPermissions = currentNode.clientPermissions;
-        viewGroupContainer.searchParams = RoutingHelpers.prepareSearchParamsForClient(currentNode, luigi);
-        viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
-        viewGroupContainer.theme = luigi.theming().getCurrentTheme();
-        viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
-        viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
-        viewGroupContainer.userSettings = userSettings;
+        if (!withoutSync) {
+          viewGroupContainer.style.display = 'block';
+          viewGroupContainer.viewurl = currentNode.viewUrl
+            ? serviceRegistry
+                .get(ViewUrlDecoratorSvc)
+                .applyDecorators(
+                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, luigi),
+                  currentNode.decodeViewUrl ?? false
+                )
+            : '';
+          viewGroupContainer.nodeParams = nodeParams;
+          viewGroupContainer.pathParams = pathParams;
+          viewGroupContainer.clientPermissions = currentNode.clientPermissions;
+          viewGroupContainer.searchParams = searchParams;
+          viewGroupContainer.locale = luigi.i18n().getCurrentLocale();
+          viewGroupContainer.theme = luigi.theming().getCurrentTheme();
+          viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
+          viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
+          viewGroupContainer.userSettings = userSettings;
 
-        setSandboxRules(viewGroupContainer, luigi);
-        setAllowRules(viewGroupContainer, luigi);
+          setSandboxRules(viewGroupContainer, luigi);
+          setAllowRules(viewGroupContainer, luigi);
+        }
 
-        //IMPORTANT!!! This needs to be at the end
-        viewGroupContainer.updateContext(currentNode.context || {});
+        if (!preventContextUpdate) {
+          //IMPORTANT!!! This needs to be at the end
+          viewGroupContainer.updateContext(currentNode.context || {});
+        }
       } else {
-        const container = await createContainer(currentNode, luigi);
+        const container = await createContainer(currentNode, luigi, luigiParams);
         containerWrapper?.appendChild(container);
         const connector = luigi.getEngine()._connector;
         if (currentNode.loadingIndicator?.enabled !== false) {
@@ -225,8 +284,9 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
+    UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
 
@@ -304,9 +364,10 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: any, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+    UIModule.drawerContainer = lc;
+    luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);

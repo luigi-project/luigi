@@ -10,6 +10,34 @@ window.onload = () => {
           }
         }
       },
+      breadcrumbs: {
+        clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
+        pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
+        omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
+        autoHide: false, // hide breadcrumbs when navigating to root node
+        renderer: (containerElement, nodeItems, clickHandler) => {
+          const ui5breadcrumbs = document.createElement('ui5-breadcrumbs');
+
+          nodeItems.forEach((item) => {
+            if (item.label) {
+              const itemCmp = document.createElement('ui5-breadcrumbs-item');
+
+              itemCmp.textContent = `${item.label}`;
+              itemCmp._item = item;
+              ui5breadcrumbs.appendChild(itemCmp);
+            }
+          });
+
+          ui5breadcrumbs.addEventListener('item-click', (event) => {
+            event.preventDefault();
+            clickHandler(event.detail.item._item);
+          });
+
+          containerElement.appendChild(ui5breadcrumbs);
+
+          return ui5breadcrumbs;
+        }
+      },
       appSwitcher: {
         showMainAppEntry: true,
         items: [
@@ -52,8 +80,17 @@ window.onload = () => {
       },
       nodes: [
         {
+          pathSegment: '404',
+          label: '404',
+          viewUrl: '/404.html',
+          anonymousAccess: true,
+          loadingIndicator: { enabled: false },
+          hideFromNav: true
+        },
+        {
           pathSegment: 'home',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           anonymousAccess: 'exclusive',
           context: {
@@ -65,6 +102,7 @@ window.onload = () => {
         {
           pathSegment: 'home2',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
@@ -82,11 +120,13 @@ window.onload = () => {
                   pathSegment: ':dynamic',
                   label: 'doesntmatter',
                   viewUrl: '/microfrontend.html#dyn',
+                  viewGroup: 'vg1',
                   children: [
                     {
                       pathSegment: '1',
                       label: 'dynchild',
-                      viewUrl: '/microfrontend.html#dynchild'
+                      viewUrl: '/microfrontend.html#dynchild',
+                      viewGroup: 'vg1'
                     }
                   ]
                 }
@@ -123,7 +163,41 @@ window.onload = () => {
               label: 'MFE4',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child4',
-              category: 'cat'
+              category: 'cat',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'Detail',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#detail',
+                  icon: 'product',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    prerenderFallback: true,
+                    fallbackTitle: 'Loading... fallbacktitle',
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name',
+                    iconPropertyChain: 'data.product.icon',
+                    titleDecorator: 'Product: %s'
+                  }
+                },
+                {
+                  pathSegment: 'info',
+                  label: 'Info',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#info',
+                  icon: 'hint',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name'
+                  }
+                }
+              ]
             },
             {
               pathSegment: 'c3s',
@@ -289,6 +363,13 @@ window.onload = () => {
       }
     },
     routing: {
+      pageNotFoundHandler: function (notFoundPath, isAnyPathMatched) {
+        return {
+          redirectTo: '/404',
+          keepURL: false,
+          ignoreLuigiErrorHandling: false
+        };
+      },
       useHashRouting: true
       //showModalPathInUrl: true
     },
@@ -366,7 +447,7 @@ window.onload = () => {
       }
     },
 
-    auth: {
+    auth__: {
       use: 'myOIDC',
       storage: 'none',
       disableAutoLogin: true,

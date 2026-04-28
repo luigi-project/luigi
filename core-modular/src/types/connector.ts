@@ -1,4 +1,3 @@
-import type { ModalSettings, LeftNavData, Node, TopNavData, TabNavData } from '../services/navigation.service';
 import type {
   AlertHandler,
   AlertSettings,
@@ -6,6 +5,15 @@ import type {
   ConfirmationModalSettings,
   UserSettings
 } from '../modules/ux-module';
+import type {
+  ModalSettings,
+  LeftNavData,
+  Node,
+  TopNavData,
+  TabNavData,
+  BreadcrumbData,
+  DrawerSettings
+} from './navigation';
 
 export interface LuigiConnector {
   renderMainLayout(): void;
@@ -23,9 +31,11 @@ export interface LuigiConnector {
     onCloseRequest?: () => void
   ): any;
 
-  renderDrawer(content: HTMLElement, modalSettings: ModalSettings, onCloseCallback?: () => void): any;
+  renderDrawer(content: HTMLElement, modalSettings: DrawerSettings, onCloseCallback?: () => void): any;
 
   renderTabNav(data: TabNavData): void;
+
+  renderBreadcrumbs(data: BreadcrumbData): void;
 
   renderAlert(alertSettings: AlertSettings, alertHandler: AlertHandler): void;
 
@@ -57,6 +67,13 @@ export interface LuigiConnector {
   updateModalSettings(modalSettings: ModalSettings): void;
 
   showFatalError(error: string): void;
+
+  getCoreAPISupportedElements(): {
+    getShellbarElement(): HTMLElement | null;
+    getShellbarActions(): HTMLElement | null;
+    getLuigiContainer(): HTMLElement | null;
+    getNavFooterContainer(): HTMLElement | null;
+  };
 }
 
 export type { Node };

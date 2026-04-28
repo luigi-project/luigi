@@ -104,6 +104,23 @@ describe('Routing-helpers', () => {
       expect(RoutingHelpers.getI18nViewUrl(viewUrl)).to.equal(expected);
     });
 
+    it('substituteViewUrl - removes {virtualTreePath} placeholder when currentNode has virtualTree=true', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+      const expected = 'https://mf.luigi-project.io/app/details';
+
+      expect(
+        RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: { virtualTree: true }, pathParams: {} })
+      ).to.equal(expected);
+    });
+
+    it('substituteViewUrl - keeps {virtualTreePath} placeholder when currentNode has no virtualTree', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+
+      const result = RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: {}, pathParams: {} });
+
+      expect(result).to.include('{virtualTreePath}');
+    });
+
     it('substituteViewUrl - substitutes {i18n.currentLocale} variable to current locale', () => {
       const viewUrl = '/{i18n.currentLocale}/microfrontend.html';
       const expected = '/en/microfrontend.html';
@@ -456,10 +473,7 @@ describe('Routing-helpers', () => {
         setItem: sinon.stub()
       };
       sinon.stub(RoutingHelpers, 'getRouteLink');
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);
     });
     afterEach(() => {
       sinon.restore();
@@ -722,6 +736,16 @@ describe('Routing-helpers', () => {
       RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' });
       sinon.assert.calledWith(console.warn, 'No permission to add the search param "luigi" to the url');
     });
+    it('Client can write luigi url parameter when default preventLuigiConfigUpdate value', () => {
+      currentNode.clientPermissions.urlParameters.luigi.write = true;
+      RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' }, true);
+      sinon.assert.calledWith(LuigiRouting.addSearchParams, { luigi: 'rocks' }, true, false);
+    });
+    it('Client can write luigi url parameter when preventLuigiConfigUpdate is true', () => {
+      currentNode.clientPermissions.urlParameters.luigi.write = true;
+      RoutingHelpers.addSearchParamsFromClient(currentNode, { luigi: 'rocks', test: 'tets' }, true, true);
+      sinon.assert.calledWith(LuigiRouting.addSearchParams, { luigi: 'rocks' }, true, true);
+    });
     it('Client can only write specific url parameter', () => {
       currentNode.clientPermissions.urlParameters = {
         test: {
@@ -823,10 +847,7 @@ describe('Routing-helpers', () => {
     });
 
     it('with custom pageNotFoundHandler not defined', async () => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.pageNotFoundHandler')
-        .returns();
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.pageNotFoundHandler').returns();
       const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath');
       assert.deepEqual({}, expected);
     });
@@ -927,10 +948,7 @@ describe('Routing-helpers', () => {
   });
   describe('modifySearchParams', () => {
     beforeEach(() => {
-      sinon
-        .stub(LuigiConfig, 'getConfigValue')
-        .withArgs('routing.useHashRouting')
-        .returns(false);
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.useHashRouting').returns(false);
     });
     afterEach(() => {
       sinon.restore();

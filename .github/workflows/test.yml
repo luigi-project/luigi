@@ -25,10 +25,10 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -37,16 +37,33 @@ jobs:
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix core || exit 1
 
+  client_unit:
+    name: Client Unit Tests
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/tmp_build
+            ~/cypress-binary-cache
+          key: buildcache-${{ github.ref }}
+      - run: cp -r ~/tmp_build/* .
+      - run: npm test --prefix client || exit 1
+
   mock_engine:
     name: Mock Engine Tests
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -62,11 +79,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -80,11 +97,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -100,11 +117,11 @@ jobs:
     env:
       USE_CYPRESS_DASHBOARD: false # enable when trying to debug
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -120,11 +137,11 @@ jobs:
     env:
       USE_CYPRESS_DASHBOARD: true  # enable when trying to debug
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
-      - uses: actions/cache@v4
+          node-version: '24.x'
+      - uses: actions/cache@v5
         with:
           path: |
             ~/tmp_build
@@ -144,9 +161,9 @@ jobs:
     name: Check Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.19.0'
+          node-version: '24.x'
       - run: cd ./scripts && npm ci
       - run: bash ./scripts/docuCheck.sh

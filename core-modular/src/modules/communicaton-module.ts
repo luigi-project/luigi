@@ -5,6 +5,7 @@ import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
+import type { NavigationRequestParams } from '../types/navigation';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -17,11 +18,41 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
-      const { link, preserveView, modal, newTab } = event.detail;
-
-      serviceRegistry
-        .get(NavigationService)
-        .handleNavigationRequest(link, preserveView, modal, newTab, event.callbackFn);
+      const {
+        drawer,
+        link,
+        preserveView,
+        modal,
+        newTab,
+        withoutSync,
+        preventContextUpdate,
+        preventHistoryEntry,
+        fromVirtualTreeRoot,
+        fromContext,
+        fromClosestContext,
+        fromParent,
+        relative,
+        nodeParams
+      } = event.detail;
+      const navRequestParams: NavigationRequestParams = {
+        drawerSettings: drawer,
+        modalSettings: modal,
+        newTab,
+        path: link,
+        preserveView,
+        preventContextUpdate,
+        options: {
+          fromVirtualTreeRoot,
+          fromContext,
+          fromClosestContext,
+          fromParent,
+          relative,
+          nodeParams
+        },
+        preventHistoryEntry,
+        withoutSync
+      };
+      serviceRegistry.get(NavigationService).handleNavigationRequest(navRequestParams, event.callbackFn);
     });
     containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
       luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});

@@ -26,6 +26,16 @@ const luigiPlugin = () => {
       const jsFile = bundle['luigi.js'];
       jsFile.code = jsFile.code.replace('__luigi_dyn_import_____________(', 'import(/* webpackIgnore: true */');
 
+      jsFile.code = '(function(){\n' + jsFile.code.replace('//# sourceMappingURL=luigi.js.map', '})();\n//# sourceMappingURL=luigi.js.map');
+
+      // Update the sourcemap asset to account for the added IIFE wrapper line
+      const mapFile = bundle['luigi.js.map'];
+      if (mapFile && mapFile.type === 'asset') {
+        const mapContent = JSON.parse(mapFile.source);
+        mapContent.mappings = ';' + mapContent.mappings;
+        mapFile.source = JSON.stringify(mapContent);
+      }
+
       const fdFioriCSS = bundle['fd_fiori.css'];
       const fdHorizonCSS = bundle['fd_horizon.css'];
 

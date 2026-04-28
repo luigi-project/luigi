@@ -2,23 +2,29 @@ import type { LuigiEngine } from '../luigi-engine';
 import { AuthLayerSvc } from '../services/auth-layer.service';
 import { i18nService } from '../services/i18n.service';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
+import { Elements } from './dom-elements';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { LifecycleHooks } from '../utilities/lifecycle-hooks';
 import { LuigiStore, writable } from '../utilities/store';
 import { LuigiAuth, LuigiAuthClass } from './auth';
 import { FeatureToggles } from './feature-toggles';
 import { Navigation } from './navigation';
+import { NodeDataManagementService } from '../services/node-data-management.service';
+import { serviceRegistry } from '../services/service-registry';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
+import { CustomMessages } from './custom-messages';
 
 export class Luigi {
   config: any;
+  _customMessages?: CustomMessages;
   _store: any;
   _featureToggles?: FeatureToggles;
   _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
+  _elements?: Elements;
   __cssVars?: any;
   preventLoadingModalData?: boolean;
   initialized = false;
@@ -83,6 +89,16 @@ export class Luigi {
   }
 
   /**
+   * Clears the navigation cache.
+   * @example
+   * Luigi.clearNavigationCache();
+   */
+  clearNavigationCache() {
+    serviceRegistry.get(NodeDataManagementService).deleteCache();
+    //TODO clear title resolver cache
+  }
+
+  /**
    * Reads the user settings object.
    * You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
    * By default, the user settings will be read from the **localStorage**
@@ -131,12 +147,26 @@ export class Luigi {
     this.configChanged();
   }
 
+  customMessages = (): CustomMessages => {
+    if (!this._customMessages) {
+      this._customMessages = new CustomMessages(this);
+    }
+    return this._customMessages;
+  };
+
   i18n = (): i18nService => {
     if (!this._i18n) {
       this._i18n = new i18nService(this);
     }
 
     return this._i18n;
+  };
+
+  elements = (): Elements => {
+    if (!this._elements) {
+      this._elements = new Elements(this);
+    }
+    return this._elements as Elements;
   };
 
   navigation = (): Navigation => {

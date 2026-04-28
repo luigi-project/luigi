@@ -1,6 +1,5 @@
 <svelte:options
   customElement={{
-    tag: null,
     shadow: 'none',
     props: {
       activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
@@ -80,7 +79,7 @@
   export let anchor: string;
   export let clientPermissions: any;
   export let compoundConfig: any;
-  export let context: string;
+  export let context: string | object;
   export let deferInit: boolean;
   export let dirtyStatus: boolean;
   export let documentTitle: string;
@@ -151,14 +150,14 @@
       if (thisComponent.isConnected) {
         webcomponentService.resolveAlert(id, dismissKey);
       }
-    }
+    };
 
     thisComponent.notifyConfirmationModalClosed = (result) => {
       // check if thisComponent is in dom
       if (thisComponent.isConnected) {
         webcomponentService.notifyConfirmationModalClosed(!!result);
       }
-    }
+    };
 
     const node = {
       compound: compoundConfig,
@@ -210,7 +209,7 @@
   });
 </script>
 
-<main bind:this={mainComponent} />
+<main bind:this={mainComponent}></main>
 
 <style>
   main {

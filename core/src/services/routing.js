@@ -223,9 +223,9 @@ class RoutingClass {
   /**
    * If `showModalPathInUrl` is provided, bookmarkable modal path will be triggered.
    */
-  async shouldShowModalPathInUrl() {
+  async shouldShowModalPathInUrl(configChangedInitiated = false) {
     if (LuigiConfig.getConfigValue('routing.showModalPathInUrl')) {
-      await this.handleBookmarkableModalPath();
+      await this.handleBookmarkableModalPath(configChangedInitiated);
     }
   }
 
@@ -328,8 +328,18 @@ class RoutingClass {
    * @param {Object} config - the configuration of application
    * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
    * @param {boolean} preventContextUpdate - make no context update being triggered; default is false
+   * @param {boolean} preventContextUpdate - make no context update being triggered; default is false
+   * @param {boolean} configChangedInitiated - indicates if the route change was initiated by a config change; default is false
    */
-  async handleRouteChange(rawPath, component, iframeElement, config, withoutSync, preventContextUpdate = false) {
+  async handleRouteChange(
+    rawPath,
+    component,
+    iframeElement,
+    config,
+    withoutSync,
+    preventContextUpdate = false,
+    configChangedInitiated = false
+  ) {
     const path = rawPath || '';
     // Handle intent navigation with new tab scenario.
     if (path.external) {
@@ -351,7 +361,7 @@ class RoutingClass {
         await this.handleUnsavedChangesModal(path, component, iframeElement, config);
         return;
       }
-      await this.shouldShowModalPathInUrl();
+      await this.shouldShowModalPathInUrl(configChangedInitiated);
 
       const previousCompData = component.get();
       this.checkInvalidateCache(previousCompData, path);
@@ -505,17 +515,23 @@ class RoutingClass {
         tabHeaderCnt.dispatchEvent(new Event('lui_ctx_update'));
       }
 
-      Navigation.onNodeChange(previousCompData.currentNode, currentNode);
+      Navigation.onNodeChange(previousCompData.currentNode, currentNode, { currentContext: ctx });
     } catch (err) {
       console.info('Could not handle route change', err);
     }
   }
 
-  async handleBookmarkableModalPath() {
+  async handleBookmarkableModalPath(configChangedInitiated = false) {
     const additionalModalPath = RoutingHelpers.getModalPathFromPath();
     if (additionalModalPath) {
-      const modalParams = RoutingHelpers.getModalParamsFromPath();
       const { nodeObject } = await Navigation.extractDataFromPath(additionalModalPath);
+      let modalParams = RoutingHelpers.getModalParamsFromPath();
+      if (configChangedInitiated) {
+        if (!modalParams) {
+          modalParams = {};
+        }
+        modalParams._reuseIframeOpener = true;
+      }
       LuigiNavigation.openAsModal(additionalModalPath, modalParams || nodeObject.openNodeInModal);
     }
   }

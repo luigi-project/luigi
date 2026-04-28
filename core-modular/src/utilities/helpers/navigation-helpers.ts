@@ -1,8 +1,10 @@
+import { get } from 'lodash';
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { AppSwitcher, Node, PathData } from '../../services/navigation.service';
+import type { AppSwitcher, Node, PathData, TitleResolver } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
+import { RoutingHelpers } from './routing-helpers';
 
 export const NavigationHelpers = {
   normalizePath: (raw: string) => {
@@ -68,7 +70,7 @@ export const NavigationHelpers = {
     return true;
   },
 
-  generateTooltipText: (node: any, translation: string, luigi: Luigi): string => {
+  generateTooltipText: (node: Node, translation: string, luigi: Luigi): string => {
     let ttText: boolean | string | undefined = node?.tooltipText;
 
     if (ttText === undefined) {
@@ -113,6 +115,24 @@ export const NavigationHelpers = {
     }
 
     return permissionCheckerFn(nodeToCheckPermissionFor, parentNode, currentContext);
+  },
+
+  applyContext: (
+    context: Record<string, any>,
+    addition: Record<string, any>,
+    navigationContext: any
+  ): Record<string, any> => {
+    if (addition) {
+      for (let p in addition) {
+        context[p] = addition[p];
+      }
+    }
+
+    if (navigationContext && context.parentNavigationContexts) {
+      context.parentNavigationContexts.unshift(navigationContext);
+    }
+
+    return context;
   },
 
   updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): string | undefined => {
@@ -171,5 +191,119 @@ export const NavigationHelpers = {
       }
     });
     return result;
+  },
+
+  /**
+   * Finds the virtual tree root node for a given node by traversing up the node hierarchy until it finds a node with the virtualTree property set to true. If no such node is found, it returns undefined.
+   * @param node  The node for which to find the virtual tree root node.
+   * @returns The virtual tree root node if found, otherwise undefined.
+   */
+  findVirtualTreeRootNode(node: Node): Node | undefined {
+    if (node.virtualTree) {
+      return node;
+    }
+    if (node.parent) {
+      return NavigationHelpers.findVirtualTreeRootNode(node.parent);
+    }
+    return undefined;
+  },
+
+  /**
+   * Validates if a path exists and handles page not found cases.
+   * Returns the redirect path if valid, or undefined if the path should not be followed.
+   * @param path The path to validate
+   * @param luigi The Luigi instance
+   * @returns The redirect path if valid, undefined otherwise
+   */
+  validatePathAndGetRedirect: async (path: string, luigi: Luigi): Promise<string | undefined> => {
+    const pathExist = await RoutingHelpers.pathExists(path, luigi);
+    const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(path, pathExist, luigi);
+    return redirectPath || undefined;
+  },
+
+  async fetchNodeTitleData(node: Node, context: any): Promise<{ label: string; icon?: string }> {
+    return new Promise<{ label: string; icon?: string }>((resolve, reject) => {
+      if (!node.titleResolver) {
+        reject(new Error('No title resolver defined at node'));
+        return;
+      }
+      const strippedResolver = { ...node.titleResolver };
+      delete strippedResolver._cache;
+
+      const resolver = this.substituteVars(strippedResolver, context);
+      const resolverString = JSON.stringify(resolver);
+      if (node.titleResolver._cache) {
+        if (node.titleResolver._cache.key === resolverString) {
+          resolve(node.titleResolver._cache.value);
+          return;
+        }
+      }
+
+      const requestOptions = resolver.request;
+
+      this._fetch(requestOptions.url, {
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        body: JSON.stringify(requestOptions.body)
+      })
+        .then((response) => {
+          response.json().then((data) => {
+            try {
+              const titleData = this.processTitleData(data, resolver);
+              node.titleResolver!._cache = {
+                key: resolverString,
+                value: titleData
+              };
+              resolve(titleData);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  },
+
+  /**
+   * Returns a nested property value defined by a chain string
+   * @param {*} obj - the object
+   * @param {*} propChain - a string defining the property chain
+   * @param {*} fallback - fallback value if resolution fails
+   * @returns the value or fallback
+   */
+  getPropertyChainValue(obj: Record<string, unknown>, propChain?: string, fallback?: any): any {
+    if (!propChain || !obj) {
+      return fallback;
+    }
+    return get(obj, propChain, fallback);
+  },
+
+  substituteVars(resolver: TitleResolver, context: Record<string, unknown>): TitleResolver {
+    const resolverString = JSON.stringify(resolver);
+    const resString = resolverString.replace(/\$\{[a-zA-Z0-9$_.]+\}/g, (match) => {
+      const chain = match.substr(2, match.length - 3);
+      return this.getPropertyChainValue(context, chain) || match;
+    });
+    return JSON.parse(resString);
+  },
+
+  _fetch(url: string, options: RequestInit): Promise<Response> {
+    return fetch(url, options);
+  },
+
+  processTitleData(data: Record<string, unknown>, resolver: TitleResolver): { label: string; icon?: string } {
+    let label = this.getPropertyChainValue(data, resolver.titlePropertyChain);
+    if (label) {
+      label = label.trim();
+    }
+    if (label && resolver.titleDecorator) {
+      label = resolver.titleDecorator.replace('%s', label);
+    }
+    return {
+      label: label || resolver.fallbackTitle,
+      icon: this.getPropertyChainValue(data, resolver.iconPropertyChain, resolver.fallbackIcon)
+    };
   }
 };

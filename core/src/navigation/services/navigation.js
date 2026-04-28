@@ -198,7 +198,21 @@ class NavigationClass {
       return str;
     }
     newStr += ':virtualSegment_' + _virtualPathIndex + '/';
-    return str + '/' + newStr;
+
+    let vViewUrl = str;
+    if (str.includes('{virtualTreePath}')) {
+      vViewUrl = str.replace('{virtualTreePath}', newStr);
+    } else {
+      vViewUrl = str + '/' + newStr;
+    }
+    try {
+      if (new URL(vViewUrl, 'http://dummy-base').origin === new URL(str, 'http://dummy-base').origin) {
+        return vViewUrl;
+      }
+    } catch (err) {
+      console.error('Error building virtual view URL -- make sure virtualTreePath is not part of origin.', err);
+    }
+    return str;
   }
 
   buildVirtualTree(node, nodeNamesInCurrentPath, pathParams) {
@@ -232,7 +246,6 @@ class NavigationClass {
         _virtualPathIndex,
         _virtualViewUrl
       });
-
       const isVirtualChildren =
         Array.isArray(node.children) && node.children.length > 0 ? node.children[0]._virtualTree : false;
       if (node.children && !isVirtualChildren) {
@@ -283,10 +296,10 @@ class NavigationClass {
     return result;
   }
 
-  onNodeChange(prevNode, nextNode) {
+  onNodeChange(prevNode, nextNode, aData) {
     const invokedFunction = LuigiConfig.getConfigValue('navigation.nodeChangeHook');
     if (typeof invokedFunction === 'function') {
-      invokedFunction(prevNode, nextNode);
+      invokedFunction(prevNode, nextNode, aData);
     } else if (invokedFunction !== undefined) {
       console.warn('nodeChangeHook is not a function!');
     }

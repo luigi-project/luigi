@@ -1,15 +1,23 @@
-import { ModalService } from '../../src/services/modal.service';
 import { serviceRegistry } from '../../src/services/service-registry';
-import { NavigationService, type Node } from '../../src/services/navigation.service';
+import { NavigationService } from '../../src/services/navigation.service';
+import type { NavigationRequestParams, Node, PathData } from '../../src/types/navigation';
+import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
+import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
+import { NavigationHelpers } from '../../src/utilities/helpers/navigation-helpers';
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
   let navigationService: NavigationService;
+  let mockModalService: any;
+  let mockNodeDataManagementService: any;
 
   beforeEach(() => {
     luigiMock = {
       getConfigValue: jest.fn(),
       getConfig: jest.fn(),
+      getAsyncConfigValue: jest.fn(),
+      getConfigValueAsync: jest.fn(),
       auth: jest.fn().mockReturnValue({
         isAuthorizationEnabled: jest.fn()
       }),
@@ -18,13 +26,42 @@ describe('NavigationService', () => {
       })
     };
     navigationService = new NavigationService(luigiMock);
+
+    mockModalService = {
+      clearModalStack: jest.fn(),
+      closeModals: jest.fn()
+    };
+    mockNodeDataManagementService = {
+      setChildren: jest.fn(),
+      getChildren: jest.fn(),
+      hasChildren: jest.fn(),
+      setRootNode: jest.fn(),
+      getRootNode: jest.fn(),
+      hasRootNode: jest.fn(),
+      deleteNodesRecursively: jest.fn(),
+      deleteCache: jest.fn(),
+      dataManagement: {} as any,
+      navPath: '' as any
+    };
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
+      if (service.name === 'ModalService') {
+        return mockModalService;
+      }
+      if (service.name === 'NodeDataManagementService') {
+        return mockNodeDataManagementService;
+      }
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('NavigationService.onNodeChange', () => {
     let prevNode: Node;
     let nextNode: Node;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       prevNode = { label: 'prev', children: [] };
       nextNode = { label: 'next', children: [] };
     });
@@ -114,7 +151,7 @@ describe('NavigationService', () => {
 
       await navigationService.openViewInNewTab(nodepath);
 
-      expect(windowOpenSpy).toHaveBeenCalledWith(nodepath, '_blank', 'noopener,noreferrer');
+      expect(windowOpenSpy).toHaveBeenCalledWith(window.location.origin + nodepath, '_blank', 'noopener,noreferrer');
     });
 
     it('should not open view in new tab if navigation is prevented', async () => {
@@ -183,8 +220,9 @@ describe('NavigationService', () => {
       expect(matchingNode).toBeUndefined();
     });
   });
+
   describe('NavigationService.getPathData', () => {
-    it('should return path data with pathParams included', () => {
+    it('should return path data with pathParams included', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -202,13 +240,14 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/123';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.pathParams).toEqual({ id: '123' });
     });
-    it('should return path data with empty pathParams if no dynamic segments', () => {
+    it('should return path data with empty pathParams if no dynamic segments', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -223,11 +262,11 @@ describe('NavigationService', () => {
       luigiMock.getConfig.mockReturnValue(cfg);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.pathParams).toEqual({});
     });
-    it('should return path data with empty pathParams if no matching nodes', () => {
+    it('should return path data with empty pathParams if no matching nodes', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -242,11 +281,11 @@ describe('NavigationService', () => {
       luigiMock.getConfig.mockReturnValue(cfg);
 
       const path = 'unknown/path';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.pathParams).toEqual({});
     });
-    it('should return path data with correct selectedNode and selectedNodeChildren', () => {
+    it('should return path data with correct selectedNode and selectedNodeChildren', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -264,15 +303,16 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
       const expectedNode = cfg.navigation.nodes[0].children[0];
       (expectedNode as any).context = {};
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', () => {
+    it('should return path data with undefined selectedNode and rootNodes as selectedNodeChildren for unknown path', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -286,14 +326,15 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'unknown/path';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode).toBeUndefined();
       expect(pathData.selectedNodeChildren).toEqual(cfg.navigation.nodes);
     });
-    it('should return path data with rootNodes as selectedNodeChildren for root path', () => {
+    it('should return path data with rootNodes as selectedNodeChildren for root path', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -307,14 +348,15 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = '';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode).toBeUndefined();
       expect(pathData.selectedNodeChildren).toEqual(cfg.navigation.nodes);
     });
-    it('should handle trailing slashes in path correctly', () => {
+    it('should handle trailing slashes in path correctly', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -332,15 +374,16 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard/';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
       let expectedNode = cfg.navigation.nodes[0].children[0];
       (expectedNode as any).context = {};
       expect(pathData.selectedNode).toEqual(expectedNode);
       expect(pathData.selectedNodeChildren).toEqual([]);
     });
-    it('inhert context from globalContext', () => {
+    it('inhert context from globalContext', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -356,13 +399,14 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual(cfg.navigation.globalContext);
     });
-    it('should return empty context if no globalContext is defined', () => {
+    it('should return empty context if no globalContext is defined', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -375,13 +419,14 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({});
     });
-    it('should merge globalContext with node context, node context takes precedence', () => {
+    it('should merge globalContext with node context, node context takes precedence', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -398,16 +443,17 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
         theme: 'light'
       });
     });
-    it('inhert context from parent nodes', () => {
+    it('inhert context from parent nodes', async () => {
       const cfg = {
         navigation: {
           nodes: [
@@ -427,9 +473,10 @@ describe('NavigationService', () => {
         }
       };
       luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
 
       const path = 'home/dashboard';
-      const pathData = navigationService.getPathData(path);
+      const pathData = await navigationService.getPathData(path);
 
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
@@ -440,18 +487,31 @@ describe('NavigationService', () => {
   });
 
   describe('NavigationService.navItemClick', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
     it('should navigate to the given path', () => {
       const navigateSpy = jest.fn();
+
       luigiMock.navigation = jest.fn().mockReturnValue({
         navigate: navigateSpy
       });
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/home');
+      jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue('/home');
 
       const node = {
         pathSegment: 'home',
         children: [],
         isRootNode: true
       };
-      navigationService.navItemClick(node, '');
+
+      const pathData: PathData = {
+        pathParams: {},
+        rootNodes: []
+      };
+
+      navigationService.navItemClick(node, pathData);
 
       expect(navigateSpy).toHaveBeenCalledWith('/home');
     });
@@ -461,82 +521,63 @@ describe('NavigationService', () => {
         navigate: navigateSpy
       });
 
-      navigationService.navItemClick({}, '');
-
-      expect(navigateSpy).not.toHaveBeenCalled();
-    });
-    it('should navigate to root if node has no pathSegment', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-
-      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, 'projects');
-
-      expect(navigateSpy).toHaveBeenCalledWith('/projects/pro');
-    });
-
-    it('no rootNode marker', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '');
-      expect(navigateSpy).not.toHaveBeenCalled();
-    });
-
-    it('no rootNode marker 2', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-      navigationService.navItemClick({ pathSegment: 'pro', children: [] }, '      ');
-      expect(navigateSpy).not.toHaveBeenCalled();
-    });
-
-    it('should handle parentPath without trailing slash correctly', () => {
-      const navigateSpy = jest.fn();
-      luigiMock.navigation = jest.fn().mockReturnValue({
-        navigate: navigateSpy
-      });
-
-      const node = {
-        pathSegment: 'home',
-        children: [],
-        isRootNode: true
+      const pathData: PathData = {
+        pathParams: {},
+        rootNodes: []
       };
-      navigationService.navItemClick(node, 'parent');
 
-      expect(navigateSpy).toHaveBeenCalledWith('/parent/home');
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue(undefined as any);
+      jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue(undefined as any);
+
+      navigationService.navItemClick({ pathSegment: 'home' } as any, pathData);
+
+      expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('NavigationService.handleNavigationRequest', () => {
-    let modalServiceMock: { closeModals: jest.Mock };
     beforeEach(() => {
-      modalServiceMock = {
-        closeModals: jest.fn()
-      };
-      jest.spyOn(serviceRegistry, 'get').mockReturnValue(modalServiceMock);
-      navigationService = new NavigationService(luigiMock);
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
     });
 
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/modal/path');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: { size: 'l' },
+        newTab: false,
+        options: {
+          fromVirtualTreeRoot: false,
+          fromClosestContext: false,
+          fromParent: false,
+          nodeParams: {}
+        },
+        path: '/modal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
       luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
 
-      await navigationService.handleNavigationRequest('/modal/path', undefined, { size: 'l' }, false, jest.fn());
+      await navigationService.handleNavigationRequest(navRequestParams, jest.fn());
 
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
 
     it('should close modals and update history if no modalSettings and not using hash routing', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+
+      const navRequestParams: NavigationRequestParams = {
+        path: '/normal/path'
+      };
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
 
-      await navigationService.handleNavigationRequest('/normal/path');
+      await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
 
@@ -546,8 +587,13 @@ describe('NavigationService', () => {
 
     it('should set location.hash if useHashRouting is true', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+
+      const navRequestParams: NavigationRequestParams = {
+        path: '/hash/path'
+      };
       const originalHash = window.location.hash;
-      await navigationService.handleNavigationRequest('/hash/path');
+
+      await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(window.location.hash).toBe('#/hash/path');
 
@@ -556,19 +602,116 @@ describe('NavigationService', () => {
 
     it('should navigate to a path in new browser tab', async () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/test/path');
       const pushStateSpy = jest.spyOn(window.history, 'pushState');
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: true,
+        path: '/test/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
 
       navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(false);
 
-      await navigationService.handleNavigationRequest('/test/path', undefined, undefined, true);
+      await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(modalServiceMock.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModals).toHaveBeenCalled();
       expect(openViewInNewTabSpy).toHaveBeenCalledWith('/test/path');
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
     });
+
+    it('should close modals and update history if no modalSettings and using withoutSync', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/normal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.any(
+          CustomEvent<{
+            preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
+            withoutSync: boolean;
+          }>
+        )
+      );
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('popstate');
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: true
+      });
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
+
+    it('should close modals and replace history state if no modalSettings and using preventHistoryEntry', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/normal/path',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.any(
+          CustomEvent<{
+            preventContextUpdate: boolean;
+            preventHistoryEntry: boolean;
+            withoutSync: boolean;
+          }>
+        )
+      );
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('popstate');
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: false,
+        preventHistoryEntry: true,
+        withoutSync: false
+      });
+
+      pushStateSpy.mockRestore();
+      replaceStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
   });
+
   describe('NavigationService.buildNavItems', () => {
     it('should return empty array if nodes is empty', () => {
       const pathData = {
@@ -662,6 +805,847 @@ describe('NavigationService', () => {
       expect(items.length).toBe(1);
       expect(items[0].label).toBe('Translated Node 1');
       expect(items[0].tooltip).toBe('Translated Tooltip 1');
+    });
+  });
+
+  describe('NavigationService.getChildren', () => {
+    let getAccessibleNodesSpy: jest.SpyInstance;
+    beforeEach(() => {
+      navigationService = new NavigationService(luigiMock);
+      getAccessibleNodesSpy = jest.spyOn(navigationService as any, 'getAccessibleNodes');
+    });
+    it('should return children from NodeDataManagementService if available', async () => {
+      const node: Node = { pathSegment: 'parent', label: 'Parent', children: [] };
+      const children: Node[] = [
+        { pathSegment: 'child1', label: 'Child 1', children: [] },
+        { pathSegment: 'child2', label: 'Child 2', children: [] }
+      ];
+
+      mockNodeDataManagementService.hasChildren.mockReturnValue(true);
+      mockNodeDataManagementService.getChildren.mockReturnValue({ children });
+      getAccessibleNodesSpy.mockReturnValue(children);
+
+      const result = await navigationService.getChildren(node);
+
+      expect(getAccessibleNodesSpy).toHaveBeenCalledWith(node, children, {});
+      expect(mockNodeDataManagementService.getChildren).toHaveBeenCalledWith(node);
+      expect(result).toBe(children);
+    });
+
+    it('should return empty array if no children in NodeDataManagementService and no static children', async () => {
+      const node: Node = { pathSegment: 'parent', label: 'Parent', children: [] };
+      mockNodeDataManagementService.getChildren.mockResolvedValue(undefined);
+      mockNodeDataManagementService.hasChildren.mockReturnValue(true);
+
+      const result = await navigationService.getChildren(node);
+
+      expect(mockNodeDataManagementService.getChildren).toHaveBeenCalledWith(node);
+      expect(result).toEqual([]);
+    });
+
+    it('should return static children if no children in NodeDataManagementService', async () => {
+      const staticChildren: Node[] = [
+        { pathSegment: 'child1', label: 'Child 1', children: [] },
+        { pathSegment: 'child2', label: 'Child 2', children: [] }
+      ];
+      const topNodes: Node[] = [
+        { pathSegment: 'top1', label: 'Top 1', children: staticChildren },
+        { pathSegment: 'top2', label: 'Top 2', children: staticChildren }
+      ];
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockResolvedValue(staticChildren);
+      const expandSpy = jest.spyOn(navigationService, 'getExpandStructuralPathSegment');
+      const bindChildToParent = jest.spyOn(navigationService, 'bindChildToParent');
+      mockNodeDataManagementService.hasChildren.mockReturnValue(false);
+      mockNodeDataManagementService.getChildren.mockResolvedValue(undefined);
+
+      const result = await navigationService.getChildren({ children: topNodes }, {});
+
+      expect(expandSpy).toHaveBeenCalledTimes(staticChildren.length);
+      expect(bindChildToParent).toHaveBeenCalledTimes(staticChildren.length);
+
+      expect(mockNodeDataManagementService.setChildren).toHaveBeenCalled();
+      expect(result[0].pathSegment).toBe(staticChildren[0].pathSegment);
+    });
+  });
+
+  describe('navigationService.getExpandStructuralPathSegment', () => {
+    it('should expand structural path segment', async () => {
+      const node: Node = {
+        pathSegment: 'node',
+        label: 'Node',
+        children: []
+      };
+      const result = await navigationService.getExpandStructuralPathSegment(node);
+      expect(result).toBe(node);
+    });
+    it('should expand structural when node is a virtual tree', async () => {
+      const node: Node = {
+        pathSegment: 'path/to/virtualNode',
+        label: 'Virtual Node',
+        children: [],
+        viewUrl: 'virtual.html'
+      };
+      const result = await navigationService.getExpandStructuralPathSegment(node);
+      expect(result.children?.[0]?.pathSegment).toBe('to');
+      expect(result.children?.[0]?.children?.[0]?.pathSegment).toBe('virtualNode');
+    });
+  });
+
+  describe('navigationService.bindChildToParent', () => {
+    it('should bind child to parent node', () => {
+      const childNode: Node = {
+        pathSegment: 'child',
+        label: 'Child Node',
+        children: []
+      };
+      const parentNode: Node = {
+        pathSegment: 'parent',
+        label: 'Parent Node',
+        children: [childNode]
+      };
+
+      navigationService.bindChildToParent(childNode, parentNode);
+
+      expect(childNode['parent']).toBe(parentNode);
+    });
+    it('should not fail if parent node has no children', () => {
+      const childNode: Node = {
+        label: 'Child Node',
+        pathSegment: 'child'
+      };
+      const parentNode: Node = {
+        label: 'Parent Node'
+      };
+
+      navigationService.bindChildToParent(childNode, parentNode);
+
+      expect(childNode.parent).toBeUndefined();
+      expect(childNode).toBe(childNode);
+    });
+  });
+
+  describe('buildPath', () => {
+    beforeEach(() => {
+      jest.spyOn((navigationService as any).luigi, 'getConfig').mockReturnValue({
+        navigation: {}
+      });
+
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return incomingPath if fromVirtualTreeRoot is false', async () => {
+      const result = await navigationService.buildPath('/my/path', { fromVirtualTreeRoot: false });
+
+      expect(result).toBe('/my/path');
+    });
+
+    it('should build full path from virtual tree root', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { pathSegment: 'parent', virtualTree: false },
+          { pathSegment: 'child', virtualTree: false }
+        ]
+      } as any);
+
+      const result = await navigationService.buildPath('details', { fromVirtualTreeRoot: true });
+
+      expect(result).toBe('/parent/child/details');
+    });
+
+    it('should stop at last virtualTree node', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { pathSegment: 'level1', virtualTree: false },
+          { pathSegment: 'virtual', virtualTree: true },
+          { pathSegment: 'ignored', virtualTree: false }
+        ]
+      } as any);
+
+      const result = await navigationService.buildPath('next', { fromVirtualTreeRoot: true });
+
+      expect(result).toBe('/level1/virtual/next');
+    });
+
+    it('should ignore nodes without pathSegment', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [
+          { pathSegment: '', virtualTree: false },
+          { virtualTree: false },
+          { pathSegment: 'valid', virtualTree: false }
+        ]
+      } as any);
+
+      const result = await navigationService.buildPath('end', { fromVirtualTreeRoot: true });
+
+      expect(result).toBe('/valid/end');
+    });
+
+    it('should handle empty nodesInPath gracefully', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: []
+      } as any);
+
+      const result = await navigationService.buildPath('alone', { fromVirtualTreeRoot: true });
+
+      expect(result).toBe('/alone');
+    });
+
+    it('should return incomingPath if nodesInPath is undefined', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: undefined
+      } as any);
+
+      const result = await navigationService.buildPath('fallback', { fromVirtualTreeRoot: true });
+
+      expect(result).toBe('fallback');
+    });
+
+    describe('fromParent', () => {
+      beforeEach(() => {
+        jest.spyOn(RoutingHelpers, 'concatenatePath').mockImplementation((base, rel) => `${base}/${rel}`);
+        jest.spyOn(GenericHelpers, 'replaceVars').mockImplementation((path) => path);
+      });
+
+      it('should build path from parent node', async () => {
+        const parentNode = { pathSegment: 'parent', parent: { pathSegment: 'grandparent' } };
+        const selectedNode = { pathSegment: 'current', parent: parentNode };
+
+        jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+          nodesInPath: [{ pathSegment: '' }, { pathSegment: 'grandparent' }, parentNode, selectedNode],
+          selectedNode: selectedNode,
+          pathParams: {}
+        } as any);
+        jest.spyOn(RoutingHelpers, 'getSubPath').mockReturnValue('/parent/path');
+
+        const result = await navigationService.buildPath('sibling', { fromParent: true });
+
+        expect(RoutingHelpers.getSubPath).toHaveBeenCalledWith(parentNode, {});
+        expect(result).toBe('/parent/path/sibling');
+      });
+
+      // TODO waiting for error handling implementation
+      // it('should handle selectedNode without parent', async () => {
+      //   const selectedNode = { pathSegment: 'current' };
+
+      //   jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+      //     nodesInPath: [
+      //       { pathSegment: '' },
+      //       selectedNode
+      //     ],
+      //     selectedNode: selectedNode,
+      //     pathParams: {}
+      //   } as any);
+
+      //   jest.spyOn(RoutingHelpers, 'getSubPath').mockReturnValue('');
+
+      //   const result = await navigationService.buildPath('next', { fromParent: true });
+
+      //   expect(RoutingHelpers.getSubPath).toHaveBeenCalledWith(undefined, {});
+      //   expect(result).toBe('/next');
+      // });
+
+      // it('should handle no selectedNode', async () => {
+      //   jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+      //     nodesInPath: [
+      //       { pathSegment: '' },
+      //       { pathSegment: 'some' }
+      //     ],
+      //     selectedNode: undefined,
+      //     pathParams: {}
+      //   } as any);
+
+      //   jest.spyOn(RoutingHelpers, 'getSubPath').mockReturnValue('');
+
+      //   const result = await navigationService.buildPath('path', { fromParent: true });
+
+      //   expect(RoutingHelpers.getSubPath).toHaveBeenCalledWith(undefined, {});
+      //   expect(result).toBe('/path');
+      // });
+    });
+
+    describe('relative', () => {
+      beforeEach(() => {
+        const homeNodeMock = { pathSegment: 'home' };
+        const baseNodeMock = { pathSegment: 'base', parent: homeNodeMock };
+
+        jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/home/base', query: undefined } as any);
+        jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+          nodesInPath: [
+            {
+              children: [homeNodeMock]
+            },
+            homeNodeMock,
+            baseNodeMock
+          ],
+          selectedNode: baseNodeMock,
+          pathParams: {}
+        } as any);
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('relative path from existing path', async () => {
+        const result = await navigationService.buildPath('relative/path', { relative: true });
+
+        expect(result).toBe('home/base/relative/path');
+      });
+
+      it('relative path with nodeParams', async () => {
+        jest.spyOn(RoutingHelpers, 'getContentViewParamPrefix').mockReturnValue('~');
+        const result = await navigationService.buildPath('relative/path', {
+          relative: true,
+          nodeParams: { id: '123' }
+        });
+
+        expect(result).toBe('home/base/relative/path?~id=123');
+      });
+
+      //TODO waiting for error handling implementation
+      // it('wrong relative path from existing path', async () => {
+      //   const result = await navigationService.buildPath('blaaa', { relative: true });
+
+      //   expect(result).toBe('home/base');
+
+      // });
+    });
+  });
+
+  describe('buildVirtualViewUrl', () => {
+    it('should return original string if _virtualPathIndex is 0', () => {
+      const result = navigationService.buildVirtualViewUrl('/base', { virtualSegment_1: 'abc' }, 0);
+
+      expect(result).toBe('/base');
+    });
+
+    it('should return original string if _virtualPathIndex is undefined', () => {
+      const result = navigationService.buildVirtualViewUrl('/base', { virtualSegment_1: 'abc' }, undefined as any);
+
+      expect(result).toBe('/base');
+    });
+
+    it('should append virtual segments from pathParams and index', () => {
+      const result = navigationService.buildVirtualViewUrl(
+        '/base',
+        {
+          virtualSegment_1: 'foo',
+          virtualSegment_2: 'bar',
+          otherParam: 'ignoreMe'
+        },
+        3
+      );
+
+      expect(result).toBe('/base/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/');
+    });
+
+    it('should append only index if no matching virtualSegment keys exist', () => {
+      const result = navigationService.buildVirtualViewUrl('/base', { someParam: 'value' }, 2);
+
+      expect(result).toBe('/base/:virtualSegment_2/');
+    });
+
+    it('should handle empty pathParams object', () => {
+      const result = navigationService.buildVirtualViewUrl('/base', {}, 1);
+
+      expect(result).toBe('/base/:virtualSegment_1/');
+    });
+
+    it('should replace {virtualTreePath} placeholder instead of appending', () => {
+      const result = navigationService.buildVirtualViewUrl(
+        'https://mf.luigi-project.io/app/{virtualTreePath}details',
+        {
+          virtualSegment_1: 'foo',
+          virtualSegment_2: 'bar'
+        },
+        3
+      );
+
+      expect(result).toBe(
+        'https://mf.luigi-project.io/app/:virtualSegment_1/:virtualSegment_2/:virtualSegment_3/details'
+      );
+    });
+
+    it('should replace {virtualTreePath} placeholder with only the new index segment when no prior virtualSegments exist', () => {
+      const result = navigationService.buildVirtualViewUrl('https://mf.luigi-project.io/{virtualTreePath}view', {}, 1);
+
+      expect(result).toBe('https://mf.luigi-project.io/:virtualSegment_1/view');
+    });
+
+    it('should return original string and log error when {virtualTreePath} is part of the origin', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const str = 'https://{virtualTreePath}.luigi-project.io/app';
+
+      const result = navigationService.buildVirtualViewUrl(str, {}, 1);
+
+      expect(result).toBe(str);
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error building virtual view URL -- make sure virtualTreePath is not part of origin.',
+        expect.any(Error)
+      );
+      errorSpy.mockRestore();
+    });
+  });
+
+  describe('buildVirtualTree', () => {
+    beforeEach(() => {
+      jest.spyOn(GenericHelpers, 'removeProperties').mockImplementation((obj: any) => ({ ...obj }));
+
+      jest.spyOn(GenericHelpers, 'trimTrailingSlash').mockImplementation((str: string) => str.replace(/\/$/, ''));
+
+      jest.spyOn(navigationService, 'buildVirtualViewUrl').mockReturnValue('/virtual/url');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should do nothing if node is not virtualTree or _virtualTree', () => {
+      const node: any = { pathSegment: 'test' };
+      const nodesInPath = [{}];
+
+      navigationService.buildVirtualTree(node, nodesInPath, {});
+
+      expect(node.children).toBeUndefined();
+    });
+
+    it('should create virtual child when virtualTree is true', () => {
+      const node: any = {
+        virtualTree: true,
+        viewUrl: '/base'
+      };
+
+      const nodesInPath = [{}];
+
+      const children = navigationService.buildVirtualTree(node, nodesInPath, {});
+
+      expect(node.keepSelectedForChildren).toBe(true);
+      expect(children).toHaveLength(1);
+
+      const child = children ? children[0] : undefined;
+
+      expect(child).toBeDefined();
+      expect(child!.pathSegment).toBe(':virtualSegment_1');
+      expect(child!._virtualTree).toBe(true);
+      expect(child!._virtualPathIndex).toBe(1);
+      expect(child!.viewUrl).toBe('/virtual/url');
+    });
+
+    it('should increment _virtualPathIndex if provided', () => {
+      const node: any = {
+        _virtualTree: true,
+        _virtualPathIndex: 2,
+        viewUrl: '/base'
+      };
+
+      const nodesInPath = [{}];
+
+      const children = navigationService.buildVirtualTree(node, nodesInPath, {}) || [];
+
+      expect(children[0]!._virtualPathIndex).toBe(3);
+      expect(children[0]!.pathSegment).toBe(':virtualSegment_3');
+    });
+
+    it('should stop if _virtualPathIndex exceeds max depth', () => {
+      const node: any = {
+        _virtualTree: true,
+        _virtualPathIndex: 51
+      };
+
+      const nodesInPath = [{}];
+
+      navigationService.buildVirtualTree(node, nodesInPath, {});
+
+      expect(node.children).toBeUndefined();
+    });
+
+    it('should warn if both virtualTree and children exist', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      const node: any = {
+        virtualTree: true,
+        viewUrl: '/base',
+        children: [{ pathSegment: 'realChild' }]
+      };
+
+      const nodesInPath = [{}];
+
+      navigationService.buildVirtualTree(node, nodesInPath, {});
+
+      expect(warnSpy).toHaveBeenCalled();
+    });
+
+    it('should not execute if nodesInPath[0] is missing', () => {
+      const node: any = {
+        virtualTree: true
+      };
+
+      navigationService.buildVirtualTree(node, [], {});
+
+      expect(node.children).toBeUndefined();
+    });
+  });
+
+  describe('Navigation nodes with viewurl in rootNode and nodes defined as object', () => {
+    let cfg: any;
+    let getAccessibleNodesSpy: jest.SpyInstance;
+    let details2Children: Node[];
+    let dasboard2Children: Node[];
+    beforeEach(async () => {
+      details2Children = [
+        {
+          pathSegment: 'detail2_aa',
+          label: 'detail2 aa',
+          viewUrl: '/microfrontend.html#detail2_aa'
+        }
+      ];
+      dasboard2Children = [
+        {
+          pathSegment: 'details2',
+          label: 'details2',
+          viewUrl: '/microfrontend.html#details2',
+          children: details2Children
+        }
+      ];
+      let topNavNodes: Node[] = [
+        {
+          pathSegment: 'dashboard',
+          icon: 'employee',
+          label: 'dashboard',
+          viewUrl: '/microfrontend.html#dashboard',
+          children: [
+            {
+              pathSegment: 'details',
+              label: 'details',
+              viewUrl: '/microfrontend.html#details',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'detail',
+                  viewUrl: '/microfrontend.html#detail'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          pathSegment: 'dashboard2',
+          icon: 'settings',
+          label: 'dashboard2',
+          viewUrl: '/microfrontend.html#dashboard2',
+          children: dasboard2Children
+        }
+      ];
+      cfg = {
+        navigation: {
+          nodes: {
+            pathSegment: 'home',
+            label: 'home',
+            icon: 'home',
+            viewUrl: '/microfrontend.html#home',
+            children: topNavNodes
+          },
+          globalContext: {}
+        }
+      };
+      luigiMock.getConfig.mockReturnValue(cfg);
+      luigiMock.getConfigValueAsync.mockReturnValue(cfg.navigation.nodes);
+
+      navigationService = new NavigationService(luigiMock);
+      getAccessibleNodesSpy = jest.spyOn(navigationService as any, 'getAccessibleNodes').mockReturnValue(topNavNodes);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockResolvedValue(topNavNodes);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('rootNode and topNav nodes check', async () => {
+      const pathData = await navigationService.getPathData('');
+      expect(pathData.selectedNode?.pathSegment).toBe('');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#home');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+
+    it('rootNode and topNav nodes and selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2');
+      expect(pathData.selectedNode?.pathSegment).toBe('details2');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#details2');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+    it('selectedNode check', async () => {
+      getAccessibleNodesSpy.mockImplementation((node: Node, children: Node[], context: any) => children);
+      jest.spyOn(AsyncHelpers, 'getConfigValueFromObjectAsync').mockImplementation((obj: any, prop: string) => {
+        return Promise.resolve(obj[prop]);
+      });
+      const pathData = await navigationService.getPathData('dashboard2/details2/detail2_aa');
+      expect(pathData.selectedNode?.pathSegment).toBe('detail2_aa');
+      expect(pathData.selectedNode?.viewUrl).toBe('/microfrontend.html#detail2_aa');
+      expect(pathData.nodesInPath?.[0]?.pathSegment).toBe('');
+      expect(pathData.nodesInPath?.[0]?.children?.length).toBe(2);
+      expect(pathData.rootNodes?.[0]?.pathSegment).toBe('dashboard');
+      expect(pathData.rootNodes?.[1]?.pathSegment).toBe('dashboard2');
+    });
+  });
+
+  describe('getBreadcrumbData', () => {
+    const pathData = {
+      selectedNode: undefined,
+      selectedNodeChildren: [],
+      nodesInPath: [
+        { pathSegment: '', virtualTree: false },
+        { pathSegment: 'parent', virtualTree: false },
+        { pathSegment: 'child', virtualTree: false }
+      ],
+      rootNodes: [],
+      pathParams: {}
+    };
+
+    beforeEach(() => {
+      luigiMock.getConfigValue.mockReturnValue({
+        clearBeforeRender: true,
+        pendingItemLabel: 'not loaded yet',
+        omitRoot: false,
+        autoHide: false
+      });
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return full breadcrumb data', async () => {
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true,
+        basePath: '',
+        items: [
+          {
+            label: 'parent',
+            node: {
+              pathSegment: 'parent',
+              virtualTree: false
+            },
+            route: undefined
+          },
+          {
+            label: 'child',
+            last: true,
+            node: {
+              pathSegment: 'child',
+              virtualTree: false
+            },
+            route: undefined
+          }
+        ],
+        renderer: undefined,
+        selectedNode: {}
+      });
+    });
+
+    it('should return limited breadcrumb data', async () => {
+      pathData.nodesInPath[2].showBreadcrumbs = false;
+
+      const result = await navigationService.getBreadcrumbData('/base', pathData);
+
+      expect(result).toEqual({
+        clearBeforeRender: true
+      });
+    });
+
+    it('should only toggle showBreadcrumb on explicit true/false', async () => {
+      const pd = {
+        selectedNode: undefined,
+        selectedNodeChildren: [],
+        nodesInPath: [
+          { pathSegment: '', children: [] },
+          { pathSegment: 'a', showBreadcrumbs: false },
+          { pathSegment: 'b' }
+        ],
+        rootNodes: [],
+        pathParams: {}
+      };
+
+      const result = await navigationService.getBreadcrumbData('/base', pd);
+
+      expect(result).toEqual({ clearBeforeRender: true });
+    });
+
+    describe('titleResolver', () => {
+      const i18nMock = { getTranslation: (key: string) => key };
+
+      beforeEach(() => {
+        luigiMock.i18n = jest.fn().mockReturnValue(i18nMock);
+        luigiMock.navigation = jest.fn().mockReturnValue({
+          navService: {
+            extractDataFromPath: jest.fn().mockResolvedValue({ pathData: { context: {}, pathParams: {} } })
+          }
+        });
+        jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
+        jest.spyOn(RoutingHelpers, 'mapPathToNode').mockReturnValue('/some/route');
+      });
+
+      it('should create pending item with pendingItemLabel when no prerenderFallback', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            {
+              pathSegment: ':id',
+              titleResolver: {
+                request: { method: 'GET', url: '/api/test' },
+                titlePropertyChain: 'name'
+              }
+            }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        const pendingItem = result.items?.find((i) => i.pending);
+        expect(pendingItem).toBeDefined();
+        expect(pendingItem!.label).toBe('not loaded yet');
+        expect(pendingItem!.pending).toBe(true);
+      });
+
+      it('should create pending item with fallbackTitle when prerenderFallback is true', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            {
+              pathSegment: ':id',
+              titleResolver: {
+                prerenderFallback: true,
+                fallbackTitle: 'Loading...',
+                request: { method: 'GET', url: '/api/test' },
+                titlePropertyChain: 'name'
+              }
+            }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        const pendingItem = result.items?.find((i) => i.pending);
+        expect(pendingItem).toBeDefined();
+        expect(pendingItem!.label).toBe('Loading...');
+      });
+
+      it('should return pre-render data immediately and call onResolve with resolved data', async () => {
+        const titleResolver = {
+          request: { method: 'GET', url: '/api/test' },
+          titlePropertyChain: 'name'
+        };
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: ':id', titleResolver }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        jest.spyOn(NavigationHelpers, 'fetchNodeTitleData').mockResolvedValue({ label: 'Resolved Title' });
+        navigationService.extractDataFromPath = jest.fn().mockResolvedValue({
+          pathData: { context: {}, pathParams: {} }
+        });
+        jest.spyOn(RoutingHelpers, 'substituteDynamicParamsInObject').mockReturnValue({});
+
+        const onResolve = jest.fn();
+        const preRenderResult = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        expect(preRenderResult.items?.some((i) => i.pending)).toBe(true);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).toHaveBeenCalledTimes(1);
+        const resolvedData = onResolve.mock.calls[0][0];
+        expect(resolvedData.items?.some((i: any) => i.label === 'Resolved Title')).toBe(true);
+        expect(resolvedData.items?.some((i: any) => i.pending)).toBeFalsy();
+      });
+
+      it('should fall back to getNodeLabel when fetchNodeTitleData rejects', async () => {
+        const titleResolver = {
+          request: { method: 'GET', url: '/api/fail' },
+          titlePropertyChain: 'name'
+        };
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: 'fallback-node', label: 'Fallback Label', titleResolver }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        jest.spyOn(NavigationHelpers, 'fetchNodeTitleData').mockRejectedValue(new Error('API error'));
+        navigationService.extractDataFromPath = jest.fn().mockResolvedValue({
+          pathData: { context: {}, pathParams: {} }
+        });
+        jest.spyOn(RoutingHelpers, 'substituteDynamicParamsInObject').mockReturnValue({});
+        jest.spyOn(RoutingHelpers, 'getNodeLabel').mockResolvedValue('Fallback Label');
+
+        const onResolve = jest.fn();
+        await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).toHaveBeenCalledTimes(1);
+        const resolvedData = onResolve.mock.calls[0][0];
+        expect(resolvedData.items?.some((i: any) => i.label === 'Fallback Label')).toBe(true);
+      });
+
+      it('should not call onResolve when there are no pending items', async () => {
+        const pd = {
+          selectedNode: undefined,
+          nodesInPath: [
+            { pathSegment: '', children: [] },
+            { pathSegment: 'parent' },
+            { pathSegment: 'child', label: 'Static Label' }
+          ],
+          rootNodes: [],
+          pathParams: {}
+        };
+
+        const onResolve = jest.fn();
+        const result = await navigationService.getBreadcrumbData('/base', pd, onResolve);
+
+        await new Promise(process.nextTick);
+
+        expect(onResolve).not.toHaveBeenCalled();
+        expect(result.items?.every((i) => !i.pending)).toBe(true);
+      });
     });
   });
 });

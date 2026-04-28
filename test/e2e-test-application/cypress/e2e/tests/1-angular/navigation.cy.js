@@ -44,10 +44,8 @@ describe('Navigation', () => {
           size: '40',
           collapsed: false
         });
-        setTimeout(() => {
-          cy.get('#splitViewContainer').should('not.exist');
-          cy.expect(handle.exists()).to.be.true;
-        }, 0);
+        cy.get('#splitViewContainer').should('not.exist');
+        cy.expect(handle).to.be.undefined;
         cy.expectPathToBe('/overview');
         cy.get('@consoleWarn').should('be.calledWith', 'Navigation with an absolute path prevented.');
       });

@@ -1,9 +1,5 @@
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 
-const chai = require('chai');
-const expect = chai.expect;
-const assert = chai.assert;
-
 describe('NodeDataManagementService', function () {
   const getNodeMock = () => ({
     pathSegment: 'myNode',
@@ -28,7 +24,7 @@ describe('NodeDataManagementService', function () {
   });
 
   it('constructor values', () => {
-    assert.exists(nodeDataManagementService.dataManagement);
+    expect(nodeDataManagementService.dataManagement).toBeTruthy();
   });
 
   describe('setChildren', function () {
@@ -36,20 +32,20 @@ describe('NodeDataManagementService', function () {
       nodeDataManagementService.setChildren(getNodeMock(), {
         children: getNodeMock().children
       });
-      expect(nodeDataManagementService.dataManagement.size).to.equal(1);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(1);
     });
 
     it('extend node in cache with another children', () => {
       nodeDataManagementService.setChildren(getNodeMock(), {
         children: getNodeMock().children
       });
-      expect(nodeDataManagementService.dataManagement.size).to.equal(1);
-      let nodeMock = getNodeMock();
+      expect(nodeDataManagementService.dataManagement.size).toEqual(1);
+      const nodeMock = getNodeMock();
       nodeMock.children.push({ pathSegment: 'children3' });
       nodeDataManagementService.setChildren(nodeMock, {
         children: nodeMock.children
       });
-      expect(nodeDataManagementService.dataManagement.size).to.equal(2);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(2);
     });
   });
 
@@ -60,13 +56,13 @@ describe('NodeDataManagementService', function () {
 
     it('get children from cache', () => {
       const nodeMock = getNodeMock();
-      expect(nodeDataManagementService.getChildren(nodeMock)).to.be.undefined;
+      expect(nodeDataManagementService.getChildren(nodeMock)).toEqual(undefined);
       nodeDataManagementService.setChildren(nodeMock, {
         children: nodeMock.children
       });
       const children = nodeDataManagementService.getChildren(nodeMock).children;
-      expect(children.length).to.equal(2);
-      expect(children[0]).to.deep.equal({
+      expect(children.length).toEqual(2);
+      expect(children[0]).toStrictEqual({
         pathSegment: 'children1'
       });
     });
@@ -79,16 +75,16 @@ describe('NodeDataManagementService', function () {
 
     it('check if children for node is stored in cache', () => {
       const nodeMock = getNodeMock();
-      expect(nodeDataManagementService.hasChildren(nodeMock)).to.be.false;
+      expect(nodeDataManagementService.hasChildren(nodeMock)).toBeFalsy();
       nodeDataManagementService.setChildren(nodeMock, {
         children: nodeMock.children
       });
-      expect(nodeDataManagementService.hasChildren(nodeMock)).to.be.true;
+      expect(nodeDataManagementService.hasChildren(nodeMock)).toBeTruthy();
     });
   });
 
   describe('set, get and has rootNode', () => {
-    let rootNode = {
+    const rootNode = {
       children: [{ pathSegment: 'Overview' }, { pathSegment: 'projects', children: [{ pathSegment: 'pr1' }] }]
     };
 
@@ -97,43 +93,43 @@ describe('NodeDataManagementService', function () {
     });
 
     it('store rootNode in cache', () => {
-      expect(nodeDataManagementService.dataManagement.size).to.equal(0);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(0);
       nodeDataManagementService.setRootNode(rootNode);
-      expect(nodeDataManagementService.dataManagement.size).to.equal(1);
-      let rootNodeFromCache = nodeDataManagementService.dataManagement.get('_luigiRootNode').node;
-      expect(rootNodeFromCache).to.deep.equal(rootNode);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(1);
+      const rootNodeFromCache = nodeDataManagementService.dataManagement.get('_luigiRootNode').node;
+      expect(rootNodeFromCache).toStrictEqual(rootNode);
     });
 
     it('get stored rootNode from cache using getRootNode', () => {
-      expect(nodeDataManagementService.getRootNode()).to.be.undefined;
+      expect(nodeDataManagementService.getRootNode()).toEqual(undefined);
       nodeDataManagementService.setRootNode(rootNode);
       const rootNodeFromCache = nodeDataManagementService.getRootNode().node;
-      expect(rootNodeFromCache).to.deep.equal(rootNode);
+      expect(rootNodeFromCache).toStrictEqual(rootNode);
     });
 
     it('check if rootNode is set', () => {
-      expect(nodeDataManagementService.hasRootNode()).to.be.false;
+      expect(nodeDataManagementService.hasRootNode()).toBeFalsy();
       nodeDataManagementService.setRootNode(rootNode);
-      expect(nodeDataManagementService.hasRootNode()).to.be.true;
+      expect(nodeDataManagementService.hasRootNode()).toBeTruthy();
       nodeDataManagementService.deleteCache();
-      expect(nodeDataManagementService.hasRootNode()).to.be.false;
+      expect(nodeDataManagementService.hasRootNode()).toBeFalsy();
     });
   });
 
   describe('delete Cache', () => {
     it('remove all entries from map', () => {
-      expect(nodeDataManagementService.dataManagement.size).to.equal(0);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(0);
       const nodeMock = getNodeMock();
       nodeDataManagementService.setChildren(nodeMock, {
         children: nodeMock.children
       });
-      expect(nodeDataManagementService.dataManagement.size).to.equal(1);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(1);
       nodeDataManagementService.deleteCache();
-      expect(nodeDataManagementService.dataManagement.size).to.equal(0);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(0);
     });
 
     it('remove node and its children recursivly', () => {
-      expect(nodeDataManagementService.dataManagement.size).to.equal(0);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(0);
       let children1 = { pathSegment: 'child1' };
       let children4 = { pathSegment: 'child4' };
       let children3 = { pathSegment: 'child3', children: [children4] };
@@ -153,9 +149,9 @@ describe('NodeDataManagementService', function () {
       nodeDataManagementService.setChildren(children3, {
         children: children3.children
       });
-      expect(nodeDataManagementService.dataManagement.size).to.equal(4);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(4);
       nodeDataManagementService.deleteNodesRecursively(children2);
-      expect(nodeDataManagementService.dataManagement.size).to.equal(2);
+      expect(nodeDataManagementService.dataManagement.size).toEqual(2);
     });
   });
 });

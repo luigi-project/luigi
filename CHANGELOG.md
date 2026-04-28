@@ -2,27 +2,50 @@
 
 > Note: All the versions not mentioned in the changelog file do not contain changes.
 
-<!--
-Generate the changelog using the lerna-changelog tool.
-Run the following command to generate changelog content for pull requests that have been merged since the time when the last git tag was created:
+<!--Generate the changelog using release cli. -->
 
-./node_modules/lerna-changelog/bin/cli.js --ignoreCommiters
 
-You can also generate changelog content corresponding to pull requests that were merged in between particular git tags:
 
-./node_modules/lerna-changelog/bin/cli.js --ignoreCommiters --from core-0.3.0 --to core-0.3.1
+## [v2.29.0] (2026-03-19)
 
-The lerna-changelog tool detects changes based on PR labels and maps them to sections as per the configuration in the package.json file.
-  "changelog": {
-    "labels": {
-      "breaking": ":boom: Breaking Change",
-      "enhancement": ":rocket: Added",
-      "bug": ":bug: Fixed",
-      "documentation": ":memo: Documentation"
-    }
-    ...
-  }
--->
+#### :rocket: Added
+
+* [#4880](https://github.com/luigi-project/luigi/pull/4880) Prevent config changed function call from client api ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4877](https://github.com/luigi-project/luigi/pull/4877) Missing heading in core ([@walmazacn](https://github.com/walmazacn))
+* [#4870](https://github.com/luigi-project/luigi/pull/4870) A11y improvement - aria-label app title translatable ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#4747](https://github.com/luigi-project/luigi/pull/4747) ESM support for client ([@hardl](https://github.com/hardl))
+
+#### :bug: Fixed
+* [#4838](https://github.com/luigi-project/luigi/pull/4838) Modal opener reuse ([@hardl](https://github.com/hardl))
+
+
+
+## [v2.28.0] (2026-02-26)
+
+#### :rocket: Added
+
+* [#4839](https://github.com/luigi-project/luigi/pull/4839) Open compound microfrontend in modal ([@hardl](https://github.com/hardl))
+* [#4683](https://github.com/luigi-project/luigi/pull/4683) openAsModal in webcomponent client api ([@walmazacn](https://github.com/walmazacn))
+
+#### :bug: Fixed
+
+* [#4838](https://github.com/luigi-project/luigi/pull/4838) Modal opener reuse ([@hardl](https://github.com/hardl))
+
+
+
+
+## [v2.27.0] (2026-02-09)
+
+#### :rocket: Added
+
+* [#4766](https://github.com/luigi-project/luigi/pull/4766) Pass current context to nodechangehook ([@hardl](https://github.com/hardl))
+* [#4746](https://github.com/luigi-project/luigi/pull/4746) Prevent wrong storagetype init ([@hardl](https://github.com/hardl))
+* [#4762](https://github.com/luigi-project/luigi/pull/4762) Avoid potential conflicts in core when not included as module ([@hardl](https://github.com/hardl))
+* [#4713](https://github.com/luigi-project/luigi/pull/4713) Add dedicated prop to resolved value ([@hardl](https://github.com/hardl))
+* [#4665](https://github.com/luigi-project/luigi/pull/4665) A11y improvements in core ([@walmazacn](https://github.com/walmazacn))
+
+#### :bug: Fixed
+*[#4712](https://github.com/luigi-project/luigi/pull/4712) Profile: custom icon for items ([@hardl](https://github.com/hardl))
 
 
 ## [v2.26.0] (2025-12-01)
@@ -2107,3 +2130,6 @@ The lerna-changelog tool detects changes based on PR labels and maps them to sec
 [v2.25.0]: https://github.com/luigi-project/luigi/compare/v2.24.0...v2.25.0
 [v2.25.1]: https://github.com/luigi-project/luigi/compare/v2.25.0...v2.25.1
 [v2.26.0]: https://github.com/luigi-project/luigi/compare/v2.25.1...v2.26.0
+[v2.27.0]: https://github.com/luigi-project/luigi/compare/v2.26.0...v2.27.0
+[v2.28.0]: https://github.com/luigi-project/luigi/compare/v2.27.0...v2.28.0
+[v2.29.0]: https://github.com/luigi-project/luigi/compare/v2.28.0...v2.29.0
