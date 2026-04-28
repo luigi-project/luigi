@@ -1495,7 +1495,9 @@ describe('NavigationService', () => {
       beforeEach(() => {
         luigiMock.i18n = jest.fn().mockReturnValue(i18nMock);
         luigiMock.navigation = jest.fn().mockReturnValue({
-          navService: { extractDataFromPath: jest.fn().mockResolvedValue({ pathData: { context: {}, pathParams: {} } }) }
+          navService: {
+            extractDataFromPath: jest.fn().mockResolvedValue({ pathData: { context: {}, pathParams: {} } })
+          }
         });
         jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/current', query: undefined } as any);
         jest.spyOn(RoutingHelpers, 'mapPathToNode').mockReturnValue('/some/route');
