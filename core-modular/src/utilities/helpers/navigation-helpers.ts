@@ -242,30 +242,28 @@ export const NavigationHelpers = {
       const requestOptions = resolver.request;
 
       // TODO: Remove - temp delay for testing
-      setTimeout(() => {
-        this._fetch(requestOptions.url, {
-          method: requestOptions.method,
-          headers: requestOptions.headers,
-          body: JSON.stringify(requestOptions.body)
-        })
-          .then((response) => {
-            response.json().then((data) => {
-              try {
-                const titleData = this.processTitleData(data, resolver);
-                node.titleResolver!._cache = {
-                  key: resolverString,
-                  value: titleData
-                };
-                resolve(titleData);
-              } catch (e) {
-                reject(e);
-              }
-            });
-          })
-          .catch((error) => {
-            reject(error);
+      this._fetch(requestOptions.url, {
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        body: JSON.stringify(requestOptions.body)
+      })
+        .then((response) => {
+          response.json().then((data) => {
+            try {
+              const titleData = this.processTitleData(data, resolver);
+              node.titleResolver!._cache = {
+                key: resolverString,
+                value: titleData
+              };
+              resolve(titleData);
+            } catch (e) {
+              reject(e);
+            }
           });
-      }, 3000);
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   },
 

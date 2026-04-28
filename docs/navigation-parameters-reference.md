@@ -826,11 +826,9 @@ tooltipText: 'Useful links'
     - **headers** (object): optional request headers. Supports `${varName}` substitution.
     - **body** (object): optional request body. Supports `${varName}` substitution.
   - **titlePropertyChain** (string): dot-notation path to extract the title value from the response object, for example `'data.project.displayName'`.
-  - **iconPropertyChain** (string): dot-notation path to extract the icon value from the response object.
-  - **titleDecorator** (string): format string applied to the resolved title. Use `%s` as a placeholder for the title value, for example `'Project: %s'`.
+    - **titleDecorator** (string): format string applied to the resolved title. Use `%s` as a placeholder for the title value, for example `'Project: %s'`.
   - **fallbackTitle** (string): title shown when the resolved value is empty or the request fails. Supports i18n keys.
-  - **fallbackIcon** (string): icon shown when the resolved icon value is empty or the request fails.
-  - **prerenderFallback** (boolean): if `true`, the **fallbackTitle** is displayed in the breadcrumb immediately while the request is still pending. If `false` or omitted, the breadcrumb shows `navigation.breadcrumbs.pendingItemLabel` during the pending state. Defaults to `false`.
+    - **prerenderFallback** (boolean): if `true`, the **fallbackTitle** is displayed in the breadcrumb immediately while the request is still pending. If `false` or omitted, the breadcrumb shows `navigation.breadcrumbs.pendingItemLabel` during the pending state. Defaults to `false`.
 - **example**:
 ```javascript
 {
@@ -847,10 +845,8 @@ tooltipText: 'Useful links'
       }
     },
     titlePropertyChain: 'data.project.displayName',
-    iconPropertyChain: 'data.project.icon',
     titleDecorator: 'Project: %s',
     fallbackTitle: 'navigation.project.fallback',
-    fallbackIcon: 'folder',
     prerenderFallback: true
   }
 }
