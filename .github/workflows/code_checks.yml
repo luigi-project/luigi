@@ -22,5 +22,5 @@ jobs:
           node-version: '24.x' 
       - name: Install and lint
         working-directory: ./container
-        run: npm i && npm run lint || exit 1
+        run: npm ci && npm run lint || exit 1
     
