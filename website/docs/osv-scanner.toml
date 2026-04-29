@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-pxg6-pf52-xh8x"
+reason = "Vulnerable code is not actually used"

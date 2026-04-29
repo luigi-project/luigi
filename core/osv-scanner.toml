@@ -1,0 +1,23 @@
+[[IgnoredVulns]]
+id = "GHSA-grv7-fg5c-xmjg"
+reason = "Vulnerable code is not actually used"
+
+[[IgnoredVulns]]
+id = "GHSA-f7gr-6p89-r883"
+reason = "SSR is not used by Luigi"
+
+[[IgnoredVulns]]
+id = "GHSA-m56q-vw4c-c2cp"
+reason = "SSR is not used by Luigi"
+
+[[IgnoredVulns]]
+id = "GHSA-crpf-4hrx-3jrp"
+reason = "SSR is not used by Luigi"
+
+[[IgnoredVulns]]
+id = "GHSA-phwv-c562-gvmh"
+reason = "SSR is not used by Luigi"
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "live-server is intended for local development only"

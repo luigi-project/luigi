@@ -1,0 +1,7 @@
+[[IgnoredVulns]]
+id = "GHSA-5c6j-r48x-rmvq"
+reason = "False positive: terser-webpack-plugin uses serialize-javascript only for build cache keys (dev-controlled config). Build-time only, no user input."
+
+[[IgnoredVulns]]
+id = "GHSA-qj8w-gfj5-8c6v"
+reason = "False positive: terser-webpack-plugin uses serialize-javascript only for build cache keys (dev-controlled config). Build-time only, no user input."
