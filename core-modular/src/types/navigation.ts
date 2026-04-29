@@ -104,7 +104,7 @@ export interface Node {
   };
   compound?: CompoundConfig;
   context?: Record<string, any>;
-  drawer?: ModalSettings;
+  drawer?: DrawerSettings;
   decodeViewUrl?: boolean;
   externalLink?: ExternalLink;
   hideFromNav?: boolean;
@@ -125,6 +125,7 @@ export interface Node {
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
   tabNav?: boolean;
+  titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
   viewUrl?: string;
@@ -196,6 +197,13 @@ export interface BreadcrumbData {
   items?: BreadcrumbItem[];
   renderer?: any;
   selectedNode?: Node;
+}
+
+export interface DrawerSettings {
+  backdrop?: boolean;
+  header?: any;
+  overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
 }
 
 export interface ModalSettings {
@@ -474,6 +482,32 @@ export interface RendererConfig {
     minWidth?: number;
     maxWidth?: number;
   }>;
+}
+
+export interface TitleResolverCache {
+  key: string;
+  value: {
+    label: string;
+    icon?: string;
+  };
+}
+
+export interface TitleResolver {
+  request: {
+    method: string;
+    url: string;
+    headers?: Record<string, string>;
+    body?: any;
+  };
+  titlePropertyChain: string;
+  titleDecorator?: string;
+  iconPropertyChain?: string;
+  prerenderFallback?: boolean;
+  responsePath?: string;
+  fallbackTitle?: string;
+  fallbackIcon?: string;
+  /** @internal runtime cache – not user-configured */
+  _cache?: TitleResolverCache;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';

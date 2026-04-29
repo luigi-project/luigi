@@ -580,12 +580,16 @@ export class NavigationService {
     };
   }
 
-  async getBreadcrumbData(path: string, pData?: PathData): Promise<BreadcrumbData> {
+  async getBreadcrumbData(
+    path: string,
+    pData?: PathData,
+    onResolve?: (data: BreadcrumbData) => void
+  ): Promise<BreadcrumbData> {
     const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
     const pathData = pData ?? (await this.getPathData(path));
     const nodesInPath = pathData?.nodesInPath || [];
     const navItems: BreadcrumbItem[] = [];
-    let showBreadcrumb;
+    let showBreadcrumb = !!breadcrumbConfig;
     let basePath = '';
 
     if (!breadcrumbConfig || (path === '' && nodesInPath?.[0].viewUrl)) {
@@ -601,7 +605,7 @@ export class NavigationService {
 
       if (node.showBreadcrumbs === false) {
         showBreadcrumb = false;
-      } else {
+      } else if (node.showBreadcrumbs === true) {
         showBreadcrumb = true;
       }
     });
@@ -622,18 +626,48 @@ export class NavigationService {
 
       if (route && this.previousBreadcrumbs[route]) {
         navItems.push(this.previousBreadcrumbs[route]);
-      } else if (node.label || node.pathSegment) {
-        let label = await RoutingHelpers.getNodeLabel(node, this.luigi);
-
-        if (!label) {
-          label = breadcrumbConfig.pendingItemLabel || '';
+      } else if (node.label || node.pathSegment || node.titleResolver) {
+        if (node.titleResolver) {
+          navItems.push({
+            label:
+              node.titleResolver.prerenderFallback && node.titleResolver.fallbackTitle
+                ? this.luigi.i18n().getTranslation(node.titleResolver.fallbackTitle)
+                : breadcrumbConfig.pendingItemLabel || '',
+            node: node,
+            route: route,
+            pending: true
+          });
+        } else {
+          const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+          if (label) {
+            navItems.push({ label: label, node: node, route: route });
+          }
         }
-
-        navItems.push({ label: label, node: node, route: route });
       }
     }
 
-    // check if route has been changed in the meantime - if yes, do nothing
+    const hasPendingItems = navItems.some((item) => item.pending);
+    const buildResult = (items: BreadcrumbItem[]): BreadcrumbData => ({
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      clearBeforeRender: breadcrumbConfig.clearBeforeRender,
+      items,
+      renderer: breadcrumbConfig.renderer,
+      selectedNode: pathData?.selectedNode || ({} as Node)
+    });
+
+    if (hasPendingItems && onResolve) {
+      this.resolveBreadcrumbTitles(
+        nodesInPath,
+        start,
+        currentPath,
+        hashRouting,
+        breadcrumbConfig,
+        buildResult,
+        onResolve
+      );
+      return buildResult(navItems);
+    }
+
     if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
       const breadcrumbCache: Record<string, BreadcrumbItem> = {};
 
@@ -652,13 +686,64 @@ export class NavigationService {
       this.previousBreadcrumbs = breadcrumbCache;
     }
 
-    return {
-      basePath: basePath.replace(/\/\/+/g, '/'),
-      clearBeforeRender: breadcrumbConfig.clearBeforeRender,
-      items: navItems,
-      renderer: breadcrumbConfig.renderer,
-      selectedNode: pathData?.selectedNode || ({} as Node)
-    };
+    return buildResult(navItems);
+  }
+
+  private async resolveBreadcrumbTitles(
+    nodesInPath: Node[],
+    start: number,
+    currentPath: { path: string },
+    hashRouting: boolean,
+    breadcrumbConfig: any,
+    buildResult: (items: BreadcrumbItem[]) => BreadcrumbData,
+    onResolve: (data: BreadcrumbData) => void
+  ): Promise<void> {
+    const resolvedItems: BreadcrumbItem[] = [];
+
+    for (let i = start; i < nodesInPath.length; i++) {
+      const node = nodesInPath[i];
+      const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
+
+      if (node.titleResolver) {
+        try {
+          const data = await this.extractDataFromPath(route || '');
+          const ctx = RoutingHelpers.substituteDynamicParamsInObject(
+            Object.assign({}, data.pathData.context, node.context),
+            data.pathData.pathParams || {}
+          );
+          const nodeTitleData = await NavigationHelpers.fetchNodeTitleData(node, ctx);
+          resolvedItems.push({ label: nodeTitleData.label, node, route });
+          continue;
+        } catch (e) {
+          // fallback to label resolution below
+        }
+      }
+
+      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      if (label) {
+        resolvedItems.push({ label, node, route });
+      }
+    }
+
+    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+      const breadcrumbCache: Record<string, BreadcrumbItem> = {};
+
+      if (resolvedItems.length > 1) {
+        resolvedItems[resolvedItems.length - 1].last = true;
+      } else if (breadcrumbConfig.autoHide) {
+        resolvedItems.length = 0;
+      }
+
+      resolvedItems.map((item: BreadcrumbItem) => {
+        if (item.route) {
+          breadcrumbCache[item.route] = item;
+        }
+      });
+
+      this.previousBreadcrumbs = breadcrumbCache;
+    }
+
+    onResolve(buildResult(resolvedItems));
   }
 
   /**

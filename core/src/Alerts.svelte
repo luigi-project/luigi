@@ -110,7 +110,11 @@
       role="alert"
       id="j2ALl423"
       data-testid="luigi-alert"
+      aria-labelledby="luigi-alert-sr-{al.settings.id} luigi-alert-text-{al.settings.id}"
     >
+      <span class="fd-message-strip__sr-only" id="luigi-alert-sr-{al.settings.id}"
+        >{alertTypeMap[al.settings.type]}</span
+      >
       <div class="fd-message-strip__icon-container" aria-hidden="true">
         <span
           class="sap-icon sap-icon--message-{alertTypeMap[al.settings.type]}"
@@ -119,7 +123,7 @@
           aria-hidden="true"
         />
       </div>
-      <p class="fd-message-strip__text">
+      <p class="fd-message-strip__text" id="luigi-alert-text-{al.settings.id}">
         {@html al.dataSanitized ? al.settings.text : ''}
       </p>
       <button

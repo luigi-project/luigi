@@ -8,6 +8,7 @@
 {#if node.statusBadge && node.statusBadge.label}
   <span class="fd-object-status fd-object-status--{type} fd-object-status--inverted">
     <span class="fd-object-status__text">{node.statusBadge.label}</span>
+    <span class="fd-object-status__sr-only">Object Status</span>
   </span>
 {/if}
 
