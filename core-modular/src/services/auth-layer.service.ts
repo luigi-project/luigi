@@ -201,7 +201,7 @@ class AuthLayerSvcClass {
     }
   }
 
-  broadcastAuthData(authData: any) {
+  broadcastAuthData(authData: any): void {
     const luigi = ConfigHelpers.getLuigi();
     const containerWrapper = luigi?.getEngine()?._connector?.getContainerWrapper();
     if (!containerWrapper) return;
