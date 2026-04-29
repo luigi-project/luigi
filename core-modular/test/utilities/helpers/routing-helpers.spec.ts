@@ -114,7 +114,7 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path?param1=value1&param2=value2';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath(true);
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
     expect(currentPath.path).toEqual('some/path');
     expect(currentPath.query).toEqual('param1=value1&param2=value2');
   });
@@ -122,9 +122,17 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath(true);
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
     expect(currentPath.path).toEqual('some/path');
     expect(currentPath.query).toEqual(undefined);
+  });
+
+  it('getCurrentPath should return the intent path and query without intentMapping', () => {
+    const pathRaw = '#/some/path?intent=value';
+    location.hash = pathRaw; // Simulate the hash in the URL
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
+    expect(currentPath.path).toEqual('some/path');
+    expect(currentPath.query).toEqual('intent=value');
   });
 
   it('prepareSearchParamsForClient should filter search params based on client permissions', () => {
@@ -739,6 +747,29 @@ describe('Routing-helpers', () => {
       const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
 
       expect(result).toBe('');
+    });
+  });
+
+  describe('hasIntent', () => {
+    it('checks against correct intent keyword', () => {
+      const path = '#?intent=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeTruthy();
+    });
+
+    it('check against incorrect intent keyword', () => {
+      const path = '#?int=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
+    });
+
+    it('check against undefined intent keyword', () => {
+      const path = undefined;
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
     });
   });
 });

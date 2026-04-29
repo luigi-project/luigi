@@ -617,7 +617,7 @@ export class NavigationService {
     }
 
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const start = breadcrumbConfig.omitRoot ? 2 : 1;
 
     for (let i = start; i < nodesInPath.length; i++) {
@@ -668,7 +668,7 @@ export class NavigationService {
       return buildResult(navItems);
     }
 
-    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
       const breadcrumbCache: Record<string, BreadcrumbItem> = {};
 
       if (navItems.length > 1) {
@@ -725,7 +725,7 @@ export class NavigationService {
       }
     }
 
-    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
       const breadcrumbCache: Record<string, BreadcrumbItem> = {};
 
       if (resolvedItems.length > 1) {
@@ -1102,7 +1102,7 @@ export class NavigationService {
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent, relative, nodeParams } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const fullPath = currentPath + (query ? '?' + query : '');
     const pathData = await this.getPathData(fullPath);
     const nodes = pathData.nodesInPath;
