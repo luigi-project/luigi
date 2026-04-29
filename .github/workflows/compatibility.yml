@@ -3,6 +3,8 @@ on:
     branches:
       - 'main'
 name: Backwards Compatibility Check
+permissions:
+  contents: read
 env:
   CYPRESS_CACHE_FOLDER: ~/cypress-binary-cache
   CYPRESS_DASHBOARD_RECORD_KEY: ${{ secrets.CYPRESS_DASHBOARD }}
@@ -14,8 +16,9 @@ jobs:
     with:
       buildcache_key: compat_buildcache-${{ github.ref }}
     secrets: inherit
-    permissions: 
+    permissions:
       actions: write
+      contents: read
 
   compatibility:
     name: Compatibility Tests
