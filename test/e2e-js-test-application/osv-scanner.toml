@@ -1,0 +1,7 @@
+[[IgnoredVulns]]
+id = "GHSA-grv7-fg5c-xmjg"
+reason = "Vulnerable code is not actually used"
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "live-server is intended for local development only"
