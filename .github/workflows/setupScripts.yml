@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 name: Test Setup Scripts
+permissions:
+  contents: read
 jobs:
   angular:
     runs-on: ubuntu-latest

@@ -1,5 +1,7 @@
 on: workflow_dispatch
 name: Publish Create React App (CRA) template
+permissions:
+  contents: read
 env:
   NPM_LUI_AUTH_TOKEN: ${{ secrets.NPM_LUI_AUTH_TOKEN }}
 

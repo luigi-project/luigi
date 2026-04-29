@@ -4,10 +4,12 @@ on:
       - '**'
     paths:
       - 'container/**'
-  pull_request: 
-    branches: 
+  pull_request:
+    branches:
       - 'main'
 name: Code Analysis
+permissions:
+  contents: read
 
 jobs:
   container_linting:
