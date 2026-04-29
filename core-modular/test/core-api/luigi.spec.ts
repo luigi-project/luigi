@@ -62,9 +62,7 @@ describe('Luigi Core API', () => {
             {
               pathSegment: 'child',
               titleResolver: { _cache: 'childCache' },
-              children: [
-                { pathSegment: 'grandchild', titleResolver: { _cache: 'grandchildCache' } }
-              ]
+              children: [{ pathSegment: 'grandchild', titleResolver: { _cache: 'grandchildCache' } }]
             }
           ]
         }
@@ -79,19 +77,14 @@ describe('Luigi Core API', () => {
     });
 
     it('should not fail when nodes have no titleResolver', () => {
-      const nodes = [
-        { pathSegment: 'home' },
-        { pathSegment: 'about', titleResolver: {} }
-      ];
+      const nodes = [{ pathSegment: 'home' }, { pathSegment: 'about', titleResolver: {} }];
       luigi.config = { navigation: { nodes } };
 
       expect(() => luigi.clearNavigationCache()).not.toThrow();
     });
 
     it('should not fail when nodes have no children', () => {
-      const nodes = [
-        { pathSegment: 'home', titleResolver: { _cache: 'value' } }
-      ];
+      const nodes = [{ pathSegment: 'home', titleResolver: { _cache: 'value' } }];
       luigi.config = { navigation: { nodes } };
 
       expect(() => luigi.clearNavigationCache()).not.toThrow();
