@@ -23,10 +23,10 @@ jobs:
           node-version: '24.x'
 
       - name: Build Luigi Client
-        run: cd ./client && npm i && npm run bundle
+        run: cd ./client && npm ci && npm run bundle
 
       - name: Run unit tests
-        run: cd ./container && npm i && npm run test
+        run: cd ./container && npm ci && npm run test
 
       - name: Run e2e tests
         run: bash ./container/run-container-e2e.sh coverage || exit 1
