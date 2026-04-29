@@ -2622,10 +2622,6 @@
     background-clip: padding-box;
   }
 
-  :global(.fd-shellbar__logo) {
-    margin-right: 0px;
-  }
-
   :global(.fd-menu__link) {
     text-decoration: none; //Remove underline from links in fd-menu
     border-radius: 0; //Remove border radius from links inside fd-menu

@@ -185,6 +185,12 @@ export const UIModule = {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
+      const uiConnector = UIModule.luigi.getEngine()._connector;
+      uiConnector?.renderBreadcrumbs(
+        await UIModule.navService.getBreadcrumbData(croute.path, undefined, (resolved) => {
+          uiConnector?.renderBreadcrumbs(resolved);
+        })
+      );
     }
     if (
       noScopes ||
