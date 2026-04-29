@@ -86,7 +86,7 @@ export class LuigiAuthClass {
     if (!ConfigHelpers.getLuigi()?.initialized) {
       console.warn(
         'Luigi Core is not initialized yet. Consider moving your code to the luigiAfterInit lifecycle hook. ' +
-        'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
+          'Documentation: https://docs.luigi-project.io/docs/lifecycle-hooks'
       );
     }
     return {
@@ -119,7 +119,7 @@ export class LuigiAuthClass {
        */
       setAuthData: (data: any) => {
         AuthStoreSvc.setAuthData(data);
-        AuthLayerSvc.broadcastAuthData(data); 
+        AuthLayerSvc.broadcastAuthData(data);
       },
       /**
        * Clears authorization data from store
