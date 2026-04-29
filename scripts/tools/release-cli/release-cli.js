@@ -367,13 +367,30 @@ function categorizePullRequests(pullRequests, lastRelease) {
       ];
       const bloginput = await prompts(blogQuestions);
       if (bloginput.generateBlog) {
-        logHeadline('\nGenerating blog post...');
-        const blogScript = path.resolve(__dirname, 'generate-blog-post.sh');
-        try {
-          require('child_process').execSync(`bash ${blogScript}`, { cwd: base, stdio: [0, 1, 2] });
-          blogPostGenerated = true;
-        } catch (e) {
-          logWarning('Blog post generation failed. Continue with the release manually.');
+        const authorQuestion = [
+          {
+            type: 'text',
+            name: 'authorName',
+            message: 'Author name for the blog post:',
+            validate: v => v.trim().length > 0 || 'Author name is required'
+          }
+        ];
+        const authorInput = await prompts(authorQuestion);
+        if (!authorInput.authorName) {
+          logWarning('No author provided. Skipping blog post generation.');
+        } else {
+          logHeadline('\nGenerating blog post...');
+          const blogScript = path.resolve(__dirname, 'generate-blog-post.sh');
+          try {
+            require('child_process').execSync(`bash ${blogScript}`, {
+              cwd: base,
+              stdio: [0, 1, 2],
+              env: { ...process.env, BLOG_AUTHOR: authorInput.authorName.trim() }
+            });
+            blogPostGenerated = true;
+          } catch (e) {
+            logWarning('Blog post generation failed. Continue with the release manually.');
+          }
         }
       }
     }
