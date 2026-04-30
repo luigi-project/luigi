@@ -289,6 +289,7 @@ function categorizePullRequests(pullRequests, lastRelease) {
   ];
 
   const input = await prompts(questions);
+  let blogPostGenerated = false;
 
   /**
    * PACKAGE VERSIONS
@@ -355,6 +356,43 @@ function categorizePullRequests(pullRequests, lastRelease) {
     const changeloginput = await prompts(changelogQuestions);
     if (changeloginput.prepend) {
       addToChangelog(versionText, changelog, lastline);
+
+      const blogQuestions = [
+        {
+          type: 'confirm',
+          name: 'generateBlog',
+          message: 'Generate blog post with Claude?',
+          initial: true
+        }
+      ];
+      const bloginput = await prompts(blogQuestions);
+      if (bloginput.generateBlog) {
+        const authorQuestion = [
+          {
+            type: 'text',
+            name: 'authorName',
+            message: 'Author name for the blog post:',
+            validate: v => v.trim().length > 0 || 'Author name is required'
+          }
+        ];
+        const authorInput = await prompts(authorQuestion);
+        if (!authorInput.authorName) {
+          logWarning('No author provided. Skipping blog post generation.');
+        } else {
+          logHeadline('\nGenerating blog post...');
+          const blogScript = path.resolve(__dirname, 'generate-blog-post.sh');
+          try {
+            require('child_process').execSync(`bash ${blogScript}`, {
+              cwd: base,
+              stdio: [0, 1, 2],
+              env: { ...process.env, BLOG_AUTHOR: authorInput.authorName.trim() }
+            });
+            blogPostGenerated = true;
+          } catch (e) {
+            logWarning('Blog post generation failed. Continue with the release manually.');
+          }
+        }
+      }
     }
   } // end if changelog
 
@@ -380,8 +418,8 @@ function categorizePullRequests(pullRequests, lastRelease) {
       color.bold(`\nThen continue with the following steps:
     1. Run: ./tools/release-cli/replaceInAllFiles.sh "NEXTRELEASE" "${input.version}"
     2. Check and modify CHANGELOG.md entries
-    3. Add and commit changed files
-    4. Follow the rest of our internal release documentation
+    ${blogPostGenerated ? '3. Review and adjust the generated blog post in blog/\n    4.' : '3.'} Add and commit changed files
+    ${blogPostGenerated ? '5.' : '4.'} Follow the rest of our internal release documentation
     `)
     );
   }
