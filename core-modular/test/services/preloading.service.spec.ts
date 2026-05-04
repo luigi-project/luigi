@@ -130,9 +130,7 @@ describe('PreloadingService', () => {
 
       preloadingService.preloadViewGroups(3);
 
-      const newChildren = [...containerWrapper.children].filter(
-        (el: any) => el.viewGroup === 'vg1'
-      );
+      const newChildren = [...containerWrapper.children].filter((el: any) => el.viewGroup === 'vg1');
       expect(newChildren.length).toBe(0);
     });
 

@@ -72,9 +72,12 @@ export class PreloadingService {
 
   preload(backgroundMfeOnly?: boolean): void {
     if (this.shouldPreload) {
-      setTimeout(() => {
-        this.preloadViewGroups(this.preloadBatchSize, !!backgroundMfeOnly);
-      }, backgroundMfeOnly ? 1 : 0);
+      setTimeout(
+        () => {
+          this.preloadViewGroups(this.preloadBatchSize, !!backgroundMfeOnly);
+        },
+        backgroundMfeOnly ? 1 : 0
+      );
     }
     this.shouldPreload = true;
   }
