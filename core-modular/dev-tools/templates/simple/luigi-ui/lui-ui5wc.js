@@ -605,20 +605,25 @@ const connector = {
   },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
+    let headerTitle;
     dialog.classList.add('lui-dialog');
     if (modalSettings.isDrawer) {
       dialog.classList.add('lui-drawer');
+      headerTitle = modalSettings?.header?.title || '';
     } else {
       dialog.classList.add('lui-modal');
+      headerTitle = modalSettings?.title || '';
     }
-    dialog.setAttribute('header-text', modalSettings?.title);
+    dialog.setAttribute('header-text', headerTitle);
     setDialogSize(dialog, modalSettings);
-    dialog.appendChild(lc);
+
+    const loader = document.createElement('ui5-busy-indicator');
+    loader.classList.add('lui-dialog-busy-indicator');
 
     const bar = document.createElement('ui5-bar');
     bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
-    dialog.appendChild(bar);
+    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${headerTitle}</ui5-title>`;
+
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
     btn.onclick = (e) => {
@@ -633,6 +638,9 @@ const connector = {
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);
 
+    dialog.appendChild(bar);
+    dialog.appendChild(loader);
+    dialog.appendChild(lc);
     document.body.appendChild(dialog);
 
     if (onCloseRequest) {
@@ -643,7 +651,6 @@ const connector = {
     }
 
     dialog.open = true;
-
     updateOverlays();
   },
 
@@ -914,19 +921,23 @@ const connector = {
     document.body.removeChild(dialog);
   },
 
-  showLoadingIndicator: () => {
-    const loadingIndicator = document.querySelector('ui5-busy-indicator');
+  showLoadingIndicator: (parentNode) => {
+    const wrapper = parentNode ? parentNode : document;
+    const loadingIndicator = wrapper.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
       loadingIndicator.active = true;
     }
   },
 
-  hideLoadingIndicator: () => {
-    const loadingIndicator = document.querySelector('ui5-busy-indicator');
+  hideLoadingIndicator: (parentNode) => {
+    const wrapper = parentNode ? parentNode : document;
+    const loadingIndicator = wrapper.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
-      loadingIndicator.active = false;
+      setTimeout(() => {
+        loadingIndicator.active = false;
+      }, 2000);
     }
   },
 
