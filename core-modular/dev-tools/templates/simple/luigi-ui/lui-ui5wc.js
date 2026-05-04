@@ -605,13 +605,16 @@ const connector = {
   },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
+    let headerTitle;
     dialog.classList.add('lui-dialog');
     if (modalSettings.isDrawer) {
       dialog.classList.add('lui-drawer');
+      headerTitle = modalSettings?.header?.title || '';
     } else {
       dialog.classList.add('lui-modal');
+      headerTitle = modalSettings?.title || '';
     }
-    dialog.setAttribute('header-text', modalSettings?.title);
+    dialog.setAttribute('header-text', headerTitle);
     setDialogSize(dialog, modalSettings);
 
     const loader = document.createElement('ui5-busy-indicator');
@@ -619,7 +622,7 @@ const connector = {
 
     const bar = document.createElement('ui5-bar');
     bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${modalSettings?.title}</ui5-title>`;
+    bar.innerHTML = `<ui5-title class="lui-modal-title" level="H5" slot="startContent">${headerTitle}</ui5-title>`;
 
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
