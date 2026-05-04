@@ -69,7 +69,8 @@ describe('Auth', () => {
 
     jest.spyOn(ConfigHelpers, 'getLuigi').mockImplementation(() => {
       return {
-        initialized: true
+        initialized: true,
+        getEngine: () => undefined
       } as unknown as Luigi;
     });
     store = LuigiAuth.store;
