@@ -136,7 +136,12 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label' },
+        {
+          selectedNode: {
+            children: [],
+            label: 'Node Label',
+          },
+          title: 'Node Label' },
         undefined
       );
     });
@@ -152,7 +157,13 @@ describe('Navigation', () => {
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', {
+        selectedNode: {
+          children: [],
+          label: 'Node Label',
+        },
+        title: 'Modal Title',
+      });
     });
   });
 
@@ -167,7 +178,16 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { header: { title: 'Node Label' }, overlap: true },
+        {
+          header: {
+            title: 'Node Label',
+          },
+          overlap: true,
+          selectedNode: {
+            children: [],
+            label: 'Node Label',
+          },
+        },
         undefined
       );
     });
