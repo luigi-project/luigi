@@ -74,6 +74,7 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node?.label;
     }
+    settings.selectedNode = node;
     // Append modal data to URL only if configured and if no other modals are open
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
       this.routingService.appendModalDataToUrl(normalizedPath, settings);
@@ -87,6 +88,7 @@ export class Navigation {
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = drawerSettings || {};
+    settings.selectedNode = node;
     if (!settings.header?.title) {
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
       const title = label || '';

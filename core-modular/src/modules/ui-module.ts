@@ -218,7 +218,9 @@ export const UIModule = {
     const userSettings =
       hasUserSettings && currentNode.userSettingsGroup ? userSettingGroups[currentNode.userSettingsGroup] : null;
     const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
-    luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+    if (currentNode.loadingIndicator?.hideAutomatically !== false) {
+      luigi.getEngine()._connector?.hideLoadingIndicator(containerWrapper);
+    }
     const nodeParams = luigiParams?.nodeParams || {};
     const pathParams = luigiParams?.pathParams || {};
     const searchParams = luigiParams?.searchParams || {};

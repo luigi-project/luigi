@@ -115,6 +115,7 @@ export interface Node {
   label?: string;
   loadingIndicator?: {
     enabled: boolean;
+    hideAutomatically?: boolean;
   };
   navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
@@ -203,16 +204,18 @@ export interface DrawerSettings {
   backdrop?: boolean;
   header?: any;
   overlap?: boolean;
+  selectedNode?: Node;
   size?: 'l' | 'm' | 's' | 'xs';
 }
 
 export interface ModalSettings {
-  size?: 'fullscreen' | 'l' | 'm' | 's';
-  width?: string;
-  height?: string;
-  title?: string;
   closebtn_data_testid?: string;
+  height?: string;
   keepPrevious?: boolean;
+  selectedNode?: Node;
+  size?: 'fullscreen' | 'l' | 'm' | 's';
+  title?: string;
+  width?: string;
 }
 
 export interface ProductSwitcher {
