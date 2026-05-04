@@ -142,7 +142,7 @@ export class RoutingService {
       this.currentRoute.node = currentNode;
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
+      await UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
     }
   }
 

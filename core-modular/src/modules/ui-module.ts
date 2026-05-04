@@ -1,6 +1,7 @@
 import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
@@ -138,6 +139,10 @@ export const UIModule = {
     UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
+    const preloadingService = serviceRegistry.get(PreloadingService);
+    preloadingService.shouldPreload = true;
+    preloadingService.preload(true);
+    preloadingService.shouldPreload = false;
   },
   update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
@@ -245,6 +250,12 @@ export const UIModule = {
           }
         }
       });
+
+      if (viewGroupContainer && viewGroupContainer._luigiPreloading) {
+        viewGroupContainer._luigiPreloading = false;
+        serviceRegistry.get(PreloadingService).viewGroupLoaded(viewGroupContainer);
+      }
+
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
