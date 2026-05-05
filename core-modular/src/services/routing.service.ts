@@ -62,17 +62,17 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true), withoutSync, preventContextUpdate);
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true));
     } else {
       window.addEventListener('popstate', (ev) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync, preventContextUpdate);
+        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi), withoutSync, preventContextUpdate);
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath());
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi));
     }
   }
 
@@ -524,7 +524,7 @@ export class RoutingService {
     if (redirectPathFromNotFoundHandler) {
       if (redirectResult.keepURL) {
         const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
-        const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+        const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
 
         currentPath.path = redirectPathFromNotFoundHandler;
 

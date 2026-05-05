@@ -121,7 +121,7 @@ export const RoutingHelpers = {
 
     if (node.pathSegment && node.pathSegment.indexOf(':') === 0) {
       const hash = luigi.getConfig().routing?.useHashRouting;
-      const route = RoutingHelpers.mapPathToNode(RoutingHelpers.getCurrentPath(hash)?.path, node) || '';
+      const route = RoutingHelpers.mapPathToNode(RoutingHelpers.getCurrentPath(luigi, hash)?.path, node) || '';
       const data = await luigi.navigation().navService.extractDataFromPath(route);
 
       return RoutingHelpers.getDynamicNodeValue(node, data.pathData.pathParams) || '';
@@ -199,16 +199,155 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Checks if given path contains intent navigation special syntax
+   * @param {string} path - path to be checked
+   */
+  hasIntent(path: string): boolean {
+    return !!path && path.toLowerCase().includes('#?intent=');
+  },
+
+  /**
+   * This function takes an intentLink and parses it conforming certain limitations in characters usage.
+   * Limitations include:
+   *  - `semanticObject` allows only alphanumeric characters
+   *  - `action` allows alphanumeric characters and the '_' sign
+   *
+   * Example of resulting output:
+   * ```
+   *  {
+   *    semanticObject: "Sales",
+   *    action: "order",
+   *    params: {param1: "value1",param2: "value2"}
+   *  };
+   * ```
+   * @param {string} intentLink - the intent link represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
+   */
+  getIntentObject(intentLink: string): object | undefined {
+    const intentParams = intentLink.split('?intent=')[1];
+
+    if (intentParams) {
+      const intentObj = intentParams.split('?');
+      const semanticObjectAndAction = intentObj[0].split('-');
+      const params = Object.fromEntries(new URLSearchParams(intentObj[1]).entries());
+
+      return {
+        semanticObject: semanticObjectAndAction[0],
+        action: semanticObjectAndAction[1],
+        params
+      };
+    }
+  },
+
+  /**
+   * This function compares the intentLink parameter with the configuration intentMapping
+   * and returns the path segment that is matched together with the parameters, if any
+   *
+   * Example:
+   *
+   * For intentLink = `#?intent=Sales-order?foo=bar`
+   * and Luigi configuration:
+   * ```
+   * intentMapping: [{
+   *   semanticObject: 'Sales',
+   *   action: 'order',
+   *   pathSegment: '/projects/pr2/order'
+   * }]
+   *
+   * ```
+   * the given intentLink is matched with the configuration's same semanticObject and action,
+   * resulting in pathSegment `/projects/pr2/order` being returned. The parameter is also added in
+   * this case resulting in: `/projects/pr2/order?~foo=bar`
+   *
+   * Or for external intent links: intentLink = `#?intent=External-external`
+   * and Luigi configuration:
+   * ```
+   * intentMapping: [{
+   *   semanticObject: 'External',
+   *   action: 'view',
+   *   externalLink: { url: 'https://www.sap.com', openInNewTab: true }
+   * }]
+   * ```
+   * The resulting will be returned from this function:
+   * ```
+   * {
+   *   url: 'https://www.sap.com',
+   *   openInNewTab: true,
+   *   external: true
+   * }
+   * ```
+   * @param {string} intentLink - the intentLink represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
+   * @param luigi - Luigi instance used to access configuration values
+   */
+  getIntentPath(intentLink: string, luigi: Luigi): boolean | string | object {
+    // TODO implement `intentMapping` in https://github.com/luigi-project/luigi/issues/4917
+
+    return false;
+  },
+
+  /**
+   * This function takes a path which contains dynamic parameters and a list parameters and replaces the dynamic parameters
+   * with the given parameters if any. The input path remains unchanged if the parameters list
+   * does not contain the respective dynamic parameter name.
+   * e.g.:
+   * Assume either of these two calls are made:
+   * 1. `linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})`
+   * 2. `linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')`
+   * For both 1. and 2., the following dynamic input path: `/projects/:project/details/:user`
+   * is resolved through this method to `/projects/pr2/details/john`
+   *
+   * @param {string} path - the path containing the potential dynamic parameter
+   * @param {Object} parameters - a list of objects consisting of passed parameters
+   */
+  resolveDynamicIntentPath(path: string, parameters: object): string {
+    if (!parameters) {
+      return path;
+    }
+
+    let newPath = path;
+
+    for (const [key, value] of Object.entries(parameters)) {
+      // regular expression to detect dynamic parameter patterns:
+      // /some/path/:param1/example/:param2/sample
+      // /some/path/example/:param1
+      const regex = new RegExp('/:' + key + '(/|$)', 'g');
+
+      newPath = newPath.replace(regex, `/${value}/`);
+    }
+
+    // strip trailing slash
+    newPath = newPath.replace(/\/$/, '');
+
+    return newPath;
+  },
+
+  /**
    * Retrieves the current path and query string from the browser's location hash.
    *
+   * @param hashRouting - true if hash routing is active, false if path routing is active
+   * @param luigi - Luigi instance used to access configuration values
    * @returns An object containing the normalized path and the query string.
    * @remarks
    * - The path is normalized using `NavigationHelpers.normalizePath`.
    * - The query string is extracted from the portion after the '?' in the hash.
    * - If there is no query string, `query` will be `undefined`.
    */
-  getCurrentPath(hashRouting?: boolean): { path: string; query: string } {
-    //TODO intentNavigation implementation
+  getCurrentPath(luigi: Luigi, hashRouting?: boolean): { path: string; query: string } {
+    if (/\?intent=/i.test(location.hash)) {
+      const hash = location.hash.replace('#/#', '').replace('#', '');
+      const intentPath = RoutingHelpers.getIntentPath(hash, luigi);
+
+      // if intent faulty or illegal then skip
+      if (intentPath && typeof intentPath === 'string') {
+        const isReplaceRouteActivated = luigi?.getConfigValue('routing.replaceIntentRoute');
+
+        if (isReplaceRouteActivated) {
+          history.replaceState((window as any).state, '', intentPath);
+        }
+
+        return { path: intentPath, query: location.search };
+      }
+    }
+
     if (hashRouting) {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
       const [path, query] = pathRaw.split('?');
@@ -334,7 +473,7 @@ export const RoutingHelpers = {
 
   /**
    * Get the query param separator which is used with hashRouting
-   * Default: :
+   * Default:
    * @example /home?modal=(urlencoded)/some-modal?modalParams=(urlencoded){...}&otherParam=hmhm
    * @returns the first query param separator (like ? for path routing)
    */
