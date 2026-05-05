@@ -1,0 +1,7 @@
+[[IgnoredVulns]]
+id = "GHSA-5c6j-r48x-rmvq"
+reason = "False positive: copy-webpack-plugin and oidc-client use serialize-javascript for build cache metadata only. Build-time only, never in production."
+
+[[IgnoredVulns]]
+id = "GHSA-qj8w-gfj5-8c6v"
+reason = "False positive: copy-webpack-plugin and oidc-client use serialize-javascript for build cache metadata only. Build-time only, never in production."

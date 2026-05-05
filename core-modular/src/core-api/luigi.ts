@@ -14,9 +14,12 @@ import { serviceRegistry } from '../services/service-registry';
 import { Routing } from './routing';
 import { Theming } from './theming';
 import { UX } from './ux';
+import { CustomMessages } from './custom-messages';
+import type { Node } from '../types/navigation';
 
 export class Luigi {
   config: any;
+  _customMessages?: CustomMessages;
   _store: any;
   _featureToggles?: FeatureToggles;
   _i18n!: i18nService;
@@ -91,9 +94,22 @@ export class Luigi {
    * @example
    * Luigi.clearNavigationCache();
    */
-  clearNavigationCache() {
+  clearNavigationCache(): void {
     serviceRegistry.get(NodeDataManagementService).deleteCache();
-    //TODO clear title resolver cache
+    const clearTitleResolverCache = (nodes: Node[]) => {
+      if (nodes && nodes.forEach) {
+        nodes.forEach((node: Node) => {
+          if (node.titleResolver && node.titleResolver._cache) {
+            node.titleResolver._cache = undefined;
+          }
+          if (node.children) {
+            clearTitleResolverCache(node.children);
+          }
+        });
+      }
+    };
+
+    clearTitleResolverCache(this.getConfig().navigation.nodes);
   }
 
   /**
@@ -144,6 +160,13 @@ export class Luigi {
     }
     this.configChanged();
   }
+
+  customMessages = (): CustomMessages => {
+    if (!this._customMessages) {
+      this._customMessages = new CustomMessages(this);
+    }
+    return this._customMessages;
+  };
 
   i18n = (): i18nService => {
     if (!this._i18n) {

@@ -1,5 +1,7 @@
 on: workflow_dispatch
-name: Publish Headless Release   
+name: Publish Headless Release
+permissions:
+  contents: read   
 env:
   NPM_LUI_AUTH_TOKEN: ${{ secrets.NPM_LUI_AUTH_TOKEN }}
 
@@ -7,8 +9,9 @@ jobs:
   prepare: 
     uses: ./.github/workflows/prepare.yml
     secrets: inherit
-    permissions: 
+    permissions:
       actions: write
+      contents: read
     with:
       buildcache_key: buildcache-headless-${{ github.ref }}
 
@@ -17,11 +20,11 @@ jobs:
     needs: prepare
     if: github.repository == 'luigi-project/luigi'
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build

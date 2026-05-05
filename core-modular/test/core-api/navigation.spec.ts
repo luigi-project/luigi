@@ -3,7 +3,7 @@ import { ModalService } from '../../src/services/modal.service';
 import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
-import type { NavigationRequestParams, Node } from '../../src/types/navigation';
+import type { DrawerSettings, NavigationRequestParams, Node } from '../../src/types/navigation';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
 describe('Navigation', () => {
@@ -155,6 +155,7 @@ describe('Navigation', () => {
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
     });
   });
+
   describe('openAsDrawer', () => {
     it('should set drawer title from node label if not provided', async () => {
       const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
@@ -166,14 +167,15 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label' },
+        { header: { title: 'Node Label' }, overlap: true },
         undefined
       );
     });
+
     it('should open drawer with provided settings', async () => {
       const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
       await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
-      const drawerSettings = { title: 'Custom Drawer Title' };
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' } };
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
 
       await navigation.openAsDrawer('/drawer/path', drawerSettings);
@@ -189,7 +191,7 @@ describe('Navigation', () => {
     it('should not open drawer, path does not exist', async () => {
       const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
       await mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] }); // FIX
-      const drawerSettings = { title: 'Custom Drawer Title' };
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' } };
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(false);
 
       await navigation.openAsDrawer('/drawer/path', drawerSettings);

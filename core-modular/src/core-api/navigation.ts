@@ -3,6 +3,7 @@ import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import type {
+  DrawerSettings,
   ModalSettings,
   NavigationOptions,
   NavigationRequestParams,
@@ -80,14 +81,23 @@ export class Navigation {
     this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
   };
 
-  openAsDrawer = async (path: string, drawerSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openAsDrawer = async (path: string, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = drawerSettings || {};
-    if (!settings.title) {
-      settings.title = node?.label || '';
+    if (!settings.header?.title) {
+      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      const title = label || '';
+      if (!settings.header) {
+        settings.header = { title };
+      } else {
+        settings.header.title = title;
+      }
+    }
+    if (settings.overlap === undefined) {
+      settings.overlap = true;
     }
     this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
   };

@@ -7,10 +7,11 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { ModalSettings, Node } from '../types/navigation';
+import type { DrawerSettings, ModalSettings, Node } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
 const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -62,6 +63,7 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
+    lc.authData = AuthHelpers.getStoredAuthData();
     lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = nodeParams;
@@ -183,9 +185,12 @@ export const UIModule = {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
-      UIModule.luigi
-        .getEngine()
-        ._connector?.renderBreadcrumbs(await UIModule.navService.getBreadcrumbData(croute.path));
+      const uiConnector = UIModule.luigi.getEngine()._connector;
+      uiConnector?.renderBreadcrumbs(
+        await UIModule.navService.getBreadcrumbData(croute.path, undefined, (resolved) => {
+          uiConnector?.renderBreadcrumbs(resolved);
+        })
+      );
     }
     if (
       noScopes ||
@@ -361,7 +366,7 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
     const lc = await createContainer(node, luigi);
     UIModule.drawerContainer = lc;
     luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
