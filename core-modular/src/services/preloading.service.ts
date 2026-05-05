@@ -25,18 +25,11 @@ export class PreloadingService {
    */
   preloadViewGroups(batchSize: number = 3, backgroundMfeOnly?: boolean): void {
     const preloadViewGroupsSetting = this.luigi.getConfigValue('navigation.preloadViewGroups');
-    if (preloadViewGroupsSetting === false) {
-      return;
-    }
-
     const vgSettings: Record<string, ViewGroupSettings> | undefined =
       this.luigi.getConfigValue('navigation.viewGroupSettings');
-    if (!vgSettings) {
-      return;
-    }
-
     const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
-    if (!containerWrapper) {
+
+    if (preloadViewGroupsSetting === false || !vgSettings || !containerWrapper) {
       return;
     }
 
