@@ -12,7 +12,10 @@
     "@luigi-project/client": "^2.27.0",
     "@luigi-project/testing-utilities": "^2.27.0",
     "cross-spawn": "7.0.6",
-    "cypress": "15.10.0",
+    "cypress": "15.14.2",
     "fundamental-styles": "0.26.5"
+  },
+  "overrides": {
+    "@cypress/request": "4.0.0"
   }
 }
