@@ -122,69 +122,6 @@
           }
         }
       }
-    },
-    "luigisample-e2e": {
-      "root": "e2e",
-      "sourceRoot": "e2e",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "luigisample-e2e:serve",
-            "watch": true,
-            "headless": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "luigisample-e2e:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
-          }
-        },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "luigisample-e2e:serve",
-            "configFile": "e2e/cypress.config.ts"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "luigisample-e2e:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": false,
-            "configFile": "e2e/cypress.config.ts"
-          }
-        },
-        "ct": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "luigisample-e2e:serve",
-            "watch": true,
-            "headless": false,
-            "testingType": "component"
-          },
-          "configurations": {
-            "development": {
-              "devServerTarget": "luigisample-e2e:serve:development"
-            }
-          }
-        }
-      }
     }
   },
   "schematics": {
@@ -202,7 +139,6 @@
       "enabled": false
     },
     "schematicCollections": [
-      "@cypress/schematic",
       "@schematics/angular",
       "angular-eslint"
     ]
