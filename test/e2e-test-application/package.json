@@ -84,6 +84,9 @@
     "webpack": "5.106.1",
     "webpack-cli": "5.1.4"
   },
+  "overrides": {
+    "@cypress/request": "4.0.0"
+  },
   "engines": {
     "node": ">=20.19.0"
   }
