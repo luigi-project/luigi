@@ -9,17 +9,17 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular/build:application",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack-extra.config.js"
-            },
             "preserveSymlinks": true,
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
             "index": "src/sampleapp.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["src/polyfills.ts"],
             "assets": [
               "src/assets",
               "src/index.html",
@@ -61,11 +61,8 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": true,
-              "buildOptimizer": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -76,7 +73,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "luigisample:build"
           },
