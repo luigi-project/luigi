@@ -9,11 +9,8 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack-extra.config.js"
-            },
             "preserveSymlinks": true,
             "outputPath": "dist",
             "index": "src/sampleapp.html",
@@ -76,7 +73,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "luigisample:build"
           },
