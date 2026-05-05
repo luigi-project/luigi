@@ -6,13 +6,16 @@ on:
         required: true
 
 name: Common
+permissions:
+  contents: read
 env:
   CYPRESS_CACHE_FOLDER: ~/cypress-binary-cache
 
 jobs:
   clear_cache:
-    permissions: 
+    permissions:
       actions: write
+      contents: read
     name: Clear Caches
     runs-on: ubuntu-latest
     continue-on-error: true

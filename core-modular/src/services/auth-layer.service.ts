@@ -5,6 +5,7 @@ import { LuigiAuth } from '../core-api/auth';
 import { ConfigHelpers } from '../utilities/helpers/config-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { AuthStoreSvc } from './auth-store.service';
+import { UIModule } from '../modules/ui-module';
 
 class AuthLayerSvcClass {
   idpProviderInstance: any;
@@ -197,6 +198,22 @@ class AuthLayerSvcClass {
   resetExpirationChecks() {
     if (this.idpProviderInstance && GenericHelpers.isFunction(this.idpProviderInstance.resetExpirationChecks)) {
       this.idpProviderInstance.resetExpirationChecks();
+    }
+  }
+
+  broadcastAuthData(authData: any): void {
+    const luigi = ConfigHelpers.getLuigi();
+    const containerWrapper = luigi?.getEngine()?._connector?.getContainerWrapper();
+    if (!containerWrapper) return;
+    for (const element of containerWrapper.childNodes as any) {
+      if (element.tagName?.startsWith('LUIGI-')) {
+        element.setAttribute('auth-data', JSON.stringify(authData));
+      }
+    }
+
+    UIModule.modalContainer?.forEach((el: any) => el.setAttribute('auth-data', JSON.stringify(authData)));
+    if (UIModule.drawerContainer) {
+      UIModule.drawerContainer.setAttribute('auth-data', JSON.stringify(authData));
     }
   }
 }

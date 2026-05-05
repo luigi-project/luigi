@@ -1,5 +1,7 @@
 on: workflow_dispatch
 name: Publish Auth OIDC PKCE Plugin Release
+permissions:
+  contents: read
 env:
   NPM_LUI_AUTH_TOKEN: ${{ secrets.NPM_LUI_AUTH_TOKEN }}
 
@@ -7,8 +9,9 @@ jobs:
   prepare:
     uses: ./.github/workflows/prepare.yml
     secrets: inherit
-    permissions: 
+    permissions:
       actions: write
+      contents: read
     with:
       buildcache_key: buildcache-auth-oidc-pkce-plugin-release-${{ github.ref }}
 
