@@ -50,7 +50,6 @@
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
     "@babel/preset-env": "7.29.2",
     "@babel/register": "7.28.6",
-    "@cypress/schematic": "5.0.0",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/jasmine": "4.0.3",
     "@types/jasminewd2": "2.0.13",
@@ -60,7 +59,7 @@
     "babel-preset-minify": "0.5.2",
     "concurrently": "8.2.2",
     "copy-webpack-plugin": "14.0.0",
-    "cypress": "15.13.1",
+    "cypress": "15.14.2",
     "cypress-plugin-tab": "1.0.5",
     "engine.io": "6.6.6",
     "esbuild": "0.27.7",
@@ -83,8 +82,10 @@
     "typescript-eslint": "8.53.0",
     "vite": "7.3.2",
     "webpack": "5.106.1",
-    "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.3"
+    "webpack-cli": "5.1.4"
+  },
+  "overrides": {
+    "@cypress/request": "4.0.0"
   },
   "engines": {
     "node": ">=20.19.0"
