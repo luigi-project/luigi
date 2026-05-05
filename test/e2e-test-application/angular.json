@@ -12,7 +12,10 @@
           "builder": "@angular/build:application",
           "options": {
             "preserveSymlinks": true,
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
             "index": "src/sampleapp.html",
             "browser": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
