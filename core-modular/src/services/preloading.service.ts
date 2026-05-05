@@ -81,6 +81,8 @@ export class PreloadingService {
    * @param containerWrapper - The DOM element to append the hidden container to.
    */
   preloadContainerOnBackground(settings: ViewGroupSettings, name: string, containerWrapper: HTMLElement): void {
+    //TODO remove before merge to main
+    console.log(`[preload] loading view group "${name}" - ${settings.preloadUrl}`);
     const lc = document.createElement('luigi-container') as any;
     lc.setAttribute('lui_container', 'true');
     lc.viewurl = settings.preloadUrl;
@@ -134,6 +136,8 @@ export class PreloadingService {
         batchSize = 2;
       }
       this.preloadBatchSize = batchSize;
+      //TODO remove before merge to main
+      console.log(`[preload] "${container.viewGroup}" loaded in ${preloadTime}ms → next batchSize: ${batchSize}`);
 
       setTimeout(
         () => {
