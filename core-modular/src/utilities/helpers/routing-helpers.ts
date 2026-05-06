@@ -222,7 +222,7 @@ export const RoutingHelpers = {
    * ```
    * @param {string} intentLink - the intent link represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
    */
-  getIntentObject(intentLink: string): object | undefined {
+  getIntentObject(intentLink: string): Record<string, any> | undefined {
     const intentParams = intentLink.split('?intent=')[1];
 
     if (intentParams) {
@@ -278,8 +278,55 @@ export const RoutingHelpers = {
    * @param {string} intentLink - the intentLink represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
    * @param luigi - Luigi instance used to access configuration values
    */
-  getIntentPath(intentLink: string, luigi: Luigi): boolean | string | object {
-    // TODO implement `intentMapping` in https://github.com/luigi-project/luigi/issues/4917
+  getIntentPath(intentLink: string, luigi: Luigi): boolean | string | Record<string, any> {
+    const mappings = luigi.getConfigValue('navigation.intentMapping');
+
+    if (mappings && mappings.length > 0) {
+      const caseInsensitiveLink = intentLink.replace(/\?intent=/i, '?intent=');
+      const intentObject = this.getIntentObject(caseInsensitiveLink);
+
+      if (intentObject) {
+        let realPath = mappings.find(
+          (item: any) => item.semanticObject === intentObject.semanticObject && item.action === intentObject.action
+        );
+
+        if (!realPath) {
+          return false;
+        }
+
+        // set 'external' boolean to make it easier to identify new tab links
+        if (realPath.externalLink) {
+          return {
+            ...realPath.externalLink,
+            external: true
+          };
+        }
+
+        realPath = realPath.pathSegment;
+
+        const params = Object.entries(intentObject.params);
+
+        if (params && params.length > 0) {
+          // resolve dynamic parameters in the path if any
+          realPath = this.resolveDynamicIntentPath(realPath, intentObject.params);
+
+          // get custom node param prefixes if any or default to ~
+          let nodeParamPrefix = luigi.getConfigValue('routing.nodeParamPrefix');
+
+          nodeParamPrefix = nodeParamPrefix || '~';
+          realPath = realPath.concat(`?${nodeParamPrefix}`);
+          params.forEach(([key, value], index) => {
+            realPath += `${index > 0 ? '&' + nodeParamPrefix : ''}${key}=${value}`;
+          });
+        }
+
+        return realPath;
+      } else {
+        console.warn('Could not parse given intent link.');
+      }
+    } else {
+      console.warn('No intent mappings are defined in Luigi configuration.');
+    }
 
     return false;
   },
@@ -290,8 +337,8 @@ export const RoutingHelpers = {
    * does not contain the respective dynamic parameter name.
    * e.g.:
    * Assume either of these two calls are made:
-   * 1. `linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})`
-   * 2. `linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')`
+   * 1. `LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})`
+   * 2. `LuigiClient.linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')`
    * For both 1. and 2., the following dynamic input path: `/projects/:project/details/:user`
    * is resolved through this method to `/projects/pr2/details/john`
    *

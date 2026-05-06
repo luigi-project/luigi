@@ -72,6 +72,7 @@ describe('Navigation', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
+
   describe('navigate with pathRouting enabled', () => {
     it('should open a path as modal with pathRouting enabled', async () => {
       // make async
@@ -103,6 +104,7 @@ describe('Navigation', () => {
       expect(openModalSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('navigate with hashRouting enabled', () => {
     beforeEach(() => {
       luigiMock.getConfig = jest.fn().mockReturnValue({ routing: { useHashRouting: true } });
@@ -125,6 +127,7 @@ describe('Navigation', () => {
       );
     });
   });
+
   describe('openAsModal', () => {
     it('should set modal title from node label if not provided', async () => {
       // async
@@ -276,6 +279,54 @@ describe('Navigation', () => {
         { splitView: true },
         { drawer: true }
       );
+
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(navRequestParams, undefined);
+    });
+  });
+
+  describe('navigateToIntent', () => {
+    it.each([
+      { slug: null, params: null },
+      { slug: 'Sales-settings', params: null },
+      { slug: null, params: { project: 'pr2', user: 'john' } },
+      { slug: 'Sales-settings', params: { project: 'pr2', user: 'john' } }
+    ])('should call sendPostMessageToLuigiCore', (data) => {
+      let payloadLink = `#?intent=${data.slug}`;
+
+      if (data.params && Object.keys(data.params)?.length) {
+        const paramList = Object.entries(data.params);
+
+        if (paramList.length > 0) {
+          payloadLink += '?';
+
+          for (const [key, value] of paramList) {
+            payloadLink += key + '=' + value + '&';
+          }
+
+          payloadLink = payloadLink.slice(0, -1);
+        }
+      }
+
+      const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        options: {
+          fromClosestContext: false,
+          fromContext: null,
+          fromParent: false,
+          fromVirtualTreeRoot: false,
+          nodeParams: {},
+          relative: true
+        },
+        path: payloadLink,
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      navigation.navigateToIntent(data.slug, data.params);
 
       expect(handleNavigationRequestSpy).toHaveBeenCalledWith(navRequestParams, undefined);
     });
