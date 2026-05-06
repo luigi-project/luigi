@@ -10,6 +10,7 @@ else
 fi
 # steps to execute line by line
 echo ""
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
 mkdir $folder && cd $folder
 
 echo "Creating folders and downloading example assets"
@@ -42,6 +43,6 @@ curl --silent $UI5EX_REPO_URL/README.md > ./README.md
 curl --silent $UI5EX_REPO_URL/.gitignore > ./.gitignore
 curl --silent $UI5EX_REPO_URL/package.json > ./package.json
 
-npm i
-npm run build
-npm run start
+$PKG_MGR i
+$PKG_MGR run build
+$PKG_MGR run start
