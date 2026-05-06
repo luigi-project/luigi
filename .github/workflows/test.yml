@@ -73,8 +73,6 @@ jobs:
             ~/cypress-binary-cache
           key: buildcache-${{ github.ref }}
       - run: cp -r ~/tmp_build/* .
-      - run: npm i -g cypress
-      - run: npm i -g live-server
       - run: bash ./test/mockengine.sh || exit 1
 
   container_unit_tests:
@@ -154,7 +152,6 @@ jobs:
       - uses: ./.github/workflows/update-deps
         with:
           list-of-deps: 'libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb'
-      - run: npm install --prefix test/e2e-test-application @babel/plugin-proposal-class-properties
       - run: ls test
       - run: bash ./test/e2e-js.sh || exit 1
       - run: bash ./test/e2e-angular.sh || exit 1
