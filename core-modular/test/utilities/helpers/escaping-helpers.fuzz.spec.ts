@@ -44,20 +44,21 @@ describe('EscapingHelpers - property-based tests', () => {
   });
 
   describe('sanitizeParamsMap', () => {
-    test.prop([
-      fc.dictionary(fc.string({ minLength: 1 }), fc.string())
-    ])('all keys and values are sanitized', (paramsMap) => {
-      const result = RoutingHelpers.sanitizeParamsMap(paramsMap);
-      for (const key of Object.keys(result)) {
-        expect(key).not.toContain('<');
-        expect(key).not.toContain('>');
-        expect(key).not.toContain('/');
+    test.prop([fc.dictionary(fc.string({ minLength: 1 }), fc.string())])(
+      'all keys and values are sanitized',
+      (paramsMap) => {
+        const result = RoutingHelpers.sanitizeParamsMap(paramsMap);
+        for (const key of Object.keys(result)) {
+          expect(key).not.toContain('<');
+          expect(key).not.toContain('>');
+          expect(key).not.toContain('/');
+        }
+        for (const value of Object.values(result)) {
+          expect(value).not.toContain('<');
+          expect(value).not.toContain('>');
+          expect(value).not.toContain('/');
+        }
       }
-      for (const value of Object.values(result)) {
-        expect(value).not.toContain('<');
-        expect(value).not.toContain('>');
-        expect(value).not.toContain('/');
-      }
-    });
+    );
   });
 });

@@ -46,11 +46,12 @@ describe('EscapingHelpers - property-based tests', () => {
 describe('RoutingHelpers - property-based tests', () => {
   describe('parseParams', () => {
     test.prop([
-      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), { minLength: 1, maxLength: 5 })
+      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), {
+        minLength: 1,
+        maxLength: 5
+      })
     ])('returns null-prototype object for well-formed params', (pairs) => {
-      const paramsString = pairs
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-        .join('&');
+      const paramsString = pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
       const result = RoutingHelpers.parseParams(paramsString);
       expect(result).toBeDefined();
       expect(typeof result).toBe('object');
@@ -58,11 +59,12 @@ describe('RoutingHelpers - property-based tests', () => {
     });
 
     test.prop([
-      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), { minLength: 1, maxLength: 5 })
+      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), {
+        minLength: 1,
+        maxLength: 5
+      })
     ])('all values are strings for well-formed input', (pairs) => {
-      const paramsString = pairs
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-        .join('&');
+      const paramsString = pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
       const result = RoutingHelpers.parseParams(paramsString);
       for (const value of Object.values(result)) {
         expect(typeof value).toBe('string');
@@ -70,11 +72,12 @@ describe('RoutingHelpers - property-based tests', () => {
     });
 
     test.prop([
-      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), { minLength: 1, maxLength: 5 })
+      fc.array(fc.tuple(fc.string({ unit: 'grapheme' }), fc.string({ unit: 'grapheme' })), {
+        minLength: 1,
+        maxLength: 5
+      })
     ])('no inherited properties leak from prototype', (pairs) => {
-      const paramsString = pairs
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-        .join('&');
+      const paramsString = pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
       const result = RoutingHelpers.parseParams(paramsString);
       const keys = new Set(pairs.map(([k]) => k));
       if (!keys.has('constructor')) {
