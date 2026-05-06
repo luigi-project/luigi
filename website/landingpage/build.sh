@@ -3,5 +3,5 @@
 # netlify is using this file for deployment
 
 cd dev
-npm install
+npm ci
 npm run build
