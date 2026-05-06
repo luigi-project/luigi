@@ -6,6 +6,7 @@
     "@babel/preset-env": "7.29.0",
     "@babel/preset-typescript": "7.28.5",
     "@eslint/js": "9.39.3",
+    "@fast-check/jest": "2.2.0",
     "@happy-dom/jest-environment": "20.8.9",
     "@luigi-project/container": "^1.7.6",
     "@sveltejs/vite-plugin-svelte": "6.2.4",
