@@ -19,5 +19,9 @@ id = "GHSA-phwv-c562-gvmh"
 reason = "SSR is not used by Luigi"
 
 [[IgnoredVulns]]
+id = "GHSA-952p-6rrq-rcjv"
+reason = "live-server is intended for local development only"
+
+[[IgnoredVulns]]
 id = "GHSA-w5hq-g745-h8pq"
 reason = "live-server is intended for local development only"
