@@ -5,6 +5,7 @@
   "devDependencies": {
     "@babel/node": "7.28.0",
     "@babel/preset-env": "7.28.0",
+    "@fast-check/jest": "2.2.0",
     "@happy-dom/jest-environment": "20.8.9",
     "@rollup/plugin-commonjs": "29.0.2",
     "@rollup/plugin-node-resolve": "16.0.3",
