@@ -30,13 +30,14 @@ import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { DirtyStatusService } from './dirty-status.service';
 
 export class NavigationService {
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
-  constructor(private luigi: Luigi) {}
+  constructor(private luigi: Luigi) { }
 
   private getModalService(): ModalService {
     if (!this.modalService) {
@@ -416,11 +417,11 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
     };
   }
 
-  navItemClick(node: Node, pathData?: PathData): void {
+  async navItemClick(node: Node, pathData?: PathData): Promise<void> {
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -431,7 +432,7 @@ export class NavigationService {
       );
       return;
     }
-    this.luigi.navigation().navigate(fullPath);
+    return this.luigi.navigation().navigate(fullPath);
   }
 
   async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
@@ -510,7 +511,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
     };
   }
 
@@ -576,7 +577,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
     };
   }
 
@@ -879,6 +880,11 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
+    const isSpecial = !!(drawerSettings || modalSettings);
+    if (!isSpecial) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+      await dirtyStatusService.getUnsavedChangesModalPromise();
+    }
     const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';

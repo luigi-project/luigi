@@ -50,6 +50,12 @@ describe('NavigationService', () => {
       if (service.name === 'NodeDataManagementService') {
         return mockNodeDataManagementService;
       }
+      if (service.name === 'DirtyStatusService') {
+        return {
+          getUnsavedChangesModalPromise: jest.fn().mockResolvedValue(undefined),
+          shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false)
+        };
+      }
     });
   });
 

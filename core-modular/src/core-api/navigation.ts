@@ -57,7 +57,7 @@ export class Navigation {
       withoutSync: false
     };
 
-    this.navService.handleNavigationRequest(navRequestParams, undefined);
+    return this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {

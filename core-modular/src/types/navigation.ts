@@ -5,7 +5,7 @@ export interface TopNavData {
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface AppSwitcher {
@@ -72,7 +72,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface PathData {
@@ -188,7 +188,7 @@ export interface TabNavData {
   selectedNode?: any;
   items?: NavItem[];
   basePath?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface BreadcrumbData {
