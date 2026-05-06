@@ -39,6 +39,7 @@ export class PreloadingService {
       (el: any) => now - (el._luigiPreloadCreatedAt || 0) < 30000
     );
     if (preloadingContainers.length > 0) {
+      console.log('skipping view group preloading (busy)');
       return;
     }
 

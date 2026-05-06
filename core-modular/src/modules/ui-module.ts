@@ -136,7 +136,6 @@ export const UIModule = {
   modalContainer: [] as any,
   drawerContainer: undefined as any,
   init: (luigi: Luigi) => {
-    console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;

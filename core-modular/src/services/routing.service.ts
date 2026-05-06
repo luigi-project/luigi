@@ -55,7 +55,6 @@ export class RoutingService {
    */
   enableRouting(): void {
     const luigiConfig = this.luigi.getConfig();
-    console.log('Init Routing...', luigiConfig.routing);
 
     if (luigiConfig.routing?.useHashRouting) {
       window.addEventListener('hashchange', (ev) => {

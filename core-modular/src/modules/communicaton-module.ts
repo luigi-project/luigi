@@ -11,7 +11,6 @@ import type { NavigationRequestParams } from '../types/navigation';
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {
-    console.log('Init communication...');
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
@@ -19,7 +18,7 @@ export const CommunicationModule = {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
       const preloadingService = serviceRegistry.get(PreloadingService);
       preloadingService.viewGroupLoaded(containerElement);
-      if (!containerElement._luigiPreloading) {
+      if (!containerElement._luigiPreloading && containerElement.style.display !== 'none') {
         preloadingService.preload();
       }
     });
