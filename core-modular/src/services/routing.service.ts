@@ -20,7 +20,7 @@ export class RoutingService {
   modalSettings?: ModalSettings;
   previousPathData?: PathData;
 
-  constructor(private luigi: Luigi) { }
+  constructor(private luigi: Luigi) {}
 
   private getNavigationService(): NavigationService {
     if (!this.navigationService) {
@@ -110,7 +110,6 @@ export class RoutingService {
     } catch (e) {
       return;
     }
-
 
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;

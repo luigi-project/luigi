@@ -1,7 +1,6 @@
-import type { Luigi } from "../core-api/luigi";
+import type { Luigi } from '../core-api/luigi';
 
 export class DirtyStatusService {
-
   unsavedChanges: {
     isDirty?: boolean;
     persistUrl?: string | null;
@@ -94,8 +93,13 @@ export class DirtyStatusService {
     };
     return new Promise((resolve, reject) => {
       this.luigi!.getEngine()._connector?.renderConfirmationModal(settings, {
-        confirm: () => { this.clearDirtyState(); resolve(); },
-        dismiss: () => { reject(); }
+        confirm: () => {
+          this.clearDirtyState();
+          resolve();
+        },
+        dismiss: () => {
+          reject();
+        }
       });
     });
   }

@@ -37,7 +37,7 @@ export class NavigationService {
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
-  constructor(private luigi: Luigi) { }
+  constructor(private luigi: Luigi) {}
 
   private getModalService(): ModalService {
     if (!this.modalService) {
@@ -417,7 +417,7 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -511,7 +511,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -577,7 +577,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node ? this.navItemClick(item.node, pathData) : Promise.resolve()
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
