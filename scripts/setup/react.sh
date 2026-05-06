@@ -8,16 +8,17 @@ else
   folder=$1
   echo "Luigi project folder name (lowercase letters only): $folder"
 fi
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
 
 # create sample react app
 npx create-react-app $folder && cd $folder
 
 # eject project to customize webpack configs
-echo yes | npm run eject
+echo yes | $PKG_MGR run eject
 
 # install dependencies
-npm i -P @luigi-project/core @luigi-project/client @sap-theming/theming-base-content react-router-dom@6
-npm i copy-webpack-plugin@9 webpack webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev
+$PKG_MGR i -P @luigi-project/core @luigi-project/client @sap-theming/theming-base-content react-router-dom@6
+$PKG_MGR i copy-webpack-plugin@9 webpack webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev
 
 # replace strings in some places
 sed "s/const HtmlWebpackPlugin = require('html-webpack-plugin');/const HtmlWebpackPlugin = require('html-webpack-plugin');const CopyWebpackPlugin = require('copy-webpack-plugin');/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
@@ -70,6 +71,6 @@ curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/lu
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-react/src/views/sample1.js > src/views/sample1.js
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-react/src/views/sample2.js > src/views/sample2.js
 
-npm i
-npm run buildConfig
-npm start
+$PKG_MGR i
+$PKG_MGR run buildConfig
+$PKG_MGR start
