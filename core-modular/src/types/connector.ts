@@ -31,7 +31,12 @@ export interface LuigiConnector {
     onCloseRequest?: () => void
   ): any;
 
-  renderDrawer(content: HTMLElement, modalSettings: DrawerSettings, onCloseCallback?: () => void): any;
+  renderDrawer(
+    content: HTMLElement,
+    drawerSettings: DrawerSettings,
+    onCloseCallback?: () => void,
+    onCloseRequest?: () => void
+  ): any;
 
   renderTabNav(data: TabNavData): void;
 

@@ -31,6 +31,7 @@ import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 import { DirtyStatusService } from './dirty-status.service';
+import { UIModule } from '../modules/ui-module';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -894,7 +895,8 @@ export class NavigationService {
         this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
       } else {
         if (!modalSettings.keepPrevious) {
-          this.getModalService().closeModals();
+          const closed = await this.getModalService().closeModalsWithDirtyCheck();
+          if (!closed) return;
         }
 
         this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
@@ -908,7 +910,18 @@ export class NavigationService {
         }
       };
 
-      await serviceRegistry.get(ModalService).closeModals();
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      if (UIModule.drawerContainer && dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+
+      const modalsClosed = await serviceRegistry.get(ModalService).closeModalsWithDirtyCheck();
+      if (!modalsClosed) return;
 
       if (newTab) {
         await this.openViewInNewTab(normalizedPath);

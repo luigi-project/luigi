@@ -62,7 +62,8 @@ export class Navigation {
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     if (!modalSettings?.keepPrevious) {
-      await this.modalService.closeModals();
+      const closed = await this.modalService.closeModalsWithDirtyCheck();
+      if (!closed) return;
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);

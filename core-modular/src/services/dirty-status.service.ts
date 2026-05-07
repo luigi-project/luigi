@@ -83,7 +83,7 @@ export class DirtyStatusService {
     }
     const customHandler = this.luigi.getConfigValue('settings.unsavedChangesHandler');
     if (customHandler) {
-      return customHandler().then(() => this.clearDirtyState());
+      return customHandler().then(() => this.clearDirtyState(source));
     }
     const settings = {
       header: this.luigi.i18n().getTranslation('luigi.unsavedChangesAlert.header'),
@@ -94,7 +94,7 @@ export class DirtyStatusService {
     return new Promise((resolve, reject) => {
       this.luigi!.getEngine()._connector?.renderConfirmationModal(settings, {
         confirm: () => {
-          this.clearDirtyState();
+          this.clearDirtyState(source);
           resolve();
         },
         dismiss: () => {

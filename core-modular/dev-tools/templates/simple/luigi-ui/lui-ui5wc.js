@@ -599,9 +599,9 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
-  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+  renderDrawer: (lc, drawerSettings, onCloseCallback, onCloseRequest) => {
     drawerSettings.isDrawer = true;
-    connector.renderModal(lc, drawerSettings, onCloseCallback);
+    connector.renderModal(lc, drawerSettings, onCloseCallback, onCloseRequest);
   },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
@@ -629,11 +629,9 @@ const connector = {
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      dialog.open = false;
       if (onCloseCallback) {
         onCloseCallback();
       }
-      document.body.removeChild(dialog);
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);

@@ -1,5 +1,7 @@
 import type { Luigi } from '../core-api/luigi';
 import { UIModule } from '../modules/ui-module';
+import { DirtyStatusService } from './dirty-status.service';
+import { serviceRegistry } from './service-registry';
 import type { ModalSettings } from '../types/navigation';
 
 export interface ModalPromiseObject {
@@ -94,5 +96,20 @@ export class ModalService {
   removeLastModalFromStack(): void {
     UIModule.modalContainer.pop();
     this._modalStack.pop();
+  }
+
+  async closeModalsWithDirtyCheck(): Promise<boolean> {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    for (const container of UIModule.modalContainer) {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(container)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(container);
+        } catch (e) {
+          return false;
+        }
+      }
+    }
+    await this.closeModals();
+    return true;
   }
 }
