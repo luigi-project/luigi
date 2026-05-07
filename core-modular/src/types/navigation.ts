@@ -27,14 +27,19 @@ export interface ContextSwitcher {
   config?: any;
   options?: ContextSwitcherItem[];
   selectedLabel?: string;
+  selectedNodePath?: any;
   selectedOption?: ContextSwitcherItem;
 }
 
 export interface ContextSwitcherItem {
   clickHandler?: any;
+  customRendererCategory?: any;
   id?: string;
   label?: string;
+  link?: string;
+  linkFromPath?: null | string;
   postion?: 'bottom' | 'top';
+  testId?: string;
 }
 
 export interface selectionConditions {

@@ -1176,17 +1176,25 @@ export class NavigationService {
       fallbackLabelResolver,
       this.luigi
     );
+    const selectedNodePath = await ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
     const selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
       currentPath?.path,
       options,
       parentNodePath
     );
 
+    if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
+      options.forEach((option) => {
+        option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption);
+      });
+    }
+
     return {
       actions,
       config,
       options,
       selectedLabel,
+      selectedNodePath,
       selectedOption
     };
   }
