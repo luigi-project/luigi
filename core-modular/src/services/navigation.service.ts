@@ -4,6 +4,8 @@ import type {
   AppSwitcherItem,
   BreadcrumbData,
   BreadcrumbItem,
+  ContextSwitcher,
+  ContextSwitcherItem,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -21,15 +23,16 @@ import type {
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
+import { ContextSwitcherHelpers } from '../utilities/helpers/context-switcher-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { NodeDataManagementService } from './node-data-management.service';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
-import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { NodeDataManagementService } from './node-data-management.service';
+import { serviceRegistry } from './service-registry';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -506,6 +509,7 @@ export class NavigationService {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
+      contextSwitcher: await this.buildContextSwitcher(),
       productSwitcher: cfg.navigation?.productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
@@ -1155,5 +1159,35 @@ export class NavigationService {
       });
     }
     return path;
+  }
+
+  private async buildContextSwitcher(): Promise<ContextSwitcher> {
+    const actions = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+    const config = this.luigi.getConfigValue('navigation.contextSwitcher');
+    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(undefined, this.luigi);
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const parentNodePath = config.parentNodePath;
+    const fallbackLabelResolver = config.fallbackLabelResolver;
+    const selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
+      currentPath?.path,
+      options,
+      parentNodePath,
+      fallbackLabelResolver,
+      this.luigi
+    );
+    const selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
+      currentPath?.path,
+      options,
+      parentNodePath
+    );
+
+    return {
+      actions,
+      config,
+      options,
+      selectedLabel,
+      selectedOption
+    };
   }
 }

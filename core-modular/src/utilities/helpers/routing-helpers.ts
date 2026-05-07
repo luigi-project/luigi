@@ -825,5 +825,30 @@ export const RoutingHelpers = {
     }
     path += relativePath;
     return path;
+  },
+
+  getI18nViewUrl(viewUrl: string, luigi: Luigi): string {
+    const i18n_currentLocale = '{i18n.currentLocale}';
+    const locale = luigi.i18n().getCurrentLocale();
+    const hasI18n = viewUrl && viewUrl.includes(i18n_currentLocale);
+
+    return hasI18n ? viewUrl.replace(i18n_currentLocale, locale) : viewUrl;
+  },
+
+  calculateNodeHref(node: any, pathParams: any, luigi: Luigi): string {
+    const prefix = luigi.getConfigValue('routing.useHashRouting') ? '#' : '';
+    const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    const link = prefix + GenericHelpers.replaceVars(route, pathParams, ':', false);
+
+    return RoutingHelpers.getI18nViewUrl(link, luigi) || link;
+  },
+
+  getNodeHref(node: any, pathParams: any, luigi: Luigi): string | undefined {
+    const addNavHrefs = GenericHelpers.getConfigBooleanValue(
+      luigi.getConfig(),
+      'navigation.addNavHrefs'
+    );
+
+    return addNavHrefs ? RoutingHelpers.calculateNodeHref(node, pathParams, luigi) : undefined;
   }
 };
