@@ -43,7 +43,7 @@ export class Navigation {
     modalSettings?: ModalSettings,
     splitViewSettings?: any,
     drawerSettings?: any
-  ) => {
+  ): Promise<void> => {
     const relativePath = path[0] !== '/';
     this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
