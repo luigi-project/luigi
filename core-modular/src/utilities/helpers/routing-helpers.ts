@@ -844,10 +844,7 @@ export const RoutingHelpers = {
   },
 
   getNodeHref(node: any, pathParams: any, luigi: Luigi): string | undefined {
-    const addNavHrefs = GenericHelpers.getConfigBooleanValue(
-      luigi.getConfig(),
-      'navigation.addNavHrefs'
-    );
+    const addNavHrefs = GenericHelpers.getConfigBooleanValue(luigi.getConfig(), 'navigation.addNavHrefs');
 
     return addNavHrefs ? RoutingHelpers.calculateNodeHref(node, pathParams, luigi) : undefined;
   }

@@ -26,7 +26,7 @@ export const ContextSwitcherHelpers = {
   generateSwitcherNav(config: Record<string, any>, rawOptions: any[]): any[] {
     const parentNodePath = ContextSwitcherHelpers.getPreparedParentNodePath(config);
 
-    return rawOptions.map(opt => ({
+    return rawOptions.map((opt) => ({
       label: opt.label,
       link: (parentNodePath || '/') + opt.pathValue,
       id: opt.pathValue,
@@ -47,11 +47,11 @@ export const ContextSwitcherHelpers = {
   },
 
   getOptionById(options: any[], id: string): any {
-    return options.find(opt => opt.id === id);
+    return options.find((opt) => opt.id === id);
   },
 
   getLabelFromOptions(options: any[], id: string): string {
-    const found = options.find(opt => opt.id === id);
+    const found = options.find((opt) => opt.id === id);
 
     return found && found.label;
   },
@@ -62,10 +62,10 @@ export const ContextSwitcherHelpers = {
 
     return Boolean(
       parentNodePath &&
-        currentPathNormalized &&
-        typeof currentPathNormalized === 'string' &&
-        currentPathNormalized.startsWith(parentNodePathNormalized) &&
-        currentPathNormalized !== parentNodePathNormalized
+      currentPathNormalized &&
+      typeof currentPathNormalized === 'string' &&
+      currentPathNormalized.startsWith(parentNodePathNormalized) &&
+      currentPathNormalized !== parentNodePathNormalized
     );
   },
 
@@ -100,10 +100,7 @@ export const ContextSwitcherHelpers = {
     }
 
     // we are inside the context switcher base path
-    return currentPath
-      .replace(parentNodePath, '')
-      .split('/')[0]
-      .split('?')[0]; //ignore everything after '?'
+    return currentPath.replace(parentNodePath, '').split('/')[0].split('?')[0]; //ignore everything after '?'
   },
 
   getSelectedOption(currentPath: string, options: any[], parentNodePath: string): any {
