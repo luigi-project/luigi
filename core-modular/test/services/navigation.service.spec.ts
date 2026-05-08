@@ -497,7 +497,7 @@ describe('NavigationService', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
-    it('should navigate to the given path', () => {
+    it('should navigate to the given path', async () => {
       const navigateSpy = jest.fn();
 
       luigiMock.navigation = jest.fn().mockReturnValue({
@@ -518,7 +518,7 @@ describe('NavigationService', () => {
         rootNodes: []
       };
 
-      navigationService.navItemClick(node, pathData);
+      await navigationService.navItemClick(node, pathData);
 
       expect(navigateSpy).toHaveBeenCalledWith('/home');
     });
