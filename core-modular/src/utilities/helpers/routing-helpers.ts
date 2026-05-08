@@ -258,7 +258,7 @@ export const RoutingHelpers = {
    * resulting in pathSegment `/projects/pr2/order` being returned. The parameter is also added in
    * this case resulting in: `/projects/pr2/order?~foo=bar`
    *
-   * Or for external intent links: intentLink = `#?intent=External-external`
+   * Or for external intent links: intentLink = `#?intent=External-view`
    * and Luigi configuration:
    * ```
    * intentMapping: [{
@@ -384,20 +384,29 @@ export const RoutingHelpers = {
       const intentPath = RoutingHelpers.getIntentPath(hash, luigi);
 
       // if intent faulty or illegal then skip
-      if (intentPath && typeof intentPath === 'string') {
-        const isReplaceRouteActivated = luigi?.getConfigValue('routing.replaceIntentRoute');
+      if (intentPath) {
+        if (typeof intentPath === 'string') {
+          const isReplaceRouteActivated = luigi?.getConfigValue('routing.replaceIntentRoute');
 
-        if (isReplaceRouteActivated) {
-          history.replaceState((window as any).state, '', intentPath);
+          if (isReplaceRouteActivated) {
+            history.replaceState((window as any).state, '', intentPath);
+          }
+
+          return { path: intentPath, query: location.search };
+        } else {
+          if ((intentPath as any).external && (intentPath as any).url) {
+            const target = (intentPath as any).openInNewTab ? '_blank' : '_self';
+
+            window.open((intentPath as any).url, target, 'noopener,noreferrer')?.focus();
+          }
         }
-
-        return { path: intentPath, query: location.search };
       }
     }
 
     if (hashRouting) {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
       const [path, query] = pathRaw.split('?');
+
       return { path, query };
     } else {
       return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
