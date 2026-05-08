@@ -1,6 +1,7 @@
 import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { UIModule } from '../../src/modules/ui-module';
 import { NavigationService } from '../../src/services/navigation.service';
+import { PreloadingService } from '../../src/services/preloading.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
@@ -96,6 +97,9 @@ describe('Routing Service', () => {
       }
       if (svc === NodeDataManagementService) {
         return mockNodeDataManagementService;
+      }
+      if (svc === PreloadingService) {
+        return { preload: jest.fn(), viewGroupLoaded: jest.fn() };
       }
       return {} as any;
     });
@@ -265,8 +269,6 @@ describe('Routing Service', () => {
         false
       );
     });
-
-    
 
     it('should use currentNode from getCurrentNode if pathData.selectedNode is not available', async () => {
       jest.spyOn(navigationService, 'getPathData').mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);

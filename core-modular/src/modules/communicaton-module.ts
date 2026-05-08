@@ -1,6 +1,7 @@
 import Events from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
@@ -10,12 +11,19 @@ import type { NavigationRequestParams } from '../types/navigation';
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {
-    console.log('Init communication...');
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
     containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
+      const preloadingService = serviceRegistry.get(PreloadingService);
+      preloadingService.viewGroupLoaded(containerElement);
+      if (!containerElement._luigiPreloading && containerElement.style.display !== 'none') {
+        preloadingService.preload();
+      }
+    });
+    containerElement.addEventListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
+      serviceRegistry.get(PreloadingService).preload();
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       const {
