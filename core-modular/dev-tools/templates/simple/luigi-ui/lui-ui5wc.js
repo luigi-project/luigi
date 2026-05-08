@@ -452,7 +452,6 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
-        console.log(topNavData.profile);
         if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
           const ava = document.createElement('ui5-avatar');
           ava.setAttribute('slot', 'profile');
@@ -512,9 +511,6 @@ const connector = {
         (topNavData.topNodes || []).forEach((item) => {
           addShellbarItem(shellbar, item, topNavData.navClick);
         });
-      }
-      if (shellbar._lastTopNavData) {
-        console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
       }
     }
     shellbar._lastTopNavData = topNavData;

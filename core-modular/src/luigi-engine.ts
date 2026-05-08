@@ -10,6 +10,7 @@ import { NavigationService } from './services/navigation.service';
 import { NodeDataManagementService } from './services/node-data-management.service';
 import { RoutingService } from './services/routing.service';
 import { serviceRegistry } from './services/service-registry';
+import { PreloadingService } from './services/preloading.service';
 import { ViewUrlDecoratorSvc } from './services/viewurl-decorator';
 import type { LuigiConnector } from './types/connector';
 
@@ -39,6 +40,7 @@ export class LuigiEngine {
     serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
     serviceRegistry.register(ViewUrlDecoratorSvc, () => new ViewUrlDecoratorSvc());
     serviceRegistry.register(ModalService, () => new ModalService(luigi));
+    serviceRegistry.register(PreloadingService, () => new PreloadingService(luigi));
     luigi.theming()._init();
     UIModule.init(luigi);
     RoutingModule.init(luigi);
