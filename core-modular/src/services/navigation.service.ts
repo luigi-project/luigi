@@ -423,6 +423,9 @@ export class NavigationService {
   }
 
   async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    await dirtyStatusService.getUnsavedChangesModalPromise();
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -884,7 +887,11 @@ export class NavigationService {
     const isSpecial = !!(drawerSettings || modalSettings);
     if (!isSpecial) {
       const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
-      await dirtyStatusService.getUnsavedChangesModalPromise();
+      try {
+        await dirtyStatusService.getUnsavedChangesModalPromise();
+      } catch (e) {
+        return;
+      }
     }
     const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');

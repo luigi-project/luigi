@@ -104,8 +104,6 @@ export class RoutingService {
         if (oldUrl) {
           history.pushState((window as any).state, '', oldUrl);
         }
-        await this.dirtyStatusService.getUnsavedChangesModalPromise();
-        history.replaceState((window as any).state, '', newUrl);
       }
     } catch (e) {
       return;

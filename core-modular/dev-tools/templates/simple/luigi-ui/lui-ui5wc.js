@@ -304,9 +304,7 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    el.addEventListener('click', (ev) => {
-      leftNavData.navClick(item);
-    });
+    el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
   } else if (item.category) {
@@ -325,9 +323,7 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('text', nodeWrapper.label);
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
-        sub.addEventListener('click', (ev) => {
-          leftNavData.navClick(nodeWrapper);
-        });
+        sub._luigiItem = nodeWrapper;
         sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
@@ -452,7 +448,6 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
-        console.log(topNavData.profile);
         if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
           const ava = document.createElement('ui5-avatar');
           ava.setAttribute('slot', 'profile');
@@ -513,9 +508,6 @@ const connector = {
           addShellbarItem(shellbar, item, topNavData.navClick);
         });
       }
-      if (shellbar._lastTopNavData) {
-        console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
-      }
     }
     shellbar._lastTopNavData = topNavData;
   },
@@ -529,6 +521,21 @@ const connector = {
           sidenav.toggleAttribute('collapsed');
         };
         burger.addEventListener('click', burger._clickListener);
+      }
+      sidenav._leftNavData = leftNavData;
+      if (!sidenav._selectionChangeListener) {
+        sidenav._selectionChangeListener = true;
+        sidenav.addEventListener('selection-change', async (event) => {
+          event.preventDefault();
+          const selectedItem = event.detail.item;
+          const luigiItem = selectedItem._luigiItem;
+          if (!luigiItem) return;
+          try {
+            await sidenav._leftNavData.navClick(luigiItem);
+          } catch {
+            // navigation was cancelled (e.g. unsaved changes dismissed)
+          }
+        });
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
