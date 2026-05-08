@@ -304,9 +304,7 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    el.addEventListener('click', (ev) => {
-      leftNavData.navClick(item);
-    });
+    el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
   } else if (item.category) {
@@ -325,9 +323,7 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('text', nodeWrapper.label);
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
-        sub.addEventListener('click', (ev) => {
-          leftNavData.navClick(nodeWrapper);
-        });
+        sub._luigiItem = nodeWrapper;
         sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
@@ -526,6 +522,21 @@ const connector = {
         };
         burger.addEventListener('click', burger._clickListener);
       }
+      sidenav._leftNavData = leftNavData;
+      if (!sidenav._selectionChangeListener) {
+        sidenav._selectionChangeListener = true;
+        sidenav.addEventListener('selection-change', async (event) => {
+          event.preventDefault();
+          const selectedItem = event.detail.item;
+          const luigiItem = selectedItem._luigiItem;
+          if (!luigiItem) return;
+          try {
+            await sidenav._leftNavData.navClick(luigiItem);
+          } catch {
+            // navigation was cancelled (e.g. unsaved changes dismissed)
+          }
+        });
+      }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
         sidenav.setAttribute('style', 'display: none');
@@ -595,9 +606,9 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
-  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+  renderDrawer: (lc, drawerSettings, onCloseCallback, onCloseRequest) => {
     drawerSettings.isDrawer = true;
-    connector.renderModal(lc, drawerSettings, onCloseCallback);
+    connector.renderModal(lc, drawerSettings, onCloseCallback, onCloseRequest);
   },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
@@ -625,11 +636,9 @@ const connector = {
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      dialog.open = false;
       if (onCloseCallback) {
         onCloseCallback();
       }
-      document.body.removeChild(dialog);
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);

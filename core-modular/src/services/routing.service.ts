@@ -10,9 +10,11 @@ import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { DirtyStatusService } from './dirty-status.service';
 
 export class RoutingService {
   navigationService?: NavigationService;
+  dirtyStatusService?: DirtyStatusService;
   previousNode: Node | undefined;
   currentRoute?: Route;
   modalSettings?: ModalSettings;
@@ -23,6 +25,7 @@ export class RoutingService {
   private getNavigationService(): NavigationService {
     if (!this.navigationService) {
       this.navigationService = serviceRegistry.get(NavigationService);
+      this.dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     }
 
     return this.navigationService;
@@ -92,6 +95,18 @@ export class RoutingService {
     const fullPath = path + (query ? '?' + query : '');
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = Object.create(null);
+
+    try {
+      if (this.dirtyStatusService?.shouldShowUnsavedChangesModal()) {
+        const newUrl = window.location.href;
+        const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
+        if (oldUrl) {
+          history.pushState((window as any).state, '', oldUrl);
+        }
+      }
+    } catch (e) {
+      return;
+    }
 
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;
@@ -175,7 +190,8 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      modalService.closeModals();
+      const closed = await modalService.closeModalsWithDirtyCheck();
+      if (!closed) return;
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
