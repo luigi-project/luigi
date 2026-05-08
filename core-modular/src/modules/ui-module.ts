@@ -240,6 +240,13 @@ export const UIModule = {
 
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
           element.style.display = 'none';
+          const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+          if (vgSettings?.preloadUrl) {
+            element.viewurl = vgSettings.preloadUrl;
+            element.context = {};
+            element.nodeParams = {};
+            element.pathParams = {};
+          }
         } else {
           if (
             element.viewGroup ||
