@@ -48,7 +48,8 @@ describe('Navigation', () => {
     };
 
     modalServiceMock = {
-      closeModals: jest.fn().mockResolvedValue(undefined), // ensure async resolves
+      closeModals: jest.fn().mockResolvedValue(undefined),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
       getModalStackLength: jest.fn().mockReturnValue(0),
       getModalSettings: jest.fn().mockReturnValue({}),
       registerModal: jest.fn(),

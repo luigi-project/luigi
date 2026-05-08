@@ -30,6 +30,8 @@ import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { DirtyStatusService } from './dirty-status.service';
+import { UIModule } from '../modules/ui-module';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -416,11 +418,14 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
-  navItemClick(node: Node, pathData?: PathData): void {
+  async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    await dirtyStatusService.getUnsavedChangesModalPromise();
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -431,7 +436,7 @@ export class NavigationService {
       );
       return;
     }
-    this.luigi.navigation().navigate(fullPath);
+    return this.luigi.navigation().navigate(fullPath);
   }
 
   async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
@@ -510,7 +515,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -576,7 +581,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -879,6 +884,15 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
+    const isSpecial = !!(drawerSettings || modalSettings);
+    if (!isSpecial) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+      try {
+        await dirtyStatusService.getUnsavedChangesModalPromise();
+      } catch (e) {
+        return;
+      }
+    }
     const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
@@ -888,7 +902,8 @@ export class NavigationService {
         this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
       } else {
         if (!modalSettings.keepPrevious) {
-          this.getModalService().closeModals();
+          const closed = await this.getModalService().closeModalsWithDirtyCheck();
+          if (!closed) return;
         }
 
         this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
@@ -902,7 +917,18 @@ export class NavigationService {
         }
       };
 
-      await serviceRegistry.get(ModalService).closeModals();
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      if (UIModule.drawerContainer && dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+
+      const modalsClosed = await serviceRegistry.get(ModalService).closeModalsWithDirtyCheck();
+      if (!modalsClosed) return;
 
       if (newTab) {
         await this.openViewInNewTab(normalizedPath);

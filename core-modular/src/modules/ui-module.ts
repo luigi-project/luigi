@@ -4,6 +4,7 @@ import { NavigationService } from '../services/navigation.service';
 import { PreloadingService } from '../services/preloading.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import { DirtyStatusService } from '../services/dirty-status.service';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
@@ -314,6 +315,7 @@ export const UIModule = {
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     let resolved = false;
     let resolveFn: (() => void) | undefined;
@@ -328,7 +330,12 @@ export const UIModule = {
           modalService.removeLastModalFromStack();
         };
 
-        onCloseRequestHandler = () => {
+        onCloseRequestHandler = async () => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
           resolveFn && resolveFn();
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
@@ -347,6 +354,7 @@ export const UIModule = {
       onCloseRequestHandler,
       onInternalClose: () => {
         try {
+          dirtyStatusService.clearDirtyState(lc);
           modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
         } catch (e) {
           console.warn('onInternalClose failed', e);
@@ -360,9 +368,14 @@ export const UIModule = {
     luigi.getEngine()._connector?.renderModal(
       lc,
       modalSettings,
-      () => {
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
         onCloseCallback?.();
-        modalService.removeLastModalFromStack();
+        resolveFn && resolveFn();
         if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
           routingService.removeModalDataFromUrl(true);
         }
@@ -390,9 +403,52 @@ export const UIModule = {
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
   openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+    if (UIModule.drawerContainer) {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+    }
+
     const lc = await createContainer(node, luigi);
     UIModule.drawerContainer = lc;
-    luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
+
+    const closePromise = new Promise<void>((resolve) => {
+      const onCloseRequestHandler = async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+        resolve();
+      };
+
+      lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+    });
+
+    luigi.getEngine()._connector?.renderDrawer(
+      lc,
+      drawerSettings,
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        onCloseCallback?.();
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+      },
+      () => closePromise
+    );
+
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);

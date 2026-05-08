@@ -29,7 +29,8 @@ describe('NavigationService', () => {
 
     mockModalService = {
       clearModalStack: jest.fn(),
-      closeModals: jest.fn()
+      closeModals: jest.fn(),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
     mockNodeDataManagementService = {
       setChildren: jest.fn(),
@@ -49,6 +50,12 @@ describe('NavigationService', () => {
       }
       if (service.name === 'NodeDataManagementService') {
         return mockNodeDataManagementService;
+      }
+      if (service.name === 'DirtyStatusService') {
+        return {
+          getUnsavedChangesModalPromise: jest.fn().mockResolvedValue(undefined),
+          shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false)
+        };
       }
     });
   });
@@ -490,7 +497,7 @@ describe('NavigationService', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
-    it('should navigate to the given path', () => {
+    it('should navigate to the given path', async () => {
       const navigateSpy = jest.fn();
 
       luigiMock.navigation = jest.fn().mockReturnValue({
@@ -511,7 +518,7 @@ describe('NavigationService', () => {
         rootNodes: []
       };
 
-      navigationService.navItemClick(node, pathData);
+      await navigationService.navItemClick(node, pathData);
 
       expect(navigateSpy).toHaveBeenCalledWith('/home');
     });
@@ -577,7 +584,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
 
@@ -619,7 +626,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
       expect(openViewInNewTabSpy).toHaveBeenCalledWith('/test/path');
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
@@ -642,7 +649,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
       expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
@@ -684,7 +691,7 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
-      expect(mockModalService.closeModals).toHaveBeenCalled();
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(

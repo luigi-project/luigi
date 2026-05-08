@@ -43,7 +43,7 @@ export class Navigation {
     modalSettings?: ModalSettings,
     splitViewSettings?: any,
     drawerSettings?: any
-  ) => {
+  ): Promise<void> => {
     const relativePath = path[0] !== '/';
     this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
@@ -57,12 +57,13 @@ export class Navigation {
       withoutSync: false
     };
 
-    this.navService.handleNavigationRequest(navRequestParams, undefined);
+    return this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     if (!modalSettings?.keepPrevious) {
-      await this.modalService.closeModals();
+      const closed = await this.modalService.closeModalsWithDirtyCheck();
+      if (!closed) return;
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
