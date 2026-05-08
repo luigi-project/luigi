@@ -510,4 +510,9 @@ export interface TitleResolver {
   _cache?: TitleResolverCache;
 }
 
+export interface ViewGroupSettings {
+  preloadUrl?: string;
+  loadOnStartup?: boolean;
+}
+
 export type HistoryMethod = 'pushState' | 'replaceState';
