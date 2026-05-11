@@ -751,41 +751,58 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
-  substituteViewUrl(node: Node, pathParams: Record<string, string>, luigi: Luigi): string {
+  substituteViewUrl(
+    node: Node,
+    pathParams: Record<string, string>,
+    nodeParams: Record<string, any>,
+    luigi: Luigi
+  ): string {
     if (!node.viewUrl) {
       return '';
     }
 
     let viewUrl = node.viewUrl;
-    //TODO issue nr 4575
-    //currently minimal requirement for this task
-    // const contextVarPrefix = 'context.';
-    // const nodeParamsVarPrefix = 'nodeParams.';
-    // const searchQuery = 'routing.queryParams';
+    const contextVarPrefix = 'context.';
+    const nodeParamsVarPrefix = 'nodeParams.';
+    const searchQuery = 'routing.queryParams';
 
     if (node.virtualTree) {
       viewUrl = viewUrl.replace('{virtualTreePath}', '');
     }
     viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
-    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
-    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
-    //TODO
-    // viewUrl = this.getI18nViewUrl(viewUrl);
+    if (node.context) {
+      viewUrl = GenericHelpers.replaceVars(viewUrl, node.context, contextVarPrefix);
+    }
+    viewUrl = GenericHelpers.replaceVars(viewUrl, nodeParams, nodeParamsVarPrefix);
+    viewUrl = this.getI18nViewUrl(viewUrl, luigi);
 
-    // if (viewUrl && viewUrl.includes(searchQuery)) {
-    //   const viewUrlSearchParam = viewUrl.split('?')[1];
-    //   if (viewUrlSearchParam) {
-    //     const key = viewUrlSearchParam.split('=')[0];
-    //     const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
-    //     if (searchParams[key]) {
-    //       viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
-    //     } else {
-    //       viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
-    //     }
-    //   }
-    // }
+    if (viewUrl && viewUrl.includes(searchQuery)) {
+      const viewUrlSearchParam = viewUrl.split('?')[1];
+      if (viewUrlSearchParam) {
+        const key = viewUrlSearchParam.split('=')[0];
+        const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
+        if (searchParams[key]) {
+          viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
+        } else {
+          viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+        }
+      }
+    }
 
     return viewUrl;
+  },
+
+  /**
+   * Returns the viewUrl with current locale, e.g. luigi/{i18n.currentLocale}/ -> luigi/en
+   * if viewUrl contains {i18n.currentLocale} term, it will be replaced by current locale
+   * @param {*} viewUrl
+   */
+  getI18nViewUrl(viewUrl: string, luigi: Luigi) {
+    const i18n_currentLocale = '{i18n.currentLocale}';
+    const locale = luigi.i18n().getCurrentLocale();
+    const hasI18n = viewUrl && viewUrl.includes(i18n_currentLocale);
+
+    return hasI18n ? viewUrl.replace(i18n_currentLocale, locale) : viewUrl;
   },
 
   /**

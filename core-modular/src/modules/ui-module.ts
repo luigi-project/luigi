@@ -34,7 +34,10 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     lcc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
-          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+            node.decodeViewUrl ?? false
+          )
       : '';
     lcc.webcomponent = node.webcomponent ?? false;
     lcc.compoundConfig = node.compound;
@@ -60,7 +63,10 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     lc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
-          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+            node.decodeViewUrl ?? false
+          )
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
@@ -271,7 +277,7 @@ export const UIModule = {
             ? serviceRegistry
                 .get(ViewUrlDecoratorSvc)
                 .applyDecorators(
-                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, luigi),
+                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
                   currentNode.decodeViewUrl ?? false
                 )
             : '';

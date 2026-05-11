@@ -710,6 +710,32 @@ describe('Routing-helpers', () => {
   });
 
   describe('substituteViewUrl', () => {
+    let mockLuigiForSubstitute: any;
+
+    beforeEach(() => {
+      mockLuigiForSubstitute = {
+        ...luigi,
+        routing: () => ({ getSearchParams: () => ({}) }),
+        i18n: () => ({ getCurrentLocale: () => 'en' })
+      };
+    });
+
+    it('should return empty string when node has no viewUrl', () => {
+      const node = { pathSegment: 'empty' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('');
+    });
+
+    it('should return viewUrl unchanged when no placeholders are present', () => {
+      const node = { pathSegment: 'home', viewUrl: 'https://example.com/app' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/app');
+    });
+
     it('should remove {virtualTreePath} placeholder when node has virtualTree=true', () => {
       const node = {
         pathSegment: 'virtual',
@@ -717,7 +743,7 @@ describe('Routing-helpers', () => {
         viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
       };
 
-      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
 
       expect(result).toBe('https://mf.luigi-project.io/app/details');
     });
@@ -728,17 +754,201 @@ describe('Routing-helpers', () => {
         viewUrl: 'https://mf.luigi-project.io/app/{virtualTreePath}details'
       };
 
-      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
 
       expect(result).toContain('{virtualTreePath}');
     });
 
-    it('should return empty string when node has no viewUrl', () => {
-      const node = { pathSegment: 'empty' };
+    it('should substitute pathParams with colon prefix', () => {
+      const node = {
+        pathSegment: ':projectId',
+        viewUrl: 'https://example.com/projects/:projectId/overview'
+      };
+      const pathParams = { projectId: 'proj-123' };
 
-      const result = RoutingHelpers.substituteViewUrl(node, {}, {} as any);
+      const result = RoutingHelpers.substituteViewUrl(node as any, pathParams, {}, mockLuigiForSubstitute);
 
-      expect(result).toBe('');
+      expect(result).toBe('https://example.com/projects/proj-123/overview');
+    });
+
+    it('should substitute multiple pathParams', () => {
+      const node = {
+        pathSegment: ':id',
+        viewUrl: 'https://example.com/:team/:id/details'
+      };
+      const pathParams = { team: 'alpha', id: '42' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, pathParams, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/alpha/42/details');
+    });
+
+    it('should substitute context variables', () => {
+      const node = {
+        pathSegment: 'details',
+        viewUrl: 'https://example.com/{context.tenant}/app',
+        context: { tenant: 'myTenant' }
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/myTenant/app');
+    });
+
+    it('should substitute nested context variables', () => {
+      const node = {
+        pathSegment: 'details',
+        viewUrl: 'https://example.com/{context.project.id}/app',
+        context: { project: { id: 'p-99' } }
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/p-99/app');
+    });
+
+    it('should not substitute context variables when context is undefined', () => {
+      const node = {
+        pathSegment: 'details',
+        viewUrl: 'https://example.com/{context.tenant}/app'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/{context.tenant}/app');
+    });
+
+    it('should substitute nodeParams variables', () => {
+      const node = {
+        pathSegment: 'view',
+        viewUrl: 'https://example.com/page?mode={nodeParams.mode}'
+      };
+      const nodeParams = { mode: 'edit' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, nodeParams, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/page?mode=edit');
+    });
+
+    it('should substitute multiple nodeParams', () => {
+      const node = {
+        pathSegment: 'view',
+        viewUrl: 'https://example.com/{nodeParams.section}/{nodeParams.tab}'
+      };
+      const nodeParams = { section: 'settings', tab: 'general' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, nodeParams, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/settings/general');
+    });
+
+    it('should substitute i18n.currentLocale placeholder', () => {
+      const node = {
+        pathSegment: 'home',
+        viewUrl: 'https://example.com/{i18n.currentLocale}/app'
+      };
+      const luigiWithLocale = {
+        ...mockLuigiForSubstitute,
+        i18n: () => ({ getCurrentLocale: () => 'de' })
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, luigiWithLocale);
+
+      expect(result).toBe('https://example.com/de/app');
+    });
+
+    it('should not modify viewUrl when i18n.currentLocale placeholder is not present', () => {
+      const node = {
+        pathSegment: 'home',
+        viewUrl: 'https://example.com/app'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/app');
+    });
+
+    it('should substitute routing.queryParams when searchParam is available', () => {
+      const node = {
+        pathSegment: 'view',
+        viewUrl: 'https://example.com/app?tab={routing.queryParams.tab}'
+      };
+      const luigiWithSearch = {
+        ...mockLuigiForSubstitute,
+        routing: () => ({ getSearchParams: () => ({ tab: 'settings' }) })
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, luigiWithSearch);
+
+      expect(result).toBe('https://example.com/app?tab=settings');
+    });
+
+    it('should remove query param placeholder when searchParam is not available', () => {
+      const node = {
+        pathSegment: 'view',
+        viewUrl: 'https://example.com/app?tab={routing.queryParams.tab}'
+      };
+      const luigiWithEmptySearch = {
+        ...mockLuigiForSubstitute,
+        routing: () => ({ getSearchParams: () => ({}) })
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, luigiWithEmptySearch);
+
+      expect(result).toBe('https://example.com/app');
+    });
+
+    it('should handle combination of pathParams, context, nodeParams, and i18n', () => {
+      const node = {
+        pathSegment: ':projectId',
+        viewUrl: 'https://example.com/{i18n.currentLocale}/projects/:projectId/{context.env}?view={nodeParams.view}',
+        context: { env: 'production' }
+      };
+      const pathParams = { projectId: 'proj-1' };
+      const nodeParams = { view: 'dashboard' };
+      const luigiWithLocale = {
+        ...mockLuigiForSubstitute,
+        i18n: () => ({ getCurrentLocale: () => 'fr' })
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, pathParams, nodeParams, luigiWithLocale);
+
+      expect(result).toBe('https://example.com/fr/projects/proj-1/production?view=dashboard');
+    });
+
+    it('should encode pathParam values in the URL', () => {
+      const node = {
+        pathSegment: ':name',
+        viewUrl: 'https://example.com/users/:name'
+      };
+      const pathParams = { name: 'John Doe' };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, pathParams, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com/users/John%20Doe');
+    });
+
+    it('should replace unresolved context placeholders with empty string', () => {
+      const node = {
+        pathSegment: 'details',
+        viewUrl: 'https://example.com/{context.missing}/app',
+        context: { other: 'value' }
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com//app');
+    });
+
+    it('should replace unresolved nodeParams placeholders with empty string', () => {
+      const node = {
+        pathSegment: 'view',
+        viewUrl: 'https://example.com/{nodeParams.missing}/page'
+      };
+
+      const result = RoutingHelpers.substituteViewUrl(node as any, {}, {}, mockLuigiForSubstitute);
+
+      expect(result).toBe('https://example.com//page');
     });
   });
 });
