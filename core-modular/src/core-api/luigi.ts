@@ -129,6 +129,7 @@ export class Luigi {
 
   /**
    * Get the global context object.
+   * @returns {Object} the global context object
    */
   getGlobalContext(): Record<string, any> {
     return this.config?.navigation?.globalContext || {};
