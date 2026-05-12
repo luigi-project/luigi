@@ -4,15 +4,13 @@ export const EventListenerHelpers = {
   listeners: [] as any[],
   hashChangeWithoutSync: false,
 
-  addEventListener(type: any, listenerFn: any): void {
-    this.listeners.push({ type, listenerFn });
-    window.addEventListener(type, listenerFn);
+  addEventListener(type: any, listenerFn: any, options?: Record<'once', boolean>): void {
+    this.listeners.push({ type, listenerFn, options });
+    window.addEventListener(type, listenerFn, options);
   },
 
   removeEventListener(type: any, listenerFn: any): void {
-    this.listeners = this.listeners.filter(
-      (l) => !(l.type === type && l.listenerFn === listenerFn)
-    );
+    this.listeners = this.listeners.filter((l) => !(l.type === type && l.listenerFn === listenerFn));
     window.removeEventListener(type, listenerFn);
   },
 

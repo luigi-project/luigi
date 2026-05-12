@@ -16,6 +16,7 @@ import { Theming } from './theming';
 import { UX } from './ux';
 import { CustomMessages } from './custom-messages';
 import type { Node } from '../types/navigation';
+import { EventListenerHelpers } from '../utilities/helpers/event-listener-helpers';
 
 export class Luigi {
   config: any;
@@ -159,6 +160,31 @@ export class Luigi {
       localStorage.setItem(this.USER_SETTINGS_KEY, JSON.stringify(userSettingsObj));
     }
     this.configChanged();
+  }
+
+  /**
+   * Reset the current Luigi instance and initialize Luigi with the latest Luigi config.
+   * @example
+   * Luigi.reset();
+   */
+  reset() {
+    const cfg = this.getConfig();
+    this.unload();
+    this.setConfig(cfg);
+  }
+
+  /**
+   * Unloads the current Luigi instance, which can be initialized later again by using `Luigi.setConfig({...})`
+   * @example
+   * Luigi.unload()
+   */
+  unload() {
+    this.initialized = false;
+    window.Luigi._store.clear();
+    AuthLayerSvc.unload();
+    EventListenerHelpers.removeAllEventListeners();
+    const container = this.elements().getLuigiContainer();
+    container?.remove();
   }
 
   customMessages = (): CustomMessages => {

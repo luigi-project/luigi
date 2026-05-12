@@ -37,6 +37,7 @@ describe('Routing Service', () => {
     mockLuigi = {
       config: {},
       engine: {},
+      initialized: true,
       setConfig: () => {},
       configChanged: () => {},
       featureToggles: () => new FeatureToggles(),
@@ -198,13 +199,13 @@ describe('Routing Service', () => {
   it('should add hashchange event listener when useHashRouting is true', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
     routingService.enableRouting();
-    expect(addEventListenerSpy).toHaveBeenCalledWith('hashchange', expect.any(Function));
+    expect(addEventListenerSpy).toHaveBeenCalledWith('hashchange', expect.any(Function), undefined);
   });
 
   it('should not add hashchange event listener when useHashRouting is false', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
     routingService.enableRouting();
-    expect(addEventListenerSpy).not.toHaveBeenCalledWith('hashchange', expect.any(Function));
+    expect(addEventListenerSpy).not.toHaveBeenCalledWith('hashchange', expect.any(Function), undefined);
   });
 
   describe('handleRouteChange', () => {
