@@ -578,7 +578,7 @@ export class RoutingService {
   ): Promise<boolean> {
     const { children, intendToHaveEmptyViewUrl, compound } = node;
 
-    const hasChildrenNode = (children && Array.isArray(children) && children.length > 0) || children || false;
+    const hasChildrenNode = !!children?.length;
 
     if (!compound && viewUrl.trim() === '' && !hasChildrenNode && !intendToHaveEmptyViewUrl) {
       console.warn(
