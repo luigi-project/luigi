@@ -114,7 +114,6 @@ export class Luigi {
 
   /**
    * Set the global context object and triggers the corresponding update.
-   * @memberof Configuration
    * @param {Object} ctx - the context object to set
    * @param {boolean} preventUpdate - if true, no view update is triggered; default is false
    */
@@ -139,7 +138,6 @@ export class Luigi {
    * Updates the context values for all micro frontends currently in the DOM.
    * Note: the updated context values are not persisted. The developers have to do it on their own.
    * @param {Object} ctx - the context object to be updated
-   * @memberof Configuration
    * @example
    * Luigi.updateContextValues({ tenant: 'org-1', lang: 'en' });
    */
