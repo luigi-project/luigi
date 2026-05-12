@@ -751,6 +751,24 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
+  /**
+   * Resolves the final view URL for a given node by substituting dynamic placeholders with actual values.
+   *
+   * Performs the following substitutions in order:
+   * 1. Removes `{virtualTreePath}` if the node is a virtual tree.
+   * 2. Replaces path parameters (e.g. `:id`) with their concrete values from `pathParams`.
+   * 3. Replaces context variables (e.g. `{context.myVar}`) with values from `node.context`.
+   * 4. Replaces node parameter variables (e.g. `{nodeParams.myParam}`) with values from `nodeParams`.
+   * 5. Replaces `{i18n.currentLocale}` with the current locale.
+   * 6. Replaces `{routing.queryParams.<key>}` with the corresponding search parameter value,
+   *    or removes the query parameter from the URL if the value is not present.
+   *
+   * @param node - The navigation node containing the `viewUrl` template and optional `context`/`virtualTree` properties.
+   * @param pathParams - A map of path parameter names to their resolved values (e.g. `{ id: '42' }`).
+   * @param nodeParams - A map of node-specific parameters passed to the micro frontend.
+   * @param luigi - The Luigi instance used to access i18n, routing, and configuration.
+   * @returns The fully resolved view URL string, or an empty string if `node.viewUrl` is not defined.
+   */
   substituteViewUrl(
     node: Node,
     pathParams: Record<string, string>,
@@ -795,9 +813,9 @@ export const RoutingHelpers = {
   /**
    * Returns the viewUrl with current locale, e.g. luigi/{i18n.currentLocale}/ -> luigi/en
    * if viewUrl contains {i18n.currentLocale} term, it will be replaced by current locale
-   * @param {*} viewUrl
+   * @param viewUrl
    */
-  getI18nViewUrl(viewUrl: string, luigi: Luigi) {
+  getI18nViewUrl(viewUrl: string, luigi: Luigi): string {
     const i18n_currentLocale = '{i18n.currentLocale}';
     const locale = luigi.i18n().getCurrentLocale();
     const hasI18n = viewUrl && viewUrl.includes(i18n_currentLocale);
