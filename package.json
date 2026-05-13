@@ -42,7 +42,8 @@
    },
    "husky": {
       "hooks": {
-         "pre-commit": "git diff --quiet HEAD -- container || npm run lint --prefix=container && npm run code-quality ./scripts/hooks/remove-test-prefixes.sh && ./scripts/hooks/generate-docu.sh &&  ./scripts/hooks/prevent-illegal-characters.sh"
+         "pre-commit": "git diff --quiet HEAD -- container || npm run lint --prefix=container && npm run code-quality ./scripts/hooks/remove-test-prefixes.sh && ./scripts/hooks/generate-docu.sh &&  ./scripts/hooks/prevent-illegal-characters.sh",
+         "commit-msg": "./scripts/hooks/check-signoff.sh $HUSKY_GIT_PARAMS"
       }
    },
    "codeQuality": {
