@@ -87,7 +87,11 @@ export class NavigationService {
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+    const rootContext = {
+      parentNavigationContexts: [] as string[],
+      ...(currentContext || {}),
+      ...(rootNode.context || {})
+    };
     const pathParams: Record<string, any> = {};
     const pathData: PathData = {
       context: rootContext,
@@ -110,7 +114,7 @@ export class NavigationService {
             break;
           }
           const nodeContext = node.context || {};
-          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext, node.navigationContext);
           let substitutedContext = mergedContext;
           if (node.pathSegment?.startsWith(':')) {
             pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);

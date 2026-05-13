@@ -120,20 +120,34 @@ describe('Navigation-helpers', () => {
     expect(NavigationHelpers.prepareForTests('Whatever It', 'Takes')).toEqual('whateverit_takes');
   });
 
-  describe('applyContext', () => {
+  describe('mergeContext', () => {
     it('should return provided context when no additional data is present', () => {
       const mockedContext = { data: 'store' };
-      const result = NavigationHelpers.applyContext(mockedContext, null, null);
+      const result = NavigationHelpers.mergeContext(mockedContext);
 
-      expect(result).toEqual(mockedContext);
+      expect(result).toEqual({ ...mockedContext, parentNavigationContexts: [] });
     });
 
-    it('should return provided context when additional data is present', () => {
+    it('should return merged context when additional data is present', () => {
       const mockedContext = { data: 'store' };
       const mockedAddition = { foo: 'bar' };
-      const result = NavigationHelpers.applyContext(mockedContext, mockedAddition, null);
+      const result = NavigationHelpers.mergeContext(mockedContext, mockedAddition);
 
-      expect(result).toEqual({ ...mockedContext, ...mockedAddition });
+      expect(result).toEqual({ ...mockedContext, ...mockedAddition, parentNavigationContexts: [] });
+    });
+
+    it('should add navigationContext to parentNavigationContexts', () => {
+      const mockedContext = { data: 'store', parentNavigationContexts: ['existing'] };
+      const result = NavigationHelpers.mergeContext(mockedContext, { foo: 'bar' }, 'project');
+
+      expect(result).toEqual({ data: 'store', foo: 'bar', parentNavigationContexts: ['project', 'existing'] });
+    });
+
+    it('should not mutate the original context', () => {
+      const mockedContext = { data: 'store', parentNavigationContexts: ['existing'] };
+      NavigationHelpers.mergeContext(mockedContext, { foo: 'bar' }, 'project');
+
+      expect(mockedContext).toEqual({ data: 'store', parentNavigationContexts: ['existing'] });
     });
   });
 

@@ -142,10 +142,15 @@ export class Luigi {
    * Luigi.updateContextValues({ tenant: 'org-1', lang: 'en' });
    */
   updateContextValues(ctx: Record<string, any>): void {
-    const containerInDom = this.elements().getMicrofrontends();
-    if (containerInDom.length > 0) {
-      containerInDom.forEach((container: any) => {
-        container.updateContext && container.updateContext(ctx);
+    const containers = GenericHelpers.getNodeList('luigi-container[lui_container]');
+    if (containers) {
+      containers.forEach((element: any) => {
+        const currentContext = element.context || {};
+        const newContext = { ...currentContext, ...ctx };
+        element.context = newContext;
+        if (element.updateContext) {
+          element.updateContext(newContext);
+        }
       });
     }
   }

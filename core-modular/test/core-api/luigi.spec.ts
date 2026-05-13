@@ -1,4 +1,5 @@
 import { Luigi } from '../../src/core-api/luigi';
+import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
@@ -107,33 +108,27 @@ describe('Luigi Core API', () => {
 
   describe('updateContextValues', () => {
     it('should call updateContext on all microfrontend containers', () => {
-      const containers = [{ updateContext: jest.fn() }, { updateContext: jest.fn() }];
-      luigi.config = { navigation: {} };
-      jest.spyOn(luigi, 'elements').mockReturnValue({
-        getMicrofrontends: () => containers
-      } as any);
+      const containers = [
+        { context: { existing: 'data' }, updateContext: jest.fn() },
+        { context: { other: 'value' }, updateContext: jest.fn() }
+      ];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
 
       luigi.updateContextValues({ userId: '123' });
 
-      expect(containers[0].updateContext).toHaveBeenCalledWith({ userId: '123' });
-      expect(containers[1].updateContext).toHaveBeenCalledWith({ userId: '123' });
+      expect(containers[0].updateContext).toHaveBeenCalledWith({ existing: 'data', userId: '123' });
+      expect(containers[1].updateContext).toHaveBeenCalledWith({ other: 'value', userId: '123' });
     });
 
     it('should not fail when containers have no updateContext method', () => {
-      const containers = [{ someOtherMethod: jest.fn() }, {}];
-      luigi.config = { navigation: {} };
-      jest.spyOn(luigi, 'elements').mockReturnValue({
-        getMicrofrontends: () => containers
-      } as any);
+      const containers = [{ context: {}, someOtherMethod: jest.fn() }, { context: {} }];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
 
       expect(() => luigi.updateContextValues({ key: 'val' })).not.toThrow();
     });
 
     it('should not fail when there are no microfrontend containers', () => {
-      luigi.config = { navigation: {} };
-      jest.spyOn(luigi, 'elements').mockReturnValue({
-        getMicrofrontends: () => []
-      } as any);
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(null as any);
 
       expect(() => luigi.updateContextValues({ key: 'val' })).not.toThrow();
     });
