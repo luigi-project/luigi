@@ -105,7 +105,13 @@ export const CommunicationModule = {
       UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
     containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
-      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+      if (!(containerElement?.clientPermissions as any)?.changeCurrentLocale) {
+        console.error(
+          'Current locale change declined from client, as client permission "changeCurrentLocale" is not set for this view.'
+        );
+        return;
+      }
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale);
     });
   }
 };
