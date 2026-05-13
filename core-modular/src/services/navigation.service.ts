@@ -870,6 +870,7 @@ export class NavigationService {
   async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
     const {
       path,
+      intent,
       preserveView,
       drawerSettings,
       modalSettings,
@@ -879,7 +880,21 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    const computedPath = await this.buildPath(path, options || {});
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    let computedPath = await this.buildPath(path, options || {});
+
+    if (intent) {
+      const intentPath = RoutingHelpers.getIntentPath(path.replace('#', ''), this.luigi);
+
+      if (typeof intentPath === 'string') {
+        computedPath = intentPath;
+      } else {
+        const locationPath = hashRouting ? location.hash : location.pathname;
+
+        computedPath = locationPath + path;
+      }
+    }
+
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
 
@@ -924,7 +939,7 @@ export class NavigationService {
         ? 'replaceState'
         : chosenHistoryMethod;
 
-      if (this.luigi.getConfig().routing?.useHashRouting) {
+      if (hashRouting) {
         if (!withoutSync && method !== 'replaceState') {
           location.hash = normalizedPath;
         } else {

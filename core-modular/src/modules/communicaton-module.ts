@@ -21,6 +21,7 @@ export const CommunicationModule = {
       const {
         drawer,
         link,
+        intent,
         preserveView,
         modal,
         newTab,
@@ -36,6 +37,7 @@ export const CommunicationModule = {
       } = event.detail;
       const navRequestParams: NavigationRequestParams = {
         drawerSettings: drawer,
+        intent,
         modalSettings: modal,
         newTab,
         path: link,

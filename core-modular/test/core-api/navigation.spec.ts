@@ -72,6 +72,7 @@ describe('Navigation', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
+
   describe('navigate with pathRouting enabled', () => {
     it('should open a path as modal with pathRouting enabled', async () => {
       // make async
@@ -103,6 +104,7 @@ describe('Navigation', () => {
       expect(openModalSpy).not.toHaveBeenCalled();
     });
   });
+
   describe('navigate with hashRouting enabled', () => {
     beforeEach(() => {
       luigiMock.getConfig = jest.fn().mockReturnValue({ routing: { useHashRouting: true } });
@@ -125,6 +127,7 @@ describe('Navigation', () => {
       );
     });
   });
+
   describe('openAsModal', () => {
     it('should set modal title from node label if not provided', async () => {
       // async
