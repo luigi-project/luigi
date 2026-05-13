@@ -176,12 +176,12 @@ describe('Luigi Core API', () => {
       expect(AuthLayerSvc.unload).toHaveBeenCalled();
     });
 
-    it('should remove the Luigi container from the DOM', () => {
-      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+    it('should reset _i18n instance', () => {
+      luigi['_i18n'] = { listeners: { 1: jest.fn() } } as any;
 
       luigi.unload();
 
-      expect(containerMock.remove).toHaveBeenCalled();
+      expect(luigi['_i18n']).toBeUndefined();
     });
 
     it('should handle null container', () => {

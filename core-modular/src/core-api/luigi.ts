@@ -183,8 +183,8 @@ export class Luigi {
     window.Luigi._store.clear();
     AuthLayerSvc.unload();
     EventListenerHelpers.removeAllEventListeners();
-    const container = this.elements().getLuigiContainer();
-    container?.remove();
+    this.getEngine()._connector?.unload();
+    this._i18n = undefined!; //TODO needs to be clarified if we should refactor the i18n service to be reinitialized instead of setting it to undefined
   }
 
   customMessages = (): CustomMessages => {
