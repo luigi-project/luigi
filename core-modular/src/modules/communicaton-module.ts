@@ -7,6 +7,7 @@ import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
 import type { NavigationRequestParams } from '../types/navigation';
+import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -105,10 +106,7 @@ export const CommunicationModule = {
       UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
     containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
-      if (!(containerElement?.clientPermissions as any)?.changeCurrentLocale) {
-        console.error(
-          'Current locale change declined from client, as client permission "changeCurrentLocale" is not set for this view.'
-        );
+      if (!I18nHelpers.hasLocaleChangePermission(containerElement)) {
         return;
       }
       luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale);
