@@ -62,7 +62,11 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, true, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
@@ -70,7 +74,11 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, false, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }
