@@ -378,8 +378,8 @@ export const RoutingHelpers = {
    * - The query string is extracted from the portion after the '?' in the hash.
    * - If there is no query string, `query` will be `undefined`.
    */
-  getCurrentPath(luigi: Luigi, hashRouting?: boolean): { path: string; query: string } {
-    if (/\?intent=/i.test(location.hash)) {
+  getCurrentPath(luigi: Luigi, hashRouting?: boolean, checkIntent?: boolean): { path: string; query: string } {
+    if (checkIntent && /\?intent=/i.test(location.hash)) {
       const hash = location.hash.replace('#/#', '').replace('#', '');
       const intentPath = RoutingHelpers.getIntentPath(hash, luigi);
 
@@ -407,7 +407,7 @@ export const RoutingHelpers = {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
       const [path, query] = pathRaw.split('?');
 
-      return { path, query };
+      return { path: path.replace('#', ''), query };
     } else {
       return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
     }
