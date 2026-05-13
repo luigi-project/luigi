@@ -312,7 +312,7 @@ export class RoutingService {
       const modalHistoryLength = history.state.modalHistoryLength;
       const path = history.state.pathBeforeHistory;
       let isModalHistoryHigherThanHistoryLength = false;
-      EventListenerHelpers.addEventListener(
+      window.addEventListener(
         'popstate',
         (e: PopStateEvent) => {
           if (isModalHistoryHigherThanHistoryLength) {

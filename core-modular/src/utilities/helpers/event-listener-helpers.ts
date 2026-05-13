@@ -4,9 +4,9 @@ export const EventListenerHelpers = {
   listeners: [] as any[],
   hashChangeWithoutSync: false,
 
-  addEventListener(type: any, listenerFn: any, options?: Record<'once', boolean>): void {
-    this.listeners.push({ type, listenerFn, options });
-    window.addEventListener(type, listenerFn, options);
+  addEventListener(type: any, listenerFn: any): void {
+    this.listeners.push({ type, listenerFn });
+    window.addEventListener(type, listenerFn);
   },
 
   removeEventListener(type: any, listenerFn: any): void {
