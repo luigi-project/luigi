@@ -471,7 +471,10 @@ export class RoutingService {
     const activePath: string = GenericHelpers.getTrimmedUrl(path);
     const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
 
-    if ((!viewUrl && !nodeObject?.compound && !nodeObject?.intendToHaveEmptyViewUrl) || nodeObject?.tabNav?.showAsTabHeader) {
+    if (
+      (!viewUrl && !nodeObject?.compound && !nodeObject?.intendToHaveEmptyViewUrl) ||
+      nodeObject?.tabNav?.showAsTabHeader
+    ) {
       const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {
         return await this.getNavigationService().getChildren(node, ctx);
       });
