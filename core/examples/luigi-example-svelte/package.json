@@ -19,7 +19,7 @@
     "local-web-server": "5.4.0",
     "mini-css-extract-plugin": "2.10.2",
     "serve": "14.2.6",
-    "svelte": "5.55.1",
+    "svelte": "5.55.7",
     "svelte-loader": "3.2.4",
     "webpack": "5.105.4",
     "webpack-cli": "6.0.1"

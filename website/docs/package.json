@@ -57,7 +57,7 @@
     "sass": "1.94.2",
     "sass-embedded": "1.93.3",
     "sirv-cli": "2.0.2",
-    "svelte": "5.55.1",
+    "svelte": "5.55.7",
     "svelte-check": "4.4.6",
     "typescript": "5.9.3",
     "vite": "6.4.2",
