@@ -149,7 +149,7 @@ export class Luigi {
         const newContext = { ...currentContext, ...ctx };
         element.context = newContext;
         if (element.updateContext) {
-          element.updateContext(newContext);
+          element.updateContext(newContext, { withoutSync: false });
         }
       });
     }
