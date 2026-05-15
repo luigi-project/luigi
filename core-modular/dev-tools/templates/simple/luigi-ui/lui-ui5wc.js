@@ -451,6 +451,114 @@ const connector = {
 
       shellbar.innerHTML = html;
 
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const switcher = document.createElement('ui5-combobox');
+        const createSwitcherOption = function (item, type) {
+          const element = data.config.customOptionsRenderer ? 'div' : 'ui5-cb-item';
+          const option = document.createElement(element);
+          let label = item.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(item.id);
+          }
+
+          if (data.config.customOptionsRenderer) {
+            option.innerHTML = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+          } else {
+            option.setAttribute('text', label);
+            option.setAttribute('value', item.link);
+          }
+
+          option.setAttribute('type', type);
+
+          return option;
+        };
+
+        switcher.setAttribute('slot', 'content');
+
+        if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+        }
+
+        if (data.config.defaultLabel) {
+          switcher.setAttribute('placeholder', data.config.defaultLabel);
+        }
+
+        switcher.addEventListener('selection-change', function (event) {
+          const selectedType = event.detail?.item?.attributes?.type?.textContent;
+          const selectedValue = event.detail?.item?.attributes?.value?.textContent;
+
+          if (!selectedValue) {
+            return;
+          }
+
+          if (selectedType === 'action') {
+            const node = data.actions.find((action) => action.link === selectedValue);
+
+            if (node?.clickHandler) {
+              const result = node.clickHandler(node);
+
+              if (!result) {
+                return;
+              }
+            }
+
+            setTimeout(() => globalThis.Luigi.navigation().navigate(selectedValue));
+          } else {
+            globalThis.Luigi.navigation().navigate(selectedValue);
+          }
+        });
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position !== 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === filteredActions.length - 1) {
+              item.classList.add('lui-switcher-item--top-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.options?.length) {
+          data.options.forEach((option) => {
+            const item = createSwitcherOption(option, 'option');
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position === 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === 0) {
+              item.classList.add('lui-switcher-item--bottom-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        shellbar.appendChild(switcher);
+      }
+
       if (topNavData.profile) {
         console.log(topNavData.profile);
         if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
@@ -515,6 +623,20 @@ const connector = {
       }
       if (shellbar._lastTopNavData) {
         console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
+      }
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const switcher = shellbar.querySelector('ui5-combobox');
+        if (!switcher) {
+          return;
+        }
+        if (data.selectedOption) {
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', data.selectedOption.label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+        }
       }
     }
     shellbar._lastTopNavData = topNavData;

@@ -74,6 +74,14 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
+.lui-switcher-item--top-separator {
+    border-bottom: 1px solid var(--sapList_BorderColor);
+}
+
+.lui-switcher-item--bottom-separator {
+    border-top: 1px solid var(--sapList_BorderColor);
+}
+
 .breadcrumb-wrapper {
     clear: both;
     padding: 1rem 1.5rem 0;

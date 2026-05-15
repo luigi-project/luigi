@@ -10,6 +10,47 @@ window.onload = () => {
           }
         }
       },
+      contextSwitcher: {
+        defaultLabel: 'Select Environment',
+        parentNodePath: '/environments',
+        lazyloadOptions: true,
+        options: () =>
+          [...Array(10).keys()]
+            .filter((n) => n !== 0)
+            .map((n) => ({
+              label: 'Environment ' + n,
+              pathValue: 'env' + n
+            })),
+        actions: [
+          {
+            label: '+ New Environment (top)',
+            link: '/create-environment'
+          },
+          {
+            label: '+ New Environment (bottom)',
+            link: '/create-environment',
+            position: 'bottom',
+            clickHandler: (node) => {
+              return true; // route change will be done using link value (if defined)
+              // return false // route change will not be done even if link attribute is defined
+            }
+          },
+          {
+            label: '+ New Project',
+            link: '/projects',
+            position: 'bottom',
+            clickHandler: (node) => {
+              Luigi.ux().showAlert({
+                text: `Project created.`,
+                type: 'info',
+                closeAfter: 3000
+              });
+              return true;
+            }
+          }
+        ],
+        fallbackLabelResolver: (id) => (id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment')
+      },
       breadcrumbs: {
         clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
         pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
@@ -209,6 +250,50 @@ window.onload = () => {
                 label: 'SubCat',
                 icon: 'group'
               }
+            }
+          ]
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'projects',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/projects',
+          context: {
+            label: 'Project List'
+          }
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'create-environment',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/create/environment',
+          context: {
+            label: 'Create Environment'
+          }
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'environments',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/environments',
+          children: [
+            {
+              pathSegment: ':environmentId',
+              viewUrl: '/microfrontend.html#/environments/:environmentId',
+              children: [
+                {
+                  label: 'Overview',
+                  icon: 'group',
+                  pathSegment: 'overview',
+                  viewUrl: '/microfrontend.html#/environments/:environmentId/overview'
+                },
+                {
+                  label: 'Settings',
+                  icon: 'group',
+                  pathSegment: 'settings',
+                  viewUrl: '/microfrontend.html#/environments/:environmentId/settings'
+                }
+              ]
             }
           ]
         },
