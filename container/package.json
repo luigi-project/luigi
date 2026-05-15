@@ -70,7 +70,7 @@
     "rollup-plugin-svelte": "7.2.3",
     "sirv-cli": "2.0.2",
     "source-map-support": "0.5.21",
-    "svelte": "5.55.1",
+    "svelte": "5.55.7",
     "svelte-check": "3.8.6",
     "svelte-preprocess": "5.1.4",
     "ts-node": "10.9.2",
