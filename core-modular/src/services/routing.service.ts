@@ -11,6 +11,7 @@ import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { DirtyStatusService } from './dirty-status.service';
+import { EventListenerHelpers } from '../utilities/helpers/event-listener-helpers';
 
 export class RoutingService {
   navigationService?: NavigationService;
@@ -60,7 +61,7 @@ export class RoutingService {
     const luigiConfig = this.luigi.getConfig();
 
     if (luigiConfig.routing?.useHashRouting) {
-      window.addEventListener('hashchange', (ev) => {
+      EventListenerHelpers.addEventListener('hashchange', (ev: HashChangeEvent) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
@@ -68,7 +69,7 @@ export class RoutingService {
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
-      window.addEventListener('popstate', (ev) => {
+      EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
@@ -319,7 +320,7 @@ export class RoutingService {
       let isModalHistoryHigherThanHistoryLength = false;
       window.addEventListener(
         'popstate',
-        (e) => {
+        (e: PopStateEvent) => {
           if (isModalHistoryHigherThanHistoryLength) {
             //replace the url with saved path and get rid of modal data in url
             history.replaceState({}, '', path);
