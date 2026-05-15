@@ -37,6 +37,7 @@ describe('Routing Service', () => {
     mockLuigi = {
       config: {},
       engine: {},
+      initialized: true,
       setConfig: () => {},
       configChanged: () => {},
       featureToggles: () => new FeatureToggles(),
