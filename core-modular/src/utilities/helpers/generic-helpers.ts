@@ -254,7 +254,13 @@ export const GenericHelpers = {
    * @param parenthesis
    * @returns
    */
-  replaceVars(inputString: string, params: Record<string, any>, prefix: string, parenthesis = true): string {
+  replaceVars(
+    inputString: string,
+    params: Record<string, any>,
+    prefix: string,
+    parenthesis = true,
+    slashStop = false
+  ): string {
     let processedString = inputString;
     if (params) {
       if (parenthesis) {
@@ -266,12 +272,17 @@ export const GenericHelpers = {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach((entry) => {
-          processedString = processedString.replace(
-            new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
-            encodeURIComponent(entry[1])
-          );
-        });
+        const delim = slashStop ? ' ' : '';
+        processedString = processedString.replace(/\//g, delim + '/') + delim;
+        Array.from(Object.entries(params))
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach((entry) => {
+            processedString = processedString.replace(
+              new RegExp(this.escapeRegExp(prefix + entry[0] + delim), 'g'),
+              encodeURIComponent(entry[1])
+            );
+          });
+        processedString = processedString.replace(new RegExp(this.escapeRegExp(delim), 'g'), '');
       }
     }
     if (parenthesis) {

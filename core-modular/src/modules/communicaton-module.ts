@@ -7,6 +7,7 @@ import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
 import type { NavigationRequestParams } from '../types/navigation';
+import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -105,7 +106,10 @@ export const CommunicationModule = {
       UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
     containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
-      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+      if (!I18nHelpers.hasLocaleChangePermission(containerElement)) {
+        return;
+      }
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale);
     });
   }
 };

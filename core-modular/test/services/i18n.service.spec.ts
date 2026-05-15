@@ -54,25 +54,11 @@ describe('I18N Service', function () {
       expect(locale).toEqual('mock-locale');
     });
 
-    it('should set locale if client permission is set to true', () => {
-      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
-      LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: true } } as any);
-      expect(global.sessionStorage.setItem).toHaveBeenCalledWith('luigi.currentLocale', 'de');
-      expect(notifyLocaleChangeSpy).toHaveBeenCalledWith('de');
-    });
-
-    it('should not set locale if client permission is set to false', () => {
-      const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
-      LuigiI18N.setCurrentLocale('de', { clientPermissions: { changeCurrentLocale: false } } as any);
-      expect(global.sessionStorage.setItem).not.toHaveBeenCalled();
-      expect(notifyLocaleChangeSpy).not.toHaveBeenCalled();
-    });
-
-    it('should not set locale if client permission is missing', () => {
+    it('should set locale', () => {
       const notifyLocaleChangeSpy = jest.spyOn(LuigiI18N, '_notifyLocaleChange');
       LuigiI18N.setCurrentLocale('de');
-      expect(global.sessionStorage.setItem).not.toHaveBeenCalled();
-      expect(notifyLocaleChangeSpy).not.toHaveBeenCalled();
+      expect(global.sessionStorage.setItem).toHaveBeenCalledWith('luigi.currentLocale', 'de');
+      expect(notifyLocaleChangeSpy).toHaveBeenCalledWith('de');
     });
 
     it('should not set empty locale', () => {
