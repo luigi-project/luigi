@@ -452,9 +452,9 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.contextSwitcher) {
-        const data = {...topNavData.contextSwitcher};
+        const data = { ...topNavData.contextSwitcher };
         const switcher = document.createElement('ui5-combobox');
-        const createSwitcherOption = function(item, type) {
+        const createSwitcherOption = function (item, type) {
           const element = data.config.customOptionsRenderer ? 'div' : 'ui5-cb-item';
           const option = document.createElement(element);
           let label = item.label;
@@ -495,7 +495,7 @@ const connector = {
           switcher.setAttribute('placeholder', data.config.defaultLabel);
         }
 
-        switcher.addEventListener('selection-change', function(event) {
+        switcher.addEventListener('selection-change', function (event) {
           const selectedType = event.detail?.item?.attributes?.type?.textContent;
           const selectedValue = event.detail?.item?.attributes?.value?.textContent;
 
@@ -625,7 +625,7 @@ const connector = {
         console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
       }
       if (topNavData.contextSwitcher) {
-        const data = {...topNavData.contextSwitcher};
+        const data = { ...topNavData.contextSwitcher };
         const switcher = shellbar.querySelector('ui5-combobox');
         if (!switcher) {
           return;

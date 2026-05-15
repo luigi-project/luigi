@@ -49,7 +49,7 @@ window.onload = () => {
             }
           }
         ],
-        fallbackLabelResolver: (id) => id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment'
+        fallbackLabelResolver: (id) => (id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment')
       },
       breadcrumbs: {
         clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
