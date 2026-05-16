@@ -155,6 +155,8 @@
   let context;
   let previousPathData;
   let sideNavCompactMode;
+  let sideNavFooterItems = [];
+  let expandedFooterItems = {};
   let store = getContext('store');
   let getTranslation = getContext('getTranslation');
   let addNavHrefForAnchor = false;
@@ -201,10 +203,15 @@
     sideNavCompactMode = LuigiConfig.getConfigBooleanValue('settings.sideNavCompactMode');
     expandedCategories = NavigationHelpers.loadExpandedCategories();
     displayFooterWhenCollapsed = LuigiConfig.getConfigBooleanValue('settings.sideNav.displayFooterWhenCollapsed');
+    sideNavFooterItems = LuigiConfig.getConfigValue('settings.sideNav.footerItems') || [];
 
     StateHelpers.doOnStoreChange(store, () => {
       footerText = LuigiConfig.getConfigValue('settings.sideNavFooterText');
     }, ['settings.footer']);
+
+    StateHelpers.doOnStoreChange(store, () => {
+      sideNavFooterItems = LuigiConfig.getConfigValue('settings.sideNav.footerItems') || [];
+    }, ['settings.sideNav']);
 
     StateHelpers.doOnStoreChange(store, () => {
       setLeftNavData();
@@ -491,6 +498,25 @@
     if (vegaSideNav) {
       closeMorePopup();
     }
+  }
+
+  function handleFooterItemClick(item) {
+    Routing.navigateToLink(item);
+  }
+
+  function toggleFooterItem(key) {
+    expandedFooterItems[key] = !expandedFooterItems[key];
+    expandedFooterItems = expandedFooterItems;
+  }
+
+  function getFooterItemHref(item) {
+    if (item.externalLink && item.externalLink.url) {
+      return item.externalLink.url;
+    }
+    if (addNavHrefForAnchor && item.link) {
+      return item.link;
+    }
+    return undefined;
   }
 
   export function handleIconClick(nodeOrNodes, el) {
@@ -1096,7 +1122,8 @@
 {:else}
   <div
     class="fd-app__sidebar fd-navigation {hideNavComponent ? 'hideNavComponent' : ''} {footerText ||
-    semiCollapsibleButton
+    semiCollapsibleButton ||
+    (sideNavFooterItems && sideNavFooterItems.length > 0)
       ? 'hasFooter'
       : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}"
   >
@@ -1359,6 +1386,150 @@
             <LeftNavMore collapsedMode={isSemiCollapsed}></LeftNavMore>
           </ul>
         </div>
+        <!-- Vega sideNav footer items -->
+        {#if sideNavFooterItems && sideNavFooterItems.length > 0}
+          <hr class="fd-side-nav__separator" />
+          <div
+            class="fd-side-nav__container fd-side-nav__container--bottom lui-sidenav-footer-items"
+            data-testid="lui-sidenav-footer-items"
+          >
+            <ul class="fd-navigation-list" role="list">
+              {#each sideNavFooterItems as item, index}
+                {#if item.label}
+                  {#if item.children && item.children.length > 0}
+                    <!-- Collapsible parent item -->
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <li
+                      class="fd-navigation-list__item {isSemiCollapsed
+                        ? 'fd-popover__control'
+                        : ''} lui-footer-nav-entry"
+                      role="presentation"
+                      on:click|stopPropagation={(event) => {
+                        if (isSemiCollapsed) {
+                          handleIconClick({ metaInfo: { label: '__footer_' + index } }, event.currentTarget);
+                        }
+                      }}
+                    >
+                      <!-- svelte-ignore a11y-missing-attribute -->
+                      <!-- svelte-ignore a11y-role-has-required-aria-props -->
+                      <a
+                        class="fd-navigation-list__content"
+                        role="treeitem"
+                        tabindex="0"
+                        aria-expanded={isSemiCollapsed
+                          ? selectedCategory === '__footer_' + index
+                          : !!expandedFooterItems[index]}
+                        aria-selected={false}
+                        title={$getTranslation(item.label)}
+                        on:click|preventDefault={() => {
+                          if (!isSemiCollapsed) {
+                            toggleFooterItem(index);
+                          }
+                        }}
+                        on:keyup={(event) => {
+                          if (!isSemiCollapsed && (event.key === 'Enter' || event.code === 'Space')) {
+                            toggleFooterItem(index);
+                          }
+                        }}
+                        data-testid={item.testId || NavigationHelpers.prepareForTests(item.label, 'footer')}
+                      >
+                        <div class="fd-navigation-list__content-container">
+                          {#if item.icon}
+                            <span class="fd-navigation-list__icon">
+                              {#if isOpenUIiconName(item.icon)}
+                                <i class={getSapIconStr(item.icon)} role="presentation" />
+                              {:else}
+                                <img src={item.icon} alt={item.altText || ''} />
+                              {/if}
+                            </span>
+                          {:else if isSemiCollapsed}
+                            <span class="fd-navigation-list__icon">
+                              <i class="sap-icon--rhombus-milestone-2" role="presentation" />
+                            </span>
+                          {/if}
+                          <span class="fd-navigation-list__text">{$getTranslation(item.label)}</span>
+                        </div>
+                        <div class="fd-navigation-list__navigation-indicator" role="presentation" aria-hidden="true">
+                          {#if !isSemiCollapsed && expandedFooterItems[index]}
+                            <i class="sap-icon--navigation-down-arrow" role="presentation"></i>
+                          {:else}
+                            <i class="sap-icon--navigation-right-arrow" role="presentation"></i>
+                          {/if}
+                        </div>
+                      </a>
+                      {#if isSemiCollapsed || expandedFooterItems[index]}
+                        <LeftNavCollapsedWrapper
+                          label={$getTranslation(item.label)}
+                          icon={item.icon}
+                          collapsedMode={isSemiCollapsed}
+                          expanded={isSemiCollapsed
+                            ? selectedCategory === '__footer_' + index
+                            : !!expandedFooterItems[index]}
+                        >
+                          <ul class="fd-navigation-list level-2" role="group" tabindex="-1">
+                            {#each item.children as child}
+                              {#if child.label}
+                                <li class="fd-navigation-list__item" role="presentation">
+                                  <!-- svelte-ignore a11y-role-has-required-aria-props -->
+                                  <a
+                                    class="fd-navigation-list__content"
+                                    role="treeitem"
+                                    tabindex="0"
+                                    href={getFooterItemHref(child)}
+                                    title={$getTranslation(child.label)}
+                                    on:click|preventDefault={() => handleFooterItemClick(child)}
+                                    data-testid={child.testId ||
+                                      NavigationHelpers.prepareForTests(child.label, 'footer')}
+                                  >
+                                    <div class="fd-navigation-list__content-container">
+                                      <span class="fd-navigation-list__text">{$getTranslation(child.label)}</span>
+                                    </div>
+                                  </a>
+                                </li>
+                              {/if}
+                            {/each}
+                          </ul>
+                        </LeftNavCollapsedWrapper>
+                      {/if}
+                    </li>
+                  {:else}
+                    <!-- Leaf item -->
+                    <li class="fd-navigation-list__item lui-footer-nav-entry" role="presentation">
+                      <!-- svelte-ignore a11y-role-has-required-aria-props -->
+                      <a
+                        class="fd-navigation-list__content"
+                        role="treeitem"
+                        aria-selected={false}
+                        tabindex="0"
+                        href={getFooterItemHref(item)}
+                        title={$getTranslation(item.label)}
+                        on:click|preventDefault={() => handleFooterItemClick(item)}
+                        data-testid={item.testId || NavigationHelpers.prepareForTests(item.label, 'footer')}
+                      >
+                        <div class="fd-navigation-list__content-container">
+                          {#if item.icon}
+                            <span class="fd-navigation-list__icon">
+                              {#if isOpenUIiconName(item.icon)}
+                                <i class={getSapIconStr(item.icon)} role="presentation" />
+                              {:else}
+                                <img src={item.icon} alt={item.altText || ''} />
+                              {/if}
+                            </span>
+                          {:else if isSemiCollapsed}
+                            <span class="fd-navigation-list__icon">
+                              <i class="sap-icon--rhombus-milestone-2" role="presentation" />
+                            </span>
+                          {/if}
+                          <span class="fd-navigation-list__text">{$getTranslation(item.label)}</span>
+                        </div>
+                      </a>
+                    </li>
+                  {/if}
+                {/if}
+              {/each}
+            </ul>
+          </div>
+        {/if}
         <!-- Vega footer -->
         {#if displayFooterWhenCollapsed && footerText}
           <div class="fd-side-nav__utility">
@@ -1990,6 +2161,10 @@
     overflow-x: hidden;
     background-color: transparent;
     @include transition(width 0.1s linear);
+  }
+
+  .lui-sidenav-footer-items {
+    flex-shrink: 0;
   }
 
   .lui-side-nav__footer {
