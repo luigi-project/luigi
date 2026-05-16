@@ -1080,7 +1080,7 @@ The profile section is a configurable drop-down list available in the top naviga
 
 ### items
 - **type**: array
-- **description**: an array of objects, each one being a link to a Luigi navigation node or an external URL.
+- **description**: an array of objects, each one being a link to a Luigi navigation node or an external URL. Items can also act as group headers containing sub-items when the **children** property is defined.
 - **attributes**:
   - **label** defines the text for the link.
   - **testId** is a string where you can define your own custom `testId` for E2E tests. If nothing is specified, it is the node's label written as one word and lower case (e.g. `label`).
@@ -1094,6 +1094,7 @@ The profile section is a configurable drop-down list available in the top naviga
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
     - **url** is the external URL that the link leads to.
+  - **children** is an array of sub-items displayed in an expandable submenu flyout. When this property is defined, the item acts as a non-clickable group header. Each child item supports the same attributes as a regular item (**label**, **icon**, **altText**, **testId**, **link**, **openNodeInModal**, **externalLink**). This feature is only available for the **vega** profile type. **since**: v2.x
 
 ### logout
 - **type**: object

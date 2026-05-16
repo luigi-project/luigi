@@ -683,6 +683,7 @@
                     on:toggleDropdownState={() => toggleDropdownState('profilePopover')}
                     on:userInfoUpdated={userInfoUpdate}
                     {addNavHrefForAnchor}
+                    isHidden={!(dropDownStates.profilePopover || false)}
                   />
                 </div>
               </div>
