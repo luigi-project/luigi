@@ -896,7 +896,11 @@ export class NavigationService {
     const computedPath = await this.buildPath(path, options || {});
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
-
+    const hashRouting = this.luigi.getConfig()?.routing?.useHashRouting;
+    const currentPath = RoutingHelpers.getCurrentPath(hashRouting).path;
+    if (GenericHelpers.trimLeadingSlash(currentPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
+      return;
+    }
     if (drawerSettings || modalSettings) {
       if (drawerSettings) {
         this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);

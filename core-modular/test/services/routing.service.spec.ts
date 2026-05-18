@@ -274,6 +274,7 @@ describe('Routing Service', () => {
     it('should use currentNode from getCurrentNode if pathData.selectedNode is not available', async () => {
       jest.spyOn(navigationService, 'getPathData').mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
+      jest.spyOn(routingService, 'handleViewUrlMisconfigured').mockResolvedValue(false);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({});
       const childNode = { pathSegment: '123', viewUrl: '/some/url' };
       const rootNode = { pathSegment: 'home', children: [childNode] };
@@ -301,6 +302,7 @@ describe('Routing Service', () => {
     it('should not call onNodeChange if current node has not changed', async () => {
       jest.spyOn(navigationService, 'getPathData').mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
+      jest.spyOn(routingService, 'handleViewUrlMisconfigured').mockResolvedValue(false);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({});
       (mockLuigi.getConfig as jest.Mock).mockReturnValue({ navigation: { nodeChangeHook: () => {} } });
       const childNode = { pathSegment: '123', viewUrl: '/some/url' };
@@ -328,6 +330,7 @@ describe('Routing Service', () => {
 
       jest.spyOn(navigationService, 'getPathData').mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
       jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
+      jest.spyOn(routingService, 'handleViewUrlMisconfigured').mockResolvedValue(false);
       routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
       (mockNavService.getCurrentNode as jest.Mock).mockReturnValue({ nodeParams: {}, searchParams: {} });
 
@@ -908,6 +911,126 @@ describe('Routing Service', () => {
       expect(handleRouteChangeSpy).not.toHaveBeenCalled();
       expect(showRouteNotFoundAlertSpy).toHaveBeenCalled();
       expect(handleNavigationRequestSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('handleViewUrlMisconfigured', () => {
+    let showPageNotFoundErrorSpy: jest.SpyInstance;
+    let getDefaultChildNodeSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      showPageNotFoundErrorSpy = jest.spyOn(routingService, 'showPageNotFoundError').mockResolvedValue(undefined);
+      getDefaultChildNodeSpy = jest.spyOn(RoutingHelpers, 'getDefaultChildNode').mockResolvedValue('/home');
+      mockNavService.getPathData.mockResolvedValue({
+        rootNodes: [],
+        pathParams: {},
+        matchedPath: '/',
+        nodesInPath: [{ pathSegment: 'home' }]
+      });
+    });
+
+    it('should return false if node is a compound', async () => {
+      const node = { compound: {}, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', {} as any, '/test');
+      expect(result).toBe(false);
+    });
+
+    it('should return false if viewUrl is not empty', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '/some/url', {} as any, '/test');
+      expect(result).toBe(false);
+    });
+
+    it('should return false if node has children', async () => {
+      const node = {
+        compound: undefined,
+        children: [{ pathSegment: 'child' }],
+        intendToHaveEmptyViewUrl: false
+      } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', {} as any, '/test');
+      expect(result).toBe(false);
+    });
+
+    it('should return false if intendToHaveEmptyViewUrl is true', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: true } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', {} as any, '/test');
+      expect(result).toBe(false);
+    });
+
+    it('should return true and redirect when viewUrl is misconfigured and no previous path data', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', undefined as any, '/test');
+
+      expect(result).toBe(true);
+      expect(mockNavService.getPathData).toHaveBeenCalledWith('/');
+      expect(getDefaultChildNodeSpy).toHaveBeenCalled();
+      expect(showPageNotFoundErrorSpy).toHaveBeenCalledWith('/home', '/test', false);
+    });
+
+    it('should return true and redirect when previous path data has no viewUrl and no compound', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const previousPathData = {
+        selectedNode: { viewUrl: undefined, compound: undefined },
+        rootNodes: [],
+        pathParams: {},
+        matchedPath: ''
+      } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
+
+      expect(result).toBe(true);
+      expect(showPageNotFoundErrorSpy).toHaveBeenCalledWith('/home', '/test', false);
+    });
+
+    it('should return true without redirect when previous path data has a viewUrl', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const previousPathData = {
+        selectedNode: { viewUrl: '/prev/view' },
+        rootNodes: [],
+        pathParams: {},
+        matchedPath: ''
+      } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
+
+      expect(result).toBe(true);
+      expect(showPageNotFoundErrorSpy).not.toHaveBeenCalled();
+      expect(mockNavService.handleNavigationRequest).not.toHaveBeenCalled();
+    });
+
+    it('should return true without redirect when previous path data has a compound node', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const previousPathData = {
+        selectedNode: { viewUrl: undefined, compound: {} },
+        rootNodes: [],
+        pathParams: {},
+        matchedPath: ''
+      } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
+
+      expect(result).toBe(true);
+      expect(showPageNotFoundErrorSpy).not.toHaveBeenCalled();
+      expect(mockNavService.handleNavigationRequest).not.toHaveBeenCalled();
+    });
+
+    it('should log a warning when misconfiguration is detected', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      await routingService.handleViewUrlMisconfigured(node, '', undefined as any, '/test');
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        "The intended target route can't be accessed since it has neither a viewUrl nor children. This is most likely a misconfiguration."
+      );
+    });
+
+    it('should return false for whitespace-only viewUrl when node has children', async () => {
+      const node = { compound: undefined, children: [{ pathSegment: 'a' }], intendToHaveEmptyViewUrl: false } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '   ', {} as any, '/test');
+      expect(result).toBe(false);
+    });
+
+    it('should treat whitespace-only viewUrl as empty', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const result = await routingService.handleViewUrlMisconfigured(node, '   ', undefined as any, '/test');
+      expect(result).toBe(true);
     });
   });
 });
