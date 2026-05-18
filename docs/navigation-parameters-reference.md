@@ -1094,7 +1094,7 @@ The profile section is a configurable drop-down list available in the top naviga
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
     - **url** is the external URL that the link leads to.
-  - **children** is an array of sub-items displayed in an expandable submenu flyout. When this property is defined, the item acts as a non-clickable group header. Each child item supports the same attributes as a regular item (**label**, **icon**, **altText**, **testId**, **link**, **openNodeInModal**, **externalLink**). This feature is only available for the **vega** profile type. **since**: v2.x
+  - **children** is an array of sub-items displayed in an expandable submenu flyout. When this property is defined, the item acts as a non-clickable group header. Each child item supports the same attributes as a regular item (**label**, **icon**, **altText**, **testId**, **link**, **openNodeInModal**, **externalLink**). This feature is only available for the **vega** profile type.
 
 ### logout
 - **type**: object
