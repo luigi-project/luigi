@@ -891,7 +891,9 @@ export class NavigationService {
       } else {
         const locationPath = hashRouting ? location.hash : location.pathname;
 
-        computedPath = locationPath + path;
+        RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
+
+        computedPath = locationPath;
       }
     }
 

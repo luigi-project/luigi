@@ -394,11 +394,7 @@ export const RoutingHelpers = {
 
           return { path: intentPath, query: location.search };
         } else {
-          if ((intentPath as any).external && (intentPath as any).url) {
-            const target = (intentPath as any).openInNewTab ? '_blank' : '_self';
-
-            window.open((intentPath as any).url, target, 'noopener,noreferrer')?.focus();
-          }
+          RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
         }
       }
     }
@@ -410,6 +406,14 @@ export const RoutingHelpers = {
       return { path: path.replace('#', ''), query };
     } else {
       return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
+    }
+  },
+
+  handleExternalIntentPath(intentPath: Record<string, any>): void {
+    if (intentPath.external && intentPath.url) {
+      const target = intentPath.openInNewTab ? '_blank' : '_self';
+
+      window.open(intentPath.url, target, 'noopener,noreferrer')?.focus();
     }
   },
 
