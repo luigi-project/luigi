@@ -6,8 +6,9 @@
 
 ## [v1.7.7] (2026-05-18)
 
+#### :rocket: Added
 
-
+* [#5114](https://github.com/luigi-project/luigi/pull/5114) Allow configuring withoutSync for updateContext ([@JohannesDoberer](https://github.com/JohannesDoberer))
 
 
 ## [v1.7.6] (2025-12-18)
