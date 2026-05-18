@@ -106,8 +106,8 @@
             type="text"
             class="fd-input fd-input-group__input fd-shellbar__input-group-input luigi-search__input fd-shellbar__search-field-input"
             data-testid="luigi-search-input__no-handlers"
-            onfocus="event.target.parentNode.classList.add('is-focus')"
-            onblur="event.target.parentNode.classList.remove('is-focus')"
+            on:focus={(event) => event.target.parentNode.classList.add('is-focus')}
+            on:blur={(event) => event.target.parentNode.classList.remove('is-focus')}
             placeholder=" "
           />
         {:else}
@@ -119,8 +119,8 @@
             data-testid="luigi-search-input"
             bind:this={inputElem}
             on:input={() => renderClearBtn()}
-            onfocus="event.target.parentNode.classList.add('is-focus')"
-            onblur="event.target.parentNode.classList.remove('is-focus')"
+            on:focus={(event) => event.target.parentNode.classList.add('is-focus')}
+            on:blur={(event) => event.target.parentNode.classList.remove('is-focus')}
             placeholder=" "
           />
           <div
