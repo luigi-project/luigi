@@ -19,6 +19,14 @@ id = "GHSA-phwv-c562-gvmh"
 reason = "SSR is not used by Luigi"
 
 [[IgnoredVulns]]
+id = "GHSA-pr6f-5x2q-rwfp"
+reason = "SSR is not used by Luigi"
+
+[[IgnoredVulns]]
+id = "GHSA-rcqx-6q8c-2c42"
+reason = "DOM clobbering requires attribute spreading on both a form element and its child input/button elements, which Luigi does not use anywhere."
+
+[[IgnoredVulns]]
 id = "GHSA-952p-6rrq-rcjv"
 reason = "live-server is intended for local development only"
 

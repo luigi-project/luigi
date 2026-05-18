@@ -79,6 +79,8 @@ export interface LuigiConnector {
     getLuigiContainer(): HTMLElement | null;
     getNavFooterContainer(): HTMLElement | null;
   };
+
+  unload(): void;
 }
 
 export type { Node };
