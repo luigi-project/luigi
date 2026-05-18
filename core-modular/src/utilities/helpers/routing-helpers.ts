@@ -393,8 +393,10 @@ export const RoutingHelpers = {
           }
 
           return { path: intentPath, query: location.search };
-        } else {
+        } else if (GenericHelpers.isObject(intentPath)) {
           RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
+
+          return { path: hashRouting ? location.hash : location.pathname, query: '' };
         }
       }
     }

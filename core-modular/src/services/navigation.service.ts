@@ -886,14 +886,15 @@ export class NavigationService {
     if (intent) {
       const intentPath = RoutingHelpers.getIntentPath(path.replace('#', ''), this.luigi);
 
+      if (!intentPath) {
+        return;
+      }
+
       if (typeof intentPath === 'string') {
         computedPath = intentPath;
-      } else {
-        const locationPath = hashRouting ? location.hash : location.pathname;
-
+      } else if (GenericHelpers.isObject(intentPath)) {
         RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
-
-        computedPath = locationPath;
+        return;
       }
     }
 
