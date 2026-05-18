@@ -361,9 +361,9 @@
   }
 
   :global(
-      .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-cancel.fd-input-group__addon--button,
-      .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-submit.fd-input-group__addon--button
-    ) {
+    .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-cancel.fd-input-group__addon--button,
+    .fd-input-group__addon.fd-shellbar__search-field-addon.fd-shellbar__search-submit.fd-input-group__addon--button
+  ) {
     display: inherit;
   }
 
