@@ -52,15 +52,15 @@ export class ContainerAPIFunctions {
    * @param internal internal luigi legacy data
    * @param iframeHandle a reference to the iframe that is needed to send a message to it internally
    */
-  updateViewUrl = (viewUrl: string, context: object, internal?: InternalPayload, iframeHandle?: IframeHandle) => {
+  updateViewUrl = (viewUrl: string, context: object, internal?: object, iframeHandle?: IframeHandle) => {
     if (iframeHandle) {
-      const internalParameter: InternalPayload = internal || {};
+      const internalParameter = internal || {};
       containerService.sendCustomMessageToIframe(
         iframeHandle,
         {
           context,
           internal: internalParameter,
-          withoutSync: internalParameter.withoutSync ?? false,
+          withoutSync: false,
           viewUrl
         },
         LuigiInternalMessageID.SEND_CONTEXT_OBJECT
