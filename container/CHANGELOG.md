@@ -4,6 +4,12 @@
 
 
 
+## [v1.7.7] (2026-05-18)
+
+
+
+
+
 ## [v1.7.6] (2025-12-18)
 
 #### :bug: Fixed
@@ -164,3 +170,4 @@
 [v1.7.4]: https://github.com/luigi-project/luigi/compare/container/v1.7.3...container/v1.7.4
 [v1.7.5]: https://github.com/luigi-project/luigi/compare/container/v1.7.4...container/v1.7.5
 [v1.7.6]: https://github.com/luigi-project/luigi/compare/container/v1.7.5...container/v1.7.6
+[v1.7.7]: https://github.com/luigi-project/luigi/compare/container/v1.7.6...container/v1.7.7
