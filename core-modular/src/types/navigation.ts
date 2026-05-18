@@ -110,6 +110,7 @@ export interface Node {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  intendToHaveEmptyViewUrl?: boolean;
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;

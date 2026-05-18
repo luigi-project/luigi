@@ -2,6 +2,25 @@ import { Luigi } from '../../src/core-api/luigi';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
+jest.mock('../../src/utilities/helpers/config-helpers', () => ({
+  ConfigHelpers: {
+    getConfigValue: jest.fn(),
+    getConfigValueAsync: jest.fn(),
+    setErrorMessage: jest.fn(),
+    getLuigi: jest.fn(),
+    executeConfigFnAsync: jest.fn().mockResolvedValue(undefined)
+  }
+}));
+
+jest.mock('../../src/services/auth-layer.service', () => ({
+  AuthLayerSvc: {
+    init: jest.fn().mockResolvedValue(undefined),
+    unload: jest.fn()
+  }
+}));
+
+import { AuthLayerSvc } from '../../src/services/auth-layer.service';
+
 describe('Luigi Core API', () => {
   let luigi: Luigi;
   let engineMock: any;
@@ -112,6 +131,111 @@ describe('Luigi Core API', () => {
       expect(nodes[0].titleResolver._cache).toBeUndefined();
       expect(nodes[0].titleResolver.url).toBe('/api/title');
       expect(nodes[0].titleResolver.timeout).toBe(5000);
+    });
+  });
+
+  describe('unload', () => {
+    let containerMock: any;
+
+    beforeEach(() => {
+      containerMock = {
+        remove: jest.fn()
+      };
+
+      (window as any).Luigi = {
+        _store: { clear: jest.fn() }
+      };
+    });
+
+    afterEach(() => {
+      delete (window as any).Luigi;
+    });
+
+    it('should set initialized to false', () => {
+      luigi.initialized = true;
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+
+      luigi.unload();
+
+      expect(luigi.initialized).toBe(false);
+    });
+
+    it('should call _store.clear on window.Luigi', () => {
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+
+      luigi.unload();
+
+      expect((window as any).Luigi._store.clear).toHaveBeenCalled();
+    });
+
+    it('should call AuthLayerSvc.unload', () => {
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+
+      luigi.unload();
+
+      expect(AuthLayerSvc.unload).toHaveBeenCalled();
+    });
+
+    it('should reset _i18n instance', () => {
+      luigi['_i18n'] = { listeners: { 1: jest.fn() } } as any;
+
+      luigi.unload();
+
+      expect(luigi['_i18n']).toBeUndefined();
+    });
+
+    it('should handle null container', () => {
+      luigi['_elements'] = { getLuigiContainer: () => null } as any;
+
+      expect(() => luigi.unload()).not.toThrow();
+    });
+  });
+
+  describe('reset', () => {
+    beforeEach(() => {
+      (window as any).Luigi = {
+        _store: { clear: jest.fn() }
+      };
+    });
+
+    afterEach(() => {
+      delete (window as any).Luigi;
+    });
+
+    it('should call unload', () => {
+      const containerMock = { remove: jest.fn() };
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+      luigi.config = { navigation: { nodes: [] } };
+
+      const unloadSpy = jest.spyOn(luigi, 'unload');
+
+      luigi.reset();
+
+      expect(unloadSpy).toHaveBeenCalled();
+    });
+
+    it('should call setConfig with the existing config', () => {
+      const containerMock = { remove: jest.fn() };
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+      const cfg = { navigation: { nodes: [] }, settings: { header: { title: 'Test' } } };
+      luigi.config = cfg;
+
+      const setConfigSpy = jest.spyOn(luigi, 'setConfig');
+
+      luigi.reset();
+
+      expect(setConfigSpy).toHaveBeenCalledWith(cfg);
+    });
+
+    it('should reinitialize with the same config after unload', () => {
+      const containerMock = { remove: jest.fn() };
+      luigi['_elements'] = { getLuigiContainer: () => containerMock } as any;
+      const cfg = { navigation: { nodes: [] }, settings: {} };
+      luigi.config = cfg;
+
+      luigi.reset();
+
+      expect(luigi.config).toBe(cfg);
     });
   });
 });

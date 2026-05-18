@@ -11,6 +11,7 @@ import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { DirtyStatusService } from './dirty-status.service';
+import { EventListenerHelpers } from '../utilities/helpers/event-listener-helpers';
 
 export class RoutingService {
   navigationService?: NavigationService;
@@ -60,7 +61,7 @@ export class RoutingService {
     const luigiConfig = this.luigi.getConfig();
 
     if (luigiConfig.routing?.useHashRouting) {
-      window.addEventListener('hashchange', (ev) => {
+      EventListenerHelpers.addEventListener('hashchange', (ev: HashChangeEvent) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
@@ -68,7 +69,7 @@ export class RoutingService {
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
     } else {
-      window.addEventListener('popstate', (ev) => {
+      EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
@@ -120,9 +121,8 @@ export class RoutingService {
     });
     this.checkInvalidateCache(this.previousPathData, path);
     const pathData = await this.getNavigationService().getPathData(path);
-    this.previousPathData = pathData;
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const pathUrlRaw = GenericHelpers.getPathWithoutHash(path);
+    const pathUrlRaw = GenericHelpers.getPathWithoutHash(path) || '';
 
     this.currentRoute = {
       raw: window.location.href,
@@ -132,6 +132,12 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     const viewUrl = currentNode?.viewUrl || '';
+    if (
+      currentNode &&
+      this.previousPathData &&
+      (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))
+    )
+      return;
     if (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw)) {
       return;
     }
@@ -157,6 +163,7 @@ export class RoutingService {
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
       await UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
+      this.previousPathData = pathData;
     }
   }
 
@@ -313,7 +320,7 @@ export class RoutingService {
       let isModalHistoryHigherThanHistoryLength = false;
       window.addEventListener(
         'popstate',
-        (e) => {
+        (e: PopStateEvent) => {
           if (isModalHistoryHigherThanHistoryLength) {
             //replace the url with saved path and get rid of modal data in url
             history.replaceState({}, '', path);
@@ -553,5 +560,46 @@ export class RoutingService {
 
     RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched, this.luigi);
     this.getNavigationService().handleNavigationRequest({ path: GenericHelpers.addLeadingSlash(pathToRedirect) });
+  }
+
+  /**
+   * Handles viewUrl misconfiguration scenario. If a node has no viewUrl, no children,
+   * and is not a compound node, it redirects to the root default child node.
+   * @param node - active node data
+   * @param viewUrl - the url of the current mf view
+   * @param previousPathData - previous path data
+   * @param pathUrlRaw - path url without hash
+   * @returns true if misconfiguration was detected and handled
+   */
+  async handleViewUrlMisconfigured(
+    node: Node,
+    viewUrl: string,
+    previousPathData: PathData,
+    pathUrlRaw: string
+  ): Promise<boolean> {
+    const { children, intendToHaveEmptyViewUrl, compound } = node;
+
+    const hasChildrenNode = !!children?.length;
+
+    if (!compound && viewUrl.trim() === '' && !hasChildrenNode && !intendToHaveEmptyViewUrl) {
+      console.warn(
+        "The intended target route can't be accessed since it has neither a viewUrl nor children. This is most likely a misconfiguration."
+      );
+
+      if (
+        !(
+          previousPathData &&
+          (previousPathData.selectedNode?.viewUrl ||
+            (previousPathData.selectedNode && previousPathData.selectedNode.compound))
+        )
+      ) {
+        const rootPathData = await this.getNavigationService().getPathData('/');
+        const rootPath = await RoutingHelpers.getDefaultChildNode(rootPathData);
+        this.showPageNotFoundError(rootPath, pathUrlRaw, false);
+        this.getNavigationService().handleNavigationRequest({ path: rootPath });
+      }
+      return true;
+    }
+    return false;
   }
 }
