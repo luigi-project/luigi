@@ -694,6 +694,7 @@ describe('JS-TEST-APP', () => {
       it('Should collapse group on second click', () => {
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
         cy.get('[data-testid="profile-child-profile"]').should('be.visible');
         cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
