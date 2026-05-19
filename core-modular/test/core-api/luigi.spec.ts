@@ -135,8 +135,14 @@ describe('Luigi Core API', () => {
 
       luigi.updateContextValues({ userId: '123' });
 
-      expect(containers[0].updateContext).toHaveBeenCalledWith({ existing: 'data', userId: '123' }, { withoutSync: false });
-      expect(containers[1].updateContext).toHaveBeenCalledWith({ other: 'value', userId: '123' }, { withoutSync: false });
+      expect(containers[0].updateContext).toHaveBeenCalledWith(
+        { existing: 'data', userId: '123' },
+        { withoutSync: false }
+      );
+      expect(containers[1].updateContext).toHaveBeenCalledWith(
+        { other: 'value', userId: '123' },
+        { withoutSync: false }
+      );
     });
 
     it('should not fail when containers have no updateContext method', () => {
