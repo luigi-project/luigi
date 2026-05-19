@@ -1,21 +1,30 @@
 import Events from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule } from './ux-module';
 import type { NavigationRequestParams } from '../types/navigation';
+import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {
-    console.log('Init communication...');
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
     containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
+      const preloadingService = serviceRegistry.get(PreloadingService);
+      preloadingService.viewGroupLoaded(containerElement);
+      if (!containerElement._luigiPreloading && containerElement.style.display !== 'none') {
+        preloadingService.preload();
+      }
+    });
+    containerElement.addEventListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
+      serviceRegistry.get(PreloadingService).preload();
     });
     containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
       const {
@@ -81,7 +90,7 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
     containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: any) => {
-      UXModule.handleDirtyStatusRequest(event.detail?.data?.dirty, event.detail?.source);
+      UXModule.handleDirtyStatusRequest(event.detail?.data?.dirty, containerElement);
     });
     containerElement.addEventListener(Events.ADD_NODE_PARAMS_REQUEST, (event: any) => {
       luigi.routing().addNodeParams(event.payload.data, event.payload.keepBrowserHistory);
@@ -99,7 +108,10 @@ export const CommunicationModule = {
       UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
     });
     containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
-      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+      if (!I18nHelpers.hasLocaleChangePermission(containerElement)) {
+        return;
+      }
+      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale);
     });
   }
 };

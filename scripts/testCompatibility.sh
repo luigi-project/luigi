@@ -185,7 +185,7 @@ checkoutLuigiToTestfolder() {
   for FOLDER in "${APP_FOLDERS[@]}"; do
     echoe "Installing app $FOLDER in $LUIGI_DIR_TESTING"
     cd $LUIGI_DIR_TESTING/$FOLDER
-    npm i
+    npm ci
   done
 }
 

@@ -5,7 +5,7 @@ export interface TopNavData {
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface AppSwitcher {
@@ -72,7 +72,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface PathData {
@@ -110,6 +110,7 @@ export interface Node {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  intendToHaveEmptyViewUrl?: boolean;
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
@@ -188,7 +189,7 @@ export interface TabNavData {
   selectedNode?: any;
   items?: NavItem[];
   basePath?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface BreadcrumbData {
@@ -509,6 +510,11 @@ export interface TitleResolver {
   fallbackIcon?: string;
   /** @internal runtime cache – not user-configured */
   _cache?: TitleResolverCache;
+}
+
+export interface ViewGroupSettings {
+  preloadUrl?: string;
+  loadOnStartup?: boolean;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';

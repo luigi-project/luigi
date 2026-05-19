@@ -58,7 +58,6 @@ export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
   init: (luigi: Luigi) => {
-    console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable(undefined);
     dirtyStatusService = serviceRegistry.get(DirtyStatusService);

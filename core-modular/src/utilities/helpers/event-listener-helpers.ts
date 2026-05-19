@@ -10,9 +10,7 @@ export const EventListenerHelpers = {
   },
 
   removeEventListener(type: any, listenerFn: any): void {
-    this.listeners = this.listeners.filter(
-      (l) => !(l.type === type && l.listenerFn === listenerFn)
-    );
+    this.listeners = this.listeners.filter((l) => !(l.type === type && l.listenerFn === listenerFn));
     window.removeEventListener(type, listenerFn);
   },
 
