@@ -62,17 +62,25 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, true, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true));
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
       window.addEventListener('popstate', (ev) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, false, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi));
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }
   }
 
@@ -118,6 +126,7 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     const viewUrl = currentNode?.viewUrl || '';
+
     if (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw)) {
       return;
     }
