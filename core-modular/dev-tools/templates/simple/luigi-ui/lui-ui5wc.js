@@ -453,19 +453,24 @@ const connector = {
 
       if (topNavData.contextSwitcher) {
         const data = { ...topNavData.contextSwitcher };
-        const switcher = document.createElement('ui5-combobox');
+        const wrapper = data.config.customOptionsRenderer ? 'select' : 'ui5-combobox';
+        const switcher = document.createElement(wrapper);
         const createSwitcherOption = function (item, type) {
-          const element = data.config.customOptionsRenderer ? 'div' : 'ui5-cb-item';
-          const option = document.createElement(element);
           let label = item.label;
+          let option;
 
           if (!label && data.config.fallbackLabelResolver) {
             label = data.config.fallbackLabelResolver(item.id);
           }
 
           if (data.config.customOptionsRenderer) {
-            option.innerHTML = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+            if (data.selectedOption?.link === item.link && data.config.customSelectedOptionRenderer) {
+              option = data.config.customSelectedOptionRenderer(data.selectedOption);
+            } else {
+              option = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+            }
           } else {
+            option = document.createElement('ui5-cb-item');
             option.setAttribute('text', label);
             option.setAttribute('value', item.link);
           }
@@ -475,6 +480,7 @@ const connector = {
           return option;
         };
 
+        switcher.setAttribute('name', 'context-switcher');
         switcher.setAttribute('slot', 'content');
 
         if (data.selectedOption) {
@@ -492,12 +498,27 @@ const connector = {
         }
 
         if (data.config.defaultLabel) {
-          switcher.setAttribute('placeholder', data.config.defaultLabel);
+          if (data.config.customOptionsRenderer) {
+            const option = document.createElement('option');
+
+            option.setAttribute('value', '');
+            option.textContent = data.config.defaultLabel;
+
+            switcher.prepend(option);
+          } else {
+            switcher.setAttribute('placeholder', data.config.defaultLabel);
+          }
         }
 
-        switcher.addEventListener('selection-change', function (event) {
-          const selectedType = event.detail?.item?.attributes?.type?.textContent;
-          const selectedValue = event.detail?.item?.attributes?.value?.textContent;
+        const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
+
+        switcher.addEventListener(eventType, function (event) {
+          const selectedType = event.detail ?
+            event.detail?.item?.attributes?.type?.textContent :
+            event.target.value;
+          const selectedValue = event.detail ?
+            event.detail?.item?.attributes?.value?.textContent :
+            event.target.value;
 
           if (!selectedValue) {
             return;

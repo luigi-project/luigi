@@ -38,7 +38,7 @@ export interface ContextSwitcherItem {
   label?: string;
   link?: string;
   linkFromPath?: null | string;
-  postion?: 'bottom' | 'top';
+  position?: 'bottom' | 'top';
   testId?: string;
 }
 

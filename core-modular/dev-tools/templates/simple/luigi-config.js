@@ -49,6 +49,29 @@ window.onload = () => {
             }
           }
         ],
+        customOptionsRenderer: (item, selected) => {
+          const option = document.createElement('option');
+
+          option.setAttribute('value', item.link);
+          option.textContent = item.label;
+
+          if (selected) {
+            option.selected = true;
+            option.classList.add('is-selected');
+          }
+
+          return option;
+        },
+        customSelectedOptionRenderer: (item) => {
+          const option = document.createElement('option');
+
+          option.setAttribute('value', item.link);
+          option.textContent = item.label;
+          option.selected = true;
+          option.classList.add('is-selected');
+
+          return option;
+        },
         fallbackLabelResolver: (id) => (id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment')
       },
       breadcrumbs: {
