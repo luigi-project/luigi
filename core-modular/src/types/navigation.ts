@@ -114,6 +114,7 @@ export interface Node {
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  link?: string;
   loadingIndicator?: {
     enabled: boolean;
   };
@@ -178,6 +179,7 @@ export interface BreadcrumbItem {
 export interface NavItem {
   altText?: string;
   category?: Category;
+  href?: string;
   icon?: string;
   node?: Node;
   label?: string;

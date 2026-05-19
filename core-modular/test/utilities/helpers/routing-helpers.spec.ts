@@ -951,4 +951,119 @@ describe('Routing-helpers', () => {
       expect(result).toBe('https://example.com//page');
     });
   });
+
+  describe('getRouteLink', () => {
+    it('should return external link URL when node has externalLink', () => {
+      const node = { pathSegment: 'ext', externalLink: { url: 'https://external.com/page' } };
+      const result = RoutingHelpers.getRouteLink(node as any, {}, '#');
+      expect(result).toBe('https://external.com/page');
+    });
+
+    it('should return prefixed custom link when node has link property', () => {
+      const node = { pathSegment: 'custom', link: '/some/path' };
+      const result = RoutingHelpers.getRouteLink(node as any, {}, '#');
+      expect(result).toBe('#/some/path');
+    });
+
+    it('should build route from path segments with prefix', () => {
+      const node = { pathSegment: 'child', parent: { pathSegment: 'parent' } };
+      const result = RoutingHelpers.getRouteLink(node as any, {}, '#');
+      expect(result).toBe('#/parent/child');
+    });
+
+    it('should substitute dynamic path params in route', () => {
+      const node = { pathSegment: ':userId', parent: { pathSegment: 'users' } };
+      const result = RoutingHelpers.getRouteLink(node as any, { userId: '42' }, '/');
+      expect(result).toBe('//users/42');
+    });
+
+    it('should use empty prefix when relativePathPrefix is empty', () => {
+      const node = { pathSegment: 'home' };
+      const result = RoutingHelpers.getRouteLink(node as any, {}, '');
+      expect(result).toBe('/home');
+    });
+  });
+
+  describe('calculateNodeHref', () => {
+    it('should use hash prefix when useHashRouting is true', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ routing: { useHashRouting: true } }),
+        getConfigValue: (key: string) => {
+          if (key === 'routing.useHashRouting') return true;
+          return null;
+        },
+        i18n: () => ({ getCurrentLocale: () => 'en', getTranslation: (k: string) => k })
+      };
+      const node = { pathSegment: 'projects' };
+      const result = RoutingHelpers.calculateNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBe('#/projects');
+    });
+
+    it('should use no prefix when useHashRouting is false', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ routing: { useHashRouting: false } }),
+        getConfigValue: (key: string) => {
+          if (key === 'routing.useHashRouting') return false;
+          return null;
+        },
+        i18n: () => ({ getCurrentLocale: () => 'en', getTranslation: (k: string) => k })
+      };
+      const node = { pathSegment: 'projects' };
+      const result = RoutingHelpers.calculateNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBe('/projects');
+    });
+  });
+
+  describe('getNodeHref', () => {
+    it('should return undefined when addNavHrefs is false', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ navigation: { addNavHrefs: false }, routing: {} }),
+        getConfigValue: (key: string) => null
+      };
+      const node = { pathSegment: 'home' };
+      const result = RoutingHelpers.getNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when addNavHrefs is not set', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ navigation: {}, routing: {} }),
+        getConfigValue: (key: string) => null
+      };
+      const node = { pathSegment: 'home' };
+      const result = RoutingHelpers.getNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return href when addNavHrefs is true', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ navigation: { addNavHrefs: true }, routing: { useHashRouting: true } }),
+        getConfigValue: (key: string) => {
+          if (key === 'routing.useHashRouting') return true;
+          return null;
+        },
+        i18n: () => ({ getCurrentLocale: () => 'en', getTranslation: (k: string) => k })
+      };
+      const node = { pathSegment: 'projects', parent: { pathSegment: 'home' } };
+      const result = RoutingHelpers.getNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBe('#/home/projects');
+    });
+
+    it('should return external link href when addNavHrefs is true and node has externalLink', () => {
+      const mockLuigi = {
+        ...luigi,
+        getConfig: () => ({ navigation: { addNavHrefs: true }, routing: { useHashRouting: false } }),
+        getConfigValue: (key: string) => null,
+        i18n: () => ({ getCurrentLocale: () => 'en', getTranslation: (k: string) => k })
+      };
+      const node = { pathSegment: 'ext', externalLink: { url: 'https://example.com' } };
+      const result = RoutingHelpers.getNodeHref(node as any, {}, mockLuigi as any);
+      expect(result).toBe('https://example.com');
+    });
+  });
 });

@@ -860,5 +860,32 @@ export const RoutingHelpers = {
     }
     path += relativePath;
     return path;
+  },
+
+  getRouteLink(node: Node, pathParams: Record<string, any>, relativePathPrefix: string): string {
+    const pp = relativePathPrefix || '';
+
+    if (node.externalLink && node.externalLink.url) {
+      return node.externalLink.url;
+    } else if (node.link) {
+      return pp + node.link;
+    }
+
+    const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
+  },
+
+  calculateNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string {
+    const useHashRouting = luigi.getConfigValue('routing.useHashRouting');
+    const prefix = useHashRouting ? '#' : '';
+    const link = RoutingHelpers.getRouteLink(node, pathParams, prefix);
+    return RoutingHelpers.getI18nViewUrl(link, luigi) || link;
+  },
+
+  getNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string | undefined {
+    if (GenericHelpers.getConfigBooleanValue(luigi.getConfig(), 'navigation.addNavHrefs')) {
+      return RoutingHelpers.calculateNodeHref(node, pathParams, luigi);
+    }
+    return undefined;
   }
 };

@@ -228,7 +228,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
-          icon: node.icon
+          icon: node.icon,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -237,7 +238,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
-          selected: node === selectedNode
+          selected: node === selectedNode,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
