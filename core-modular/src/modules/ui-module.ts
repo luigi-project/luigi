@@ -207,10 +207,18 @@ export const UIModule = {
       noScopes ||
       scopes.includes('navigation') ||
       scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata') ||
-      scopes.includes('settings.theming')
+      scopes.includes('navigation.viewgroupdata')
     ) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
+      if (croute.path) {
+        const pathData = await UIModule.navService.getPathData(croute.path);
+        const currentNode = pathData?.selectedNode ?? croute.node;
+        if (currentNode) {
+          croute.node = currentNode;
+          UIModule.updateMainContent(currentNode, UIModule.luigi);
+        }
+      }
+    } else if (scopes.includes('settings.theming')) {
       if (croute.node) {
         UIModule.updateMainContent(croute.node, UIModule.luigi);
       }

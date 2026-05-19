@@ -113,7 +113,10 @@ export class NavigationService {
             console.warn('No matching node found for segment:', segment);
             break;
           }
-          const nodeContext = node.context || {};
+          const nodeContext = node._rawContext ?? node.context ?? {};
+          if (!('_rawContext' in node)) {
+            node._rawContext = node.context;
+          }
           const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext, node.navigationContext);
           let substitutedContext = mergedContext;
           if (node.pathSegment?.startsWith(':')) {

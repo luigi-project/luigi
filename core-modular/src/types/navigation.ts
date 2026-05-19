@@ -143,6 +143,7 @@ export interface Node {
   _virtualTree?: Node;
   _virtualPathIndex?: number;
   _virtualViewUrl?: string;
+  _rawContext?: Record<string, any>;
 }
 
 export interface PageErrorHandler {
