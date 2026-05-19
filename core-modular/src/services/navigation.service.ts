@@ -916,7 +916,7 @@ export class NavigationService {
 
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
-    const currentPath = RoutingHelpers.getCurrentPath(hashRouting).path;
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path;
 
     if (GenericHelpers.trimLeadingSlash(currentPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
       return;
