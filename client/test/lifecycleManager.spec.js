@@ -45,10 +45,7 @@ describe('LifecycleManager', () => {
     it('posts luigi.get-context message to parent', () => {
       const postMessageSpy = jest.spyOn(window.parent, 'postMessage').mockImplementation(() => {});
       lcManager.luigiClientInit();
-      expect(postMessageSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ msg: 'luigi.get-context' }),
-        '*'
-      );
+      expect(postMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ msg: 'luigi.get-context' }), '*');
       postMessageSpy.mockRestore();
     });
   });
@@ -236,9 +233,7 @@ describe('LifecycleManager', () => {
     it('defaults keepBrowserHistory to true', () => {
       const spy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {});
       lcManager.addNodeParams({ page: 2 });
-      expect(spy).toHaveBeenCalledWith(
-        expect.objectContaining({ keepBrowserHistory: true })
-      );
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ keepBrowserHistory: true }));
       spy.mockRestore();
     });
   });
@@ -489,10 +484,7 @@ describe('LifecycleManager', () => {
 
       lcManager._tpcCheck();
 
-      expect(postMessageSpy).toHaveBeenCalledWith(
-        { msg: 'luigi.third-party-cookie', tpc: 'enabled' },
-        '*'
-      );
+      expect(postMessageSpy).toHaveBeenCalledWith({ msg: 'luigi.third-party-cookie', tpc: 'enabled' }, '*');
 
       postMessageSpy.mockRestore();
     });

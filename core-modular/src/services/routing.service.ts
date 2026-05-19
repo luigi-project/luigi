@@ -142,9 +142,9 @@ export class RoutingService {
     const viewUrl = currentNode?.viewUrl || '';
 
     if (
-      currentNode &&
-      this.previousPathData &&
-      (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw)) ||
+      (currentNode &&
+        this.previousPathData &&
+        (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))) ||
       (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw))
     ) {
       return;
