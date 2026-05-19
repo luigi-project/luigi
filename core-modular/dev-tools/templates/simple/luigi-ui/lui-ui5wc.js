@@ -513,12 +513,8 @@ const connector = {
         const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
 
         switcher.addEventListener(eventType, function (event) {
-          const selectedType = event.detail ?
-            event.detail?.item?.attributes?.type?.textContent :
-            event.target.value;
-          const selectedValue = event.detail ?
-            event.detail?.item?.attributes?.value?.textContent :
-            event.target.value;
+          const selectedType = event.detail ? event.detail?.item?.attributes?.type?.textContent : event.target.value;
+          const selectedValue = event.detail ? event.detail?.item?.attributes?.value?.textContent : event.target.value;
 
           if (!selectedValue) {
             return;
