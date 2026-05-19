@@ -114,6 +114,9 @@ export class NavigationService {
             break;
           }
           const nodeContext = node._rawContext ?? node.context ?? {};
+          // node.context gets overwritten with the merged result (globalContext + nodeContext) below.
+          // We preserve the originally declared context so that subsequent calls (e.g. after setGlobalContext)
+          // merge against the raw value instead of the previously accumulated one.
           if (!('_rawContext' in node)) {
             node._rawContext = node.context;
           }
