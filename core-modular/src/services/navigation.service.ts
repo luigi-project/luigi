@@ -1162,7 +1162,7 @@ export class NavigationService {
   }
 
   private async buildContextSwitcher(): Promise<ContextSwitcher> {
-    const actions = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
     const config = this.luigi.getConfigValue('navigation.contextSwitcher');
     const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(undefined, this.luigi);
     const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
@@ -1182,6 +1182,30 @@ export class NavigationService {
       options,
       parentNodePath
     );
+    const handleChangeEvent = (event: any) => {
+      const selectedType = event.detail ? event.detail?.item?.attributes?.type?.textContent : undefined;
+      const selectedValue = event.detail ? event.detail?.item?.attributes?.value?.textContent : event.target.value;
+
+      if (!selectedValue) {
+        return;
+      }
+
+      if (selectedType === 'action') {
+        const node = actions.find((action) => action.link === selectedValue);
+
+        if (node?.clickHandler) {
+          const result = node.clickHandler(node);
+
+          if (!result) {
+            return;
+          }
+        }
+
+        setTimeout(() => this.luigi.navigation().navigate(selectedValue));
+      } else {
+        this.luigi.navigation().navigate(selectedValue);
+      }
+    };
 
     if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
       options.forEach((option) => {
@@ -1195,7 +1219,8 @@ export class NavigationService {
       options,
       selectedLabel,
       selectedNodePath,
-      selectedOption
+      selectedOption,
+      switcherChange: (event: any) => handleChangeEvent(event)
     };
   }
 }

@@ -29,6 +29,7 @@ export interface ContextSwitcher {
   selectedLabel?: string;
   selectedNodePath?: any;
   selectedOption?: ContextSwitcherItem;
+  switcherChange?: (event: any) => void;
 }
 
 export interface ContextSwitcherItem {
@@ -38,7 +39,7 @@ export interface ContextSwitcherItem {
   label?: string;
   link?: string;
   linkFromPath?: null | string;
-  postion?: 'bottom' | 'top';
+  position?: 'bottom' | 'top';
   testId?: string;
 }
 
