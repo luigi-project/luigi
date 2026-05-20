@@ -513,27 +513,10 @@ const connector = {
         const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
 
         switcher.addEventListener(eventType, function (event) {
-          const selectedType = event.detail ? event.detail?.item?.attributes?.type?.textContent : event.target.value;
-          const selectedValue = event.detail ? event.detail?.item?.attributes?.value?.textContent : event.target.value;
-
-          if (!selectedValue) {
-            return;
-          }
-
-          if (selectedType === 'action') {
-            const node = data.actions.find((action) => action.link === selectedValue);
-
-            if (node?.clickHandler) {
-              const result = node.clickHandler(node);
-
-              if (!result) {
-                return;
-              }
-            }
-
-            setTimeout(() => globalThis.Luigi.navigation().navigate(selectedValue));
+          if (data.switcherChange) {
+            data.switcherChange(event);
           } else {
-            globalThis.Luigi.navigation().navigate(selectedValue);
+            console.warn('There is no context switcher change handler defined in configuration.');
           }
         });
 
@@ -648,8 +631,14 @@ const connector = {
           return;
         }
         if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
           switcher.setAttribute('selected-value', data.selectedOption.link);
-          switcher.setAttribute('value', data.selectedOption.label);
+          switcher.setAttribute('value', label);
         } else {
           switcher.removeAttribute('selected-value');
           switcher.removeAttribute('value');

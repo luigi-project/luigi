@@ -29,6 +29,7 @@ export interface ContextSwitcher {
   selectedLabel?: string;
   selectedNodePath?: any;
   selectedOption?: ContextSwitcherItem;
+  switcherChange?: (event: any) => void;
 }
 
 export interface ContextSwitcherItem {
