@@ -60,6 +60,38 @@ export class Navigation {
     return this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
+  /**
+   * Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing parameters.
+   * @param {string} semanticSlug - concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
+   * @param {Object} params - an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`
+   * @example
+   * LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
+   * LuigiClient.linkManager().navigateToIntent('Sales-settings')
+   */
+  navigateToIntent = (semanticSlug: string, params = {}) => {
+    let newPath = '#?intent=';
+
+    newPath += semanticSlug;
+
+    if (params && Object.keys(params)?.length) {
+      const paramList = Object.entries(params);
+
+      // append parameters to the path if any
+      if (paramList.length > 0) {
+        newPath += '?';
+
+        for (const [key, value] of paramList) {
+          newPath += key + '=' + value + '&';
+        }
+
+        // trim potential excessive ampersand & at the end
+        newPath = newPath.slice(0, -1);
+      }
+    }
+
+    this.navigate(newPath);
+  };
+
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
     if (!modalSettings?.keepPrevious) {
       const closed = await this.modalService.closeModalsWithDirtyCheck();
@@ -104,7 +136,7 @@ export class Navigation {
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
-    const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
+    const { path } = RoutingHelpers.getCurrentPath(this.luigi, this.luigi.getConfig().routing?.useHashRouting);
     const currentNode: Node | undefined = await this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
