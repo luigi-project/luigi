@@ -696,20 +696,28 @@ describe('JS-TEST-APP', () => {
       });
 
       it('Should collapse group on second click', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist';
+
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
-          .should('be.visible')
-          .and('have.attr', 'aria-expanded', 'false')
-          .click();
-        cy.get('[data-testid="profile-child-profile"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should(
-          'have.attr',
-          'aria-expanded',
-          'true'
-        );
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').click();
+
+        // First click: expand. Wait for the *sublist DOM* to appear, not just the
+        // aria-expanded flag, so the post-render is fully settled before the next click.
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.get(sublist).should('exist');
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
+
+        // Second click: collapse. Re-query from scratch to avoid any stale element
+        // reference from the previous render pass.
+        cy.get(groupHeader).click();
+
+        // Verify collapse on the toggle itself first (cheapest assertion, retried by
+        // Cypress until the state propagates), then on the resulting DOM removal.
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
+        cy.get(sublist).should('not.exist');
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
       });
 
