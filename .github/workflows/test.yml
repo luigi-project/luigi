@@ -111,6 +111,23 @@ jobs:
       - run: cp -r ~/tmp_build/* .
       - run: npm run test --prefix core-modular || exit 1
 
+  client_support_angular_unit:
+    name: Client Support Angular Unit Tests
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '24.x'
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        with:
+          path: |
+            ~/tmp_build
+            ~/cypress-binary-cache
+          key: buildcache-${{ github.ref }}
+      - run: cp -r ~/tmp_build/* .
+      - run: npm test --prefix client-frameworks-support/client-support-angular || exit 1
+
   container_e2e_tests:
     name: Container E2E Tests
     needs: prepare

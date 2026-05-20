@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-58qx-3vcg-4xpx"
+reason = "ws is a transitive dependency of browser-sync, used only for local development"
