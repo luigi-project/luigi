@@ -697,7 +697,7 @@ describe('JS-TEST-APP', () => {
 
       it('Should collapse group on second click', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist';
+        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
 
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
