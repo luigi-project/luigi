@@ -687,7 +687,10 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('be.visible')
+          .and('have.attr', 'aria-expanded', 'false')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         cy.get('[data-testid="profile-child-privacy"]').should('exist');
       });
@@ -696,9 +699,14 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('be.visible')
+          .and('have.attr', 'aria-expanded', 'false')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('have.attr', 'aria-expanded', 'true')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
       });
 
@@ -706,7 +714,10 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/two', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('be.visible')
+          .and('have.attr', 'aria-expanded', 'false')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').click();
         cy.expectPathToBe('/home/one');
       });
@@ -715,7 +726,10 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('be.visible')
+          .and('have.attr', 'aria-expanded', 'false')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         cy.get('.fd-user-menu__header').click();
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
@@ -725,7 +739,10 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/one', newConfig);
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').should('be.visible').click();
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
+          .should('be.visible')
+          .and('have.attr', 'aria-expanded', 'false')
+          .click();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         // Close profile menu
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
