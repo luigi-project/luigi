@@ -705,8 +705,8 @@ describe('JS-TEST-APP', () => {
           .click();
         cy.get('[data-testid="profile-child-profile"]').should('be.visible');
         cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child')
-          .should('have.attr', 'aria-expanded', 'true')
-          .click();
+          .should('have.attr', 'aria-expanded', 'true');
+        cy.get('[data-testid="profile-group-account"] .fd-menu__link.has-child').click();
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
       });
 
