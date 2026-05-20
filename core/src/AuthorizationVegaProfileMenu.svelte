@@ -291,7 +291,7 @@
                     class="fd-menu__link has-child"
                     class:is-expanded={expandedGroupIndex === index}
                     aria-controls="profile-group-{index}"
-                    aria-expanded={expandedGroupIndex === index}
+                    aria-expanded={expandedGroupIndex === index ? 'true' : 'false'}
                     aria-haspopup="true"
                     role="menuitem"
                     tabindex="0"
