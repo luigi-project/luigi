@@ -1183,12 +1183,8 @@ export class NavigationService {
       parentNodePath
     );
     const handleChangeEvent = (event: any) => {
-      const selectedType = event.detail ?
-        event.detail?.item?.attributes?.type?.textContent :
-        undefined;
-      const selectedValue = event.detail ?
-        event.detail?.item?.attributes?.value?.textContent :
-        event.target.value;
+      const selectedType = event.detail ? event.detail?.item?.attributes?.type?.textContent : undefined;
+      const selectedValue = event.detail ? event.detail?.item?.attributes?.value?.textContent : event.target.value;
 
       if (!selectedValue) {
         return;
