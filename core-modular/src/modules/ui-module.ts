@@ -306,7 +306,7 @@ export const UIModule = {
 
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          viewGroupContainer.updateContext(currentNode.context || {});
+          viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
         }
       } else {
         const container = await createContainer(currentNode, luigi, luigiParams);
