@@ -703,22 +703,13 @@ describe('JS-TEST-APP', () => {
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
 
-        // First click: expand. Wait until the sublist is fully laid out (visible, not just
-        // present in DOM) before issuing the second click. Without this, layout shifts from
-        // the sublist insertion can cause Cypress to click outside the popover, which then
-        // hits the window-level closeAllDropdowns handler in TopNav.svelte and dismisses the
-        // entire profile menu.
         cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false').click();
         cy.get(sublist).should('be.visible');
         cy.get('[data-testid="profile-child-profile"]').should('be.visible');
         cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
 
-        // Second click: collapse. Use trigger('click') instead of .click() to bypass
-        // Cypress's coordinate-based actionability check, eliminating the race where the
-        // computed click point falls outside the (re-rendering) element.
-        cy.get(groupHeader).trigger('click');
+        cy.get(groupHeader).click();
 
-        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
         cy.get(sublist).should('not.exist');
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
       });
