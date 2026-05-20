@@ -260,6 +260,7 @@ export interface NavigationRequestBase {
 
 export interface NavigationRequestParams extends NavigationRequestBase {
   drawerSettings?: any;
+  intent?: boolean;
   modalSettings?: any;
   newTab?: boolean;
   path: string;

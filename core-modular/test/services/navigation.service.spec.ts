@@ -549,6 +549,12 @@ describe('NavigationService', () => {
 
   describe('NavigationService.handleNavigationRequest', () => {
     beforeEach(() => {
+      const cfg = {
+        routing: {
+          useHashRouting: true
+        }
+      };
+      luigiMock.getConfig.mockReturnValue(cfg);
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
     });
 

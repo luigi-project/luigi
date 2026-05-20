@@ -65,17 +65,25 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, true, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
       EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, false, true),
+          withoutSync,
+          preventContextUpdate
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath());
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }
   }
 
@@ -132,15 +140,16 @@ export class RoutingService {
 
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
     const viewUrl = currentNode?.viewUrl || '';
+
     if (
-      currentNode &&
-      this.previousPathData &&
-      (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))
-    )
-      return;
-    if (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw)) {
+      (currentNode &&
+        this.previousPathData &&
+        (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))) ||
+      (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw))
+    ) {
       return;
     }
+
     // render top nav even if requested route cannot be found or/and `ignoreLuigiErrorHandling` is set
     const connector = this.luigi.getEngine()._connector;
     connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
@@ -546,7 +555,7 @@ export class RoutingService {
     if (redirectPathFromNotFoundHandler) {
       if (redirectResult.keepURL) {
         const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
-        const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+        const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
 
         currentPath.path = redirectPathFromNotFoundHandler;
 
