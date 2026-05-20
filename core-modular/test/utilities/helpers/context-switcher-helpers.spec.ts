@@ -2,7 +2,7 @@ import { ContextSwitcherHelpers as CSHelpers } from '../../../src/utilities/help
 import { GenericHelpers } from '../../../src/utilities/helpers/generic-helpers';
 import { RoutingHelpers } from '../../../src/utilities/helpers/routing-helpers';
 
-describe('Context-switcher', function() {
+describe('Context-switcher', function () {
   let luigi: any = {};
   let myResolverFn;
 
@@ -95,10 +95,7 @@ describe('Context-switcher', function() {
 
   describe('getFallbackLabel', () => {
     beforeEach(() => {
-      jest
-        .spyOn(GenericHelpers, 'getConfigBooleanValue')
-        .mockClear()
-        .mockReturnValue(false);
+      jest.spyOn(GenericHelpers, 'getConfigBooleanValue').mockClear().mockReturnValue(false);
     });
 
     it('works without fallback resolver', async () => {
@@ -109,14 +106,14 @@ describe('Context-switcher', function() {
     it('works with fallback resolver', async () => {
       const result = await CSHelpers.getFallbackLabel(myResolverFn, 'some_id', luigi);
       expect(result).toEqual('##some_id##');
-      expect(GenericHelpers.getConfigBooleanValue).toHaveBeenCalledWith({routing: {contentViewParamPrefix: '~'}}, 'navigation.contextSwitcher.useFallbackLabelCache');
+      expect(GenericHelpers.getConfigBooleanValue).toHaveBeenCalledWith(
+        { routing: { contentViewParamPrefix: '~' } },
+        'navigation.contextSwitcher.useFallbackLabelCache'
+      );
     });
 
     it('works with fallback resolver cached', async () => {
-      jest
-        .spyOn(GenericHelpers, 'getConfigBooleanValue')
-        .mockClear()
-        .mockReturnValue(true);
+      jest.spyOn(GenericHelpers, 'getConfigBooleanValue').mockClear().mockReturnValue(true);
 
       const result = await CSHelpers.getFallbackLabel(myResolverFn, 'some_id', luigi);
       expect(result).toEqual('##some_id##');
@@ -180,16 +177,11 @@ describe('Context-switcher', function() {
       const opts = ['a', 'b', 'c'];
       const expectedResult = 'works';
       const configSpy = jest.spyOn(luigi, 'getConfigValue');
-      const asyncConfigSpy =
-        jest
-          .spyOn(luigi, 'getConfigValueAsync')
-          .mockClear()
-          .mockReturnValue(opts);
-      const generateSwitcherSpy =
-        jest
-          .spyOn(CSHelpers, 'generateSwitcherNav')
-          .mockClear()
-          .mockReturnValue(expectedResult);
+      const asyncConfigSpy = jest.spyOn(luigi, 'getConfigValueAsync').mockClear().mockReturnValue(opts);
+      const generateSwitcherSpy = jest
+        .spyOn(CSHelpers, 'generateSwitcherNav')
+        .mockClear()
+        .mockReturnValue(expectedResult);
       const result = await CSHelpers.fetchOptions(undefined, luigi);
 
       expect(result).toEqual(expectedResult);
@@ -204,16 +196,11 @@ describe('Context-switcher', function() {
       const opts = ['a', 'b', 'c'];
       const expectedResult = 'works';
       const configSpy = jest.spyOn(luigi, 'getConfigValue');
-      const asyncConfigSpy =
-        jest
-          .spyOn(luigi, 'getConfigValueAsync')
-          .mockClear()
-          .mockReturnValue(opts);
-      const generateSwitcherSpy =
-        jest
-          .spyOn(CSHelpers, 'generateSwitcherNav')
-          .mockClear()
-          .mockReturnValue(expectedResult);
+      const asyncConfigSpy = jest.spyOn(luigi, 'getConfigValueAsync').mockClear().mockReturnValue(opts);
+      const generateSwitcherSpy = jest
+        .spyOn(CSHelpers, 'generateSwitcherNav')
+        .mockClear()
+        .mockReturnValue(expectedResult);
       const result = await CSHelpers.fetchOptions(opts, luigi);
 
       await CSHelpers.fetchOptions(opts, luigi);
@@ -229,32 +216,33 @@ describe('Context-switcher', function() {
 
   describe('generateSwitcherNav', () => {
     it('composes proper values with ParentNodePath', async () => {
-      const result = await CSHelpers.generateSwitcherNav(
-        { parentNodePath: '/environment' },
-        [{ label: 'Env 1', pathValue: 'env1' }]
-      );
-
-      expect(JSON.stringify(result)).toEqual(JSON.stringify([
-        {
-          label: 'Env 1',
-          link: '/environment/env1',
-          id: 'env1'
-        }
-      ]));
-    });
-
-    it('composes proper values without ParentNodePath', async () => {
-      const result = await CSHelpers.generateSwitcherNav({}, [
+      const result = await CSHelpers.generateSwitcherNav({ parentNodePath: '/environment' }, [
         { label: 'Env 1', pathValue: 'env1' }
       ]);
 
-      expect(JSON.stringify(result)).toEqual(JSON.stringify([
-        {
-          label: 'Env 1',
-          link: '/env1',
-          id: 'env1'
-        }
-      ]));
+      expect(JSON.stringify(result)).toEqual(
+        JSON.stringify([
+          {
+            label: 'Env 1',
+            link: '/environment/env1',
+            id: 'env1'
+          }
+        ])
+      );
+    });
+
+    it('composes proper values without ParentNodePath', async () => {
+      const result = await CSHelpers.generateSwitcherNav({}, [{ label: 'Env 1', pathValue: 'env1' }]);
+
+      expect(JSON.stringify(result)).toEqual(
+        JSON.stringify([
+          {
+            label: 'Env 1',
+            link: '/env1',
+            id: 'env1'
+          }
+        ])
+      );
     });
   });
 
@@ -300,45 +288,30 @@ describe('Context-switcher', function() {
 
     it('returns false if parent node path is falsy', () => {
       parentNodePath = undefined;
-      const result = CSHelpers.isContextSwitcherDetailsView(
-        currentPath,
-        parentNodePath
-      );
+      const result = CSHelpers.isContextSwitcherDetailsView(currentPath, parentNodePath);
       expect(result).toBeFalsy();
     });
 
     it('returns false if parent node path is not included in current path', () => {
       parentNodePath = '/home/nomatch';
-      const result = CSHelpers.isContextSwitcherDetailsView(
-        currentPath,
-        parentNodePath
-      );
+      const result = CSHelpers.isContextSwitcherDetailsView(currentPath, parentNodePath);
       expect(result).toBeFalsy();
     });
 
     it('returns false if last path segment from parent node is not a full match in currentPath', () => {
       currentPath = '/home/projectsandmore/pr1';
-      const result = CSHelpers.isContextSwitcherDetailsView(
-        currentPath,
-        parentNodePath
-      );
+      const result = CSHelpers.isContextSwitcherDetailsView(currentPath, parentNodePath);
       expect(result).toBeFalsy();
     });
 
     it('returns false if current path has no content after parent node path', () => {
       currentPath = '/home/projects';
-      const result = CSHelpers.isContextSwitcherDetailsView(
-        currentPath,
-        parentNodePath
-      );
+      const result = CSHelpers.isContextSwitcherDetailsView(currentPath, parentNodePath);
       expect(result).toBeFalsy();
     });
 
     it('returns true if current path has content after parent node path', () => {
-      const result = CSHelpers.isContextSwitcherDetailsView(
-        currentPath,
-        parentNodePath
-      );
+      const result = CSHelpers.isContextSwitcherDetailsView(currentPath, parentNodePath);
       expect(result).toEqual(true);
     });
   });
@@ -361,42 +334,31 @@ describe('Context-switcher', function() {
         assert: undefined
       },
       {
-        it:
-          'returns undefined if parent node path is not included in current path',
+        it: 'returns undefined if parent node path is not included in current path',
         parentNodePath: '/home/nomatch',
         assert: undefined
       }
-    ].forEach(t => {
+    ].forEach((t) => {
       it(t.it, () => {
-        const selectedId = CSHelpers.getSelectedId(
-          currentPath,
-          [env1, env2],
-          t.parentNodePath
-        );
+        const selectedId = CSHelpers.getSelectedId(currentPath, [env1, env2], t.parentNodePath);
         expect(selectedId).toEqual(t.assert);
       });
     });
 
     [
       {
-        it:
-          'returns undefined if last path segment from parent node is not a full match in currentPath',
+        it: 'returns undefined if last path segment from parent node is not a full match in currentPath',
         currentPath: '/home/projectsandmore/pr1',
         assert: undefined
       },
       {
-        it:
-          'returns undefined if current path has no content after parent node path',
+        it: 'returns undefined if current path has no content after parent node path',
         currentPath: '/home/projects',
         assert: undefined
       }
-    ].forEach(t => {
+    ].forEach((t) => {
       it(t.it, () => {
-        const selectedId = CSHelpers.getSelectedId(
-          t.currentPath,
-          [env1, env2],
-          parentNodePath
-        );
+        const selectedId = CSHelpers.getSelectedId(t.currentPath, [env1, env2], parentNodePath);
         expect(selectedId).toEqual(t.assert);
       });
     });
@@ -404,11 +366,7 @@ describe('Context-switcher', function() {
     it('returns id if current path has id after parent node path', () => {
       CSHelpers.isContextSwitcherDetailsView = jest.fn().mockImplementation(() => true);
 
-      const selectedId = CSHelpers.getSelectedId(
-        currentPath,
-        [env1, env2],
-        parentNodePath
-      );
+      const selectedId = CSHelpers.getSelectedId(currentPath, [env1, env2], parentNodePath);
       expect(selectedId).toEqual('pr1');
     });
 
@@ -416,11 +374,7 @@ describe('Context-switcher', function() {
       CSHelpers.isContextSwitcherDetailsView = jest.fn().mockImplementation(() => true);
       currentPath = '/home/projects/pr1?foo=bar&test=false';
 
-      const selectedId = CSHelpers.getSelectedId(
-        currentPath,
-        [env1, env2],
-        parentNodePath
-      );
+      const selectedId = CSHelpers.getSelectedId(currentPath, [env1, env2], parentNodePath);
       expect(selectedId).toEqual('pr1');
     });
   });
@@ -443,42 +397,31 @@ describe('Context-switcher', function() {
         assert: undefined
       },
       {
-        it:
-          'returns undefined if parent node path is not included in current path',
+        it: 'returns undefined if parent node path is not included in current path',
         parentNodePath: '/home/nomatch',
         assert: undefined
       }
-    ].forEach(t => {
+    ].forEach((t) => {
       it(t.it, async () => {
-        const selectedOption = await CSHelpers.getSelectedOption(
-          currentPath,
-          [env1, env2],
-          t.parentNodePath
-        );
+        const selectedOption = await CSHelpers.getSelectedOption(currentPath, [env1, env2], t.parentNodePath);
         expect(selectedOption).toEqual(t.assert);
       });
     });
 
     [
       {
-        it:
-          'returns undefined if last path segment from parent node is not a full match in currentPath',
+        it: 'returns undefined if last path segment from parent node is not a full match in currentPath',
         currentPath: '/home/projectsandmore/pr1',
         assert: undefined
       },
       {
-        it:
-          'returns undefined if current path has no content after parent node path',
+        it: 'returns undefined if current path has no content after parent node path',
         currentPath: '/home/projects',
         assert: undefined
       }
-    ].forEach(t => {
+    ].forEach((t) => {
       it(t.it, async () => {
-        const selectedOption = await CSHelpers.getSelectedOption(
-          t.currentPath,
-          [env1, env2],
-          parentNodePath
-        );
+        const selectedOption = await CSHelpers.getSelectedOption(t.currentPath, [env1, env2], parentNodePath);
         expect(selectedOption).toEqual(t.assert);
       });
     });
@@ -486,11 +429,7 @@ describe('Context-switcher', function() {
     it('returns option if current path has id after parent node path', async () => {
       CSHelpers.isContextSwitcherDetailsView = jest.fn().mockImplementation(() => true);
 
-      const selectedOption = await CSHelpers.getSelectedOption(
-        currentPath,
-        [env1, env2],
-        parentNodePath
-      );
+      const selectedOption = await CSHelpers.getSelectedOption(currentPath, [env1, env2], parentNodePath);
       expect(selectedOption).toEqual({ label: 'Env 1', id: 'pr1' });
     });
 
@@ -498,11 +437,7 @@ describe('Context-switcher', function() {
       CSHelpers.isContextSwitcherDetailsView = jest.fn().mockImplementation(() => true);
       currentPath = '/home/projects/pr1?foo=bar&test=false';
 
-      const selectedOption = await CSHelpers.getSelectedOption(
-        currentPath,
-        [env1, env2],
-        parentNodePath
-      );
+      const selectedOption = await CSHelpers.getSelectedOption(currentPath, [env1, env2], parentNodePath);
       expect(selectedOption).toEqual({ label: 'Env 1', id: 'pr1' });
     });
   });
@@ -511,24 +446,12 @@ describe('Context-switcher', function() {
     const parentNodePath = '/environment';
 
     it('returns undefined when path only partially contains parentNodePath', async () => {
-      const result = await CSHelpers.getSelectedLabel(
-        '/environmentWhatever',
-        [],
-        parentNodePath,
-        myResolverFn,
-        luigi
-      );
+      const result = await CSHelpers.getSelectedLabel('/environmentWhatever', [], parentNodePath, myResolverFn, luigi);
       expect(result).toBeUndefined();
     });
 
     it('returns undefined if outside current path', async () => {
-      const result = await CSHelpers.getSelectedLabel(
-        '/something',
-        [],
-        parentNodePath,
-        myResolverFn,
-        luigi
-      );
+      const result = await CSHelpers.getSelectedLabel('/something', [], parentNodePath, myResolverFn, luigi);
       expect(result).toBeUndefined();
     });
 
@@ -592,7 +515,9 @@ describe('Context-switcher', function() {
     });
 
     it('returns correctly adapted path', () => {
-      RoutingHelpers.getCurrentPath = jest.fn().mockImplementation(() => ({ path: '/environments/env1/details/and/more', query: '' }));
+      RoutingHelpers.getCurrentPath = jest
+        .fn()
+        .mockImplementation(() => ({ path: '/environments/env1/details/and/more', query: '' }));
 
       const result = CSHelpers.getNodePathFromCurrentPath(
         {
