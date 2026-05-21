@@ -480,22 +480,9 @@ const connector = {
           return option;
         };
 
+        switcher.classList.add('lui-context-switcher');
         switcher.setAttribute('name', 'context-switcher');
         switcher.setAttribute('slot', 'content');
-
-        if (data.selectedOption) {
-          let label = data.selectedOption.label;
-
-          if (!label && data.config.fallbackLabelResolver) {
-            label = data.config.fallbackLabelResolver(data.selectedOption.id);
-          }
-
-          switcher.setAttribute('selected-value', data.selectedOption.link);
-          switcher.setAttribute('value', label);
-        } else {
-          switcher.removeAttribute('selected-value');
-          switcher.removeAttribute('value');
-        }
 
         if (data.config.defaultLabel) {
           if (data.config.customOptionsRenderer) {
@@ -510,11 +497,45 @@ const connector = {
           }
         }
 
+        if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
+
         const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
 
         switcher.addEventListener(eventType, function (event) {
+          let selectedValue;
+          let selectedType;
+
+          if (eventType === 'selection-change') {
+            selectedValue = event.detail?.item?.getAttribute('value') || '';
+            selectedType = event.detail?.item?.getAttribute('type') || undefined;
+          } else {
+            selectedValue = event.target.value || '';
+
+            if (event.target.children?.length) {
+              const selectedOption = [...event.target.children].find((child) => child.selected);
+
+              selectedType = selectedOption ? selectedOption?.attributes?.type?.value : undefined;
+            }
+          }
+
           if (data.switcherChange) {
-            data.switcherChange(event);
+            data.switcherChange(selectedValue, selectedType);
           } else {
             console.warn('There is no context switcher change handler defined in configuration.');
           }
@@ -626,22 +647,23 @@ const connector = {
       }
       if (topNavData.contextSwitcher) {
         const data = { ...topNavData.contextSwitcher };
-        const switcher = shellbar.querySelector('ui5-combobox');
+        const switcher = shellbar.querySelector('.lui-context-switcher');
         if (!switcher) {
           return;
         }
         if (data.selectedOption) {
           let label = data.selectedOption.label;
-
           if (!label && data.config.fallbackLabelResolver) {
             label = data.config.fallbackLabelResolver(data.selectedOption.id);
           }
-
           switcher.setAttribute('selected-value', data.selectedOption.link);
           switcher.setAttribute('value', label);
         } else {
           switcher.removeAttribute('selected-value');
           switcher.removeAttribute('value');
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
         }
       }
     }

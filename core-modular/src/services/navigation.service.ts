@@ -1164,29 +1164,26 @@ export class NavigationService {
   private async buildContextSwitcher(): Promise<ContextSwitcher> {
     const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
     const config = this.luigi.getConfigValue('navigation.contextSwitcher');
-    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(undefined, this.luigi);
+    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(this.luigi);
     const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
     const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
     const parentNodePath = config.parentNodePath;
     const fallbackLabelResolver = config.fallbackLabelResolver;
-    const selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
+    let selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
       currentPath?.path,
       options,
       parentNodePath,
       fallbackLabelResolver,
       this.luigi
     );
-    const selectedNodePath = await ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
-    const selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
+    let selectedNodePath = ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
+    let selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
       currentPath?.path,
       options,
       parentNodePath
     );
-    const handleChangeEvent = (event: any) => {
-      const selectedType = event.detail ? event.detail?.item?.attributes?.type?.textContent : undefined;
-      const selectedValue = event.detail ? event.detail?.item?.attributes?.value?.textContent : event.target.value;
-
-      if (!selectedValue) {
+    const handleChangeEvent = (selectedValue: string, selectedType?: string | undefined) => {
+      if (!selectedValue || typeof selectedValue !== 'string') {
         return;
       }
 
@@ -1201,7 +1198,7 @@ export class NavigationService {
           }
         }
 
-        setTimeout(() => this.luigi.navigation().navigate(selectedValue));
+        this.luigi.navigation().navigate(selectedValue);
       } else {
         this.luigi.navigation().navigate(selectedValue);
       }
@@ -1213,6 +1210,16 @@ export class NavigationService {
       });
     }
 
+    if (!selectedOption && actions?.length) {
+      const activeAction = actions?.find((action) => action.link === `/${currentPath?.path}`);
+
+      if (activeAction) {
+        selectedLabel = activeAction.label;
+        selectedNodePath = activeAction.link;
+        selectedOption = activeAction;
+      }
+    }
+
     return {
       actions,
       config,
@@ -1220,7 +1227,7 @@ export class NavigationService {
       selectedLabel,
       selectedNodePath,
       selectedOption,
-      switcherChange: (event: any) => handleChangeEvent(event)
+      switcherChange: (selectedValue: string, selectedType?: string | undefined) => handleChangeEvent(selectedValue, selectedType)
     };
   }
 }

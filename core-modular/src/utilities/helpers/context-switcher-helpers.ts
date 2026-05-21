@@ -148,7 +148,7 @@ export const ContextSwitcherHelpers = {
     return selectedNodePath;
   },
 
-  async fetchOptions(existingOptions = [], luigi: Luigi): Promise<any[]> {
+  async fetchOptions(luigi: Luigi, existingOptions = []): Promise<any[]> {
     const config = luigi.getConfigValue('navigation.contextSwitcher');
 
     if (!config.lazyloadOptions && existingOptions.length) {
