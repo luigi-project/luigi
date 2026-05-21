@@ -114,7 +114,7 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path?param1=value1&param2=value2';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath(true);
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
     expect(currentPath.path).toEqual('some/path');
     expect(currentPath.query).toEqual('param1=value1&param2=value2');
   });
@@ -122,9 +122,17 @@ describe('Routing-helpers', () => {
   it('getCurrentPath should return the current path and query', () => {
     const pathRaw = '#/some/path';
     location.hash = pathRaw; // Simulate the hash in the URL
-    const currentPath = RoutingHelpers.getCurrentPath(true);
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
     expect(currentPath.path).toEqual('some/path');
     expect(currentPath.query).toEqual(undefined);
+  });
+
+  it('getCurrentPath should return the intent path and query without intentMapping', () => {
+    const pathRaw = '#/some/path?intent=value';
+    location.hash = pathRaw; // Simulate the hash in the URL
+    const currentPath = RoutingHelpers.getCurrentPath(luigi, true);
+    expect(currentPath.path).toEqual('some/path');
+    expect(currentPath.query).toEqual('intent=value');
   });
 
   it('prepareSearchParamsForClient should filter search params based on client permissions', () => {
@@ -1064,6 +1072,199 @@ describe('Routing-helpers', () => {
       const node = { pathSegment: 'ext', externalLink: { url: 'https://example.com' } };
       const result = RoutingHelpers.getNodeHref(node as any, {}, mockLuigi as any);
       expect(result).toBe('https://example.com');
+    });
+  });
+
+  describe('hasIntent', () => {
+    it('checks against correct intent keyword', () => {
+      const path = '#?intent=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeTruthy();
+    });
+
+    it('check against incorrect intent keyword', () => {
+      const path = '#?int=';
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
+    });
+
+    it('check against undefined intent keyword', () => {
+      const path = undefined;
+      const hasIntent = RoutingHelpers.hasIntent(path);
+
+      expect(hasIntent).toBeFalsy();
+    });
+  });
+
+  describe('getIntentObject()', () => {
+    beforeEach(() => {
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'navigation.intentMapping') {
+          return [
+            {
+              semanticObject: 'Sales',
+              action: 'settings',
+              pathSegment: '/projects/pr2/settings'
+            }
+          ];
+        }
+        return null;
+      });
+    });
+
+    it('returns intentObject from provided intent link with params', () => {
+      const actual = RoutingHelpers.getIntentObject('#?intent=Sales-settings?param1=luigi&param2=mario');
+      const expected = {
+        semanticObject: 'Sales',
+        action: 'settings',
+        params: { param1: 'luigi', param2: 'mario' }
+      };
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns intentObject from provided intent link without params', () => {
+      const actual = RoutingHelpers.getIntentObject('#?intent=Sales-settings');
+      const expected = {
+        semanticObject: 'Sales',
+        action: 'settings',
+        params: {}
+      };
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('getIntentPath()', () => {
+    beforeEach(() => {
+      luigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'navigation.intentMapping') {
+          return [
+            {
+              semanticObject: 'Sales',
+              action: 'settings',
+              pathSegment: '/projects/pr2/settings'
+            },
+            {
+              semanticObject: 'External',
+              action: 'view',
+              externalLink: { url: 'https://www.sap.com', openInNewTab: true }
+            },
+            {
+              semanticObject: 'External',
+              action: 'view2',
+              externalLink: { url: 'https://www.sap.com', openInNewTab: false }
+            }
+          ];
+        }
+        return null;
+      });
+    });
+
+    it('checks intent path parsing with illegal characters', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=Sa#les-sett!@ings?param1=luigi&param2=mario', luigi);
+      expect(actual).toBeFalsy();
+    });
+
+    it('checks intent path parsing with illegal hyphen character', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=Sa-les-sett-ings?param1=luigi&param2=mario', luigi);
+      expect(actual).toBeFalsy();
+    });
+
+    it('returns path from provided intent link without params', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=Sales-settings', luigi);
+      const expected = '/projects/pr2/settings';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns path from provided intent link with params', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=Sales-settings?param1=hello&param2=world', luigi);
+      const expected = '/projects/pr2/settings?~param1=hello&~param2=world';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns path from intent link with params and case insensitive start pattern ', () => {
+      const actual = RoutingHelpers.getIntentPath('#?iNteNT=Sales-settings?param1=hello&param2=world', luigi);
+      const expected = '/projects/pr2/settings?~param1=hello&~param2=world';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns expected object for external intent links with openInNewTab true', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=External-view', luigi);
+      const expected = {
+        url: 'https://www.sap.com',
+        openInNewTab: true,
+        external: true
+      };
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns expected object for external intent links with openInNewTab false', () => {
+      const actual = RoutingHelpers.getIntentPath('#?intent=External-view2', luigi);
+      const expected = {
+        url: 'https://www.sap.com',
+        openInNewTab: false,
+        external: true
+      };
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('resolveDynamicIntentPath()', () => {
+    it('returns resolved dynamic path with single dynamic parameter', () => {
+      const path = '/projects/:id/details';
+      const parameters = { id: 123 };
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/123/details';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns resolved dynamic path with multiple dynamic parameter', () => {
+      const path = '/projects/:id/details/:componentId/view/:viewId/show';
+      const parameters = { id: 123, componentId: 444, viewId: '223' };
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/123/details/444/view/223/show';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns resolved dynamic path with similiar named parameters', () => {
+      const path = '/projects/:component/details/:componentId/view/:componentCount/show';
+      const parameters = { component: 123 };
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/123/details/:componentId/view/:componentCount/show';
+      expect(actual).toEqual(expected);
+    });
+
+    it('input path not changed when there are no parameters defined', () => {
+      const path = '/projects/:component/details/:componentId/view/:componentCount/show';
+      const parameters = undefined;
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/:component/details/:componentId/view/:componentCount/show';
+      expect(actual).toEqual(expected);
+    });
+
+    it('input path not changed when no paramters match dynamic specification', () => {
+      const path = '/projects/:component/details/:componentId/view/:componentCount/show';
+      const parameters = { other: 123, param: 343, not: '231', related: 'to dynamic ones' };
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/:component/details/:componentId/view/:componentCount/show';
+      expect(actual).toEqual(expected);
+    });
+
+    it('returns resolved parameters when there is extra parameters given', () => {
+      const path = '/projects/:other/details/:param/view/:not';
+      const parameters = { other: 123, param: 343, not: '231', related: 'to dynamic ones', sample: 'test' };
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/123/details/343/view/231';
+      expect(actual).toEqual(expected);
+    });
+
+    it('input path not changed when array has an empty object', () => {
+      const path = '/projects/:other/details/:param/view/:not';
+      const parameters = {};
+      const actual = RoutingHelpers.resolveDynamicIntentPath(path, parameters);
+      const expected = '/projects/:other/details/:param/view/:not';
+      expect(actual).toEqual(expected);
     });
   });
 });

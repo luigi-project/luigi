@@ -117,24 +117,6 @@ export const NavigationHelpers = {
     return permissionCheckerFn(nodeToCheckPermissionFor, parentNode, currentContext);
   },
 
-  applyContext: (
-    context: Record<string, any>,
-    addition: Record<string, any>,
-    navigationContext: any
-  ): Record<string, any> => {
-    if (addition) {
-      for (let p in addition) {
-        context[p] = addition[p];
-      }
-    }
-
-    if (navigationContext && context.parentNavigationContexts) {
-      context.parentNavigationContexts.unshift(navigationContext);
-    }
-
-    return context;
-  },
-
   updateHeaderTitle: (appSwitcherData: AppSwitcher, pathData: PathData): string | undefined => {
     const appSwitcherItems = appSwitcherData?.items;
     if (appSwitcherItems && pathData) {
@@ -179,8 +161,16 @@ export const NavigationHelpers = {
     return replacedSegments.join('/');
   },
 
-  mergeContext(...objs: Record<string, any>[]): Record<string, any> {
-    return Object.assign({}, ...objs);
+  mergeContext(
+    base: Record<string, any>,
+    addition?: Record<string, any>,
+    navigationContext?: string
+  ): Record<string, any> {
+    const parentNavigationContexts = [...(base.parentNavigationContexts || [])];
+    if (navigationContext) {
+      parentNavigationContexts.unshift(navigationContext);
+    }
+    return { ...base, ...(addition || {}), parentNavigationContexts };
   },
 
   prepareForTests(...parts: string[]): string {
