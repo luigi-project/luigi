@@ -1227,7 +1227,8 @@ export class NavigationService {
       selectedLabel,
       selectedNodePath,
       selectedOption,
-      switcherChange: (selectedValue: string, selectedType?: string | undefined) => handleChangeEvent(selectedValue, selectedType)
+      switcherChange: (selectedValue: string, selectedType?: string | undefined) =>
+        handleChangeEvent(selectedValue, selectedType)
     };
   }
 }
