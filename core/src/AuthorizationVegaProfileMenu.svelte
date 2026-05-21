@@ -295,7 +295,7 @@
                     aria-haspopup="true"
                     role="menuitem"
                     tabindex="0"
-                    on:click={() => toggleGroup(index)}
+                    on:click|stopPropagation={() => toggleGroup(index)}
                     on:keydown={(event) => handleGroupKeyDown(event, index)}
                   >
                     {#if profileItem.icon}
