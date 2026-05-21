@@ -17,7 +17,8 @@ import type {
   ProfileSettings,
   TabNavData,
   TopNavData,
-  UserInfo
+  UserInfo,
+  UserSettingsProfileMenuEntry
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -485,6 +486,14 @@ export class NavigationService {
         }
       }
     };
+    const userSettingsEnabled = cfg.userSettings;
+    let userSettingsProfileMenuEntry: UserSettingsProfileMenuEntry = {};
+    if (userSettingsEnabled) {
+      userSettingsProfileMenuEntry = {
+        ...TOP_NAV_DEFAULTS.userSettingsProfileMenuEntry,
+        ...cfg.userSettings?.userSettingsProfileMenuEntry
+      };
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
@@ -500,6 +509,7 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
+      settings: userSettingsProfileMenuEntry,
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {

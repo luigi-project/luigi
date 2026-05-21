@@ -38,7 +38,13 @@ export interface ProfileSettings {
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
   onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
+  settings: UserSettingsProfileMenuEntry;
   itemClick: (item: ProfileItem) => void;
+}
+
+export interface UserSettingsProfileMenuEntry {
+  label?: string;
+  link?: string;
 }
 
 export interface ProfileLogout {
