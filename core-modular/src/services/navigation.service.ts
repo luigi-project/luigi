@@ -1162,31 +1162,62 @@ export class NavigationService {
   }
 
   private async buildContextSwitcher(): Promise<ContextSwitcher> {
-    const actions = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
     const config = this.luigi.getConfigValue('navigation.contextSwitcher');
-    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(undefined, this.luigi);
+    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(this.luigi);
     const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
     const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
     const parentNodePath = config.parentNodePath;
     const fallbackLabelResolver = config.fallbackLabelResolver;
-    const selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
+    let selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
       currentPath?.path,
       options,
       parentNodePath,
       fallbackLabelResolver,
       this.luigi
     );
-    const selectedNodePath = await ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
-    const selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
+    let selectedNodePath = ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
+    let selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
       currentPath?.path,
       options,
       parentNodePath
     );
+    const handleChangeEvent = (selectedValue: string, selectedType?: string | undefined) => {
+      if (!selectedValue || typeof selectedValue !== 'string') {
+        return;
+      }
+
+      if (selectedType === 'action') {
+        const node = actions.find((action) => action.link === selectedValue);
+
+        if (node?.clickHandler) {
+          const result = node.clickHandler(node);
+
+          if (!result) {
+            return;
+          }
+        }
+
+        this.luigi.navigation().navigate(selectedValue);
+      } else {
+        this.luigi.navigation().navigate(selectedValue);
+      }
+    };
 
     if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
       options.forEach((option) => {
         option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption);
       });
+    }
+
+    if (!selectedOption && actions?.length) {
+      const activeAction = actions?.find((action) => action.link === `/${currentPath?.path}`);
+
+      if (activeAction) {
+        selectedLabel = activeAction.label;
+        selectedNodePath = activeAction.link;
+        selectedOption = activeAction;
+      }
     }
 
     return {
@@ -1195,7 +1226,9 @@ export class NavigationService {
       options,
       selectedLabel,
       selectedNodePath,
-      selectedOption
+      selectedOption,
+      switcherChange: (selectedValue: string, selectedType?: string | undefined) =>
+        handleChangeEvent(selectedValue, selectedType)
     };
   }
 }
