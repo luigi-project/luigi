@@ -18,7 +18,6 @@ describe('Context-switcher', function () {
         navService: { extractDataFromPath: () => ({ pathData: { pathParams: { virtualnode: 'virtualnode' } } }) }
       }),
       routing: () => ({ getSearchParams: () => ({}) }),
-      i18n: () => ({ getTranslation: () => undefined }),
       uxManager: () => ({}),
       linkManager: () => ({}),
       getConfigValue: (key: string) => {
