@@ -26,6 +26,7 @@
   let getUnsavedChangesModalPromise = getContext('getUnsavedChangesModalPromise');
   let openViewInModal = getContext('openViewInModal');
   let initialsOfUser;
+  let setProfileNavDataTimeout;
 
   onMount(async () => {
     if (!LuigiAuth.isAuthorizationEnabled()) {
@@ -69,7 +70,8 @@
   export function setProfileNavData() {
     if (!navProfileListenerInstalled) {
       StateHelpers.doOnStoreChange(store, async () => {
-        setTimeout(async () => {
+        clearTimeout(setProfileNavDataTimeout);
+        setProfileNavDataTimeout = setTimeout(async () => {
           const logoutItem = await LuigiConfig.getConfigValueAsync('navigation.profile.logout');
           //check if the User Settings schema exist
           const userSettingsConfig = await LuigiConfig.getConfigValueAsync('userSettings');
