@@ -162,7 +162,7 @@ describe('Context-switcher', function () {
       mockConfig.lazyloadOptions = false;
 
       const opts = ['a', 'b', 'c'];
-      const result = await CSHelpers.fetchOptions(opts, luigi);
+      const result = await CSHelpers.fetchOptions(luigi, opts);
       const configSpy = jest.spyOn(luigi, 'getConfigValue');
       const asyncConfigSpy = jest.spyOn(luigi, 'getConfigValueAsync');
 
@@ -182,7 +182,7 @@ describe('Context-switcher', function () {
         .spyOn(CSHelpers, 'generateSwitcherNav')
         .mockClear()
         .mockReturnValue(expectedResult);
-      const result = await CSHelpers.fetchOptions(undefined, luigi);
+      const result = await CSHelpers.fetchOptions(luigi);
 
       expect(result).toEqual(expectedResult);
       expect(configSpy).toHaveBeenCalledWith('navigation.contextSwitcher');
@@ -201,10 +201,10 @@ describe('Context-switcher', function () {
         .spyOn(CSHelpers, 'generateSwitcherNav')
         .mockClear()
         .mockReturnValue(expectedResult);
-      const result = await CSHelpers.fetchOptions(opts, luigi);
+      const result = await CSHelpers.fetchOptions(luigi, opts);
 
-      await CSHelpers.fetchOptions(opts, luigi);
-      await CSHelpers.fetchOptions(opts, luigi);
+      await CSHelpers.fetchOptions(luigi, opts);
+      await CSHelpers.fetchOptions(luigi, opts);
 
       expect(result).toEqual(expectedResult);
       expect(configSpy).toHaveBeenCalledWith('navigation.contextSwitcher');
