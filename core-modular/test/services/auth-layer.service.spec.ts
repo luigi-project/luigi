@@ -1,5 +1,6 @@
 import { LuigiAuth } from '../../src/core-api/auth';
 import type { Luigi } from '../../src/core-api/luigi';
+import { UIModule } from '../../src/modules/ui-module';
 import { AuthLayerSvc } from '../../src/services/auth-layer.service';
 import { AuthStoreSvc } from '../../src/services/auth-store.service';
 import { AuthHelpers } from '../../src/utilities/helpers/auth-helpers';
@@ -491,5 +492,80 @@ describe('Auth-Layer Service', () => {
     AuthLayerSvc.resetExpirationChecks();
 
     expect(resetExpirationChecksFn).toHaveBeenCalled();
+  });
+
+  describe('broadcastAuthData', () => {
+    let containerWrapper: HTMLElement;
+
+    beforeEach(() => {
+      containerWrapper = document.createElement('div');
+    });
+
+    it('should do nothing if containerWrapper is not available', () => {
+      getEngine.mockReturnValue({ _connector: { getContainerWrapper: () => undefined } });
+
+      AuthLayerSvc.broadcastAuthData({ token: 'abc' });
+      // no error thrown
+    });
+
+    it('should set auth-data attribute on LUIGI- elements', () => {
+      const luigiElement = document.createElement('div');
+      Object.defineProperty(luigiElement, 'tagName', { value: 'LUIGI-COMPOUND-CONTAINER' });
+      const nonLuigiElement = document.createElement('div');
+      Object.defineProperty(nonLuigiElement, 'tagName', { value: 'DIV' });
+
+      containerWrapper.appendChild(luigiElement);
+      containerWrapper.appendChild(nonLuigiElement);
+
+      getEngine.mockReturnValue({ _connector: { getContainerWrapper: () => containerWrapper } });
+
+      const authData = { token: 'abc', expiresIn: 3600 };
+      AuthLayerSvc.broadcastAuthData(authData);
+
+      expect(luigiElement.getAttribute('auth-data')).toEqual(JSON.stringify(authData));
+      expect(nonLuigiElement.getAttribute('auth-data')).toBeNull();
+    });
+
+    it('should set auth-data on modal containers', () => {
+      containerWrapper.innerHTML = '';
+      getEngine.mockReturnValue({ _connector: { getContainerWrapper: () => containerWrapper } });
+
+      const modalEl1 = document.createElement('div');
+      const modalEl2 = document.createElement('div');
+      UIModule.modalContainer = [modalEl1, modalEl2];
+
+      const authData = { token: 'modal-token' };
+      AuthLayerSvc.broadcastAuthData(authData);
+
+      expect(modalEl1.getAttribute('auth-data')).toEqual(JSON.stringify(authData));
+      expect(modalEl2.getAttribute('auth-data')).toEqual(JSON.stringify(authData));
+
+      UIModule.modalContainer = [];
+    });
+
+    it('should set auth-data on drawer container', () => {
+      containerWrapper.innerHTML = '';
+      getEngine.mockReturnValue({ _connector: { getContainerWrapper: () => containerWrapper } });
+
+      const drawerEl = document.createElement('div');
+      UIModule.drawerContainer = drawerEl;
+
+      const authData = { token: 'drawer-token' };
+      AuthLayerSvc.broadcastAuthData(authData);
+
+      expect(drawerEl.getAttribute('auth-data')).toEqual(JSON.stringify(authData));
+
+      UIModule.drawerContainer = undefined;
+    });
+
+    it('should not set auth-data on drawer container if not defined', () => {
+      containerWrapper.innerHTML = '';
+      getEngine.mockReturnValue({ _connector: { getContainerWrapper: () => containerWrapper } });
+
+      UIModule.drawerContainer = undefined;
+
+      AuthLayerSvc.broadcastAuthData({ token: 'test' });
+      // no error thrown
+    });
   });
 });

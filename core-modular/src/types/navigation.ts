@@ -5,7 +5,7 @@ export interface TopNavData {
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface AppSwitcher {
@@ -38,7 +38,13 @@ export interface ProfileSettings {
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
   onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
+  settings: UserSettingsProfileMenuEntry;
   itemClick: (item: ProfileItem) => void;
+}
+
+export interface UserSettingsProfileMenuEntry {
+  label?: string;
+  link?: string;
 }
 
 export interface ProfileLogout {
@@ -72,7 +78,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface PathData {
@@ -110,9 +116,11 @@ export interface Node {
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  intendToHaveEmptyViewUrl?: boolean;
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  link?: string;
   loadingIndicator?: {
     enabled: boolean;
   };
@@ -142,6 +150,7 @@ export interface Node {
   _virtualTree?: Node;
   _virtualPathIndex?: number;
   _virtualViewUrl?: string;
+  _rawContext?: Record<string, any>;
 }
 
 export interface PageErrorHandler {
@@ -177,6 +186,7 @@ export interface BreadcrumbItem {
 export interface NavItem {
   altText?: string;
   category?: Category;
+  href?: string;
   icon?: string;
   node?: Node;
   label?: string;
@@ -188,7 +198,7 @@ export interface TabNavData {
   selectedNode?: any;
   items?: NavItem[];
   basePath?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface BreadcrumbData {
@@ -258,6 +268,7 @@ export interface NavigationRequestBase {
 
 export interface NavigationRequestParams extends NavigationRequestBase {
   drawerSettings?: any;
+  intent?: boolean;
   modalSettings?: any;
   newTab?: boolean;
   path: string;
@@ -508,6 +519,11 @@ export interface TitleResolver {
   fallbackIcon?: string;
   /** @internal runtime cache – not user-configured */
   _cache?: TitleResolverCache;
+}
+
+export interface ViewGroupSettings {
+  preloadUrl?: string;
+  loadOnStartup?: boolean;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';

@@ -1,8 +1,10 @@
 import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import { DirtyStatusService } from '../services/dirty-status.service';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
@@ -11,6 +13,7 @@ import type { DrawerSettings, ModalSettings, Node } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
 const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
@@ -32,7 +35,10 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     lcc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
-          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+            node.decodeViewUrl ?? false
+          )
       : '';
     lcc.webcomponent = node.webcomponent ?? false;
     lcc.compoundConfig = node.compound;
@@ -58,10 +64,14 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     lc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
-          .applyDecorators(RoutingHelpers.substituteViewUrl(node, pathParams, luigi), node.decodeViewUrl ?? false)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+            node.decodeViewUrl ?? false
+          )
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
+    lc.authData = AuthHelpers.getStoredAuthData();
     lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = nodeParams;
@@ -133,11 +143,14 @@ export const UIModule = {
   modalContainer: [] as any,
   drawerContainer: undefined as any,
   init: (luigi: Luigi) => {
-    console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
+    const preloadingService = serviceRegistry.get(PreloadingService);
+    preloadingService.shouldPreload = true;
+    preloadingService.preload(true);
+    preloadingService.shouldPreload = false;
   },
   update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
@@ -194,10 +207,18 @@ export const UIModule = {
       noScopes ||
       scopes.includes('navigation') ||
       scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata') ||
-      scopes.includes('settings.theming')
+      scopes.includes('navigation.viewgroupdata')
     ) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
+      if (croute.path) {
+        const pathData = await UIModule.navService.getPathData(croute.path);
+        const currentNode = pathData?.selectedNode ?? croute.node;
+        if (currentNode) {
+          croute.node = currentNode;
+          UIModule.updateMainContent(currentNode, UIModule.luigi);
+        }
+      }
+    } else if (scopes.includes('settings.theming')) {
       if (croute.node) {
         UIModule.updateMainContent(croute.node, UIModule.luigi);
       }
@@ -234,6 +255,13 @@ export const UIModule = {
 
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
           element.style.display = 'none';
+          const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+          if (vgSettings?.preloadUrl) {
+            element.viewurl = vgSettings.preloadUrl;
+            element.context = {};
+            element.nodeParams = {};
+            element.pathParams = {};
+          }
         } else {
           if (
             element.viewGroup ||
@@ -245,6 +273,12 @@ export const UIModule = {
           }
         }
       });
+
+      if (viewGroupContainer && viewGroupContainer._luigiPreloading) {
+        viewGroupContainer._luigiPreloading = false;
+        serviceRegistry.get(PreloadingService).viewGroupLoaded(viewGroupContainer);
+      }
+
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
@@ -252,7 +286,7 @@ export const UIModule = {
             ? serviceRegistry
                 .get(ViewUrlDecoratorSvc)
                 .applyDecorators(
-                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, luigi),
+                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
                   currentNode.decodeViewUrl ?? false
                 )
             : '';
@@ -272,7 +306,7 @@ export const UIModule = {
 
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          viewGroupContainer.updateContext(currentNode.context || {});
+          viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
         }
       } else {
         const container = await createContainer(currentNode, luigi, luigiParams);
@@ -289,6 +323,7 @@ export const UIModule = {
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     let resolved = false;
     let resolveFn: (() => void) | undefined;
@@ -303,7 +338,12 @@ export const UIModule = {
           modalService.removeLastModalFromStack();
         };
 
-        onCloseRequestHandler = () => {
+        onCloseRequestHandler = async () => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
           resolveFn && resolveFn();
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
@@ -322,6 +362,7 @@ export const UIModule = {
       onCloseRequestHandler,
       onInternalClose: () => {
         try {
+          dirtyStatusService.clearDirtyState(lc);
           modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
         } catch (e) {
           console.warn('onInternalClose failed', e);
@@ -335,9 +376,14 @@ export const UIModule = {
     luigi.getEngine()._connector?.renderModal(
       lc,
       modalSettings,
-      () => {
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
         onCloseCallback?.();
-        modalService.removeLastModalFromStack();
+        resolveFn && resolveFn();
         if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
           routingService.removeModalDataFromUrl(true);
         }
@@ -365,9 +411,52 @@ export const UIModule = {
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
   openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+    if (UIModule.drawerContainer) {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+    }
+
     const lc = await createContainer(node, luigi);
     UIModule.drawerContainer = lc;
-    luigi.getEngine()._connector?.renderDrawer(lc, drawerSettings, onCloseCallback);
+
+    const closePromise = new Promise<void>((resolve) => {
+      const onCloseRequestHandler = async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+        resolve();
+      };
+
+      lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+    });
+
+    luigi.getEngine()._connector?.renderDrawer(
+      lc,
+      drawerSettings,
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        onCloseCallback?.();
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+      },
+      () => closePromise
+    );
+
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);

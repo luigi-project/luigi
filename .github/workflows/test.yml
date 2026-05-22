@@ -7,6 +7,8 @@ on:
       - 'main'
 
 name: Build & Test
+permissions:
+  contents: read
 env:
   CYPRESS_CACHE_FOLDER: ~/cypress-binary-cache
   CYPRESS_DASHBOARD_RECORD_KEY:  ${{ secrets.CYPRESS_DASHBOARD }}
@@ -15,8 +17,9 @@ jobs:
   prepare:
     uses: ./.github/workflows/prepare.yml
     secrets: inherit
-    permissions: 
+    permissions:
       actions: write
+      contents: read
     with:
       buildcache_key: buildcache-${{ github.ref }}
 
@@ -25,10 +28,10 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -42,10 +45,10 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -59,19 +62,17 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
           key: buildcache-${{ github.ref }}
       - run: cp -r ~/tmp_build/* .
-      - run: npm i -g cypress
-      - run: npm i -g live-server
       - run: bash ./test/mockengine.sh || exit 1
 
   container_unit_tests:
@@ -79,11 +80,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -97,11 +98,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -110,6 +111,23 @@ jobs:
       - run: cp -r ~/tmp_build/* .
       - run: npm run test --prefix core-modular || exit 1
 
+  client_support_angular_unit:
+    name: Client Support Angular Unit Tests
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '24.x'
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        with:
+          path: |
+            ~/tmp_build
+            ~/cypress-binary-cache
+          key: buildcache-${{ github.ref }}
+      - run: cp -r ~/tmp_build/* .
+      - run: npm test --prefix client-frameworks-support/client-support-angular || exit 1
+
   container_e2e_tests:
     name: Container E2E Tests
     needs: prepare
@@ -117,11 +135,11 @@ jobs:
     env:
       USE_CYPRESS_DASHBOARD: false # enable when trying to debug
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -137,11 +155,11 @@ jobs:
     env:
       USE_CYPRESS_DASHBOARD: true  # enable when trying to debug
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ~/tmp_build
@@ -151,7 +169,6 @@ jobs:
       - uses: ./.github/workflows/update-deps
         with:
           list-of-deps: 'libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb'
-      - run: npm install --prefix test/e2e-test-application @babel/plugin-proposal-class-properties
       - run: ls test
       - run: bash ./test/e2e-js.sh || exit 1
       - run: bash ./test/e2e-angular.sh || exit 1
@@ -161,8 +178,8 @@ jobs:
     name: Check Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '24.x'
       - run: cd ./scripts && npm ci

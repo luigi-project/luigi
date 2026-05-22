@@ -55,8 +55,7 @@ console.log(template); // Output: <p>Hello, World!</p>
 Base class for Luigi web component micro frontends.
 
 #### afterInit&nbsp;  
-Override to execute logic after initialization of the web component, i.e.
-after internal rendering and all context data set.
+Override to execute logic after initialization of the web component, i.e.after internal rendering and all context data set.
 
 **Params**
 
@@ -84,8 +83,7 @@ Query selector operating on shadow root.
 
 **See**: ParentNode.querySelector  
 ### html&nbsp;  
-Html string processing according to luigi functionality.
-Also useful in combination with LitElement VS Code plugins.
+Html string processing according to luigi functionality.Also useful in combination with LitElement VS Code plugins.
 
 **Params**
 

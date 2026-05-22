@@ -17,7 +17,8 @@ import type {
   ProfileSettings,
   TabNavData,
   TopNavData,
-  UserInfo
+  UserInfo,
+  UserSettingsProfileMenuEntry
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -30,6 +31,8 @@ import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { DirtyStatusService } from './dirty-status.service';
+import { UIModule } from '../modules/ui-module';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -85,7 +88,11 @@ export class NavigationService {
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+    const rootContext = {
+      parentNavigationContexts: [] as string[],
+      ...(currentContext || {}),
+      ...(rootNode.context || {})
+    };
     const pathParams: Record<string, any> = {};
     const pathData: PathData = {
       context: rootContext,
@@ -107,8 +114,14 @@ export class NavigationService {
             console.warn('No matching node found for segment:', segment);
             break;
           }
-          const nodeContext = node.context || {};
-          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+          // node.context gets overwritten with the merged result (globalContext + nodeContext) below.
+          // We preserve the originally declared context so that subsequent calls (e.g. after setGlobalContext)
+          // merge against the raw value instead of the previously accumulated one.
+          if (!('_rawContext' in node)) {
+            node._rawContext = node.context;
+          }
+          const nodeContext = node._rawContext ?? {};
+          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext, node.navigationContext);
           let substitutedContext = mergedContext;
           if (node.pathSegment?.startsWith(':')) {
             pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
@@ -226,7 +239,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
-          icon: node.icon
+          icon: node.icon,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -235,7 +249,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
-          selected: node === selectedNode
+          selected: node === selectedNode,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
@@ -416,11 +431,14 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
-  navItemClick(node: Node, pathData?: PathData): void {
+  async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    await dirtyStatusService.getUnsavedChangesModalPromise();
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -431,7 +449,7 @@ export class NavigationService {
       );
       return;
     }
-    this.luigi.navigation().navigate(fullPath);
+    return this.luigi.navigation().navigate(fullPath);
   }
 
   async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
@@ -470,6 +488,14 @@ export class NavigationService {
         }
       }
     };
+    const userSettingsEnabled = cfg.userSettings;
+    let userSettingsProfileMenuEntry: UserSettingsProfileMenuEntry = {};
+    if (userSettingsEnabled) {
+      userSettingsProfileMenuEntry = {
+        ...TOP_NAV_DEFAULTS.userSettingsProfileMenuEntry,
+        ...cfg.userSettings?.userSettingsProfileMenuEntry
+      };
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
@@ -485,6 +511,7 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
+      settings: userSettingsProfileMenuEntry,
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {
@@ -510,7 +537,7 @@ export class NavigationService {
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -576,7 +603,7 @@ export class NavigationService {
       selectedNode,
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -617,7 +644,7 @@ export class NavigationService {
     }
 
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const start = breadcrumbConfig.omitRoot ? 2 : 1;
 
     for (let i = start; i < nodesInPath.length; i++) {
@@ -668,7 +695,7 @@ export class NavigationService {
       return buildResult(navItems);
     }
 
-    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
       const breadcrumbCache: Record<string, BreadcrumbItem> = {};
 
       if (navItems.length > 1) {
@@ -725,7 +752,7 @@ export class NavigationService {
       }
     }
 
-    if (currentPath.path === RoutingHelpers.getCurrentPath(hashRouting).path) {
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
       const breadcrumbCache: Record<string, BreadcrumbItem> = {};
 
       if (resolvedItems.length > 1) {
@@ -870,6 +897,7 @@ export class NavigationService {
   async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
     const {
       path,
+      intent,
       preserveView,
       drawerSettings,
       modalSettings,
@@ -879,16 +907,50 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    const computedPath = await this.buildPath(path, options || {});
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    const isSpecial = !!(drawerSettings || modalSettings);
+    let computedPath = await this.buildPath(path, options || {});
+
+    if (!isSpecial) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      try {
+        await dirtyStatusService.getUnsavedChangesModalPromise();
+      } catch (e) {
+        return;
+      }
+    }
+
+    if (intent) {
+      const intentPath = RoutingHelpers.getIntentPath(path.replace('#', ''), this.luigi);
+
+      if (!intentPath) {
+        return;
+      }
+
+      if (typeof intentPath === 'string') {
+        computedPath = intentPath;
+      } else if (GenericHelpers.isObject(intentPath)) {
+        RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
+        return;
+      }
+    }
+
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path;
+
+    if (GenericHelpers.trimLeadingSlash(currentPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
+      return;
+    }
 
     if (drawerSettings || modalSettings) {
       if (drawerSettings) {
         this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
       } else {
         if (!modalSettings.keepPrevious) {
-          this.getModalService().closeModals();
+          const closed = await this.getModalService().closeModalsWithDirtyCheck();
+          if (!closed) return;
         }
 
         this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
@@ -902,7 +964,18 @@ export class NavigationService {
         }
       };
 
-      await serviceRegistry.get(ModalService).closeModals();
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      if (UIModule.drawerContainer && dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+
+      const modalsClosed = await serviceRegistry.get(ModalService).closeModalsWithDirtyCheck();
+      if (!modalsClosed) return;
 
       if (newTab) {
         await this.openViewInNewTab(normalizedPath);
@@ -924,7 +997,7 @@ export class NavigationService {
         ? 'replaceState'
         : chosenHistoryMethod;
 
-      if (this.luigi.getConfig().routing?.useHashRouting) {
+      if (hashRouting) {
         if (!withoutSync && method !== 'replaceState') {
           location.hash = normalizedPath;
         } else {
@@ -1102,7 +1175,7 @@ export class NavigationService {
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent, relative, nodeParams } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const fullPath = currentPath + (query ? '?' + query : '');
     const pathData = await this.getPathData(fullPath);
     const nodes = pathData.nodesInPath;

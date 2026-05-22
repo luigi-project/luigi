@@ -131,6 +131,7 @@ ui5-shellbar {
     z-index: 11;
 }
 
+.lui-dialog-busy-indicator,
 .luigi-busy-indicator {
     height: 100%;
     width: 100%;
@@ -139,6 +140,14 @@ ui5-shellbar {
     z-index: 999;
 }
 
+.lui-dialog-busy-indicator {
+    background: transparent;
+    pointer-events: none;
+    inset: 0;
+}
+
+.lui-dialog-busy-indicator:not([active]),
+.lui-dialog-busy-indicator[active] + *,
 .luigi-busy-indicator:not([active]) {
     display: none;
 }

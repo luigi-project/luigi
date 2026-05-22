@@ -80,7 +80,9 @@ var params = {
   wait: 1000,
   mount: [
     ['/public', './public'],
-    ['/public_client', '../client/public']
+    ['/public_client', '../client/public'],
+    ['/assets/auth-oidc-pkce', '../plugins/auth/public/auth-oidc-pkce'],
+    ['/assets/auth-oidc-pkce', '../plugins/node_modules/oidc-client-ts/dist/browser']
   ],
   logLevel: 0,
   cors: true

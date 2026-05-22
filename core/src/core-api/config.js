@@ -343,7 +343,7 @@ class LuigiConfig {
   }
 
   /**
-   * Updates the context values for visible iframes and LUI web components.
+   * Updates the context values for all micro frontends currently in the DOM (iframes and web components).
    * Note: the updated context values are not persisted. The developers have to do it on their own.
    * @param {Object} ctx - the context to be updated
    * @memberof Configuration

@@ -11,13 +11,14 @@ else
 fi
 # steps to execute line by line
 echo ""
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
 
 mkdir $folder && cd $folder
 
 # download the package.json
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-js/package.json > package.json
 
-npm i 
+$PKG_MGR i
 mkdir -p public/
 mkdir -p public/views
 
@@ -29,5 +30,5 @@ curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/lu
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-js/public/views/home.html > public/views/home.html
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-js/public/views/sample1.html > public/views/sample1.html
 
-echo "Running server with command: npm run start"
-npm run start
+echo "Running server with command: $PKG_MGR run start"
+$PKG_MGR run start

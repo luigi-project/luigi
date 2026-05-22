@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-vpq2-c234-7xj6"
+reason = "Only used for executing tests, not related to production code"

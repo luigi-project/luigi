@@ -356,9 +356,13 @@ class LifecycleManager extends LuigiClientBase {
    * const customMsgId = LuigiClient.addCustomMessageListener('myapp.project-updated', (data) => doSomething(data))
    */
   addCustomMessageListener(customMessageId, customMessageListener) {
-    return helpers.addEventListener(customMessageId, (customMessage, listenerId) => {
-      return customMessageListener(customMessage, listenerId);
-    });
+    return helpers.addEventListener(
+      customMessageId,
+      (customMessage, listenerId) => {
+        return customMessageListener(customMessage, listenerId);
+      },
+      true
+    );
   }
 
   /**
