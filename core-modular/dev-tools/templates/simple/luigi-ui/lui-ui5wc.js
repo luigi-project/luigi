@@ -652,11 +652,22 @@ const connector = {
           return;
         }
         if (data.selectedOption) {
+          const link = data.selectedOption.link;
           let label = data.selectedOption.label;
           if (!label && data.config.fallbackLabelResolver) {
             label = data.config.fallbackLabelResolver(data.selectedOption.id);
           }
-          switcher.setAttribute('selected-value', data.selectedOption.link);
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              if (option.value === link) {
+                const newOption = data.config.customSelectedOptionRenderer(data.selectedOption);
+                option.replaceWith(newOption);
+              } else {
+                option.classList.remove('is-selected');
+              }
+            });
+          }
+          switcher.setAttribute('selected-value', link);
           switcher.setAttribute('value', label);
         } else {
           switcher.removeAttribute('selected-value');

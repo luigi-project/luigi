@@ -75,11 +75,11 @@ ui5-shellbar {
 }
 
 .lui-switcher-item--top-separator {
-    border-bottom: 1px solid var(--sapList_BorderColor);
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
 }
 
 .lui-switcher-item--bottom-separator {
-    border-top: 1px solid var(--sapList_BorderColor);
+    border-top: 1px solid var(--sapList_BorderColor, #e5e5e5);
 }
 
 .breadcrumb-wrapper {
