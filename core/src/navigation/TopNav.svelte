@@ -217,6 +217,13 @@
     }
   }
 
+  function onWindowBlur() {
+    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+      return;
+    }
+    closeAllDropdowns();
+  }
+
   function burgerClickHandler() {
     if (responsiveNavSetting === 'simple' || responsiveNavSetting === 'simpleMobileOnly') {
       simpleNav();
@@ -267,7 +274,7 @@
   }
 </script>
 
-<svelte:window on:click={closeAllDropdowns} on:blur={closeAllDropdowns} />
+<svelte:window on:click={closeAllDropdowns} on:blur={onWindowBlur} />
 {#if showTopNav}
   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div
