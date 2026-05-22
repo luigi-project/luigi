@@ -711,7 +711,9 @@ describe('JS-TEST-APP', () => {
         const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
 
         cy.visitTestApp('/home/one', newConfig);
-        cy.getIframeBody().contains('Some content').should('be.visible');
+        cy.get('.iframeContainer iframe').should(($f) => {
+          expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
+        });
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
