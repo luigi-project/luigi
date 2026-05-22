@@ -411,7 +411,10 @@ describe('NavigationService', () => {
       const path = 'home';
       const pathData = await navigationService.getPathData(path);
 
-      expect(pathData.selectedNode?.context).toEqual(cfg.navigation.globalContext);
+      expect(pathData.selectedNode?.context).toEqual({
+        ...cfg.navigation.globalContext,
+        parentNavigationContexts: []
+      });
     });
     it('should return empty context if no globalContext is defined', async () => {
       const cfg = {
@@ -431,7 +434,7 @@ describe('NavigationService', () => {
       const path = 'home';
       const pathData = await navigationService.getPathData(path);
 
-      expect(pathData.selectedNode?.context).toEqual({});
+      expect(pathData.selectedNode?.context).toEqual({ parentNavigationContexts: [] });
     });
     it('should merge globalContext with node context, node context takes precedence', async () => {
       const cfg = {
@@ -457,7 +460,8 @@ describe('NavigationService', () => {
 
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
-        theme: 'light'
+        theme: 'light',
+        parentNavigationContexts: []
       });
     });
     it('inhert context from parent nodes', async () => {
@@ -488,7 +492,8 @@ describe('NavigationService', () => {
       expect(pathData.selectedNode?.context).toEqual({
         user: 'testUser',
         region: 'US',
-        theme: 'dark'
+        theme: 'dark',
+        parentNavigationContexts: []
       });
     });
   });
