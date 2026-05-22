@@ -1061,5 +1061,56 @@ export const RoutingHelpers = {
     }
     path += relativePath;
     return path;
+  },
+
+  /**
+   * Returns the resolved route link for a navigation node. If the node has an external link, its URL is returned directly.
+   * If the node has an internal link, the prefix is prepended. Otherwise, the full route is built from the node's path
+   * segments and path parameters are substituted.
+   * @param node - The navigation node to resolve the link for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param relativePathPrefix - Prefix to prepend to relative paths (e.g. '#' for hash routing)
+   * @returns The resolved route link as a string
+   */
+  getRouteLink(node: Node, pathParams: Record<string, any>, relativePathPrefix: string): string {
+    const pp = relativePathPrefix || '';
+
+    if (node.externalLink && node.externalLink.url) {
+      return node.externalLink.url;
+    } else if (node.link) {
+      return pp + node.link;
+    }
+
+    const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
+  },
+
+  /**
+   * Calculates the full href for a navigation node, taking hash routing and i18n view URLs into account.
+   * @param node - The navigation node to calculate the href for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param luigi - The Luigi instance used to read routing configuration
+   * @returns The fully resolved href string for the node
+   */
+  calculateNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string {
+    const useHashRouting = luigi.getConfigValue('routing.useHashRouting');
+    const prefix = useHashRouting ? '#' : '';
+    const link = RoutingHelpers.getRouteLink(node, pathParams, prefix);
+    return RoutingHelpers.getI18nViewUrl(link, luigi) || link;
+  },
+
+  /**
+   * Returns the href for a navigation node if the `navigation.addNavHrefs` configuration is enabled.
+   * This is used to populate anchor `href` attributes for accessibility and native browser behavior.
+   * @param node - The navigation node to get the href for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param luigi - The Luigi instance used to read configuration
+   * @returns The node href string if `addNavHrefs` is enabled, otherwise `undefined`
+   */
+  getNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string | undefined {
+    if (GenericHelpers.getConfigBooleanValue(luigi.getConfig(), 'navigation.addNavHrefs')) {
+      return RoutingHelpers.calculateNodeHref(node, pathParams, luigi);
+    }
+    return undefined;
   }
 };
