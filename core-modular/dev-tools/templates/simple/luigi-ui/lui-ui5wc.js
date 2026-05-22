@@ -304,6 +304,7 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+    if (item.href) el.setAttribute('href', item.href);
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
