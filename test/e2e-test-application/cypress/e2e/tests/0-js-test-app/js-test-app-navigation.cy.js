@@ -677,6 +677,7 @@ describe('JS-TEST-APP', () => {
 
       it('Should render group items with submenu arrow', () => {
         cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-group-account"]').should('exist');
@@ -685,6 +686,7 @@ describe('JS-TEST-APP', () => {
 
       it('Should render flat items without submenu arrow', () => {
         cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
@@ -693,6 +695,7 @@ describe('JS-TEST-APP', () => {
       it('Should expand group on click and show children', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
         cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
@@ -711,9 +714,7 @@ describe('JS-TEST-APP', () => {
         const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
 
         cy.visitTestApp('/home/one', newConfig);
-        cy.get('.iframeContainer iframe').should(($f) => {
-          expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
-        });
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
@@ -733,6 +734,7 @@ describe('JS-TEST-APP', () => {
       it('Should navigate when clicking a child item', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
         cy.visitTestApp('/home/two', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
@@ -745,6 +747,7 @@ describe('JS-TEST-APP', () => {
       it('Should close submenu when clicking elsewhere in the menu', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
         cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
@@ -758,6 +761,7 @@ describe('JS-TEST-APP', () => {
       it('Should reset submenu state when profile menu is reopened', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
         cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');

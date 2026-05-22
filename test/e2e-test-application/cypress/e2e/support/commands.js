@@ -135,6 +135,12 @@ Cypress.Commands.add('getIframeBody', (getIframeOpts = {}, index = 0, containerS
   return cy.get(`${containerSelector} iframe`, getIframeOpts).eq(index).iframe();
 });
 
+Cypress.Commands.add('waitForLuigiHandshake', (containerSelector = '.iframeContainer') => {
+  cy.get(`${containerSelector} iframe`).should(($f) => {
+    expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
+  });
+});
+
 // More robust iframe retrival methods based on: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
 // retrieves the <iframe /> element directly
 Cypress.Commands.add('getIframe', () => {
