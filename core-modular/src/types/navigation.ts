@@ -29,7 +29,7 @@ export interface ContextSwitcher {
   selectedLabel?: string;
   selectedNodePath?: any;
   selectedOption?: ContextSwitcherItem;
-  switcherChange?: (event: any) => void;
+  switcherChange?: (selectedValue: string, selectedType?: string | undefined) => void;
 }
 
 export interface ContextSwitcherItem {

@@ -451,6 +451,135 @@ const connector = {
 
       shellbar.innerHTML = html;
 
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const wrapper = data.config.customOptionsRenderer ? 'select' : 'ui5-combobox';
+        const switcher = document.createElement(wrapper);
+        const createSwitcherOption = function (item, type) {
+          let label = item.label;
+          let option;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(item.id);
+          }
+
+          if (data.config.customOptionsRenderer) {
+            if (data.selectedOption?.link === item.link && data.config.customSelectedOptionRenderer) {
+              option = data.config.customSelectedOptionRenderer(data.selectedOption);
+            } else {
+              option = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+            }
+          } else {
+            option = document.createElement('ui5-cb-item');
+            option.setAttribute('text', label);
+            option.setAttribute('value', item.link);
+          }
+
+          option.setAttribute('type', type);
+
+          return option;
+        };
+
+        switcher.classList.add('lui-context-switcher');
+        switcher.setAttribute('name', 'context-switcher');
+        switcher.setAttribute('slot', 'content');
+
+        if (data.config.defaultLabel) {
+          if (data.config.customOptionsRenderer) {
+            const option = document.createElement('option');
+
+            option.setAttribute('value', '');
+            option.textContent = data.config.defaultLabel;
+
+            switcher.prepend(option);
+          } else {
+            switcher.setAttribute('placeholder', data.config.defaultLabel);
+          }
+        }
+
+        if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
+
+        const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
+
+        switcher.addEventListener(eventType, function (event) {
+          let selectedValue;
+          let selectedType;
+
+          if (eventType === 'selection-change') {
+            selectedValue = event.detail?.item?.getAttribute('value') || '';
+            selectedType = event.detail?.item?.getAttribute('type') || undefined;
+          } else {
+            selectedValue = event.target.value || '';
+
+            if (event.target.children?.length) {
+              const selectedOption = [...event.target.children].find((child) => child.selected);
+
+              selectedType = selectedOption ? selectedOption?.attributes?.type?.value : undefined;
+            }
+          }
+
+          if (data.switcherChange) {
+            data.switcherChange(selectedValue, selectedType);
+          } else {
+            console.warn('There is no context switcher change handler defined in configuration.');
+          }
+        });
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position !== 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === filteredActions.length - 1) {
+              item.classList.add('lui-switcher-item--top-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.options?.length) {
+          data.options.forEach((option) => {
+            const item = createSwitcherOption(option, 'option');
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position === 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === 0) {
+              item.classList.add('lui-switcher-item--bottom-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        shellbar.appendChild(switcher);
+      }
+
       if (topNavData.profile) {
         console.log(topNavData.profile);
         if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
@@ -515,6 +644,38 @@ const connector = {
       }
       if (shellbar._lastTopNavData) {
         console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
+      }
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const switcher = shellbar.querySelector('.lui-context-switcher');
+        if (!switcher) {
+          return;
+        }
+        if (data.selectedOption) {
+          const link = data.selectedOption.link;
+          let label = data.selectedOption.label;
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              if (option.value === link) {
+                const newOption = data.config.customSelectedOptionRenderer(data.selectedOption);
+                option.replaceWith(newOption);
+              } else {
+                option.classList.remove('is-selected');
+              }
+            });
+          }
+          switcher.setAttribute('selected-value', link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
       }
     }
     shellbar._lastTopNavData = topNavData;
