@@ -17,7 +17,8 @@ import type {
   ProfileSettings,
   TabNavData,
   TopNavData,
-  UserInfo
+  UserInfo,
+  UserSettingsProfileMenuEntry
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -238,7 +239,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
-          icon: node.icon
+          icon: node.icon,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -247,7 +249,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
-          selected: node === selectedNode
+          selected: node === selectedNode,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
@@ -485,6 +488,14 @@ export class NavigationService {
         }
       }
     };
+    const userSettingsEnabled = cfg.userSettings;
+    let userSettingsProfileMenuEntry: UserSettingsProfileMenuEntry = {};
+    if (userSettingsEnabled) {
+      userSettingsProfileMenuEntry = {
+        ...TOP_NAV_DEFAULTS.userSettingsProfileMenuEntry,
+        ...cfg.userSettings?.userSettingsProfileMenuEntry
+      };
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
@@ -500,6 +511,7 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
+      settings: userSettingsProfileMenuEntry,
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {
