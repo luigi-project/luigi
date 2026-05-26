@@ -1,8 +1,10 @@
 import { type AlertSettings, type ConfirmationModalSettings, type UserSettings } from '../modules/ux-module';
 import { DirtyStatusService } from '../services/dirty-status.service';
 import { serviceRegistry } from '../services/service-registry';
+import type { UserSettingsDialogSettings } from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
+import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { get } from '../utilities/store';
 import type { Luigi } from './luigi';
 
@@ -69,15 +71,24 @@ export class UX {
     });
   };
 
-  processUserSettingGroups = (): any[] => {
+  openUserSettings = async () => {
     const userSettings = this.luigi.getConfigValue('userSettings');
     const storedSettings = this.luigi.getConfigValue('settings');
+    
+    const previousUserSettings = await this.luigi.readUserSettings();
+    const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
+    
+    const userSettinsDialog = userSettings.userSettingsDialog;
+    let dialogHeader = userSettinsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
+    let saveBtn = userSettinsDialog.saveBtn || TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
+    let dismissBtn = userSettinsDialog.dismissBtn || TOP_NAV_DEFAULTS.userSettingsDialog.dismissBtn;
+    const userSettingsDialogSettings: UserSettingsDialogSettings = {
+      dialogHeader: this.luigi.i18n().getTranslation(dialogHeader),
+      saveBtn: this.luigi.i18n().getTranslation(saveBtn),
+      dismissBtn: this.luigi.i18n().getTranslation(dismissBtn)
+    };
 
-    return UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
-  };
-
-  openUserSettings = (settings: UserSettings) => {
-    this.luigi.getEngine()._connector?.openUserSettings(settings);
+    this.luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings);
   };
 
   closeUserSettings = () => {

@@ -511,7 +511,12 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
-      settings: userSettingsProfileMenuEntry,
+      settings: {
+        ...userSettingsProfileMenuEntry,
+        openUserSettings: () => {
+          this.luigi.ux().openUserSettings();
+        }
+      },
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {

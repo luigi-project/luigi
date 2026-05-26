@@ -222,10 +222,7 @@ function renderProfilePopover(profileObj, avatar) {
     profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
-      connector.openUserSettings({
-        size: 'm',
-        title: 'User Settings'
-      });
+     profileObj.settings.openUserSettings();
     });
 
     profileList.appendChild(profileLi);
@@ -807,12 +804,6 @@ const connector = {
   },
 
   openUserSettings: async (settings) => {
-    if (!settings) {
-      settings = {
-        title: 'User Settings'
-      };
-    }
-
     const storedUserSettings = {};
     const previousUserSettings = await globalThis.Luigi.readUserSettings();
     const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
@@ -840,11 +831,11 @@ const connector = {
     }
 
     dialog.classList.add('lui-dialog');
-    dialog.setAttribute('header-text', settings?.title);
+    dialog.setAttribute('header-text', settings?.dialogHeader);
     setDialogSize(dialog, settings);
 
     bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.title}</ui5-title>`;
+    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.dialogHeader}</ui5-title>`;
     dialog.appendChild(bar);
 
     toolbar.setAttribute('slot', 'footer');
@@ -853,7 +844,7 @@ const connector = {
     cancelBtn.onclick = () => {
       connector.closeUserSettings();
     };
-    cancelBtn.setAttribute('text', 'Cancel');
+    cancelBtn.setAttribute('text', settings?.dismissBtn);
     toolbar.appendChild(cancelBtn);
 
     saveBtn.onclick = async () => {
@@ -878,7 +869,7 @@ const connector = {
       }
     };
     saveBtn.setAttribute('design', 'Positive');
-    saveBtn.setAttribute('text', 'Save');
+    saveBtn.setAttribute('text', settings?.saveBtn);
     toolbar.appendChild(saveBtn);
 
     if (Array.isArray(userSettingData) && userSettingData.length > 0) {
