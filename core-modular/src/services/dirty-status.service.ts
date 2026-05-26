@@ -1,3 +1,5 @@
+import type { Luigi } from '../core-api/luigi';
+
 export class DirtyStatusService {
   unsavedChanges: {
     isDirty?: boolean;
@@ -8,7 +10,8 @@ export class DirtyStatusService {
    * Initializes the `unsavedChanges` property with default values.
    * Sets `isDirty` to `false` and `persistUrl` to `null`, indicating that there are no unsaved changes initially.
    */
-  constructor() {
+  constructor(private luigi: Luigi) {
+    this.luigi = luigi;
     this.unsavedChanges = {
       isDirty: false,
       persistUrl: null
@@ -72,5 +75,39 @@ export class DirtyStatusService {
    */
   readDirtyStatus(): boolean {
     return this.unsavedChanges.dirtySet ? this.unsavedChanges.dirtySet.size > 0 : !!this.unsavedChanges.isDirty;
+  }
+
+  getUnsavedChangesModalPromise(source?: any): Promise<void> {
+    if (!this.shouldShowUnsavedChangesModal(source)) {
+      return Promise.resolve();
+    }
+    const customHandler = this.luigi.getConfigValue('settings.unsavedChangesHandler');
+    if (customHandler) {
+      return customHandler().then(() => this.clearDirtyState(source));
+    }
+    const settings = {
+      header: this.luigi.i18n().getTranslation('luigi.unsavedChangesAlert.header'),
+      body: this.luigi.i18n().getTranslation('luigi.unsavedChangesAlert.body'),
+      buttonDismiss: this.luigi.i18n().getTranslation('luigi.button.dismiss'),
+      buttonConfirm: this.luigi.i18n().getTranslation('luigi.button.confirm')
+    };
+    return new Promise((resolve, reject) => {
+      this.luigi!.getEngine()._connector?.renderConfirmationModal(settings, {
+        confirm: () => {
+          this.clearDirtyState(source);
+          resolve();
+        },
+        dismiss: () => {
+          reject();
+        }
+      });
+    });
+  }
+
+  shouldShowUnsavedChangesModal(source?: any): boolean {
+    if (source) {
+      return this.unsavedChanges.dirtySet?.has(source) ?? false;
+    }
+    return this.readDirtyStatus();
   }
 }

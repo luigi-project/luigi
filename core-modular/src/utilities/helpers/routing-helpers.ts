@@ -121,7 +121,7 @@ export const RoutingHelpers = {
 
     if (node.pathSegment && node.pathSegment.indexOf(':') === 0) {
       const hash = luigi.getConfig().routing?.useHashRouting;
-      const route = RoutingHelpers.mapPathToNode(RoutingHelpers.getCurrentPath(hash)?.path, node) || '';
+      const route = RoutingHelpers.mapPathToNode(RoutingHelpers.getCurrentPath(luigi, hash)?.path, node) || '';
       const data = await luigi.navigation().navService.extractDataFromPath(route);
 
       return RoutingHelpers.getDynamicNodeValue(node, data.pathData.pathParams) || '';
@@ -199,22 +199,223 @@ export const RoutingHelpers = {
   },
 
   /**
+   * Checks if given path contains intent navigation special syntax
+   * @param {string} path - path to be checked
+   */
+  hasIntent(path: string): boolean {
+    return !!path && path.toLowerCase().includes('#?intent=');
+  },
+
+  /**
+   * This function takes an intentLink and parses it conforming certain limitations in characters usage.
+   * Limitations include:
+   *  - `semanticObject` allows only alphanumeric characters
+   *  - `action` allows alphanumeric characters and the '_' sign
+   *
+   * Example of resulting output:
+   * ```
+   *  {
+   *    semanticObject: "Sales",
+   *    action: "order",
+   *    params: {param1: "value1",param2: "value2"}
+   *  };
+   * ```
+   * @param {string} intentLink - the intent link represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
+   */
+  getIntentObject(intentLink: string): Record<string, any> | undefined {
+    const intentParams = intentLink.split('?intent=')[1];
+
+    if (intentParams) {
+      const intentObj = intentParams.split('?');
+      const semanticObjectAndAction = intentObj[0].split('-');
+      const params = Object.fromEntries(new URLSearchParams(intentObj[1]).entries());
+
+      return {
+        semanticObject: semanticObjectAndAction[0],
+        action: semanticObjectAndAction[1],
+        params
+      };
+    }
+  },
+
+  /**
+   * This function compares the intentLink parameter with the configuration intentMapping
+   * and returns the path segment that is matched together with the parameters, if any
+   *
+   * Example:
+   *
+   * For intentLink = `#?intent=Sales-order?foo=bar`
+   * and Luigi configuration:
+   * ```
+   * intentMapping: [{
+   *   semanticObject: 'Sales',
+   *   action: 'order',
+   *   pathSegment: '/projects/pr2/order'
+   * }]
+   *
+   * ```
+   * the given intentLink is matched with the configuration's same semanticObject and action,
+   * resulting in pathSegment `/projects/pr2/order` being returned. The parameter is also added in
+   * this case resulting in: `/projects/pr2/order?~foo=bar`
+   *
+   * Or for external intent links: intentLink = `#?intent=External-view`
+   * and Luigi configuration:
+   * ```
+   * intentMapping: [{
+   *   semanticObject: 'External',
+   *   action: 'view',
+   *   externalLink: { url: 'https://www.sap.com', openInNewTab: true }
+   * }]
+   * ```
+   * The resulting will be returned from this function:
+   * ```
+   * {
+   *   url: 'https://www.sap.com',
+   *   openInNewTab: true,
+   *   external: true
+   * }
+   * ```
+   * @param {string} intentLink - the intentLink represents the semantic intent defined by the user, i.e.: #?intent=semanticObject-action?param=value
+   * @param luigi - Luigi instance used to access configuration values
+   */
+  getIntentPath(intentLink: string, luigi: Luigi): boolean | string | Record<string, any> {
+    const mappings = luigi.getConfigValue('navigation.intentMapping');
+
+    if (mappings && mappings.length > 0) {
+      const caseInsensitiveLink = intentLink.replace(/\?intent=/i, '?intent=');
+      const intentObject = this.getIntentObject(caseInsensitiveLink);
+
+      if (intentObject) {
+        let realPath = mappings.find(
+          (item: any) => item.semanticObject === intentObject.semanticObject && item.action === intentObject.action
+        );
+
+        if (!realPath) {
+          return false;
+        }
+
+        // set 'external' boolean to make it easier to identify new tab links
+        if (realPath.externalLink) {
+          return {
+            ...realPath.externalLink,
+            external: true
+          };
+        }
+
+        realPath = realPath.pathSegment;
+
+        const params = Object.entries(intentObject.params);
+
+        if (params && params.length > 0) {
+          // resolve dynamic parameters in the path if any
+          realPath = this.resolveDynamicIntentPath(realPath, intentObject.params);
+
+          // get custom node param prefixes if any or default to ~
+          let nodeParamPrefix = luigi.getConfigValue('routing.nodeParamPrefix');
+
+          nodeParamPrefix = nodeParamPrefix || '~';
+          realPath = realPath.concat(`?${nodeParamPrefix}`);
+          params.forEach(([key, value], index) => {
+            realPath += `${index > 0 ? '&' + nodeParamPrefix : ''}${key}=${value}`;
+          });
+        }
+
+        return realPath;
+      } else {
+        console.warn('Could not parse given intent link.');
+      }
+    } else {
+      console.warn('No intent mappings are defined in Luigi configuration.');
+    }
+
+    return false;
+  },
+
+  /**
+   * This function takes a path which contains dynamic parameters and a list parameters and replaces the dynamic parameters
+   * with the given parameters if any. The input path remains unchanged if the parameters list
+   * does not contain the respective dynamic parameter name.
+   * e.g.:
+   * Assume either of these two calls are made:
+   * 1. `LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})`
+   * 2. `LuigiClient.linkManager().navigate('/#?intent=Sales-settings?project=pr2&user=john')`
+   * For both 1. and 2., the following dynamic input path: `/projects/:project/details/:user`
+   * is resolved through this method to `/projects/pr2/details/john`
+   *
+   * @param {string} path - the path containing the potential dynamic parameter
+   * @param {Object} parameters - a list of objects consisting of passed parameters
+   */
+  resolveDynamicIntentPath(path: string, parameters: object): string {
+    if (!parameters) {
+      return path;
+    }
+
+    let newPath = path;
+
+    for (const [key, value] of Object.entries(parameters)) {
+      // regular expression to detect dynamic parameter patterns:
+      // /some/path/:param1/example/:param2/sample
+      // /some/path/example/:param1
+      const regex = new RegExp('/:' + key + '(/|$)', 'g');
+
+      newPath = newPath.replace(regex, `/${value}/`);
+    }
+
+    // strip trailing slash
+    newPath = newPath.replace(/\/$/, '');
+
+    return newPath;
+  },
+
+  /**
    * Retrieves the current path and query string from the browser's location hash.
    *
+   * @param hashRouting - true if hash routing is active, false if path routing is active
+   * @param luigi - Luigi instance used to access configuration values
    * @returns An object containing the normalized path and the query string.
    * @remarks
    * - The path is normalized using `NavigationHelpers.normalizePath`.
    * - The query string is extracted from the portion after the '?' in the hash.
    * - If there is no query string, `query` will be `undefined`.
    */
-  getCurrentPath(hashRouting?: boolean): { path: string; query: string } {
-    //TODO intentNavigation implementation
+  getCurrentPath(luigi: Luigi, hashRouting?: boolean, checkIntent?: boolean): { path: string; query: string } {
+    if (checkIntent && /\?intent=/i.test(location.hash)) {
+      const hash = location.hash.replace('#/#', '').replace('#', '');
+      const intentPath = RoutingHelpers.getIntentPath(hash, luigi);
+
+      // if intent faulty or illegal then skip
+      if (intentPath) {
+        if (typeof intentPath === 'string') {
+          const isReplaceRouteActivated = luigi?.getConfigValue('routing.replaceIntentRoute');
+
+          if (isReplaceRouteActivated) {
+            history.replaceState((window as any).state, '', intentPath);
+          }
+
+          return { path: intentPath, query: location.search };
+        } else if (GenericHelpers.isObject(intentPath)) {
+          RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
+
+          return { path: hashRouting ? location.hash : location.pathname, query: '' };
+        }
+      }
+    }
+
     if (hashRouting) {
       const pathRaw = NavigationHelpers.normalizePath(location.hash);
       const [path, query] = pathRaw.split('?');
-      return { path, query };
+
+      return { path: path.replace('#', ''), query };
     } else {
       return { path: NavigationHelpers.normalizePath(location.pathname), query: location.search };
+    }
+  },
+
+  handleExternalIntentPath(intentPath: Record<string, any>): void {
+    if (intentPath.external && intentPath.url) {
+      const target = intentPath.openInNewTab ? '_blank' : '_self';
+
+      window.open(intentPath.url, target, 'noopener,noreferrer')?.focus();
     }
   },
 
@@ -334,7 +535,7 @@ export const RoutingHelpers = {
 
   /**
    * Get the query param separator which is used with hashRouting
-   * Default: :
+   * Default:
    * @example /home?modal=(urlencoded)/some-modal?modalParams=(urlencoded){...}&otherParam=hmhm
    * @returns the first query param separator (like ? for path routing)
    */
@@ -751,41 +952,76 @@ export const RoutingHelpers = {
       : this.buildRoute(node.parent, `/${node.parent.pathSegment}${path}`, params);
   },
 
-  substituteViewUrl(node: Node, pathParams: Record<string, string>, luigi: Luigi): string {
+  /**
+   * Resolves the final view URL for a given node by substituting dynamic placeholders with actual values.
+   *
+   * Performs the following substitutions in order:
+   * 1. Removes `{virtualTreePath}` if the node is a virtual tree.
+   * 2. Replaces path parameters (e.g. `:id`) with their concrete values from `pathParams`.
+   * 3. Replaces context variables (e.g. `{context.myVar}`) with values from `node.context`.
+   * 4. Replaces node parameter variables (e.g. `{nodeParams.myParam}`) with values from `nodeParams`.
+   * 5. Replaces `{i18n.currentLocale}` with the current locale.
+   * 6. Replaces `{routing.queryParams.<key>}` with the corresponding search parameter value,
+   *    or removes the query parameter from the URL if the value is not present.
+   *
+   * @param node - The navigation node containing the `viewUrl` template and optional `context`/`virtualTree` properties.
+   * @param pathParams - A map of path parameter names to their resolved values (e.g. `{ id: '42' }`).
+   * @param nodeParams - A map of node-specific parameters passed to the micro frontend.
+   * @param luigi - The Luigi instance used to access i18n, routing, and configuration.
+   * @returns The fully resolved view URL string, or an empty string if `node.viewUrl` is not defined.
+   */
+  substituteViewUrl(
+    node: Node,
+    pathParams: Record<string, string>,
+    nodeParams: Record<string, any>,
+    luigi: Luigi
+  ): string {
     if (!node.viewUrl) {
       return '';
     }
 
     let viewUrl = node.viewUrl;
-    //TODO issue nr 4575
-    //currently minimal requirement for this task
-    // const contextVarPrefix = 'context.';
-    // const nodeParamsVarPrefix = 'nodeParams.';
-    // const searchQuery = 'routing.queryParams';
+    const contextVarPrefix = 'context.';
+    const nodeParamsVarPrefix = 'nodeParams.';
+    const searchQuery = 'routing.queryParams';
 
     if (node.virtualTree) {
       viewUrl = viewUrl.replace('{virtualTreePath}', '');
     }
     viewUrl = GenericHelpers.replaceVars(viewUrl, pathParams, ':', false);
-    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.context, contextVarPrefix);
-    // viewUrl = GenericHelpers.replaceVars(viewUrl, pathData.nodeParams, nodeParamsVarPrefix);
-    //TODO
-    // viewUrl = this.getI18nViewUrl(viewUrl);
+    if (node.context) {
+      viewUrl = GenericHelpers.replaceVars(viewUrl, node.context, contextVarPrefix);
+    }
+    viewUrl = GenericHelpers.replaceVars(viewUrl, nodeParams, nodeParamsVarPrefix);
+    viewUrl = this.getI18nViewUrl(viewUrl, luigi);
 
-    // if (viewUrl && viewUrl.includes(searchQuery)) {
-    //   const viewUrlSearchParam = viewUrl.split('?')[1];
-    //   if (viewUrlSearchParam) {
-    //     const key = viewUrlSearchParam.split('=')[0];
-    //     const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
-    //     if (searchParams[key]) {
-    //       viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
-    //     } else {
-    //       viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
-    //     }
-    //   }
-    // }
+    if (viewUrl && viewUrl.includes(searchQuery)) {
+      const viewUrlSearchParam = viewUrl.split('?')[1];
+      if (viewUrlSearchParam) {
+        const key = viewUrlSearchParam.split('=')[0];
+        const searchParams = luigi.routing().getSearchParams() as Record<string, string>;
+        if (searchParams[key]) {
+          viewUrl = viewUrl.replace(`{${searchQuery}.${key}}`, searchParams[key]);
+        } else {
+          viewUrl = viewUrl.replace(`?${key}={${searchQuery}.${key}}`, '');
+        }
+      }
+    }
 
     return viewUrl;
+  },
+
+  /**
+   * Returns the viewUrl with current locale, e.g. luigi/{i18n.currentLocale}/ -> luigi/en
+   * if viewUrl contains {i18n.currentLocale} term, it will be replaced by current locale
+   * @param viewUrl
+   */
+  getI18nViewUrl(viewUrl: string, luigi: Luigi): string {
+    const i18n_currentLocale = '{i18n.currentLocale}';
+    const locale = luigi.i18n().getCurrentLocale();
+    const hasI18n = viewUrl && viewUrl.includes(i18n_currentLocale);
+
+    return hasI18n ? viewUrl.replace(i18n_currentLocale, locale) : viewUrl;
   },
 
   /**
@@ -825,5 +1061,56 @@ export const RoutingHelpers = {
     }
     path += relativePath;
     return path;
+  },
+
+  /**
+   * Returns the resolved route link for a navigation node. If the node has an external link, its URL is returned directly.
+   * If the node has an internal link, the prefix is prepended. Otherwise, the full route is built from the node's path
+   * segments and path parameters are substituted.
+   * @param node - The navigation node to resolve the link for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param relativePathPrefix - Prefix to prepend to relative paths (e.g. '#' for hash routing)
+   * @returns The resolved route link as a string
+   */
+  getRouteLink(node: Node, pathParams: Record<string, any>, relativePathPrefix: string): string {
+    const pp = relativePathPrefix || '';
+
+    if (node.externalLink && node.externalLink.url) {
+      return node.externalLink.url;
+    } else if (node.link) {
+      return pp + node.link;
+    }
+
+    const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
+  },
+
+  /**
+   * Calculates the full href for a navigation node, taking hash routing and i18n view URLs into account.
+   * @param node - The navigation node to calculate the href for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param luigi - The Luigi instance used to read routing configuration
+   * @returns The fully resolved href string for the node
+   */
+  calculateNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string {
+    const useHashRouting = luigi.getConfigValue('routing.useHashRouting');
+    const prefix = useHashRouting ? '#' : '';
+    const link = RoutingHelpers.getRouteLink(node, pathParams, prefix);
+    return RoutingHelpers.getI18nViewUrl(link, luigi) || link;
+  },
+
+  /**
+   * Returns the href for a navigation node if the `navigation.addNavHrefs` configuration is enabled.
+   * This is used to populate anchor `href` attributes for accessibility and native browser behavior.
+   * @param node - The navigation node to get the href for
+   * @param pathParams - Dynamic path parameters to substitute in the route
+   * @param luigi - The Luigi instance used to read configuration
+   * @returns The node href string if `addNavHrefs` is enabled, otherwise `undefined`
+   */
+  getNodeHref(node: Node, pathParams: Record<string, any>, luigi: Luigi): string | undefined {
+    if (GenericHelpers.getConfigBooleanValue(luigi.getConfig(), 'navigation.addNavHrefs')) {
+      return RoutingHelpers.calculateNodeHref(node, pathParams, luigi);
+    }
+    return undefined;
   }
 };

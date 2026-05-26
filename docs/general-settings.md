@@ -33,6 +33,7 @@ settings: {
   header: {  object / function / Promise
     logo: 'path/to/image.png',
     title: 'Luigi Demo',
+    subTitle: 'Application subtitle',
     favicon: 'path/to/favicon.ico'
   },
   featureToggles : {
@@ -202,10 +203,21 @@ Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 ### header.title
 - **type**: string
 - **description**: defines the top left navigation title.
-- **example**: 
+- **example**:
 ```
  header: {  object / function / Promise
     title: 'Luigi Demo'
+  },
+```
+
+### header.subTitle
+- **type**: string
+- **description**: defines the subtitle displayed below the top left navigation title.
+- **example**:
+```
+ header: {  object / function / Promise
+    title: 'Luigi Demo',
+    subTitle: 'Application subtitle'
   },
 ```
 

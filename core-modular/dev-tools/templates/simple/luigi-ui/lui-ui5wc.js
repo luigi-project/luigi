@@ -193,7 +193,6 @@ function createCategoryClickHandler(id) {
 }
 
 function renderProfilePopover(profileObj, avatar) {
-  const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
   const profilePopover = document.createElement('ui5-popover');
   const profileList = document.createElement('ui5-list');
   const uInfoWrapper = document.createElement('div');
@@ -215,11 +214,12 @@ function renderProfilePopover(profileObj, avatar) {
     profileList.appendChild(profileLi);
   });
 
-  if (userSettingData) {
+  if (profileObj.settings) {
     const profileLi = document.createElement('ui5-li');
 
-    profileLi.setAttribute('text', 'User Settings');
-    profileLi.innerText = 'User Settings';
+    profileLi.setAttribute('text', profileObj.settings.label);
+    profileLi.innerText = profileObj.settings.label;
+    profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
       connector.openUserSettings({
@@ -304,9 +304,8 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    el.addEventListener('click', (ev) => {
-      leftNavData.navClick(item);
-    });
+    if (item.href) el.setAttribute('href', item.href);
+    el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
   } else if (item.category) {
@@ -325,9 +324,7 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('text', nodeWrapper.label);
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
-        sub.addEventListener('click', (ev) => {
-          leftNavData.navClick(nodeWrapper);
-        });
+        sub._luigiItem = nodeWrapper;
         sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
@@ -581,8 +578,7 @@ const connector = {
       }
 
       if (topNavData.profile) {
-        console.log(topNavData.profile);
-        if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
+        if ((topNavData.profile.authEnabled && topNavData.profile.signedIn) || !topNavData.profile.authEnabled) {
           const ava = document.createElement('ui5-avatar');
           ava.setAttribute('slot', 'profile');
           ava.setAttribute('shape', 'Circle');
@@ -591,7 +587,7 @@ const connector = {
           renderProfilePopover(topNavData.profile, ava);
           shellbar.appendChild(ava);
           shellbar.addEventListener('profile-click', onProfileClick);
-        } else {
+        } else if (topNavData.profile.authEnabled && !topNavData.profile.signedIn) {
           const loginBtn = document.createElement('div');
           loginBtn.innerHTML = 'Sign In';
           loginBtn.setAttribute('slot', 'profile');
@@ -642,9 +638,6 @@ const connector = {
           addShellbarItem(shellbar, item, topNavData.navClick);
         });
       }
-      if (shellbar._lastTopNavData) {
-        console.log('shellbar._lastTopNavData', shellbar._lastTopNavData);
-      }
       if (topNavData.contextSwitcher) {
         const data = { ...topNavData.contextSwitcher };
         const switcher = shellbar.querySelector('.lui-context-switcher');
@@ -690,6 +683,21 @@ const connector = {
           sidenav.toggleAttribute('collapsed');
         };
         burger.addEventListener('click', burger._clickListener);
+      }
+      sidenav._leftNavData = leftNavData;
+      if (!sidenav._selectionChangeListener) {
+        sidenav._selectionChangeListener = true;
+        sidenav.addEventListener('selection-change', async (event) => {
+          event.preventDefault();
+          const selectedItem = event.detail.item;
+          const luigiItem = selectedItem._luigiItem;
+          if (!luigiItem) return;
+          try {
+            await sidenav._leftNavData.navClick(luigiItem);
+          } catch {
+            // navigation was cancelled (e.g. unsaved changes dismissed)
+          }
+        });
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
@@ -760,9 +768,9 @@ const connector = {
   getContainerWrapper: () => {
     return document.querySelector('ui5-navigation-layout > .content-wrapper > .content');
   },
-  renderDrawer: (lc, drawerSettings, onCloseCallback) => {
+  renderDrawer: (lc, drawerSettings, onCloseCallback, onCloseRequest) => {
     drawerSettings.isDrawer = true;
-    connector.renderModal(lc, drawerSettings, onCloseCallback);
+    connector.renderModal(lc, drawerSettings, onCloseCallback, onCloseRequest);
   },
   renderModal: (lc, modalSettings, onCloseCallback, onCloseRequest) => {
     const dialog = document.createElement('ui5-dialog');
@@ -790,11 +798,9 @@ const connector = {
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      dialog.open = false;
       if (onCloseCallback) {
         onCloseCallback();
       }
-      document.body.removeChild(dialog);
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);

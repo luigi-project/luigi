@@ -1,15 +1,25 @@
-import { TestBed } from '@angular/core/testing';
 import { LuigiContextServiceImpl } from './luigi-context.service.impl';
 
+jest.mock('@luigi-project/client', () => ({
+  addInitListener: jest.fn(),
+  addContextUpdateListener: jest.fn()
+}));
+
+jest.mock('@angular/core', () => ({
+  Injectable: () => (target: any) => target,
+  inject: jest.fn().mockReturnValue({ run: (fn: Function) => fn() }),
+  signal: (val: any) => ({
+    set: jest.fn(),
+    asReadonly: () => val
+  }),
+  WritableSignal: {},
+  Signal: {},
+  NgZone: class {}
+}));
+
 describe('LuigiContextService', () => {
-  let service: LuigiContextServiceImpl;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(LuigiContextServiceImpl);
-  });
-
   it('should be created', () => {
+    const service = new LuigiContextServiceImpl();
     expect(service).toBeTruthy();
   });
 });

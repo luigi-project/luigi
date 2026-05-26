@@ -75,7 +75,8 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "luigisample:build"
+            "buildTarget": "luigisample:build",
+            "proxyConfig": "proxy.conf.cjs"
           },
           "configurations": {
             "production": {
@@ -87,29 +88,6 @@
           "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "luigisample:build"
-          }
-        },
-        "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
-            "styles": [
-              "src/styles.css"
-            ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico",
-              "src/index.html",
-              {
-                "glob": "**",
-                "input": "node_modules/@luigi-project/core",
-                "output": "/luigi-core"
-              }
-            ]
           }
         },
         "lint": {
