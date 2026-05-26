@@ -16,7 +16,7 @@ npm install @luigi-project/client-support-angular -s
 
 ```javascript
 providers: [
-  importProvidersFrom(LuigiAngularSupportModule)
+  provideLuigiAngular()
 ]
 ```
 
