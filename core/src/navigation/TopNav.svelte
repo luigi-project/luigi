@@ -221,6 +221,9 @@
     if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
       return;
     }
+    if (document.hasFocus()) {
+      return;
+    }
     closeAllDropdowns();
   }
 
@@ -625,7 +628,7 @@
                   title={userInfo.name || undefined}
                   role="button"
                   tabindex="0"
-                  on:click={() => toggleDropdownState('profilePopover')}
+                  on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                   on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                   data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                 >
@@ -666,7 +669,7 @@
                     title={userInfo.name || undefined}
                     role="button"
                     tabindex="0"
-                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                     on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                     data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                   >
@@ -707,7 +710,7 @@
                       aria-expanded={dropDownStates.profilePopover || false}
                       aria-haspopup="true"
                       aria-controls="profilePopover"
-                      on:click={() => toggleDropdownState('profilePopover')}
+                      on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                       title={userInfo.name ? userInfo.name : undefined}
                       tabindex="0"
                       data-testid="luigi-topnav-profile-btn"

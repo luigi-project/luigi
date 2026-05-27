@@ -81,6 +81,11 @@ const installLuigiSettledDetector = (win) => {
     characterData: true
   });
 
+  win.__luigiForceUnsettle = () => {
+    version++;
+    armCheck();
+  };
+
   armCheck();
 };
 
@@ -207,6 +212,17 @@ Cypress.Commands.add('waitForLuigiHandshake', (containerSelector = '.iframeConta
 });
 
 Cypress.Commands.add('waitForLuigiSettled', () => {
+  // Force the detector to re-arm so we never observe a stale `data-luigi-settled`
+  // from before the most recent action. Then yield through one animation frame
+  // + macrotask so Svelte has a chance to flush DOM updates synchronously
+  // scheduled by the action — without this yield, the detector may sample its
+  // "no-mutation" window *between* the click handler and Svelte's flush.
+  cy.window({ log: false }).then((win) => {
+    if (typeof win.__luigiForceUnsettle === 'function') win.__luigiForceUnsettle();
+    return new Promise((resolve) => {
+      win.requestAnimationFrame(() => win.setTimeout(resolve, 0));
+    });
+  });
   cy.get('body[data-luigi-settled]', { timeout: 10000 });
 });
 
