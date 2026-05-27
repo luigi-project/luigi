@@ -680,6 +680,7 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-group-account"]').should('exist');
         cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
@@ -690,6 +691,7 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
       });
@@ -700,6 +702,7 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
@@ -708,6 +711,7 @@ describe('JS-TEST-APP', () => {
         // DOM node.
         cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         cy.get('[data-testid="profile-child-privacy"]').should('exist');
       });
@@ -720,16 +724,19 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
 
         cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
         cy.get(sublist).should('be.visible');
         cy.get('[data-testid="profile-child-profile"]').should('be.visible');
         cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
 
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
 
         cy.get(sublist).should('not.exist');
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
@@ -741,10 +748,12 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="profile-child-profile"]').click();
         cy.expectPathToBe('/home/one');
       });
@@ -755,10 +764,12 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         cy.get('.fd-user-menu__header').click();
         cy.get('[data-testid="profile-child-profile"]').should('not.exist');
@@ -770,10 +781,12 @@ describe('JS-TEST-APP', () => {
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
         cy.get('[data-testid="profile-flat-about"]').should('exist');
         cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
         cy.get('[data-testid="profile-child-profile"]').should('exist');
         // Close profile menu
         cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
