@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "mkdirp": "3.0.1"
+  },
+  "overrides": {
+    "qs": "^6.15.2"
   }
 }
