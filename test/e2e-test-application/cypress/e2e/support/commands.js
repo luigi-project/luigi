@@ -22,12 +22,60 @@ const setLoggedIn = (win) => {
   win.localStorage.setItem(key, JSON.stringify(newLuigiAuth));
 };
 
+const installLuigiSettledDetector = (win) => {
+  const store = win.Luigi && win.Luigi._store;
+  if (!store || store.__settledInstalled) return;
+  store.__settledInstalled = true;
+
+  let version = 0;
+  let armed = false;
+
+  const markUnsettled = () => win.document.body.removeAttribute('data-luigi-settled');
+  const markSettled = () => win.document.body.setAttribute('data-luigi-settled', '');
+
+  const armCheck = () => {
+    markUnsettled();
+    if (armed) return;
+    armed = true;
+    const v1 = version;
+    win.setTimeout(() => {
+      if (version !== v1) {
+        armed = false;
+        armCheck();
+        return;
+      }
+      const v2 = version;
+      win.setTimeout(() => {
+        armed = false;
+        if (version !== v2) {
+          armCheck();
+          return;
+        }
+        markSettled();
+      }, 0);
+    }, 0);
+  };
+
+  ['update', 'set'].forEach((m) => {
+    if (typeof store[m] !== 'function') return;
+    const orig = store[m].bind(store);
+    store[m] = (...args) => {
+      version++;
+      armCheck();
+      return orig(...args);
+    };
+  });
+
+  armCheck();
+};
+
 Cypress.Commands.add('vistTestAppPathRouting', (path = '', config = defaultLuigiConfig) => {
   cy.visit(`http://localhost:4500${path}`, {
     onLoad: (win) => {
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -39,6 +87,7 @@ Cypress.Commands.add('visitTestApp', (path = '/', config = defaultLuigiConfig) =
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -53,6 +102,7 @@ Cypress.Commands.add('visitTestAppLoggedIn', (path = '/', config = defaultLuigiC
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -139,6 +189,10 @@ Cypress.Commands.add('waitForLuigiHandshake', (containerSelector = '.iframeConta
   cy.get(`${containerSelector} iframe`).should(($f) => {
     expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
   });
+});
+
+Cypress.Commands.add('waitForLuigiSettled', () => {
+  cy.get('body[data-luigi-settled]', { timeout: 10000 });
 });
 
 // More robust iframe retrival methods based on: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
