@@ -5,3 +5,7 @@ reason = "live-server is intended for local development only"
 [[IgnoredVulns]]
 id = "GHSA-952p-6rrq-rcjv"
 reason = "live-server is intended for local development only"
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "live-server is intended for local development only"
