@@ -19,6 +19,7 @@
     "live-server": "1.2.2"
   },
   "overrides": {
-    "@cypress/request": "4.0.0"
+    "@cypress/request": "4.0.0",
+    "qs": "^6.15.2"
   }
 }
