@@ -93,7 +93,8 @@
     "report-dir": "e2e-coverage"
   },
   "overrides": {
-    "@cypress/request": "4.0.0"
+    "@cypress/request": "4.0.0",
+    "qs": "^6.15.2"
   },
   "engines": {
     "node": ">=20.19.0"
