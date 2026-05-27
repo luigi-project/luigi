@@ -1279,7 +1279,7 @@ export class NavigationService {
 
     if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
       options.forEach((option) => {
-        option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption);
+        option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption, this.luigi);
       });
     }
 

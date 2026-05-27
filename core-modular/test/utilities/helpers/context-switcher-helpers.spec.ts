@@ -508,7 +508,8 @@ describe('Context-switcher', function () {
         },
         {
           link: '/environments/env1'
-        }
+        },
+        luigi
       );
       expect(result).toEqual('/environments/env3');
     });
@@ -524,7 +525,8 @@ describe('Context-switcher', function () {
         },
         {
           link: '/environments/env1/details'
-        }
+        },
+        luigi
       );
       expect(result).toEqual('/environments/env3/details/and/more');
     });

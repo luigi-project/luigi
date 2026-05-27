@@ -35,8 +35,9 @@ export const ContextSwitcherHelpers = {
     }));
   },
 
-  getNodePathFromCurrentPath(option: Record<string, any>, selectedOption: Record<string, any>): string {
-    const currentPath = GenericHelpers.addLeadingSlash(RoutingHelpers.getCurrentPath()?.path);
+  getNodePathFromCurrentPath(option: Record<string, any>, selectedOption: Record<string, any>, luigi: Luigi): string {
+    const hashRouting = luigi.getConfig().routing?.useHashRouting;
+    const currentPath = GenericHelpers.addLeadingSlash(RoutingHelpers.getCurrentPath(luigi, hashRouting)?.path);
     const selectedPath = GenericHelpers.addLeadingSlash(selectedOption.link);
 
     if (currentPath.startsWith(selectedPath)) {
