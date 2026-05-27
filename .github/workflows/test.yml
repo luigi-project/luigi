@@ -170,7 +170,11 @@ jobs:
         with:
           list-of-deps: 'libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb'
       - run: ls test
-      - run: bash ./test/e2e-js.sh || exit 1
+      - run: |
+          for i in $(seq 1 30); do
+            echo "=== js e2e run $i/30 ==="
+            bash ./test/e2e-js.sh || exit 1
+          done
       - run: bash ./test/e2e-angular.sh || exit 1
       - run: bash ./test/e2e-client-api.sh || exit 1
 
