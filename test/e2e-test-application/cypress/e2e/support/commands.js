@@ -22,12 +22,80 @@ const setLoggedIn = (win) => {
   win.localStorage.setItem(key, JSON.stringify(newLuigiAuth));
 };
 
+const installLuigiSettledDetector = (win) => {
+  if (win.__settledInstalled) return;
+  win.__settledInstalled = true;
+
+  let version = 0;
+  let armed = false;
+  let mutatingSelf = false;
+
+  const markUnsettled = () => {
+    mutatingSelf = true;
+    win.document.body.removeAttribute('data-luigi-settled');
+    mutatingSelf = false;
+  };
+  const markSettled = () => {
+    mutatingSelf = true;
+    win.document.body.setAttribute('data-luigi-settled', '');
+    mutatingSelf = false;
+  };
+
+  const armCheck = () => {
+    markUnsettled();
+    if (armed) return;
+    armed = true;
+    const v1 = version;
+    win.setTimeout(() => {
+      if (version !== v1) {
+        armed = false;
+        armCheck();
+        return;
+      }
+      const v2 = version;
+      win.setTimeout(() => {
+        armed = false;
+        if (version !== v2) {
+          armCheck();
+          return;
+        }
+        markSettled();
+      }, 0);
+    }, 0);
+  };
+
+  const observer = new win.MutationObserver((mutations) => {
+    if (mutatingSelf) return;
+    const isOnlyOurAttr =
+      mutations.length === 1 &&
+      mutations[0].type === 'attributes' &&
+      mutations[0].attributeName === 'data-luigi-settled';
+    if (isOnlyOurAttr) return;
+    version++;
+    armCheck();
+  });
+  observer.observe(win.document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    characterData: true
+  });
+
+  win.__luigiForceUnsettle = () => {
+    version++;
+    armCheck();
+  };
+
+  armCheck();
+};
+
 Cypress.Commands.add('vistTestAppPathRouting', (path = '', config = defaultLuigiConfig) => {
   cy.visit(`http://localhost:4500${path}`, {
     onLoad: (win) => {
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -39,6 +107,7 @@ Cypress.Commands.add('visitTestApp', (path = '/', config = defaultLuigiConfig) =
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -53,6 +122,7 @@ Cypress.Commands.add('visitTestAppLoggedIn', (path = '/', config = defaultLuigiC
       if (config.auth) {
         config.auth.myOAuth2.idpProvider = win[config.auth.myOAuth2.idpProvider];
       }
+      installLuigiSettledDetector(win);
       win.Luigi.setConfig(config);
     }
   });
@@ -133,6 +203,27 @@ Cypress.Commands.add('selectContextSwitcherItem', (item, currentLabel) => {
 
 Cypress.Commands.add('getIframeBody', (getIframeOpts = {}, index = 0, containerSelector = '.iframeContainer') => {
   return cy.get(`${containerSelector} iframe`, getIframeOpts).eq(index).iframe();
+});
+
+Cypress.Commands.add('waitForLuigiHandshake', (containerSelector = '.iframeContainer') => {
+  cy.get(`${containerSelector} iframe`).should(($f) => {
+    expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
+  });
+});
+
+Cypress.Commands.add('waitForLuigiSettled', () => {
+  // Force the detector to re-arm so we never observe a stale `data-luigi-settled`
+  // from before the most recent action. Then yield through one animation frame
+  // + macrotask so Svelte has a chance to flush DOM updates synchronously
+  // scheduled by the action — without this yield, the detector may sample its
+  // "no-mutation" window *between* the click handler and Svelte's flush.
+  cy.window({ log: false }).then((win) => {
+    if (typeof win.__luigiForceUnsettle === 'function') win.__luigiForceUnsettle();
+    return new Promise((resolve) => {
+      win.requestAnimationFrame(() => win.setTimeout(resolve, 0));
+    });
+  });
+  cy.get('body[data-luigi-settled]', { timeout: 10000 });
 });
 
 // More robust iframe retrival methods based on: https://www.cypress.io/blog/2020/02/12/working-with-iframes-in-cypress/
