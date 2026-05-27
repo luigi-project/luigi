@@ -23,15 +23,23 @@ const setLoggedIn = (win) => {
 };
 
 const installLuigiSettledDetector = (win) => {
-  const store = win.Luigi && win.Luigi._store;
-  if (!store || store.__settledInstalled) return;
-  store.__settledInstalled = true;
+  if (win.__settledInstalled) return;
+  win.__settledInstalled = true;
 
   let version = 0;
   let armed = false;
+  let mutatingSelf = false;
 
-  const markUnsettled = () => win.document.body.removeAttribute('data-luigi-settled');
-  const markSettled = () => win.document.body.setAttribute('data-luigi-settled', '');
+  const markUnsettled = () => {
+    mutatingSelf = true;
+    win.document.body.removeAttribute('data-luigi-settled');
+    mutatingSelf = false;
+  };
+  const markSettled = () => {
+    mutatingSelf = true;
+    win.document.body.setAttribute('data-luigi-settled', '');
+    mutatingSelf = false;
+  };
 
   const armCheck = () => {
     markUnsettled();
@@ -56,14 +64,21 @@ const installLuigiSettledDetector = (win) => {
     }, 0);
   };
 
-  ['update', 'set'].forEach((m) => {
-    if (typeof store[m] !== 'function') return;
-    const orig = store[m].bind(store);
-    store[m] = (...args) => {
-      version++;
-      armCheck();
-      return orig(...args);
-    };
+  const observer = new win.MutationObserver((mutations) => {
+    if (mutatingSelf) return;
+    const isOnlyOurAttr =
+      mutations.length === 1 &&
+      mutations[0].type === 'attributes' &&
+      mutations[0].attributeName === 'data-luigi-settled';
+    if (isOnlyOurAttr) return;
+    version++;
+    armCheck();
+  });
+  observer.observe(win.document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    characterData: true
   });
 
   armCheck();
