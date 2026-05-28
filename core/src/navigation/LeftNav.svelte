@@ -1496,6 +1496,7 @@
                           on:keypress={(event) => handleExpandCollapseCategories(event, nodes)}
                           tabindex={isSemiCollapsed ? '0' : '-1'}
                         >
+                          <!-- svelte-ignore a11y_missing_attribute -->
                           <a
                             title={resolveTooltipText(nodes, $getTranslation(key))}
                             class="fd-nested-list__link {isExpanded(nodes, expandedCategories) ? 'is-expanded' : ''}"
