@@ -10,6 +10,15 @@ import * as fs from 'fs';
 
 const production = !process.env.ROLLUP_WATCH;
 
+// Removes the `--sapThemeMetaData-Base-baseLib:{...json...};` custom property
+// declaration. Its value is a JSON object literal whose nested braces are not
+// valid CSS custom-property syntax and break some downstream parsers. The
+// declaration is always followed by more declarations in the same `:root`
+// block, so the value's terminator is the declaration-separator `;`. We can't
+// anchor on `}` because the JSON contains nested `}` followed by `}` which
+// would match the inner brace and prematurely close the rule.
+const SAP_THEME_METADATA_RE = /--sapThemeMetaData-Base-baseLib:\{[\s\S]*?\};/;
+
 // Suppress warnings
 const onwarn = (warning, warn) => {
   // Suppress circular dependency warnings
@@ -84,6 +93,26 @@ const luigiPlugin = () => {
         fioriCSS = fioriCSS.replace(/url\(\.\.\/baseTheme\//g, 'url(baseTheme/');
         horizonCSS = horizonCSS.replace(/url\(\.\.\/sap_horizon\//g, 'url(sap_horizon/');
         horizonCSS = horizonCSS.replace(/url\(\.\.\/baseTheme\//g, 'url(baseTheme/');
+
+        // Strip --sapThemeMetaData-Base-baseLib custom property: its JSON value
+        // is invalid CSS syntax and trips up some downstream tools. The
+        // .sapThemeMetaData-Base-baseLib { background-image: url(data:...) }
+        // selector is left untouched.
+        fioriCSS = fioriCSS.replace(SAP_THEME_METADATA_RE, '');
+        horizonCSS = horizonCSS.replace(SAP_THEME_METADATA_RE, '');
+
+        // Sanity-check the strip: if the upstream CSS shape changes and the
+        // regex stops matching, fail the build loudly instead of shipping a
+        // broken bundle. We assert (a) the metadata declaration is gone and
+        // (b) a known sibling variable in the same :root rule survived.
+        for (const [name, css] of [['fiori', fioriCSS], ['horizon', horizonCSS]]) {
+          if (css.includes('--sapThemeMetaData-Base-baseLib:')) {
+            throw new Error(`[luigi-postprocess] ${name}: --sapThemeMetaData-Base-baseLib was not stripped. Upstream CSS shape may have changed; check SAP_THEME_METADATA_RE.`);
+          }
+          if (!css.includes('--sapBrandColor:')) {
+            throw new Error(`[luigi-postprocess] ${name}: --sapBrandColor missing after strip. The regex likely ate too much; check SAP_THEME_METADATA_RE.`);
+          }
+        }
 
         const fullFioriCSS = coreCSS + '\n' + fioriCSS;
         const fullHorizonCSS = coreCSS + '\n' + horizonCSS;

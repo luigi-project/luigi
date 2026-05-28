@@ -17,7 +17,8 @@ import type {
   ProfileSettings,
   TabNavData,
   TopNavData,
-  UserInfo
+  UserInfo,
+  UserSettingsProfileMenuEntry
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
@@ -87,7 +88,11 @@ export class NavigationService {
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    const rootContext = { ...(currentContext || {}), ...(rootNode.context || {}) };
+    const rootContext = {
+      parentNavigationContexts: [] as string[],
+      ...(currentContext || {}),
+      ...(rootNode.context || {})
+    };
     const pathParams: Record<string, any> = {};
     const pathData: PathData = {
       context: rootContext,
@@ -109,8 +114,14 @@ export class NavigationService {
             console.warn('No matching node found for segment:', segment);
             break;
           }
-          const nodeContext = node.context || {};
-          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+          // node.context gets overwritten with the merged result (globalContext + nodeContext) below.
+          // We preserve the originally declared context so that subsequent calls (e.g. after setGlobalContext)
+          // merge against the raw value instead of the previously accumulated one.
+          if (!('_rawContext' in node)) {
+            node._rawContext = node.context;
+          }
+          const nodeContext = node._rawContext ?? {};
+          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext, node.navigationContext);
           let substitutedContext = mergedContext;
           if (node.pathSegment?.startsWith(':')) {
             pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
@@ -228,7 +239,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
-          icon: node.icon
+          icon: node.icon,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -237,7 +249,8 @@ export class NavigationService {
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
-          selected: node === selectedNode
+          selected: node === selectedNode,
+          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
@@ -475,6 +488,14 @@ export class NavigationService {
         }
       }
     };
+    const userSettingsEnabled = cfg.userSettings;
+    let userSettingsProfileMenuEntry: UserSettingsProfileMenuEntry = {};
+    if (userSettingsEnabled) {
+      userSettingsProfileMenuEntry = {
+        ...TOP_NAV_DEFAULTS.userSettingsProfileMenuEntry,
+        ...cfg.userSettings?.userSettingsProfileMenuEntry
+      };
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
@@ -490,6 +511,7 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
+      settings: userSettingsProfileMenuEntry,
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {

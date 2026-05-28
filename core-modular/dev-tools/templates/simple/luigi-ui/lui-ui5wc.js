@@ -193,7 +193,6 @@ function createCategoryClickHandler(id) {
 }
 
 function renderProfilePopover(profileObj, avatar) {
-  const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
   const profilePopover = document.createElement('ui5-popover');
   const profileList = document.createElement('ui5-list');
   const uInfoWrapper = document.createElement('div');
@@ -215,11 +214,12 @@ function renderProfilePopover(profileObj, avatar) {
     profileList.appendChild(profileLi);
   });
 
-  if (userSettingData) {
+  if (profileObj.settings) {
     const profileLi = document.createElement('ui5-li');
 
-    profileLi.setAttribute('text', 'User Settings');
-    profileLi.innerText = 'User Settings';
+    profileLi.setAttribute('text', profileObj.settings.label);
+    profileLi.innerText = profileObj.settings.label;
+    profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
       connector.openUserSettings({
@@ -304,6 +304,7 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
     el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+    if (item.href) el.setAttribute('href', item.href);
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
@@ -448,7 +449,7 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.profile) {
-        if (topNavData.profile.authEnabled && topNavData.profile.signedIn) {
+        if ((topNavData.profile.authEnabled && topNavData.profile.signedIn) || !topNavData.profile.authEnabled) {
           const ava = document.createElement('ui5-avatar');
           ava.setAttribute('slot', 'profile');
           ava.setAttribute('shape', 'Circle');
@@ -457,7 +458,7 @@ const connector = {
           renderProfilePopover(topNavData.profile, ava);
           shellbar.appendChild(ava);
           shellbar.addEventListener('profile-click', onProfileClick);
-        } else {
+        } else if (topNavData.profile.authEnabled && !topNavData.profile.signedIn) {
           const loginBtn = document.createElement('div');
           loginBtn.innerHTML = 'Sign In';
           loginBtn.setAttribute('slot', 'profile');

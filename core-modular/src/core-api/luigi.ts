@@ -114,6 +114,49 @@ export class Luigi {
   }
 
   /**
+   * Set the global context object and triggers the corresponding update.
+   * @param {Object} ctx - the context object to set
+   * @param {boolean} preventUpdate - if true, no view update is triggered; default is false
+   */
+  setGlobalContext(ctx: Record<string, any>, preventUpdate?: boolean): void {
+    if (this.config && this.config.navigation) {
+      this.config.navigation.globalContext = ctx;
+      if (!preventUpdate) {
+        this.configChanged('navigation');
+      }
+    }
+  }
+
+  /**
+   * Get the global context object.
+   * @returns {Object} the global context object
+   */
+  getGlobalContext(): Record<string, any> {
+    return this.config?.navigation?.globalContext || {};
+  }
+
+  /**
+   * Updates the context values for all micro frontends currently in the DOM.
+   * Note: the updated context values are not persisted. The developers have to do it on their own.
+   * @param {Object} ctx - the context object to be updated
+   * @example
+   * Luigi.updateContextValues({ tenant: 'org-1', lang: 'en' });
+   */
+  updateContextValues(ctx: Record<string, any>): void {
+    const containers = GenericHelpers.getNodeList('luigi-container[lui_container]');
+    if (containers) {
+      containers.forEach((element: any) => {
+        const currentContext = element.context || {};
+        const newContext = { ...currentContext, ...ctx };
+        element.context = newContext;
+        if (element.updateContext) {
+          element.updateContext(newContext, { withoutSync: false });
+        }
+      });
+    }
+  }
+
+  /**
    * Reads the user settings object.
    * You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
    * By default, the user settings will be read from the **localStorage**
