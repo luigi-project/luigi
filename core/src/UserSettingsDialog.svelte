@@ -532,11 +532,11 @@
     z-index: 2;
   }
 
-  #app.vega .lui-usersettings-left-nav .fd-list__avatar {
+  :global(#app.vega) .lui-usersettings-left-nav .fd-list__avatar {
     position: relative;
   }
 
-  #app.vega .lui-usersettings-left-nav .fd-list__avatar:not(:has(.fd-avatar)) .fd-list__icon {
+  :global(#app.vega) .lui-usersettings-left-nav .fd-list__avatar:not(:has(.fd-avatar)) .fd-list__icon {
     padding-left: 5px;
   }
 
@@ -599,7 +599,7 @@
     border-bottom: 1px solid var(--sapList_GroupHeaderBorderColor, #d9d9d9);
   }
 
-  #app:not(.vega) .fd-settings .fd-settings__header {
+  :global(#app:not(.vega) .fd-settings) .fd-settings__header {
     --fdBar_Padding_Bottom: 0.25rem;
     --fdSettings_Header_Margin_Top: 0.5px;
     --fdBar_Height: 3rem;
@@ -633,7 +633,7 @@
     background-color: var(--fdAvatar_BackgroundColor, var(--sapAccentColor6, #286eb4));
   }
 
-  #app.vega .lui-usersettings-left-nav .lui-profile-initials {
+  :global(#app.vega) .lui-usersettings-left-nav .lui-profile-initials {
     left: 0;
   }
 
