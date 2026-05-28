@@ -1234,12 +1234,19 @@ export class NavigationService {
     return path;
   }
 
-  private async buildContextSwitcher(): Promise<ContextSwitcher> {
-    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+  private async buildContextSwitcher(): Promise<ContextSwitcher | undefined> {
     const config = this.luigi.getConfigValue('navigation.contextSwitcher');
+
+    if (!config) {
+      return undefined;
+    }
+
+    ContextSwitcherHelpers.resetFallbackLabelCache();
+
+    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
     const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(this.luigi);
     const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
-    const currentPath = RoutingHelpers.getCurrentPath(hashRouting);
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const parentNodePath = config.parentNodePath;
     const fallbackLabelResolver = config.fallbackLabelResolver;
     let selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
@@ -1280,6 +1287,10 @@ export class NavigationService {
     if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
       options.forEach((option) => {
         option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption, this.luigi);
+
+        if (option.link === selectedOption.link) {
+          selectedOption.linkFromPath = option.linkFromPath;
+        }
       });
     }
 

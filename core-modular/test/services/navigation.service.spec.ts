@@ -1762,14 +1762,17 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
-      luigiMock.getConfigValue.mockReturnValue(configMock.navigation.contextSwitcher);
       luigiMock.getConfigValueAsync.mockReturnValue(configMock.navigation.contextSwitcher.actions);
       ContextSwitcherHelpers.fetchOptions = jest.fn().mockReturnValue(configMock.navigation.contextSwitcher.options);
     });
 
-    it('should create data for context switcher', async () => {
+    it('should create data for context switcher when configuration is set', async () => {
+      luigiMock.getConfigValue.mockReturnValue(configMock.navigation.contextSwitcher);
+
+      const resetFallbackLabelCacheSpy = jest.spyOn(ContextSwitcherHelpers, 'resetFallbackLabelCache');
       const result = await (navigationService as any).buildContextSwitcher();
 
+      expect(resetFallbackLabelCacheSpy).toHaveBeenCalled();
       expect(result).toEqual({
         actions: configMock.navigation.contextSwitcher.actions,
         config: configMock.navigation.contextSwitcher,
@@ -1779,6 +1782,14 @@ describe('NavigationService', () => {
         selectedOption: undefined,
         switcherChange: expect.any(Function)
       });
+    });
+
+    it('should not create data for context switcher when configuration is not set', async () => {
+      luigiMock.getConfigValue.mockReturnValue(undefined);
+
+      const result = await (navigationService as any).buildContextSwitcher();
+
+      expect(result).toEqual(undefined);
     });
   });
 });

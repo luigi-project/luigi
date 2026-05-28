@@ -467,9 +467,11 @@ const connector = {
               option = data.config.customOptionsRenderer(item, label === data.selectedLabel);
             }
           } else {
+            const link = data.config.preserveSubPathOnSwitch && type === 'option' ? item.linkFromPath : item.link;
+
             option = document.createElement('ui5-cb-item');
             option.setAttribute('text', label);
-            option.setAttribute('value', item.link);
+            option.setAttribute('value', link);
           }
 
           option.setAttribute('type', type);
