@@ -202,14 +202,49 @@ function renderProfilePopover(profileObj, avatar) {
   profilePopover.setAttribute('placement', 'Bottom');
 
   profileObj.items?.forEach((item) => {
-    const profileLi = document.createElement('ui5-li');
+    const listElement = item.children?.length ? 'ui5-li-custom' : 'ui5-li';
+    const profileLi = document.createElement(listElement);
 
-    profileLi.setAttribute('text', item.label);
-    profileLi.innerText = item.label;
+    if (item.children?.length) {
+      const childList = document.createElement('ui5-list');
+      const childGroup = document.createElement('ui5-li-group');
 
-    profileLi.addEventListener('click', () => {
-      window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
-    });
+      childGroup.setAttribute('header-text', item.label);
+
+      item.children.forEach((child) => {
+        const childLi = document.createElement('ui5-li');
+
+        childLi.setAttribute('text', child.label);
+        childLi.innerText = child.label;
+
+        if (child.icon) {
+          childLi.setAttribute('icon', child.icon);
+        }
+
+        if (child.externalLink?.url) {
+          childLi.setAttribute('type', 'Navigation');
+          childLi.addEventListener('click', () => {
+            window.open(child.externalLink.url, child.externalLink.sameWindow ? '_self' : '_blank');
+          });
+        }
+
+        childGroup.appendChild(childLi);
+      });
+
+      childList.appendChild(childGroup);
+
+      profileLi.setAttribute('type', 'Inactive');
+      profileLi.appendChild(childList);
+    } else {
+      profileLi.setAttribute('text', item.label);
+      profileLi.innerText = item.label;
+
+      if (item.externalLink?.url) {
+        profileLi.addEventListener('click', () => {
+          window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
+        });
+      }
+    }
 
     profileList.appendChild(profileLi);
   });
