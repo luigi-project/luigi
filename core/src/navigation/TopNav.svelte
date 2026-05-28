@@ -217,6 +217,16 @@
     }
   }
 
+  function onWindowBlur() {
+    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+      return;
+    }
+    if (document.hasFocus()) {
+      return;
+    }
+    closeAllDropdowns();
+  }
+
   function burgerClickHandler() {
     if (responsiveNavSetting === 'simple' || responsiveNavSetting === 'simpleMobileOnly') {
       simpleNav();
@@ -267,7 +277,7 @@
   }
 </script>
 
-<svelte:window on:click={closeAllDropdowns} on:blur={closeAllDropdowns} />
+<svelte:window on:click={closeAllDropdowns} on:blur={onWindowBlur} />
 {#if showTopNav}
   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div
@@ -618,7 +628,7 @@
                   title={userInfo.name || undefined}
                   role="button"
                   tabindex="0"
-                  on:click={() => toggleDropdownState('profilePopover')}
+                  on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                   on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                   data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                 >
@@ -659,7 +669,7 @@
                     title={userInfo.name || undefined}
                     role="button"
                     tabindex="0"
-                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                     on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                     data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                   >
@@ -683,6 +693,7 @@
                     on:toggleDropdownState={() => toggleDropdownState('profilePopover')}
                     on:userInfoUpdated={userInfoUpdate}
                     {addNavHrefForAnchor}
+                    isHidden={!(dropDownStates.profilePopover || false)}
                   />
                 </div>
               </div>
@@ -699,7 +710,7 @@
                       aria-expanded={dropDownStates.profilePopover || false}
                       aria-haspopup="true"
                       aria-controls="profilePopover"
-                      on:click={() => toggleDropdownState('profilePopover')}
+                      on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                       title={userInfo.name ? userInfo.name : undefined}
                       tabindex="0"
                       data-testid="luigi-topnav-profile-btn"
