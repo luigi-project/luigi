@@ -73,15 +73,18 @@ export class UX {
 
   openUserSettings = async () => {
     const userSettings = this.luigi.getConfigValue('userSettings');
+    if (!userSettings) {
+      return;
+    }
     const storedSettings = this.luigi.getConfigValue('settings');
 
     const previousUserSettings = await this.luigi.readUserSettings();
     const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
 
-    const userSettinsDialog = userSettings.userSettingsDialog;
-    let dialogHeader = userSettinsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
-    let saveBtn = userSettinsDialog.saveBtn || TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
-    let dismissBtn = userSettinsDialog.dismissBtn || TOP_NAV_DEFAULTS.userSettingsDialog.dismissBtn;
+    const userSettingsDialog = userSettings.userSettingsDialog || {};
+    const dialogHeader = userSettingsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
+    const saveBtn = userSettingsDialog.saveBtn || TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
+    const dismissBtn = userSettingsDialog.dismissBtn || TOP_NAV_DEFAULTS.userSettingsDialog.dismissBtn;
     const userSettingsDialogSettings: UserSettingsDialogSettings = {
       dialogHeader: this.luigi.i18n().getTranslation(dialogHeader),
       saveBtn: this.luigi.i18n().getTranslation(saveBtn),
