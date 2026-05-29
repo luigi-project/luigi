@@ -9,7 +9,7 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { DrawerSettings, ModalSettings, Node } from '../types/navigation';
+import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
@@ -461,5 +461,41 @@ export const UIModule = {
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
+  },
+
+  openUserSettings: async (
+    userSettingsDialogSettings: UserSettingsDialogSettings,
+    userSettingData: any,
+    previousUserSettings: any,
+    luigi: Luigi
+  ) => {
+    const mfeStoredSettings: Record<string, any> = {};
+
+    const renderMicroFrontendContainer = async (groupConfig: any, groupKey: string) => {
+      const viewUrl = groupConfig.viewUrl;
+      const isWebComponent = groupConfig.webcomponent ?? false;
+      const userSettingsData = previousUserSettings?.[groupKey] || {};
+      const context = { ...groupConfig.context, userSettingsData: userSettingsData };
+      const lc = await createContainer(
+        { viewUrl, userSettingsGroup: groupKey, webcomponent: isWebComponent, context } as Node,
+        luigi
+      );
+
+      lc.addEventListener(Events.CUSTOM_MESSAGE, (event: any) => {
+        const message = event.detail;
+        if (message?.id === 'luigi.updateUserSettings') {
+          mfeStoredSettings[groupKey] = message.data?.data ?? message.data;
+        }
+      });
+
+      return lc;
+    };
+    const onCloseCallback = async (storedUserSettings: any, previousUserSettings: any) => {
+      const merged = { ...storedUserSettings, ...mfeStoredSettings };
+      await luigi.storeUserSettings(merged, previousUserSettings);
+    };
+    userSettingsDialogSettings.renderMicroFrontendContainer = renderMicroFrontendContainer;
+    userSettingsDialogSettings.onCloseCallback = onCloseCallback;
+    luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings);
   }
 };

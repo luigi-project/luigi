@@ -74,10 +74,10 @@ export class UX {
   openUserSettings = async () => {
     const userSettings = this.luigi.getConfigValue('userSettings');
     const storedSettings = this.luigi.getConfigValue('settings');
-    
+
     const previousUserSettings = await this.luigi.readUserSettings();
     const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
-    
+
     const userSettinsDialog = userSettings.userSettingsDialog;
     let dialogHeader = userSettinsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
     let saveBtn = userSettinsDialog.saveBtn || TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
@@ -87,8 +87,9 @@ export class UX {
       saveBtn: this.luigi.i18n().getTranslation(saveBtn),
       dismissBtn: this.luigi.i18n().getTranslation(dismissBtn)
     };
-
-    this.luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings);
+    this.luigi
+      .getEngine()
+      ._ui?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings, this.luigi);
   };
 
   closeUserSettings = () => {

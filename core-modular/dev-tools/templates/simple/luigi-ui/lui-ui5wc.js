@@ -803,119 +803,145 @@ const connector = {
     dialog.open = true;
   },
 
-  openUserSettings: async (settings) => {
-    const storedUserSettings = {};
-    const previousUserSettings = await globalThis.Luigi.readUserSettings();
-    const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
-    const dialog = document.createElement('ui5-dialog');
-    const lc = document.createElement('div');
-    const bar = document.createElement('ui5-bar');
-    const toolbar = document.createElement('ui5-toolbar');
-    const cancelBtn = document.createElement('ui5-toolbar-button');
-    const saveBtn = document.createElement('ui5-toolbar-button');
-    const containerWrapper = globalThis.Luigi.getEngine()._connector?.getContainerWrapper();
-    let userSettingsGroup;
+  openUserSettings: async (settings, userSettingData, previousUserSettings, lc) => {
+    const storedUserSettings = previousUserSettings ? { ...previousUserSettings } : {};
 
-    if (containerWrapper) {
-      let viewGroupContainer;
-
-      [...containerWrapper.childNodes].forEach((element) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          viewGroupContainer = element;
-        }
-      });
-
-      if (viewGroupContainer) {
-        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+    function el(tag, attrs, children) {
+      const node = document.createElement(tag);
+      if (attrs) {
+        Object.entries(attrs).forEach(([k, v]) => {
+          if (v === true) node.setAttribute(k, '');
+          else if (v !== false && v != null) node.setAttribute(k, v);
+        });
       }
+      if (children) {
+        (Array.isArray(children) ? children : [children]).forEach((child) => {
+          if (typeof child === 'string') node.appendChild(document.createTextNode(child));
+          else if (child) node.appendChild(child);
+        });
+      }
+      return node;
     }
 
-    dialog.classList.add('lui-dialog');
-    dialog.setAttribute('header-text', settings?.dialogHeader);
-    setDialogSize(dialog, settings);
+    function renderSettingControl(groupKey, settingKey, settingDef, currentValue) {
+      const container = document.createDocumentFragment();
+      const labelEl = el('ui5-label', { for: `us-${groupKey}-${settingKey}`, 'show-colon': true }, settingDef.label || settingKey);
+      container.appendChild(labelEl);
 
-    bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.dialogHeader}</ui5-title>`;
-    dialog.appendChild(bar);
+      if (settingDef.type === 'enum' && settingDef.options) {
+        const combobox = el('ui5-combobox', {
+          id: `us-${groupKey}-${settingKey}`,
+          placeholder: settingDef.placeholder || settingDef.label || settingKey,
+          value: currentValue || settingDef.options[0] || ''
+        });
+        settingDef.options.forEach((option) => {
+          combobox.appendChild(el('ui5-cb-item', { text: option }));
+        });
+        combobox.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.value;
+        });
+        container.appendChild(combobox);
+      } else if (settingDef.type === 'boolean') {
+        const switchEl = el('ui5-switch', {
+          id: `us-${groupKey}-${settingKey}`,
+          checked: currentValue === true || currentValue === 'true' ? true : false
+        });
+        switchEl.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.checked;
+        });
+        container.appendChild(switchEl);
+      } else {
+        const input = el('ui5-input', {
+          id: `us-${groupKey}-${settingKey}`,
+          placeholder: settingDef.placeholder || '',
+          value: currentValue || ''
+        });
+        input.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.value;
+        });
+        container.appendChild(input);
+      }
 
-    toolbar.setAttribute('slot', 'footer');
-    dialog.appendChild(toolbar);
+      return container;
+    }
 
-    cancelBtn.onclick = () => {
-      connector.closeUserSettings();
-    };
-    cancelBtn.setAttribute('text', settings?.dismissBtn);
-    toolbar.appendChild(cancelBtn);
+    async function renderSettingsGroup(groupKey, groupConfig, isFirst) {
+      const attrs = {
+        text: groupConfig.label || groupKey,
+        tooltip: groupConfig.title || groupConfig.label || groupKey,
+        'header-text': groupConfig.title || groupConfig.label || groupKey
+      };
+      if (groupConfig.icon) attrs.icon = groupConfig.icon;
+      if (isFirst) attrs.selected = true;
 
-    saveBtn.onclick = async () => {
-      const select = document.querySelector('#timeFormatSelector');
+      const groupStoredSettings = previousUserSettings?.[groupKey] || {};
 
-      if (select) {
-        storedUserSettings.time = `${select.value} h`;
-
-        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings).then(() => {
-          connector.closeUserSettings();
-          globalThis.Luigi.ux().showAlert({
-            text: 'User settings are stored successfully!',
-            type: 'success'
-          });
+      let content;
+      if (groupConfig.viewUrl) {
+        const luigiContainer = await settings.renderMicroFrontendContainer(groupConfig, groupKey);
+        luigiContainer.style.width = '100%';
+        luigiContainer.style.height = '100%';
+        luigiContainer.style.minHeight = '300px';
+        content = luigiContainer;
+      } else if (groupConfig.settings) {
+        content = el('div', { class: 'luigi-usersettings-form' });
+        Object.entries(groupConfig.settings).forEach(([settingKey, settingDef]) => {
+          const currentValue = groupStoredSettings[settingKey];
+          content.appendChild(renderSettingControl(groupKey, settingKey, settingDef, currentValue));
         });
       } else {
-        connector.closeUserSettings();
-        globalThis.Luigi.ux().showAlert({
-          text: 'There are no user settings to store :(',
-          type: 'info'
-        });
+        content = el('ui5-text', null, 'No settings available.');
       }
-    };
-    saveBtn.setAttribute('design', 'Positive');
-    saveBtn.setAttribute('text', settings?.saveBtn);
-    toolbar.appendChild(saveBtn);
 
-    if (Array.isArray(userSettingData) && userSettingData.length > 0) {
-      const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
-      const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
-      const timeFormat =
-        previousUserSettings && previousUserSettings[userSettingsGroup]
-          ? previousUserSettings[userSettingsGroup].time
-          : userSettingsObj?.settings?.time?.options[0];
-
-      storedUserSettings.privacy = null;
-      storedUserSettings.time = timeFormat;
-
-      lc.innerHTML = `
-        <ui5-title level="H3">${userSettingsObj?.label || 'No settings in config'}</ui5-title>
-        <p>${userSettingsObj?.settings?.policy?.label || ''}</p>
-        <p>${userSettingsObj?.settings?.time?.label || ''} - ${timeFormat || ''}</p>
-        <form>
-          <label for="timeFormatSelector">Switch time format:</label><br>
-          <select id="timeFormatSelector" name="timeFormatSelector">
-            <option value="12" ${timeFormat === '12 h' ? 'selected' : ''}>12 h</option>
-            <option value="24" ${timeFormat === '24 h' ? 'selected' : ''}>24 h</option>
-          </select>
-        </form>
-      `;
-    } else {
-      lc.innerHTML = `
-        <ui5-title level="H3">No user setting groups</ui5-title>
-        <p>There are no user setting groups in the settings section of the Luigi config defined.}</p>
-      `;
+      return el('ui5-user-settings-item', attrs, [content]);
     }
 
-    dialog.appendChild(lc);
+    // Build settings items from config
+    const settingsItems = [];
+    if (Array.isArray(userSettingData)) {
+      for (let index = 0; index < userSettingData.length; index++) {
+        const groupObj = userSettingData[index];
+        const groupKey = Object.keys(groupObj)[0];
+        const groupConfig = groupObj[groupKey];
+        settingsItems.push(await renderSettingsGroup(groupKey, groupConfig, index === 0));
+      }
+    }
+
+    // Assemble dialog
+    const dialog = el('ui5-user-settings-dialog', {
+      id: 'luigi-user-settings',
+      'header-text': settings?.dialogHeader || 'Settings'
+    }, settingsItems);
+
+    dialog.addEventListener('close', async () => {
+      settings.onCloseCallback(storedUserSettings, previousUserSettings);
+      if (dialog.parentElement) {
+        document.body.removeChild(dialog);
+      }
+      const profilePopover = document.getElementById('profile-popover');
+      if (profilePopover) {
+        profilePopover.open = false;
+      }
+    });
+
     document.body.appendChild(dialog);
     dialog.open = true;
   },
 
   closeUserSettings: () => {
-    const dialog = document.querySelector('ui5-dialog');
+    const dialog = document.querySelector('#luigi-user-settings');
 
     if (!dialog) {
       return;
     }
 
     dialog.open = false;
-    document.body.removeChild(dialog);
+    if (dialog.parentElement) {
+      document.body.removeChild(dialog);
+    }
   },
 
   showLoadingIndicator: (parentNode) => {
