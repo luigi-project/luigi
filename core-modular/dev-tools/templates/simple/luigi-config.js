@@ -78,6 +78,27 @@ window.onload = () => {
           slot.appendChild(a);
         }
       },
+      productSwitcher: {
+        label: 'My Products',
+        icon: 'grid',
+        items: [
+          {
+            icon: 'business-suite-in-app-symbols',
+            label: 'Application One',
+            subTitle: 'Subtitle',
+            link: '/home'
+          },
+          {
+            icon: 'visits',
+            label: 'Luigi Project',
+            subTitle: 'External',
+            externalLink: {
+              url: 'https://luigi-project.io/',
+              sameWindow: false
+            }
+          }
+        ]
+      },
       nodes: [
         {
           pathSegment: '404',
