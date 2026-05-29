@@ -523,15 +523,6 @@
     align-items: center;
   }
 
-  #app:not(.vega) .lui-usersettings-left-nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--left-fd-side-nav-width);
-    height: 100%;
-    z-index: 2;
-  }
-
   :global(#app.vega) .lui-usersettings-left-nav .fd-list__avatar {
     position: relative;
   }
@@ -603,12 +594,6 @@
     --fdBar_Padding_Bottom: 0.25rem;
     --fdSettings_Header_Margin_Top: 0.5px;
     --fdBar_Height: 3rem;
-  }
-
-  /*customization of FD Styles to align with Fiori 3*/
-  #app:not(.vega) h5.fd-title {
-    font-size: var(--sapFontHeader3Size, 20px);
-    color: var(--sapGroup_TitleTextColor);
   }
 
   .fd-side-nav__group-header {
