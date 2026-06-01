@@ -125,10 +125,7 @@ describe('UxManager', () => {
       const addEventListenerSpy = jest.spyOn(helpers, 'addEventListener').mockImplementation(() => 'listener-id');
       uxManager.showConfirmationModal({});
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'luigi.ux.confirmationModal.hide',
-        expect.any(Function)
-      );
+      expect(addEventListenerSpy).toHaveBeenCalledWith('luigi.ux.confirmationModal.hide', expect.any(Function));
     });
   });
 
@@ -201,9 +198,7 @@ describe('UxManager', () => {
       const settings = { text: 'test', type: 'warning', closeAfter: 50 };
       uxManager.showAlert(settings);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('has too small \'closeAfter\' value')
-      );
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("has too small 'closeAfter' value"));
       expect(sendPostMessageSpy).toHaveBeenCalledWith({
         msg: 'luigi.ux.alert.show',
         data: { settings: expect.objectContaining({ closeAfter: undefined }) }

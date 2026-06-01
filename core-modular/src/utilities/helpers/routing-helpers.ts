@@ -1050,7 +1050,7 @@ export const RoutingHelpers = {
     if (!path) {
       return relativePath;
     }
-    if (!relativePath) {
+    if (!relativePath || typeof relativePath !== 'string') {
       return path;
     }
     if (path.endsWith('/')) {

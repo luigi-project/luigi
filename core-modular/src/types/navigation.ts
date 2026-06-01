@@ -1,11 +1,12 @@
 export interface TopNavData {
+  appSwitcher?: AppSwitcher;
   appTitle: string;
+  contextSwitcher?: ContextSwitcher;
   logo: string;
-  topNodes: NavItem[];
+  navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
-  appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => Promise<void>;
+  topNodes: NavItem[];
 }
 
 export interface AppSwitcher {
@@ -19,6 +20,27 @@ export interface AppSwitcherItem {
   subtitle?: string;
   link?: string;
   selectionConditions?: selectionConditions;
+}
+
+export interface ContextSwitcher {
+  actions?: any[];
+  config?: any;
+  options?: ContextSwitcherItem[];
+  selectedLabel?: string;
+  selectedNodePath?: any;
+  selectedOption?: ContextSwitcherItem;
+  switcherChange?: (selectedValue: string, selectedType?: string | undefined) => void;
+}
+
+export interface ContextSwitcherItem {
+  clickHandler?: any;
+  customRendererCategory?: any;
+  id?: string;
+  label?: string;
+  link?: string;
+  linkFromPath?: null | string;
+  position?: 'bottom' | 'top';
+  testId?: string;
 }
 
 export interface selectionConditions {

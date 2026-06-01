@@ -351,9 +351,7 @@ describe('LinkManager', () => {
       lm.fromContext('nonexistent');
 
       expect(lm.options.errorSkipNavigation).toBe(true);
-      expect(errorSpy).toHaveBeenCalledWith(
-        'Navigation not possible, navigationContext nonexistent not found.'
-      );
+      expect(errorSpy).toHaveBeenCalledWith('Navigation not possible, navigationContext nonexistent not found.');
     });
 
     it('returns the linkManager instance for chaining', () => {
