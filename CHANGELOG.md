@@ -6,6 +6,15 @@
 
 
 
+## [v2.30.0] (2026-06-01)
+
+#### :rocket: Added
+
+* [#4747](https://github.com/luigi-project/luigi/pull/9094) Support for groups/categories for profile items (vega-only) ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.29.0] (2026-03-19)
 
 #### :rocket: Added
@@ -2133,3 +2142,4 @@
 [v2.27.0]: https://github.com/luigi-project/luigi/compare/v2.26.0...v2.27.0
 [v2.28.0]: https://github.com/luigi-project/luigi/compare/v2.27.0...v2.28.0
 [v2.29.0]: https://github.com/luigi-project/luigi/compare/v2.28.0...v2.29.0
+[v2.30.0]: https://github.com/luigi-project/luigi/compare/v2.29.0...v2.30.0
