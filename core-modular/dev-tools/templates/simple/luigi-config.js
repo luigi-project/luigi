@@ -497,7 +497,7 @@ window.onload = () => {
                 }
               }
             ]
-          },
+          }
         ],
         itemClick: (item) => {
           if (item?.externalLink) {
