@@ -150,7 +150,7 @@ export default class openIdConnect {
             resolve(response);
           })
           .catch(function(err) {
-            reject(response);
+            reject(err);
             console.error('[OIDC] Logout Error', err);
           });
       }
