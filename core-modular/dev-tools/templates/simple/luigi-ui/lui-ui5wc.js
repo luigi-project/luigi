@@ -667,6 +667,11 @@ const connector = {
         } else {
           switcher.removeAttribute('selected-value');
           switcher.removeAttribute('value');
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              option.classList.remove('is-selected');
+            });
+          }
           if (data.config.customOptionsRenderer) {
             switcher.value = '';
           }
