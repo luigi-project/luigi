@@ -441,6 +441,23 @@ window.onload = () => {
       }
     },
 
+    globalSearch: {
+      searchProvider: {
+        customSearchResultItemRenderer: undefined,
+        customSearchResultRenderer: undefined,
+        inputPlaceholder: 'Type some text to search...',
+        onEnter: undefined,
+        onEscape: undefined,
+        onInput: undefined,
+        onSearchResultItemSelected: undefined,
+        toggleSearch: (element, visible) => {
+          console.log('searchProvider - toggleSearch:');
+          console.log(element);
+          console.log(visible);
+        }
+      }
+    },
+
     lifecycleHooks: {
       luigiAfterInit: () => {
         console.log('AFTER INIT');

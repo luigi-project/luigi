@@ -448,6 +448,16 @@ const connector = {
 
       shellbar.innerHTML = html;
 
+      if (topNavData.globalSearchConfig) {
+        const searchInput = document.createElement('ui5-input');
+
+        searchInput.classList.add('lui-search-field');
+        searchInput.setAttribute('slot', 'searchField');
+        searchInput.setAttribute('value', topNavData.globalSearchConfig.inputPlaceholder || 'Type to search');
+
+        shellbar.appendChild(searchInput);
+      }
+
       if (topNavData.profile) {
         if ((topNavData.profile.authEnabled && topNavData.profile.signedIn) || !topNavData.profile.authEnabled) {
           const ava = document.createElement('ui5-avatar');
@@ -981,6 +991,43 @@ const connector = {
     globalThis.Luigi.ux().showAlert({
       text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
       type: 'info'
+    });
+  },
+
+  openSearchField: () => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+      if (btn.getAttribute('aria-expanded') === 'false') {
+        btn.click();
+      }
+    });
+  },
+
+  closeSearchField: () => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+      if (btn.getAttribute('aria-expanded') === 'true') {
+        btn.click();
+      }
+    });
+  },
+
+  clearSearchField: () => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchInput = shellBar.querySelector('.lui-search-field');
+
+    if (searchInput) {
+      searchInput.value = '';
+    }
+  },
+
+  toggleSearch: (isSearchFieldVisible, onToggleCallback) => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+      const searchInput = shellBar.querySelector('.lui-search-field');
+
+      btn.click();
+      onToggleCallback(searchInput);
     });
   },
 

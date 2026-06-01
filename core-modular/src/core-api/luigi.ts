@@ -8,6 +8,7 @@ import { LifecycleHooks } from '../utilities/lifecycle-hooks';
 import { LuigiStore, writable } from '../utilities/store';
 import { LuigiAuth, LuigiAuthClass } from './auth';
 import { FeatureToggles } from './feature-toggles';
+import { GlobalSearch } from './global-search';
 import { Navigation } from './navigation';
 import { NodeDataManagementService } from '../services/node-data-management.service';
 import { serviceRegistry } from '../services/service-registry';
@@ -23,6 +24,7 @@ export class Luigi {
   _customMessages?: CustomMessages;
   _store: any;
   _featureToggles?: FeatureToggles;
+  _globalSearch?: GlobalSearch;
   _i18n!: i18nService;
   _theming?: Theming;
   _routing?: Routing;
@@ -265,6 +267,13 @@ export class Luigi {
       this._featureToggles = new FeatureToggles();
     }
     return this._featureToggles as FeatureToggles;
+  };
+
+  globalSearch = (): GlobalSearch => {
+    if (!this._globalSearch) {
+      this._globalSearch = new GlobalSearch(this);
+    }
+    return this._globalSearch as GlobalSearch;
   };
 
   routing = (): Routing => {
