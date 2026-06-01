@@ -134,13 +134,13 @@ function renderProductSwitcherItems(productSwitcherConfig) {
     item.icon && productSwitchItem.setAttribute('icon', item.icon);
     item.testId && productSwitchItem.setAttribute('data-testid', item.testId);
     item.subTitle && productSwitchItem.setAttribute('subtitle-text', item.subTitle);
-    if (item.link) {
-      productSwitchItem.setAttribute('luigi-route', item.link);
-    } else if (item.externalLink?.url) {
-      productSwitchItem.setAttribute('luigi-external-route', item.externalLink.url);
-      item.externalLink.sameWindow ??
-        productSwitchItem.setAttribute('luigi-external-route-samewindow', item.externalLink.sameWindow);
+    if (item.externalLink?.url) {
+      productSwitchItem.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
     }
+    productSwitchItem.addEventListener('click', () => {
+      productSwitcherConfig.productSwitcherItemClick?.(item);
+      document.getElementById('productswitch-popover').open = false;
+    });
     productSwitch.appendChild(productSwitchItem);
   });
 
@@ -300,8 +300,13 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('text', item.label);
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
-    el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    if (item.href) el.setAttribute('href', item.href);
+    if (item.externalLink?.url) {
+      el.setAttribute('href', item.externalLink.url);
+      el.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
+    } else {
+      el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+      if (item.href) el.setAttribute('href', item.href);
+    }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
@@ -322,7 +327,13 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub._luigiItem = nodeWrapper;
-        sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+        if (nodeWrapper.externalLink?.url) {
+          sub.setAttribute('href', nodeWrapper.externalLink.url);
+          sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
+        } else {
+          sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+          if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+        }
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
       });
@@ -405,24 +416,6 @@ const connector = {
           toggleButton.icon = toggleButton.pressed ? 'sap-icon://da-2' : 'sap-icon://da';
         });
       });
-      const items = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-route]');
-      if (items) {
-        items.forEach((item) => {
-          item.addEventListener('click', () => {
-            globalThis.Luigi.navigation().navigate(item.getAttribute('luigi-route'));
-            document.getElementById('productswitch-popover').open = false;
-          });
-        });
-      }
-      const itemsExternalLink = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-external-route]');
-      if (itemsExternalLink) {
-        itemsExternalLink.forEach((item) => {
-          item.addEventListener('click', () => {
-            const sameWindow = item.getAttribute('luigi-external-route-samewindow');
-            window.open(item.getAttribute('luigi-external-route'), sameWindow ? '_self' : '_blank').focus();
-          });
-        });
-      }
     }
 
     if (!shellbar._lastTopNavData) {

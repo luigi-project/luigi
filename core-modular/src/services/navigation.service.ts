@@ -13,6 +13,8 @@ import type {
   NavItem,
   Node,
   PathData,
+  ProductSwitcher,
+  ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
   TabNavData,
@@ -240,7 +242,8 @@ export class NavigationService {
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
           icon: node.icon,
-          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -250,7 +253,8 @@ export class NavigationService {
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
           selected: node === selectedNode,
-          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
@@ -439,6 +443,11 @@ export class NavigationService {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
+    if (node.externalLink?.url) {
+      NavigationHelpers.openExternalLink(node.externalLink, pathData?.pathParams);
+      return;
+    }
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -534,11 +543,22 @@ export class NavigationService {
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
 
+    const productSwitcher: ProductSwitcher = {
+      ...cfg.navigation?.productSwitcher,
+      productSwitcherItemClick: (item: ProductSwitcherItem) => {
+        if (item.externalLink?.url) {
+          NavigationHelpers.openExternalLink(item.externalLink);
+        } else if (item.link) {
+          this.luigi.navigation().navigate(item.link);
+        }
+      }
+    };
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
-      productSwitcher: cfg.navigation?.productSwitcher,
+      productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
