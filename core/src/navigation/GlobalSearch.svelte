@@ -68,8 +68,8 @@
             class="fd-input fd-input-group__input fd-shellbar__input-group-input luigi-search__input fd-shellbar__search-field-input"
             data-testid="luigi-search-input__no-handlers"
             autofocus
-            onfocus="event.target.parentNode.classList.add('is-focus')"
-            onblur="event.target.parentNode.classList.remove('is-focus')"
+            on:focus={(event) => event.target.parentNode.classList.add('is-focus')}
+            on:blur={(event) => event.target.parentNode.classList.remove('is-focus')}
           />
         {:else}
           <!-- svelte-ignore a11y-autofocus -->
@@ -79,8 +79,8 @@
             class="fd-input fd-input-group__input fd-shellbar__input-group-input luigi-search__input fd-shellbar__search-field-input"
             data-testid="luigi-search-input"
             autofocus
-            onfocus="event.target.parentNode.classList.add('is-focus')"
-            onblur="event.target.parentNode.classList.remove('is-focus')"
+            on:focus={(event) => event.target.parentNode.classList.add('is-focus')}
+            on:blur={(event) => event.target.parentNode.classList.remove('is-focus')}
             bind:this={inputElem}
           />
         {/if}
