@@ -134,13 +134,13 @@ function renderProductSwitcherItems(productSwitcherConfig) {
     item.icon && productSwitchItem.setAttribute('icon', item.icon);
     item.testId && productSwitchItem.setAttribute('data-testid', item.testId);
     item.subTitle && productSwitchItem.setAttribute('subtitle-text', item.subTitle);
-    if (item.link) {
-      productSwitchItem.setAttribute('luigi-route', item.link);
-    } else if (item.externalLink?.url) {
-      productSwitchItem.setAttribute('luigi-external-route', item.externalLink.url);
-      item.externalLink.sameWindow ??
-        productSwitchItem.setAttribute('luigi-external-route-samewindow', item.externalLink.sameWindow);
+    if (item.externalLink?.url) {
+      productSwitchItem.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
     }
+    productSwitchItem.addEventListener('click', () => {
+      productSwitcherConfig.productSwitcherItemClick?.(item);
+      document.getElementById('productswitch-popover').open = false;
+    });
     productSwitch.appendChild(productSwitchItem);
   });
 
@@ -201,15 +201,24 @@ function renderProfilePopover(profileObj, avatar) {
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
 
-  profileObj.items?.forEach((item) => {
-    const listElement = item.children?.length ? 'ui5-li-custom' : 'ui5-li';
-    const profileLi = document.createElement(listElement);
+  profileObj.items?.forEach((item, index) => {
+    const profileLi = document.createElement('ui5-li');
+
+    profileLi.setAttribute('text', item.label);
+    profileLi.innerText = item.label;
 
     if (item.children?.length) {
+      const childPopover = document.createElement('ui5-popover');
       const childList = document.createElement('ui5-list');
-      const childGroup = document.createElement('ui5-li-group');
 
-      childGroup.setAttribute('header-text', item.label);
+      profileLi.setAttribute('id', 'profile-opener-' + index);
+      profileLi.setAttribute('type', 'Navigation');
+      profileLi.addEventListener('click', () => {
+        childPopover.open = !childPopover.open;
+      });
+
+      childPopover.setAttribute('opener', 'profile-opener-' + index);
+      childPopover.setAttribute('placement', 'Start');
 
       item.children.forEach((child) => {
         const childLi = document.createElement('ui5-li');
@@ -222,26 +231,20 @@ function renderProfilePopover(profileObj, avatar) {
         }
 
         if (child.externalLink?.url) {
-          childLi.setAttribute('type', 'Navigation');
           childLi.addEventListener('click', () => {
-            window.open(child.externalLink.url, child.externalLink.sameWindow ? '_self' : '_blank');
+            profileObj.itemClick(child);
           });
         }
 
-        childGroup.appendChild(childLi);
+        childList.appendChild(childLi);
       });
 
-      childList.appendChild(childGroup);
-
-      profileLi.setAttribute('type', 'Inactive');
-      profileLi.appendChild(childList);
+      childPopover.appendChild(childList);
+      document.querySelector('ui5-navigation-layout').appendChild(childPopover);
     } else {
-      profileLi.setAttribute('text', item.label);
-      profileLi.innerText = item.label;
-
       if (item.externalLink?.url) {
         profileLi.addEventListener('click', () => {
-          window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
+          profileObj.itemClick(item);
         });
       }
     }
@@ -286,9 +289,9 @@ function renderProfilePopover(profileObj, avatar) {
   profileObj.onUserInfoUpdate((userInfo) => {
     uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
     uInfoWrapper.innerHTML += /*html*/ `
-      <div>${userInfo.name}</div>
-      <div>${userInfo.email}</div>
-      <div>${userInfo.description}</div>
+      <div>${userInfo.name || ''}</div>
+      <div>${userInfo.email || ''}</div>
+      <div>${userInfo.description || ''}</div>
     `;
     if (userInfo.picture) {
       avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');
@@ -338,8 +341,13 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('text', item.label);
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
-    el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    if (item.href) el.setAttribute('href', item.href);
+    if (item.externalLink?.url) {
+      el.setAttribute('href', item.externalLink.url);
+      el.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
+    } else {
+      el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+      if (item.href) el.setAttribute('href', item.href);
+    }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
@@ -360,7 +368,13 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub._luigiItem = nodeWrapper;
-        sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+        if (nodeWrapper.externalLink?.url) {
+          sub.setAttribute('href', nodeWrapper.externalLink.url);
+          sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
+        } else {
+          sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+          if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+        }
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
       });
@@ -443,24 +457,6 @@ const connector = {
           toggleButton.icon = toggleButton.pressed ? 'sap-icon://da-2' : 'sap-icon://da';
         });
       });
-      const items = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-route]');
-      if (items) {
-        items.forEach((item) => {
-          item.addEventListener('click', () => {
-            globalThis.Luigi.navigation().navigate(item.getAttribute('luigi-route'));
-            document.getElementById('productswitch-popover').open = false;
-          });
-        });
-      }
-      const itemsExternalLink = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-external-route]');
-      if (itemsExternalLink) {
-        itemsExternalLink.forEach((item) => {
-          item.addEventListener('click', () => {
-            const sameWindow = item.getAttribute('luigi-external-route-samewindow');
-            window.open(item.getAttribute('luigi-external-route'), sameWindow ? '_self' : '_blank').focus();
-          });
-        });
-      }
     }
 
     if (!shellbar._lastTopNavData) {
@@ -482,6 +478,137 @@ const connector = {
       }
 
       shellbar.innerHTML = html;
+
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const wrapper = data.config.customOptionsRenderer ? 'select' : 'ui5-combobox';
+        const switcher = document.createElement(wrapper);
+        const createSwitcherOption = function (item, type) {
+          let label = item.label;
+          let option;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(item.id);
+          }
+
+          if (data.config.customOptionsRenderer) {
+            if (data.selectedOption?.link === item.link && data.config.customSelectedOptionRenderer) {
+              option = data.config.customSelectedOptionRenderer(data.selectedOption);
+            } else {
+              option = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+            }
+          } else {
+            const link = data.config.preserveSubPathOnSwitch && type === 'option' ? item.linkFromPath : item.link;
+
+            option = document.createElement('ui5-cb-item');
+            option.setAttribute('text', label);
+            option.setAttribute('value', link);
+          }
+
+          option.setAttribute('type', type);
+
+          return option;
+        };
+
+        switcher.classList.add('lui-context-switcher');
+        switcher.setAttribute('name', 'context-switcher');
+        switcher.setAttribute('slot', 'content');
+
+        if (data.config.defaultLabel) {
+          if (data.config.customOptionsRenderer) {
+            const option = document.createElement('option');
+
+            option.setAttribute('value', '');
+            option.textContent = data.config.defaultLabel;
+
+            switcher.prepend(option);
+          } else {
+            switcher.setAttribute('placeholder', data.config.defaultLabel);
+          }
+        }
+
+        if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
+
+        const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
+
+        switcher.addEventListener(eventType, function (event) {
+          let selectedValue;
+          let selectedType;
+
+          if (eventType === 'selection-change') {
+            selectedValue = event.detail?.item?.getAttribute('value') || '';
+            selectedType = event.detail?.item?.getAttribute('type') || undefined;
+          } else {
+            selectedValue = event.target.value || '';
+
+            if (event.target.children?.length) {
+              const selectedOption = [...event.target.children].find((child) => child.selected);
+
+              selectedType = selectedOption ? selectedOption?.attributes?.type?.value : undefined;
+            }
+          }
+
+          if (data.switcherChange) {
+            data.switcherChange(selectedValue, selectedType);
+          } else {
+            console.warn('There is no context switcher change handler defined in configuration.');
+          }
+        });
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position !== 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === filteredActions.length - 1) {
+              item.classList.add('lui-switcher-item--top-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.options?.length) {
+          data.options.forEach((option) => {
+            const item = createSwitcherOption(option, 'option');
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position === 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === 0) {
+              item.classList.add('lui-switcher-item--bottom-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        shellbar.appendChild(switcher);
+      }
 
       if (topNavData.profile) {
         if ((topNavData.profile.authEnabled && topNavData.profile.signedIn) || !topNavData.profile.authEnabled) {
@@ -543,6 +670,43 @@ const connector = {
         (topNavData.topNodes || []).forEach((item) => {
           addShellbarItem(shellbar, item, topNavData.navClick);
         });
+      }
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const switcher = shellbar.querySelector('.lui-context-switcher');
+        if (!switcher) {
+          return;
+        }
+        if (data.selectedOption) {
+          const link = data.selectedOption.link;
+          let label = data.selectedOption.label;
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              if (option.value === link) {
+                const newOption = data.config.customSelectedOptionRenderer(data.selectedOption);
+                option.replaceWith(newOption);
+              } else {
+                option.classList.remove('is-selected');
+              }
+            });
+          }
+          switcher.setAttribute('selected-value', link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              option.classList.remove('is-selected');
+            });
+          }
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
       }
     }
     shellbar._lastTopNavData = topNavData;

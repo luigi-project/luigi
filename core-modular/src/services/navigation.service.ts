@@ -1,9 +1,12 @@
 import type { Luigi } from '../core-api/luigi';
+import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
   AppSwitcherItem,
   BreadcrumbData,
   BreadcrumbItem,
+  ContextSwitcher,
+  ContextSwitcherItem,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -13,6 +16,8 @@ import type {
   NavItem,
   Node,
   PathData,
+  ProductSwitcher,
+  ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
   TabNavData,
@@ -22,17 +27,17 @@ import type {
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
+import { ContextSwitcherHelpers } from '../utilities/helpers/context-switcher-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { NodeDataManagementService } from './node-data-management.service';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
-import { serviceRegistry } from './service-registry';
-import { ModalService } from './modal.service';
 import { DirtyStatusService } from './dirty-status.service';
-import { UIModule } from '../modules/ui-module';
+import { ModalService } from './modal.service';
+import { NodeDataManagementService } from './node-data-management.service';
+import { serviceRegistry } from './service-registry';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -240,7 +245,8 @@ export class NavigationService {
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           altText: node.altText,
           icon: node.icon,
-          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -250,7 +256,8 @@ export class NavigationService {
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
           selected: node === selectedNode,
-          href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
@@ -439,6 +446,11 @@ export class NavigationService {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
+    if (node.externalLink?.url) {
+      NavigationHelpers.openExternalLink(node.externalLink, pathData?.pathParams);
+      return;
+    }
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -463,10 +475,14 @@ export class NavigationService {
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
 
     if (profileItems?.length) {
-      profileItems.map((item: ProfileItem) => ({
-        ...item,
-        label: this.luigi.i18n().getTranslation(item.label || '')
-      }));
+      profileItems.forEach((item: ProfileItem) => {
+        item.label = this.luigi.i18n().getTranslation(item.label || '');
+        if (item.children?.length) {
+          item.children.forEach((child: ProfileItem) => {
+            child.label = this.luigi.i18n().getTranslation(child.label || '');
+          });
+        }
+      });
     }
 
     const logoutLabel =
@@ -528,12 +544,24 @@ export class NavigationService {
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
+    const contextSwitcher = await this.buildContextSwitcher();
+    const productSwitcher: ProductSwitcher = {
+      ...cfg.navigation?.productSwitcher,
+      productSwitcherItemClick: (item: ProductSwitcherItem) => {
+        if (item.externalLink?.url) {
+          NavigationHelpers.openExternalLink(item.externalLink);
+        } else if (item.link) {
+          this.luigi.navigation().navigate(item.link);
+        }
+      }
+    };
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
-      productSwitcher: cfg.navigation?.productSwitcher,
+      contextSwitcher,
+      productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
@@ -1228,5 +1256,87 @@ export class NavigationService {
       });
     }
     return path;
+  }
+
+  private async buildContextSwitcher(): Promise<ContextSwitcher | undefined> {
+    const config = this.luigi.getConfigValue('navigation.contextSwitcher');
+
+    if (!config) {
+      return undefined;
+    }
+
+    ContextSwitcherHelpers.resetFallbackLabelCache();
+
+    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(this.luigi);
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const parentNodePath = config.parentNodePath;
+    const fallbackLabelResolver = config.fallbackLabelResolver;
+    let selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
+      currentPath?.path,
+      options,
+      parentNodePath,
+      fallbackLabelResolver,
+      this.luigi
+    );
+    let selectedNodePath = ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
+    let selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
+      currentPath?.path,
+      options,
+      parentNodePath
+    );
+    const handleChangeEvent = (selectedValue: string, selectedType?: string | undefined) => {
+      if (!selectedValue || typeof selectedValue !== 'string') {
+        return;
+      }
+
+      if (selectedType === 'action') {
+        const node = actions.find((action) => action.link === selectedValue);
+
+        if (node?.clickHandler) {
+          const result = node.clickHandler(node);
+
+          if (!result) {
+            return;
+          }
+        }
+
+        this.luigi.navigation().navigate(selectedValue);
+      } else {
+        this.luigi.navigation().navigate(selectedValue);
+      }
+    };
+
+    if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
+      options.forEach((option) => {
+        option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption, this.luigi);
+
+        if (option.link === selectedOption.link) {
+          selectedOption.linkFromPath = option.linkFromPath;
+        }
+      });
+    }
+
+    if (!selectedOption && actions?.length) {
+      const activeAction = actions?.find((action) => action.link === `/${currentPath?.path}`);
+
+      if (activeAction) {
+        selectedLabel = activeAction.label;
+        selectedNodePath = activeAction.link;
+        selectedOption = activeAction;
+      }
+    }
+
+    return {
+      actions,
+      config,
+      options,
+      selectedLabel,
+      selectedNodePath,
+      selectedOption,
+      switcherChange: (selectedValue: string, selectedType?: string | undefined) =>
+        handleChangeEvent(selectedValue, selectedType)
+    };
   }
 }

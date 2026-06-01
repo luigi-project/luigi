@@ -74,12 +74,12 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
-ui5-li-custom[type="Inactive"] {
-    padding-bottom: 2px;
+.lui-switcher-item--top-separator {
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
 }
 
-ui5-li-custom[type="Inactive"]::part(native-li) {
-    padding: 0;
+.lui-switcher-item--bottom-separator {
+    border-top: 1px solid var(--sapList_BorderColor, #e5e5e5);
 }
 
 .breadcrumb-wrapper {
