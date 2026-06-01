@@ -8,16 +8,17 @@ describe('GlobalSearch', () => {
     luigiMock = {
       getConfig: jest.fn().mockReturnValue({ routing: { useHashRouting: false } }),
       getConfigValue: jest.fn().mockImplementation((key: string) => {
-        if (key === 'globalSearch.searchProvider') return {
-          customSearchResultItemRenderer: undefined,
-          customSearchResultRenderer: undefined,
-          inputPlaceholder: 'Type some text to search...',
-          onEnter: undefined,
-          onEscape: undefined,
-          onInput: undefined,
-          onSearchResultItemSelected: undefined,
-          toggleSearch: jest.fn()
-        };
+        if (key === 'globalSearch.searchProvider')
+          return {
+            customSearchResultItemRenderer: undefined,
+            customSearchResultRenderer: undefined,
+            inputPlaceholder: 'Type some text to search...',
+            onEnter: undefined,
+            onEscape: undefined,
+            onInput: undefined,
+            onSearchResultItemSelected: undefined,
+            toggleSearch: jest.fn()
+          };
         return null;
       }),
       navigation: jest.fn(() => ({ navigate: jest.fn() })),

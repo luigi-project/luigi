@@ -3,10 +3,10 @@ import { GlobalSearchHelpers } from '../../../src/utilities/helpers/global-searc
 describe('GlobalSearchHelpers', () => {
   describe('toggleSearch', () => {
     it.each([
-      {visible: true, result: true},
-      {visible: false, result: false},
-      {visible: undefined, result: true},
-      {visible: null, result: null}
+      { visible: true, result: true },
+      { visible: false, result: false },
+      { visible: undefined, result: true },
+      { visible: null, result: null }
     ])('should call toggleSearch from searchProvider with correct arguments', (data) => {
       const searchProvider = {
         toggleSearch: jest.fn()

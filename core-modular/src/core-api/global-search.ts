@@ -2,16 +2,8 @@ import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers'
 import type { Luigi } from './luigi';
 
 export interface GlobalSearchProvider {
-  customSearchResultItemRenderer?: (
-    searchResultItem: any,
-    slot: HTMLLIElement,
-    searchApiObj: any
-  ) => object;
-  customSearchResultRenderer?: (
-    searchResults: any[],
-    slot: HTMLDivElement,
-    searchApiObj: any
-  ) => object;
+  customSearchResultItemRenderer?: (searchResultItem: any, slot: HTMLLIElement, searchApiObj: any) => object;
+  customSearchResultRenderer?: (searchResults: any[], slot: HTMLDivElement, searchApiObj: any) => object;
   inputPlaceholder?: any;
   onEnter?: () => void;
   onEscape?: () => void;
