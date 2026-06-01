@@ -208,6 +208,7 @@ export interface BreadcrumbItem {
 export interface NavItem {
   altText?: string;
   category?: Category;
+  externalLink?: ExternalLink;
   href?: string;
   icon?: string;
   node?: Node;
@@ -254,6 +255,7 @@ export interface ProductSwitcher {
   items?: [ProductSwitcherItem];
   label?: string;
   testId?: string;
+  productSwitcherItemClick?: (item: ProductSwitcherItem) => void;
 }
 
 export interface ProductSwitcherItem {
