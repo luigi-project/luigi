@@ -230,11 +230,9 @@ function renderProfilePopover(profileObj, avatar) {
           childLi.setAttribute('icon', child.icon);
         }
 
-        if (child.externalLink?.url) {
-          childLi.addEventListener('click', () => {
-            profileObj.itemClick(child);
-          });
-        }
+        childLi.addEventListener('click', () => {
+          profileObj.itemClick(child);
+        });
 
         childList.appendChild(childLi);
       });
@@ -242,11 +240,9 @@ function renderProfilePopover(profileObj, avatar) {
       childPopover.appendChild(childList);
       document.querySelector('ui5-navigation-layout').appendChild(childPopover);
     } else {
-      if (item.externalLink?.url) {
-        profileLi.addEventListener('click', () => {
-          profileObj.itemClick(item);
-        });
-      }
+      profileLi.addEventListener('click', () => {
+        profileObj.itemClick(item);
+      });
     }
 
     profileList.appendChild(profileLi);

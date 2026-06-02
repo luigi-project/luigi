@@ -498,12 +498,7 @@ window.onload = () => {
               }
             ]
           }
-        ],
-        itemClick: (item) => {
-          if (item?.externalLink) {
-            window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
-          }
-        }
+        ]
         // staticUserInfoFn: () => {
         //   return new Promise((resolve) => {
         //     resolve({

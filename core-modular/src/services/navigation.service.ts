@@ -493,15 +493,7 @@ export class NavigationService {
       } else if (item.link) {
         this.luigi.navigation().navigate(item.link);
       } else if (item.externalLink?.url) {
-        if (item.externalLink.sameWindow) {
-          window.location.href = item.externalLink.url;
-        } else {
-          const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
-          if (newWindow) {
-            newWindow.opener = null;
-            newWindow.focus();
-          }
-        }
+        NavigationHelpers.openExternalLink(item.externalLink);
       }
     };
     const userSettingsEnabled = cfg.userSettings;
