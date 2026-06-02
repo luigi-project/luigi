@@ -605,6 +605,13 @@ export class NavigationService {
       appSwitcher.items.unshift(mainAppEntry);
     }
 
+    if (appSwitcher?.items && GenericHelpers.getConfigBooleanValue(this.luigi.getConfig(), 'navigation.addNavHrefs')) {
+      const prefix = this.luigi.getConfig().routing?.useHashRouting ? '#' : '';
+      appSwitcher.items.forEach((item: AppSwitcherItem) => {
+        item.href = item.link ? prefix + item.link : undefined;
+      });
+    }
+
     return appSwitcher;
   }
 

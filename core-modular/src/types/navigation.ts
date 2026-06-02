@@ -16,6 +16,7 @@ export interface AppSwitcher {
 }
 
 export interface AppSwitcherItem {
+  href?: string;
   title?: string;
   subtitle?: string;
   link?: string;
