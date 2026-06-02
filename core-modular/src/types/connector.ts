@@ -12,7 +12,8 @@ import type {
   TopNavData,
   TabNavData,
   BreadcrumbData,
-  DrawerSettings
+  DrawerSettings,
+  UserSettingsDialogSettings
 } from './navigation';
 
 export interface LuigiConnector {
@@ -61,7 +62,7 @@ export interface LuigiConnector {
 
   removeBackdrop(): void;
 
-  openUserSettings(settings: UserSettings): void;
+  openUserSettings(dialogSettings: UserSettingsDialogSettings, userSettingData: any[], previousUserSettings: any): void;
 
   closeUserSettings(): void;
 

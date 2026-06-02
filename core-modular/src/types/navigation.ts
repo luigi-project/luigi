@@ -67,6 +67,7 @@ export interface ProfileSettings {
 export interface UserSettingsProfileMenuEntry {
   label?: string;
   link?: string;
+  openUserSettings?: () => void;
 }
 
 export interface ProfileLogout {
@@ -86,6 +87,14 @@ export interface ProfileItem {
   testId?: string;
   altText?: string;
   openNodeInModal?: boolean | ModalSettings;
+}
+
+export interface UserSettingsDialogSettings {
+  dialogHeader?: string;
+  saveBtn?: string;
+  dismissBtn?: string;
+  renderMicroFrontendContainer?: (viewUrl: string, groupKey: string) => Promise<any>;
+  onCloseCallback?: (storedUserSettings: any, previousUserSettings: any) => void;
 }
 
 export interface UserInfo {
