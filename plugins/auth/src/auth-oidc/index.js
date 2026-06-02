@@ -19,7 +19,7 @@ export default class openIdConnect {
     const mergedSettings = Helpers.deepMerge(defaultSettings, settings);
 
     // Prepend current url to redirect_uri, if it is a relative path
-    ['redirect_uri', 'post_logout_redirect_uri'].forEach(key => {
+    ['redirect_uri', 'post_logout_redirect_uri'].forEach((key) => {
       mergedSettings[key] = Helpers.prependOrigin(mergedSettings[key]);
     });
 
@@ -43,7 +43,7 @@ export default class openIdConnect {
 
     this.client = new UserManager(this.settings);
 
-    this.client.events.addUserLoaded(async payload => {
+    this.client.events.addUserLoaded(async (payload) => {
       let profile = payload.profile;
       if (payload.profile && Luigi.getConfigValue('auth.openIdConnect.profileStorageInterceptorFn')) {
         profile = await Luigi.executeConfigFnAsync(
@@ -81,7 +81,7 @@ export default class openIdConnect {
   }
 
   login() {
-    return this.client.signinRedirect({ state: window.location.href }).catch(err => {
+    return this.client.signinRedirect({ state: window.location.href }).catch((err) => {
       console.error('[OIDC] login() Error', err);
       return err;
     });
@@ -95,11 +95,11 @@ export default class openIdConnect {
 
     return this.client
       .createSignoutRequest(signoutData)
-      .then(req => {
+      .then((req) => {
         authOnLogoutFn();
         window.location = req.url;
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.error('[OIDC] logout() Error', err);
         authOnLogoutFn();
       });
@@ -124,7 +124,7 @@ export default class openIdConnect {
       document.body.appendChild(iframe);
     }
 
-    this.client.events.addSilentRenewError(e => {
+    this.client.events.addSilentRenewError((e) => {
       let redirectUrl;
       switch (e.message) {
         case 'interaction_required':
@@ -158,12 +158,12 @@ export default class openIdConnect {
       if (window.location.href.indexOf('?logout') >= 0) {
         this.client
           .processSignoutResponse()
-          .then(response => {
+          .then((response) => {
             Luigi.auth().store.removeAuthData();
             resolve(response);
           })
-          .catch(function(err) {
-            reject(response);
+          .catch(function (err) {
+            reject(err);
             console.error('[OIDC] Logout Error', err);
           });
       }
@@ -225,7 +225,7 @@ export default class openIdConnect {
             resolve(true);
           }, 50);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error('[OIDC] tryToSignIn Error', err);
           Luigi.auth().store.removeAuthData();
           Luigi.auth().handleAuthEvent(
