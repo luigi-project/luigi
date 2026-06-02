@@ -1,6 +1,7 @@
 window.onload = () => {
   window.Luigi.setConfig({
     navigation: {
+      validWebcomponentUrls: ['.*?'],
       defaults: {
         runTimeErrorHandler: {
           errorFn: (obj, node) => {
@@ -195,7 +196,7 @@ window.onload = () => {
               label: 'MFE1',
               icon: 'group',
               viewUrl: '/microfrontend.html#child1',
-              userSettingsGroup: 'mfeOne',
+              userSettingsGroup: 'account',
               viewGroup: 'vg1',
               clientPermissions: {
                 changeCurrentLocale: true
@@ -222,7 +223,7 @@ window.onload = () => {
               label: 'MFE2',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child2',
-              userSettingsGroup: 'mfeTwo',
+              userSettingsGroup: 'theme',
               viewGroup: 'vg1'
             },
             {
@@ -477,18 +478,18 @@ window.onload = () => {
               sameWindow: false
             }
           }
-        ]
-        // staticUserInfoFn: () => {
-        //   return new Promise((resolve) => {
-        //     resolve({
-        //       name: 'Static User',
-        //       initials: 'LU',
-        //       email: 'other.luigi.user@example.com',
-        //       description: 'Luigi Developer',
-        //       picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
-        //     });
-        //   });
-        // }
+        ],
+        staticUserInfoFn: () => {
+          return new Promise((resolve) => {
+            resolve({
+              name: 'Static User',
+              initials: 'LU',
+              email: 'other.luigi.user@example.com',
+              description: 'Luigi Developer',
+              picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
+            });
+          });
+        }
       }
     },
     routing: {
@@ -529,42 +530,52 @@ window.onload = () => {
         dismissBtn: 'Cancel'
       },
       userSettingGroups: {
-        mfeOne: {
-          label: 'Privacy One',
-          title: 'Privacy',
-          icon: 'private',
+        account: {
+          label: 'User Account',
+          title: 'User Account',
+          icon: 'user',
           iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
           settings: {
-            policy: {
+            name: {
               type: 'string',
-              label: 'Privacy One policy has not been defined.',
-              placeholder: '...'
+              label: 'Name',
+              placeholder: 'Luigi'
             },
-            time: {
-              type: 'enum',
-              style: 'button',
-              label: 'Time Format',
-              options: ['12 h', '24 h']
+            email: {
+              type: 'string',
+              label: 'Email',
+              placeholder: 'luigi@example.com'
             }
           }
         },
-        mfeTwo: {
-          label: 'Privacy Two',
-          title: 'Privacy',
-          icon: 'private',
-          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+        theme: {
+          label: 'Theme',
+          title: 'Theme',
+          icon: 'palette',
           settings: {
-            policy: {
-              type: 'string',
-              label: 'Privacy Two policy has not been defined.',
-              placeholder: '...'
-            },
-            time: {
+            theme: {
               type: 'enum',
-              style: 'button',
-              label: 'Time Format',
-              options: ['12 h', '24 h']
+              label: 'theme',
+              options: ['red', 'green']
             }
+          }
+        },
+        custom: {
+          label: 'Custom',
+          title: 'Custom',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsMf.html'
+        },
+        custom2: {
+          label: 'Custom 2',
+          title: 'Custom 2',
+          icon: 'private',
+          viewUrl: 'https://luigiwebcomponents.gitlab.io/helloworld.js',
+          context: {
+            title: 'WC says hello world!'
+          },
+          webcomponent: {
+            selfRegistered: false
           }
         }
       }
