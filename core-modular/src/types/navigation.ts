@@ -35,6 +35,7 @@ export interface ContextSwitcher {
 export interface ContextSwitcherItem {
   clickHandler?: any;
   customRendererCategory?: any;
+  href?: string;
   id?: string;
   label?: string;
   link?: string;
@@ -78,6 +79,7 @@ export interface ProfileLogout {
 }
 
 export interface ProfileItem {
+  href?: string;
   label?: string;
   link?: string;
   externalLink?: ExternalLink;
@@ -198,6 +200,7 @@ export interface Category {
 }
 
 export interface BreadcrumbItem {
+  href?: string;
   label: string;
   last?: boolean;
   node: Node;
@@ -261,6 +264,7 @@ export interface ProductSwitcher {
 export interface ProductSwitcherItem {
   altText?: string;
   externalLink?: ExternalLink;
+  href?: string;
   icon?: string;
   label?: string;
   link?: string;

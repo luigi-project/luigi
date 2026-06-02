@@ -467,6 +467,9 @@ export class NavigationService {
   async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
     const cfg = this.luigi.getConfig();
     const pathData: PathData = pData ?? (await this.getPathData(path));
+    const addNavHrefs = GenericHelpers.getConfigBooleanValue(cfg, 'navigation.addNavHrefs');
+    const useHashRouting = cfg.routing?.useHashRouting;
+    const hrefPrefix = useHashRouting ? '#' : '';
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
       : [];
@@ -475,10 +478,12 @@ export class NavigationService {
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
 
     if (profileItems?.length) {
-      profileItems.map((item: ProfileItem) => ({
-        ...item,
-        label: this.luigi.i18n().getTranslation(item.label || '')
-      }));
+      profileItems.forEach((item: ProfileItem) => {
+        item.label = this.luigi.i18n().getTranslation(item.label || '');
+        if (addNavHrefs && !item.openNodeInModal) {
+          item.href = item.externalLink?.url || (item.link ? hrefPrefix + item.link : undefined);
+        }
+      });
     }
 
     const logoutLabel =
@@ -543,6 +548,10 @@ export class NavigationService {
     const contextSwitcher = await this.buildContextSwitcher();
     const productSwitcher: ProductSwitcher = {
       ...cfg.navigation?.productSwitcher,
+      items: cfg.navigation?.productSwitcher?.items?.map((item: ProductSwitcherItem) => ({
+        ...item,
+        href: addNavHrefs ? (item.externalLink?.url || (item.link ? hrefPrefix + item.link : undefined)) : undefined
+      })),
       productSwitcherItemClick: (item: ProductSwitcherItem) => {
         if (item.externalLink?.url) {
           NavigationHelpers.openExternalLink(item.externalLink);
@@ -680,6 +689,7 @@ export class NavigationService {
       } else if (node.label || node.pathSegment || node.titleResolver) {
         if (node.titleResolver) {
           navItems.push({
+            href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
             label:
               node.titleResolver.prerenderFallback && node.titleResolver.fallbackTitle
                 ? this.luigi.i18n().getTranslation(node.titleResolver.fallbackTitle)
@@ -691,7 +701,7 @@ export class NavigationService {
         } else {
           const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
           if (label) {
-            navItems.push({ label: label, node: node, route: route });
+            navItems.push({ href: RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi), label: label, node: node, route: route });
           }
         }
       }
@@ -713,6 +723,7 @@ export class NavigationService {
         currentPath,
         hashRouting,
         breadcrumbConfig,
+        pathData.pathParams,
         buildResult,
         onResolve
       );
@@ -746,6 +757,7 @@ export class NavigationService {
     currentPath: { path: string },
     hashRouting: boolean,
     breadcrumbConfig: any,
+    pathParams: Record<string, any>,
     buildResult: (items: BreadcrumbItem[]) => BreadcrumbData,
     onResolve: (data: BreadcrumbData) => void
   ): Promise<void> {
@@ -763,7 +775,7 @@ export class NavigationService {
             data.pathData.pathParams || {}
           );
           const nodeTitleData = await NavigationHelpers.fetchNodeTitleData(node, ctx);
-          resolvedItems.push({ label: nodeTitleData.label, node, route });
+          resolvedItems.push({ href: RoutingHelpers.getNodeHref(node, pathParams, this.luigi), label: nodeTitleData.label, node, route });
           continue;
         } catch (e) {
           // fallback to label resolution below
@@ -772,7 +784,7 @@ export class NavigationService {
 
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
       if (label) {
-        resolvedItems.push({ label, node, route });
+        resolvedItems.push({ href: RoutingHelpers.getNodeHref(node, pathParams, this.luigi), label, node, route });
       }
     }
 
@@ -1322,6 +1334,17 @@ export class NavigationService {
         selectedNodePath = activeAction.link;
         selectedOption = activeAction;
       }
+    }
+
+    const addNavHrefs = GenericHelpers.getConfigBooleanValue(this.luigi.getConfig(), 'navigation.addNavHrefs');
+    if (addNavHrefs) {
+      const prefix = hashRouting ? '#' : '';
+      options?.forEach((option) => {
+        option.href = prefix + (option.linkFromPath || option.link || '');
+      });
+      actions?.forEach((action) => {
+        action.href = prefix + (action.link || '');
+      });
     }
 
     return {
