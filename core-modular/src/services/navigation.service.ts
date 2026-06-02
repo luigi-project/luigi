@@ -531,6 +531,7 @@ export class NavigationService {
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      globalSearchConfig: cfg?.globalSearch?.searchProvider,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,

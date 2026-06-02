@@ -81,6 +81,14 @@ export interface LuigiConnector {
   };
 
   unload(): void;
+
+  openSearchField(): void;
+
+  closeSearchField(): void;
+
+  clearSearchField(): void;
+
+  toggleSearch(isSearchFieldVisible: boolean, onToggleCallback: (inputElem: HTMLInputElement) => void): void;
 }
 
 export type { Node };
