@@ -1,11 +1,14 @@
+import type { GlobalSearchProvider } from '../core-api/global-search';
+
 export interface TopNavData {
+  appSwitcher?: AppSwitcher;
   appTitle: string;
+  globalSearchConfig?: GlobalSearchProvider;
   logo: string;
-  topNodes: NavItem[];
+  navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
-  appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => Promise<void>;
+  topNodes: NavItem[];
 }
 
 export interface AppSwitcher {
