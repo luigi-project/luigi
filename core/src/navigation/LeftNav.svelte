@@ -1177,7 +1177,7 @@
                                 on:keyup={!addNavHrefForAnchor ? (event) => handleEnterPressed(event, node) : undefined}
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:mouseup={(event) => {
-                                  isSemiCollapsed && event.target.blur();
+                                  isSemiCollapsed && event.currentTarget.blur();
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
