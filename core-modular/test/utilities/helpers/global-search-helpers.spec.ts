@@ -31,10 +31,13 @@ describe('GlobalSearchHelpers', () => {
       { placeholder: undefined, result: undefined },
       { placeholder: 'Digit here text to search...', result: 'Digit here text to search...' },
       { placeholder: () => 'Function placeholder text', result: 'Function placeholder text' },
-      { placeholder: {
-        en: 'English placeholder text',
-        fr: 'Texte de remplacement français'
-      }, result: 'English placeholder text' }
+      {
+        placeholder: {
+          en: 'English placeholder text',
+          fr: 'Texte de remplacement français'
+        },
+        result: 'English placeholder text'
+      }
     ])('should get correct result for placeholder', (data) => {
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'globalSearch.searchProvider')

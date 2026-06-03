@@ -533,7 +533,9 @@ export class NavigationService {
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
 
     if (globalSearchConfig?.inputPlaceholder) {
-      globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(globalSearchConfig.inputPlaceholder);
+      globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(
+        globalSearchConfig.inputPlaceholder
+      );
     }
 
     return {

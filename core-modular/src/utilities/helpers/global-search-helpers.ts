@@ -3,7 +3,11 @@ import type { Luigi } from '../../core-api/luigi';
 import { GenericHelpers } from './generic-helpers';
 
 export const GlobalSearchHelpers = {
-  handleSearchResultRenderer(searchProvider: GlobalSearchProvider, searchResultItems: SearchResultItem[], rendererSlot: any): void {
+  handleSearchResultRenderer(
+    searchProvider: GlobalSearchProvider,
+    searchResultItems: SearchResultItem[],
+    rendererSlot: any
+  ): void {
     if (!searchProvider.customSearchResultRenderer) {
       return;
     }
@@ -47,7 +51,11 @@ export const GlobalSearchHelpers = {
     }
   },
 
-  toggleSearch(isSearchFieldVisible: boolean, searchProvider: GlobalSearchProvider, inputElem?: HTMLInputElement): void {
+  toggleSearch(
+    isSearchFieldVisible: boolean,
+    searchProvider: GlobalSearchProvider,
+    inputElem?: HTMLInputElement
+  ): void {
     if (searchProvider?.toggleSearch && GenericHelpers.isFunction(searchProvider.toggleSearch) && inputElem) {
       const fieldVisible = isSearchFieldVisible === undefined ? true : isSearchFieldVisible;
 
