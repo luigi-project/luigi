@@ -2068,7 +2068,7 @@
     display: flex;
     align-items: center;
     :global(.fd-object-status) {
-      margin-left: auto; 
+      margin-left: auto;
       right: var(--fdNavigationList_Content_Padding_Inline_End, 1rem);
       position: absolute;
     }
