@@ -201,15 +201,49 @@ function renderProfilePopover(profileObj, avatar) {
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
 
-  profileObj.items?.forEach((item) => {
+  profileObj.items?.forEach((item, index) => {
     const profileLi = document.createElement('ui5-li');
 
     profileLi.setAttribute('text', item.label);
     profileLi.innerText = item.label;
 
-    profileLi.addEventListener('click', () => {
-      window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
-    });
+    if (item.children?.length) {
+      const childPopover = document.createElement('ui5-popover');
+      const childList = document.createElement('ui5-list');
+
+      profileLi.setAttribute('id', 'profile-opener-' + index);
+      profileLi.setAttribute('type', 'Navigation');
+      profileLi.addEventListener('click', () => {
+        childPopover.open = !childPopover.open;
+      });
+
+      childPopover.setAttribute('opener', 'profile-opener-' + index);
+      childPopover.setAttribute('placement', 'Start');
+
+      item.children.forEach((child) => {
+        const childLi = document.createElement('ui5-li');
+
+        childLi.setAttribute('text', child.label);
+        childLi.innerText = child.label;
+
+        if (child.icon) {
+          childLi.setAttribute('icon', child.icon);
+        }
+
+        childLi.addEventListener('click', () => {
+          profileObj.itemClick(child);
+        });
+
+        childList.appendChild(childLi);
+      });
+
+      childPopover.appendChild(childList);
+      document.querySelector('ui5-navigation-layout').appendChild(childPopover);
+    } else {
+      profileLi.addEventListener('click', () => {
+        profileObj.itemClick(item);
+      });
+    }
 
     profileList.appendChild(profileLi);
   });
@@ -248,9 +282,9 @@ function renderProfilePopover(profileObj, avatar) {
   profileObj.onUserInfoUpdate((userInfo) => {
     uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
     uInfoWrapper.innerHTML += /*html*/ `
-      <div>${userInfo.name}</div>
-      <div>${userInfo.email}</div>
-      <div>${userInfo.description}</div>
+      <div>${userInfo.name || ''}</div>
+      <div>${userInfo.email || ''}</div>
+      <div>${userInfo.description || ''}</div>
     `;
     if (userInfo.picture) {
       avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');

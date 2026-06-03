@@ -79,6 +79,7 @@ export interface ProfileLogout {
 }
 
 export interface ProfileItem {
+  children?: ProfileItem[];
   label?: string;
   link?: string;
   externalLink?: ExternalLink;
