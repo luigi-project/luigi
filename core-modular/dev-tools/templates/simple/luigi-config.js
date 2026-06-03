@@ -477,6 +477,27 @@ window.onload = () => {
               url: 'https://github.com/luigi-project/luigi',
               sameWindow: false
             }
+          },
+          {
+            label: 'Resources',
+            children: [
+              {
+                icon: 'product',
+                label: 'Blog',
+                externalLink: {
+                  url: 'https://luigi-project.io/blog/overview',
+                  sameWindow: false
+                }
+              },
+              {
+                icon: 'product',
+                label: 'Docs',
+                externalLink: {
+                  url: 'https://docs.luigi-project.io/docs/getting-started',
+                  sameWindow: false
+                }
+              }
+            ]
           }
         ],
         staticUserInfoFn: () => {
