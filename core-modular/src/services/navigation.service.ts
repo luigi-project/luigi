@@ -1,4 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
+import type { GlobalSearchProvider } from '../core-api/global-search';
 import type {
   AppSwitcher,
   AppSwitcherItem,
@@ -33,6 +34,7 @@ import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
 import { DirtyStatusService } from './dirty-status.service';
 import { UIModule } from '../modules/ui-module';
+import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
 
 export class NavigationService {
   modalService?: ModalService;
@@ -525,13 +527,18 @@ export class NavigationService {
       }
     };
 
+    const globalSearchConfig: GlobalSearchProvider = cfg?.globalSearch?.searchProvider;
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
 
+    if (globalSearchConfig?.inputPlaceholder) {
+      globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(globalSearchConfig.inputPlaceholder);
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
-      globalSearchConfig: cfg?.globalSearch?.searchProvider,
+      globalSearchConfig,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
       productSwitcher: cfg.navigation?.productSwitcher,

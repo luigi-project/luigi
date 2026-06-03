@@ -1,6 +1,55 @@
 import { GlobalSearchHelpers } from '../../../src/utilities/helpers/global-search-helpers';
 
 describe('GlobalSearchHelpers', () => {
+  let luigiMock: any;
+
+  beforeEach(() => {
+    luigiMock = {
+      i18n: jest.fn().mockReturnValue({
+        getCurrentLocale: () => 'en',
+        getTranslation: (key: string) => key
+      })
+    };
+  });
+
+  describe('handleSearchResultRenderer', () => {
+    it('should call customSearchResultRenderer', () => {
+      const searchProvider = {
+        customSearchResultRenderer: jest.fn(),
+        onSearchResultItemSelected: jest.fn()
+      };
+      const searchResultRendererSpy = jest.spyOn(searchProvider, 'customSearchResultRenderer');
+
+      GlobalSearchHelpers.handleSearchResultRenderer(searchProvider, [], undefined);
+
+      expect(searchResultRendererSpy).toHaveBeenCalledWith([], undefined, { fireItemSelected: expect.any(Function) });
+    });
+  });
+
+  describe('getSearchPlaceholder', () => {
+    it.each([
+      { placeholder: undefined, result: undefined },
+      { placeholder: 'Digit here text to search...', result: 'Digit here text to search...' },
+      { placeholder: () => 'Function placeholder text', result: 'Function placeholder text' },
+      { placeholder: {
+        en: 'English placeholder text',
+        fr: 'Texte de remplacement français'
+      }, result: 'English placeholder text' }
+    ])('should get correct result for placeholder', (data) => {
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'globalSearch.searchProvider')
+          return {
+            inputPlaceholder: data.placeholder
+          };
+        return null;
+      });
+
+      const result = GlobalSearchHelpers.getSearchPlaceholder(luigiMock);
+
+      expect(result).toEqual(data.result);
+    });
+  });
+
   describe('toggleSearch', () => {
     it.each([
       { visible: true, result: true },

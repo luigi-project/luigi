@@ -453,7 +453,7 @@ const connector = {
 
         searchInput.classList.add('lui-search-field');
         searchInput.setAttribute('slot', 'searchField');
-        searchInput.setAttribute('value', topNavData.globalSearchConfig.inputPlaceholder || 'Type to search');
+        searchInput.setAttribute('placeholder', topNavData.globalSearchConfig.inputPlaceholder || 'Type to search');
 
         shellbar.appendChild(searchInput);
       }
