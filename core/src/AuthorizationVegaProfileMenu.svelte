@@ -266,7 +266,7 @@
                     <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
                     {#if profileNav.settings?.icon}
                       {#if hasOpenUIicon(profileNav.settings)}
-                        <i class="{getSapIconStr(profileNav.settings.icon)}"></i>
+                        <i class={getSapIconStr(profileNav.settings.icon)}></i>
                       {:else}
                         <img
                           class="nav-icon"
@@ -397,7 +397,7 @@
                     {#if profileItem.icon}
                       <span class="fd-menu__addon-before">
                         {#if hasOpenUIicon(profileItem)}
-                          <i class="{getSapIconStr(profileItem.icon)}"></i>
+                          <i class={getSapIconStr(profileItem.icon)}></i>
                         {:else}
                           <img
                             class="nav-icon"
@@ -430,7 +430,6 @@
 {/if}
 
 <style lang="scss">
-
   .nav-icon {
     height: var(--sapFontLargeSize);
     margin-right: 0;
