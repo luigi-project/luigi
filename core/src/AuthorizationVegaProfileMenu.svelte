@@ -205,6 +205,10 @@
     dispatch('toggleDropdownState');
   }
 
+  function getIconsClassForSublist(children) {
+    return children.some((child) => child.icon) ? 'fd-menu__sublist--icons' : '';
+  }
+
   $: if (isHidden) expandedGroupIndex = null;
 
   export let showUserInfo;
@@ -321,7 +325,7 @@
                     <div class="lui-profile-sublist">
                       <div class="lui-profile-sublist__spacer"></div>
                       <ul
-                        class="fd-menu__sublist fd-menu__sublist--icons"
+                        class="fd-menu__sublist {getIconsClassForSublist(profileItem.children)}"
                         id="profile-group-{index}"
                         aria-hidden="false"
                         role="menu"
