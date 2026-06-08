@@ -1242,7 +1242,7 @@
                       >
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <a
-                          class="fd-navigation-list__content"
+                          class="fd-navigation-list__content {!isSemiCollapsed && !isExpanded(nodes, expandedCategories) && nodes.indexOf(selectedNode) >= 0 ? 'is-selected' : ''}"
                           role="treeitem"
                           tabindex="0"
                           aria-expanded={isSemiCollapsed
@@ -1499,7 +1499,7 @@
                           <!-- svelte-ignore a11y_missing_attribute -->
                           <a
                             title={resolveTooltipText(nodes, $getTranslation(key))}
-                            class="fd-nested-list__link {isExpanded(nodes, expandedCategories) ? 'is-expanded' : ''}"
+                            class="fd-nested-list__link {isExpanded(nodes, expandedCategories) ? 'is-expanded' : ''} {!isSemiCollapsed && !isExpanded(nodes, expandedCategories) && nodes.indexOf(selectedNode) >= 0 ? 'is-selected' : ''}"
                             tabindex={isSemiCollapsed ? '-1' : '0'}
                             role={!addNavHrefForAnchor ? 'button' : undefined}
                             id="collapsible_listnode_{index}"
