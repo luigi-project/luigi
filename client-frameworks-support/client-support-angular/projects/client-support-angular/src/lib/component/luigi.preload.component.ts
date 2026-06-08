@@ -4,6 +4,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'lib-client-support-angular',
   templateUrl: './luigi.preload.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styles: [],
+  styles: []
 })
 export class LuigiPreloadComponent {}
