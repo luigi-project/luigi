@@ -1,9 +1,9 @@
 jest.mock('@angular/core', () => ({
   Component: () => (target: any) => target,
   ChangeDetectionStrategy: () => ({
-    'OnPush': 0,
-    'Eager': 1,
-    'Default': 1
+    OnPush: 0,
+    Eager: 1,
+    Default: 1
   })
 }));
 
