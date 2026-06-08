@@ -1177,7 +1177,7 @@
                                 on:keyup={!addNavHrefForAnchor ? (event) => handleEnterPressed(event, node) : undefined}
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:mouseup={(event) => {
-                                  isSemiCollapsed && event.target.blur();
+                                  isSemiCollapsed && event.currentTarget.blur();
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
@@ -2069,6 +2069,8 @@
     align-items: center;
     :global(.fd-object-status) {
       margin-left: auto;
+      right: var(--fdNavigationList_Content_Padding_Inline_End, 1rem);
+      position: absolute;
     }
   }
 
