@@ -466,7 +466,7 @@ const connector = {
         searchResultList.addEventListener('item-click', (event) => {
           console.log('searchResultListClick:');
           console.log(event);
-        })
+        });
         searchResultPopover.setAttribute('id', 'searchresult-popover');
         searchResultPopover.setAttribute('header-text', 'Search results');
         searchResultPopover.setAttribute('placement', 'Bottom');
