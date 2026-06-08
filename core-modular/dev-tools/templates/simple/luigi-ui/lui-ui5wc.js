@@ -452,10 +452,27 @@ const connector = {
         const searchInput = document.createElement('ui5-input');
 
         searchInput.classList.add('lui-search-field');
+        searchInput.setAttribute('id', 'searchresult-opener');
         searchInput.setAttribute('slot', 'searchField');
         searchInput.setAttribute('placeholder', topNavData.globalSearchConfig.inputPlaceholder || 'Type to search');
 
         shellbar.appendChild(searchInput);
+        document.querySelector('ui5-navigation-layout > #searchresult-popover')?.remove();
+
+        const searchResultList = document.createElement('ui5-list');
+        const searchResultPopover = document.createElement('ui5-popover');
+
+        searchResultList.classList.add('lui-search-results');
+        searchResultList.addEventListener('item-click', (event) => {
+          console.log('searchResultListClick:');
+          console.log(event);
+        })
+        searchResultPopover.setAttribute('id', 'searchresult-popover');
+        searchResultPopover.setAttribute('header-text', 'Search results');
+        searchResultPopover.setAttribute('placement', 'Bottom');
+
+        searchResultPopover.appendChild(searchResultList);
+        document.querySelector('ui5-navigation-layout').appendChild(searchResultPopover);
       }
 
       if (topNavData.profile) {
@@ -1026,9 +1043,81 @@ const connector = {
     const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
       const searchInput = shellBar.querySelector('.lui-search-field');
 
-      btn.click();
-      onToggleCallback(searchInput);
+      btn?.click();
+
+      if (onToggleCallback && typeof onToggleCallback === 'function') {
+        onToggleCallback(searchInput);
+      }
     });
+  },
+
+  showSearchResult: (searchResultItems, onShowResultCallback) => {
+    const searchResult = document.querySelector('#searchresult-popover');
+    const searchList = searchResult?.querySelector('.lui-search-results');
+
+    if (!searchList) {
+      return;
+    }
+
+    searchList.innerHTML = '';
+
+    if (searchResultItems?.length) {
+      searchList.setAttribute('selection-mode', 'Single');
+      searchResultItems.forEach((item) => {
+        const searchItem = document.createElement('ui5-li');
+
+        searchItem.setAttribute('icon', 'navigation-right-arrow');
+        searchItem.setAttribute('icon-end', true);
+        searchItem.setAttribute('description', item.description);
+        searchItem.setAttribute('link', item.pathObject?.link);
+        searchItem.innerText = item.label;
+        searchList.appendChild(searchItem);
+      });
+    } else {
+      const searchItem = document.createElement('ui5-li');
+      const searchQuery = globalThis.Luigi.globalSearch().getSearchString() || '';
+
+      searchItem.innerText = `No results found for query '${searchQuery}'`;
+      searchList.setAttribute('selection-mode', 'None');
+      searchList.appendChild(searchItem);
+    }
+
+    searchResult.opener = 'searchresult-opener';
+    searchResult.open = true;
+
+    if (onShowResultCallback && typeof onShowResultCallback === 'function') {
+      onShowResultCallback();
+    }
+  },
+
+  closeSearchResult: () => {
+    const searchResult = document.querySelector('#searchresult-popover');
+    const searchList = searchResult?.querySelector('.lui-search-results');
+
+    if (!searchList) {
+      return;
+    }
+
+    searchResult.open = false;
+    searchList.innerHTML = '';
+  },
+
+  setSearchString: (searchString, onSetStringCallback) => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchInput = shellBar.querySelector('.lui-search-field');
+
+    if (onSetStringCallback && typeof onSetStringCallback === 'function') {
+      onSetStringCallback(searchInput);
+    }
+  },
+
+  setSearchInputPlaceholder: (inputPlaceholder) => {
+    const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+    const searchInput = shellBar.querySelector('.lui-search-field');
+
+    if (searchInput) {
+      searchInput.setAttribute('placeholder', inputPlaceholder);
+    }
   },
 
   showFatalError: (errorMsg) => {

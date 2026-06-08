@@ -25,7 +25,7 @@ export class GlobalSearchService {
 
   showSearchResult(searchResultItems: SearchResultItem[]): void {
     if (searchResultItems?.length) {
-      this.luigi.getEngine()._connector?.showSearchResult(this.searchResult, (rendererSlot?: any) => {
+      this.luigi.getEngine()._connector?.showSearchResult(searchResultItems, (rendererSlot?: any) => {
         if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
           GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
         } else {
@@ -48,7 +48,7 @@ export class GlobalSearchService {
   }
 
   setSearchQuery(value: string): void {
-    this.searchQuery = value;
+    this.searchQuery = value || '';
     this.luigi.getEngine()._connector?.setSearchString(this.searchQuery, (inputElem?: HTMLInputElement) => {
       if (inputElem) {
         inputElem.value = this.searchQuery;
