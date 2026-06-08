@@ -26,6 +26,7 @@
   let getUnsavedChangesModalPromise = getContext('getUnsavedChangesModalPromise');
   let openViewInModal = getContext('openViewInModal');
   let initialsOfUser;
+  let setProfileNavDataTimeout;
 
   onMount(async () => {
     if (!LuigiAuth.isAuthorizationEnabled()) {
@@ -69,7 +70,8 @@
   export function setProfileNavData() {
     if (!navProfileListenerInstalled) {
       StateHelpers.doOnStoreChange(store, async () => {
-        setTimeout(async () => {
+        clearTimeout(setProfileNavDataTimeout);
+        setProfileNavDataTimeout = setTimeout(async () => {
           const logoutItem = await LuigiConfig.getConfigValueAsync('navigation.profile.logout');
           //check if the User Settings schema exist
           const userSettingsConfig = await LuigiConfig.getConfigValueAsync('userSettings');
@@ -129,7 +131,7 @@
       },
       () => {}
     );
-    dispatch('toggleDropdownState');
+    dispatchToggleDropdown();
   }
 
   export function onLogoutClick() {
@@ -151,7 +153,7 @@
 
   export function onUserSettingsClick() {
     LuigiUX.openUserSettings();
-    dispatch('toggleDropdownState');
+    dispatchToggleDropdown();
   }
 
   export function logout() {
@@ -164,12 +166,65 @@
     }
   }
 
+  let expandedGroupIndex = null;
+
+  export function toggleGroup(index) {
+    expandedGroupIndex = expandedGroupIndex === index ? null : index;
+  }
+
+  function handleGroupKeyDown(event, index) {
+    if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
+      event.preventDefault();
+      toggleGroup(index);
+    } else if (event.key === 'Escape') {
+      if (expandedGroupIndex !== null) {
+        expandedGroupIndex = null;
+      } else {
+        dispatchToggleDropdown();
+      }
+    }
+  }
+
+  function handleSublistKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      expandedGroupIndex = null;
+      const groupHeader = event.currentTarget.previousElementSibling;
+      if (groupHeader) groupHeader.focus();
+    }
+  }
+
+  function handleMenuKeyDown(event) {
+    if (event.key === 'Escape' && expandedGroupIndex === null) {
+      dispatchToggleDropdown();
+    }
+  }
+
+  function dispatchToggleDropdown() {
+    expandedGroupIndex = null;
+    dispatch('toggleDropdownState');
+  }
+
+  function getIconsClassForSublist(children) {
+    return children.some((child) => child.icon) ? 'fd-menu__sublist--icons' : '';
+  }
+
+  $: if (isHidden) expandedGroupIndex = null;
+
   export let showUserInfo;
   $: showUserInfo = Boolean(userInfo && (userInfo.name || userInfo.email));
 </script>
 
 {#if !isHidden}
-  <div class="fd-popover__wrapper fd-user-menu__popover-wrapper">
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div
+    class="fd-popover__wrapper fd-user-menu__popover-wrapper"
+    on:click={() => {
+      expandedGroupIndex = null;
+    }}
+    on:keydown={handleMenuKeyDown}
+  >
     <div class="fd-user-menu__body">
       {#if showUserInfo}
         <div class="fd-user-menu__header">
@@ -215,10 +270,10 @@
                     <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
                     {#if profileNav.settings?.icon}
                       {#if hasOpenUIicon(profileNav.settings)}
-                        <i class="fd-top-nav__icon {getSapIconStr(profileNav.settings.icon)}" />
+                        <i class={getSapIconStr(profileNav.settings.icon)}></i>
                       {:else}
                         <img
-                          class="fd-top-nav__icon nav-icon"
+                          class="nav-icon"
                           src={profileNav.settings.icon}
                           alt={profileNav.settings.altText ? profileNav.settings.altText : ''}
                         />
@@ -229,39 +284,137 @@
                 </a>
               </li>
             {/if}
-            {#each profileNav.items as profileItem}
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-              <li
-                class="fd-menu__item"
-                on:click={() => onActionClick(profileItem)}
-                data-testid={getTestId(profileItem)}
-              >
-                <a
-                  class="fd-menu__link"
-                  role="button"
-                  data-testid="luigi-topnav-profile-item"
-                  href={addNavHrefForAnchor ? getRouteLink(profileItem) : undefined}
-                  on:click={(event) => {
-                    NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event);
-                  }}
+            {#each profileNav.items as profileItem, index}
+              {#if profileItem.children && profileItem.children.length > 0}
+                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                <li
+                  class="fd-menu__item"
+                  role="presentation"
+                  data-testid={getTestId(profileItem)}
+                  on:click|stopPropagation
                 >
-                  {#if profileItem.icon}
-                    <span class="fd-menu__addon-before">
-                      {#if hasOpenUIicon(profileItem)}
-                        <i class="fd-top-nav__icon {getSapIconStr(profileItem.icon)}" />
-                      {:else}
-                        <img
-                          class="fd-top-nav__icon nav-icon"
-                          src={profileItem.icon}
-                          alt={profileItem.altText ? profileItem.altText : ''}
-                        />
-                      {/if}
-                    </span>
+                  <span
+                    class="fd-menu__link has-child"
+                    class:is-expanded={expandedGroupIndex === index}
+                    aria-controls="profile-group-{index}"
+                    aria-expanded={expandedGroupIndex === index ? 'true' : 'false'}
+                    aria-haspopup="true"
+                    role="menuitem"
+                    tabindex="0"
+                    on:click|stopPropagation={() => toggleGroup(index)}
+                    on:keydown={(event) => handleGroupKeyDown(event, index)}
+                  >
+                    {#if profileItem.icon}
+                      <span class="fd-menu__addon-before">
+                        {#if hasOpenUIicon(profileItem)}
+                          <i class={getSapIconStr(profileItem.icon)} role="presentation" />
+                        {:else}
+                          <img
+                            class="nav-icon"
+                            src={profileItem.icon}
+                            alt={profileItem.altText ? profileItem.altText : ''}
+                          />
+                        {/if}
+                      </span>
+                    {/if}
+                    <span class="fd-menu__title">{$getTranslation(profileItem.label)}</span>
+                    <span class="fd-menu__addon-after fd-menu__addon-after--submenu"></span>
+                  </span>
+                  {#if expandedGroupIndex === index}
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <div class="lui-profile-sublist">
+                      <div class="lui-profile-sublist__spacer"></div>
+                      <ul
+                        class="fd-menu__sublist {getIconsClassForSublist(profileItem.children)}"
+                        id="profile-group-{index}"
+                        aria-hidden="false"
+                        role="menu"
+                        on:keydown={handleSublistKeyDown}
+                      >
+                        {#each profileItem.children as childItem}
+                          <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                          <li
+                            class="fd-menu__item"
+                            on:click={() => onActionClick(childItem)}
+                            data-testid={getTestId(childItem)}
+                          >
+                            <a
+                              class="fd-menu__link"
+                              role="menuitem"
+                              tabindex="0"
+                              data-testid="luigi-topnav-profile-item"
+                              href={addNavHrefForAnchor ? getRouteLink(childItem) : undefined}
+                              on:click={(event) => {
+                                NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event);
+                              }}
+                              on:keydown={(event) => {
+                                if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
+                                  event.preventDefault();
+                                  onActionClick(childItem);
+                                }
+                              }}
+                            >
+                              {#if childItem.icon}
+                                <span class="fd-menu__addon-before">
+                                  {#if hasOpenUIicon(childItem)}
+                                    <i class={getSapIconStr(childItem.icon)} role="presentation" />
+                                  {:else}
+                                    <img
+                                      class="nav-icon"
+                                      src={childItem.icon}
+                                      alt={childItem.altText ? childItem.altText : ''}
+                                    />
+                                  {/if}
+                                </span>
+                              {/if}
+                              <span class="fd-menu__title">{$getTranslation(childItem.label)}</span>
+                            </a>
+                          </li>
+                        {/each}
+                      </ul>
+                    </div>
                   {/if}
-                  <span class="fd-menu__title">{$getTranslation(profileItem.label)}</span>
-                </a>
-              </li>
+                </li>
+              {:else}
+                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                <li
+                  class="fd-menu__item"
+                  on:click={() => onActionClick(profileItem)}
+                  data-testid={getTestId(profileItem)}
+                >
+                  <a
+                    class="fd-menu__link"
+                    role="menuitem"
+                    tabindex="0"
+                    data-testid="luigi-topnav-profile-item"
+                    href={addNavHrefForAnchor ? getRouteLink(profileItem) : undefined}
+                    on:click={(event) => {
+                      NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event);
+                    }}
+                    on:keydown={(event) => {
+                      if (event.keyCode === KEYCODE_ENTER || event.keyCode === KEYCODE_SPACE) {
+                        event.preventDefault();
+                        onActionClick(profileItem);
+                      }
+                    }}
+                  >
+                    {#if profileItem.icon}
+                      <span class="fd-menu__addon-before">
+                        {#if hasOpenUIicon(profileItem)}
+                          <i class={getSapIconStr(profileItem.icon)}></i>
+                        {:else}
+                          <img
+                            class="nav-icon"
+                            src={profileItem.icon}
+                            alt={profileItem.altText ? profileItem.altText : ''}
+                          />
+                        {/if}
+                      </span>
+                    {/if}
+                    <span class="fd-menu__title">{$getTranslation(profileItem.label)}</span>
+                  </a>
+                </li>
+              {/if}
             {/each}
           </ul>
         </nav>
@@ -281,14 +434,13 @@
 {/if}
 
 <style lang="scss">
-  .fd-top-nav__icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
+  .nav-icon {
+    height: var(--sapFontLargeSize);
+    margin-right: 0;
   }
 
-  .nav-icon {
-    height: 2em;
+  .fd-user-menu__header-container {
+    word-wrap: break-word;
   }
 
   /* fixes for long User Name and role */
@@ -321,6 +473,43 @@
 
     &:hover {
       background-color: var(--sapList_Hover_Background, #f5f5f5);
+    }
+  }
+
+  .lui-profile-sublist {
+    display: flex;
+    flex-direction: row;
+    height: 0;
+    justify-content: normal;
+    left: auto;
+    max-width: 90vw;
+    overflow: visible;
+    pointer-events: none;
+    position: absolute;
+    right: 100%;
+    top: 0;
+    width: calc(90vw - 100%);
+
+    & > .fd-menu__sublist {
+      left: auto;
+      max-width: 95vw;
+      min-width: auto;
+      height: fit-content;
+      pointer-events: auto;
+      position: relative;
+      width: max-content;
+      display: inline-block;
+
+      .fd-menu__title {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+
+    & > .lui-profile-sublist__spacer {
+      flex: 1;
+      height: 0;
     }
   }
 </style>

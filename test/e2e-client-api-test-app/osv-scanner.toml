@@ -1,3 +1,7 @@
 [[IgnoredVulns]]
 id = "GHSA-m6fv-jmcg-4jfg"
 reason = "Test app only"
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "Test app only"

@@ -1,11 +1,12 @@
 export interface TopNavData {
+  appSwitcher?: AppSwitcher;
   appTitle: string;
+  contextSwitcher?: ContextSwitcher;
   logo: string;
-  topNodes: NavItem[];
+  navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
-  appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => Promise<void>;
+  topNodes: NavItem[];
 }
 
 export interface AppSwitcher {
@@ -19,6 +20,27 @@ export interface AppSwitcherItem {
   subtitle?: string;
   link?: string;
   selectionConditions?: selectionConditions;
+}
+
+export interface ContextSwitcher {
+  actions?: any[];
+  config?: any;
+  options?: ContextSwitcherItem[];
+  selectedLabel?: string;
+  selectedNodePath?: any;
+  selectedOption?: ContextSwitcherItem;
+  switcherChange?: (selectedValue: string, selectedType?: string | undefined) => void;
+}
+
+export interface ContextSwitcherItem {
+  clickHandler?: any;
+  customRendererCategory?: any;
+  id?: string;
+  label?: string;
+  link?: string;
+  linkFromPath?: null | string;
+  position?: 'bottom' | 'top';
+  testId?: string;
 }
 
 export interface selectionConditions {
@@ -45,6 +67,7 @@ export interface ProfileSettings {
 export interface UserSettingsProfileMenuEntry {
   label?: string;
   link?: string;
+  openUserSettings?: () => void;
 }
 
 export interface ProfileLogout {
@@ -56,6 +79,7 @@ export interface ProfileLogout {
 }
 
 export interface ProfileItem {
+  children?: ProfileItem[];
   label?: string;
   link?: string;
   externalLink?: ExternalLink;
@@ -63,6 +87,14 @@ export interface ProfileItem {
   testId?: string;
   altText?: string;
   openNodeInModal?: boolean | ModalSettings;
+}
+
+export interface UserSettingsDialogSettings {
+  dialogHeader?: string;
+  saveBtn?: string;
+  dismissBtn?: string;
+  renderMicroFrontendContainer?: (viewUrl: string, groupKey: string) => Promise<any>;
+  onCloseCallback?: (storedUserSettings: any, previousUserSettings: any) => void;
 }
 
 export interface UserInfo {
@@ -186,6 +218,7 @@ export interface BreadcrumbItem {
 export interface NavItem {
   altText?: string;
   category?: Category;
+  externalLink?: ExternalLink;
   href?: string;
   icon?: string;
   node?: Node;
@@ -232,6 +265,7 @@ export interface ProductSwitcher {
   items?: [ProductSwitcherItem];
   label?: string;
   testId?: string;
+  productSwitcherItemClick?: (item: ProductSwitcherItem) => void;
 }
 
 export interface ProductSwitcherItem {

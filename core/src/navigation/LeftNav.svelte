@@ -1177,7 +1177,7 @@
                                 on:keyup={!addNavHrefForAnchor ? (event) => handleEnterPressed(event, node) : undefined}
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:mouseup={(event) => {
-                                  isSemiCollapsed && event.target.blur();
+                                  isSemiCollapsed && event.currentTarget.blur();
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
@@ -1496,6 +1496,7 @@
                           on:keypress={(event) => handleExpandCollapseCategories(event, nodes)}
                           tabindex={isSemiCollapsed ? '0' : '-1'}
                         >
+                          <!-- svelte-ignore a11y_missing_attribute -->
                           <a
                             title={resolveTooltipText(nodes, $getTranslation(key))}
                             class="fd-nested-list__link {isExpanded(nodes, expandedCategories) ? 'is-expanded' : ''}"
@@ -2068,6 +2069,8 @@
     align-items: center;
     :global(.fd-object-status) {
       margin-left: auto;
+      right: var(--fdNavigationList_Content_Padding_Inline_End, 1rem);
+      position: absolute;
     }
   }
 

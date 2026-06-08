@@ -47,8 +47,7 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
   
 **Example**  
 ```js
-renderer = { use: 'grid', config: { columns: '1fr 1fr 1fr 2fr', layouts: [{maxWidth: 600, columns: '1fr', gap: 0, ...}]}};
-children = [{ viewUrl: '/main.js', context: { label: 'WC', ...}, layoutConfig: {column: '1 / -1', ...}, eventListeners: [{ source: 'input1', ...}}]}];
+renderer = { use: 'grid', config: { columns: '1fr 1fr 1fr 2fr', layouts: [{maxWidth: 600, columns: '1fr', gap: 0, ...}]}};children = [{ viewUrl: '/main.js', context: { label: 'WC', ...}, layoutConfig: {column: '1 / -1', ...}, eventListeners: [{ source: 'input1', ...}}]}];
 ```
 **Example**  
 ```js

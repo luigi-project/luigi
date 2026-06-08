@@ -96,7 +96,7 @@ export const CommunicationModule = {
       luigi.routing().addNodeParams(event.payload.data, event.payload.keepBrowserHistory);
     });
     containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.openUserSettings(event.detail);
+      luigi.ux().openUserSettings();
     });
     containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, (event: any) => {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
