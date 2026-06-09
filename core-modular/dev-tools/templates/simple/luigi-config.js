@@ -448,7 +448,9 @@ window.onload = () => {
         inputPlaceholder: 'Type some text to search...',
         onEnter: undefined,
         onEscape: undefined,
-        onInput: undefined,
+        onInput: () => {
+          console.log('searchProvider - onInput');
+        },
         onSearchResultItemSelected: undefined,
         toggleSearch: (element, visible) => {
           console.log('searchProvider - toggleSearch:');

@@ -1,3 +1,4 @@
+import type { SearchResultItem } from '../core-api/global-search';
 import type {
   AlertHandler,
   AlertSettings,
@@ -88,7 +89,15 @@ export interface LuigiConnector {
 
   clearSearchField(): void;
 
-  toggleSearch(isSearchFieldVisible: boolean, onToggleCallback: (inputElem: HTMLInputElement) => void): void;
+  showSearchResult(searchResultItems: SearchResultItem[], onShowCallback: (rendererSlot?: any) => void): void;
+
+  closeSearchResult(): void;
+
+  setSearchString(searchString: string, onSetCallback: (inputElem?: HTMLInputElement) => void): void;
+
+  setSearchInputPlaceholder(placeholder: string): void;
+
+  toggleSearch(isSearchFieldVisible: boolean, onToggleCallback: (inputElem?: HTMLInputElement) => void): void;
 }
 
 export type { Node };
