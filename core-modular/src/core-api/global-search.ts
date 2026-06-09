@@ -1,4 +1,5 @@
-import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
+import { GlobalSearchService } from '../services/global-search.service';
+import { serviceRegistry } from '../services/service-registry';
 import type { Luigi } from './luigi';
 
 export interface GlobalSearchProvider {
@@ -12,14 +13,20 @@ export interface GlobalSearchProvider {
   toggleSearch?: (element: HTMLInputElement, visible: boolean) => void;
 }
 
+export interface SearchResultItem {
+  description: string;
+  label: string;
+  pathObject: Record<string, any>;
+}
+
 export class GlobalSearch {
   luigi: Luigi;
-  isSearchFieldVisible = false;
-  searchQuery: string | undefined;
+  globalSearchService: GlobalSearchService;
   searchProvider: GlobalSearchProvider;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
+    this.globalSearchService = serviceRegistry.get(GlobalSearchService);
     this.searchProvider = this.luigi.getConfigValue('globalSearch.searchProvider');
   }
 
@@ -29,7 +36,7 @@ export class GlobalSearch {
    */
   openSearchField(): void {
     if (this.checkSearchProvider(this.searchProvider)) {
-      this.isSearchFieldVisible = true;
+      this.globalSearchService.setFieldVisibility(true);
       this.luigi.getEngine()._connector?.openSearchField();
     }
   }
@@ -40,7 +47,7 @@ export class GlobalSearch {
    */
   closeSearchField(): void {
     if (this.checkSearchProvider(this.searchProvider)) {
-      this.isSearchFieldVisible = false;
+      this.globalSearchService.setFieldVisibility(false);
       this.luigi.getEngine()._connector?.closeSearchField();
     }
   }
@@ -51,21 +58,66 @@ export class GlobalSearch {
    */
   clearSearchField(): void {
     if (this.checkSearchProvider(this.searchProvider)) {
-      this.searchQuery = '';
+      this.globalSearchService.setSearchQuery('');
       this.luigi.getEngine()._connector?.clearSearchField();
-      // TODO `closeSearchResult` method
+      this.closeSearchResult();
     }
   }
 
   /**
-   * Toggles search field visibility.
+   * Opens the global search result. By standard it is a popover.
+   * @param {Array<SearchResultItem>} searchResultItems
+   * @example
+   * let searchResultItem = {
+   *   pathObject: {
+   *     link,
+   *     params: {}
+   *   },
+   *   label,
+   *   description
+   * }
+   *
+   * Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
    */
-  toggleSearch(): void {
-    this.isSearchFieldVisible = !this.isSearchFieldVisible;
-    this.luigi.getEngine()._connector?.toggleSearch(this.isSearchFieldVisible, (inputElem: HTMLInputElement) => {
-      GlobalSearchHelpers.toggleSearch(this.isSearchFieldVisible, this.searchProvider, inputElem);
-    });
-    this.clearSearchField();
+  showSearchResult(searchResultItems: SearchResultItem[]): void {
+    if (this.checkSearchProvider(this.searchProvider)) {
+      this.globalSearchService.showSearchResult(searchResultItems);
+    }
+  }
+
+  /**
+   * Closes the global search result. By standard it is rendered as a popover.
+   * @example Luigi.globalSearch().closeSearchResult();
+   */
+  closeSearchResult() {
+    this.globalSearchService.closeSearchResult();
+    this.luigi.getEngine()._connector?.closeSearchResult();
+  }
+
+  /**
+   * Gets the value of the search input field.
+   * @example Luigi.globalSearch().getSearchString();
+   */
+  getSearchString(): string {
+    return this.globalSearchService.getSearchQuery();
+  }
+
+  /**
+   * Sets the value of the search input field.
+   * @param searchString search value
+   * @example Luigi.globalSearch().setSearchString('searchString');
+   */
+  setSearchString(searchString: string) {
+    this.globalSearchService.setSearchQuery(searchString);
+  }
+
+  /**
+   * Sets the value of the Placeholder search input field.
+   * @param placeholder placeholder value
+   * @example Luigi.globalSearch().setSearchInputPlaceholder('HERE input Placeholder');
+   */
+  setSearchInputPlaceholder(placeholder: string) {
+    this.globalSearchService.setSearchInputPlaceholder(placeholder);
   }
 
   private checkSearchProvider(searchProvider: GlobalSearchProvider): boolean {
