@@ -170,7 +170,13 @@ jobs:
         with:
           list-of-deps: 'libgtk2.0-0t64 libgtk-3-0t64 libgbm-dev libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb'
       - run: ls test
-      - run: bash ./test/e2e-js.sh || exit 1
+      - name: Run e2e-js tests 30 times
+        run: |
+          for i in $(seq 1 30); do
+            echo "::group::e2e-js iteration $i / 30"
+            bash ./test/e2e-js.sh || { echo "::error::e2e-js failed on iteration $i"; exit 1; }
+            echo "::endgroup::"
+          done
       - run: bash ./test/e2e-angular.sh || exit 1
       - run: bash ./test/e2e-client-api.sh || exit 1
 
