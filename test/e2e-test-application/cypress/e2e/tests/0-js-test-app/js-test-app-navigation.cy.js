@@ -649,6 +649,20 @@ describe('JS-TEST-APP', () => {
         cy.clearCookies();
         newConfig = structuredClone(defaultLuigiConfig);
         newConfig.auth = undefined;
+        // Swap iframe MFEs for web-component MFEs in the routes these specs visit.
+        // Iframe insertion fires window-blur on the parent (focus moves into the
+        // iframe content window), and TopNav's blur handler closes all dropdowns
+        // — racing the spec's click-on-profile-button and intermittently closing
+        // the popover before assertions run. WC MFEs render in the same window,
+        // so no blur fires.
+        const homeNode = newConfig.navigation.nodes.find((n) => n.pathSegment === 'home');
+        homeNode.viewUrl = '/examples/microfrontends/helloWorldWC.js';
+        homeNode.webcomponent = true;
+        homeNode.children = homeNode.children.map((child) => ({
+          ...child,
+          viewUrl: '/examples/microfrontends/helloWorldWC.js',
+          webcomponent: true
+        }));
         newConfig.settings.profileType = 'vega';
         newConfig.navigation.profile = {
           logout: {
