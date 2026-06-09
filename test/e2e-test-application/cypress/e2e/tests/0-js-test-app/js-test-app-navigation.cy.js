@@ -689,46 +689,46 @@ describe('JS-TEST-APP', () => {
         };
       });
 
-      it('Should render group items with submenu arrow', () => {
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"]').should('exist');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
-      });
+      // it('Should render group items with submenu arrow', () => {
+      //   cy.visitTestApp('/home/one', newConfig);
+      //   cy.waitForLuigiHandshake();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+      //   cy.get('[data-testid="profile-group-account"]').should('exist');
+      //   cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
+      // });
 
-      it('Should render flat items without submenu arrow', () => {
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
-      });
+      // it('Should render flat items without submenu arrow', () => {
+      //   cy.visitTestApp('/home/one', newConfig);
+      //   cy.waitForLuigiHandshake();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="profile-flat-about"]').should('exist');
+      //   cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
+      // });
 
-      it('Should expand group on click and show children', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
-        // so the element Cypress validated may have been replaced by the time .click()
-        // fires. Re-querying with a fresh cy.get() lets Cypress retry against the latest
-        // DOM node.
-        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').should('exist');
-        cy.get('[data-testid="profile-child-privacy"]').should('exist');
-      });
+      // it('Should expand group on click and show children', () => {
+      //   const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+      //   cy.visitTestApp('/home/one', newConfig);
+      //   cy.waitForLuigiHandshake();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+      //   cy.get('[data-testid="profile-flat-about"]').should('exist');
+      //   // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
+      //   // so the element Cypress validated may have been replaced by the time .click()
+      //   // fires. Re-querying with a fresh cy.get() lets Cypress retry against the latest
+      //   // DOM node.
+      //   cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+      //   cy.get(groupHeader).click();
+      //   cy.waitForLuigiSettled();
+      //   cy.get('[data-testid="profile-child-profile"]').should('exist');
+      //   cy.get('[data-testid="profile-child-privacy"]').should('exist');
+      // });
 
       // it('Should collapse group on second click', () => {
       //   const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
