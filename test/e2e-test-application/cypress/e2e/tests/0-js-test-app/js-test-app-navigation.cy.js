@@ -758,7 +758,7 @@ describe('JS-TEST-APP', () => {
 
       it('Should navigate when clicking a child item', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/two', newConfig);
+        cy.visitTestApp('/home/one', newConfig);
         cy.waitForLuigiHandshake();
         cy.waitForLuigiSettled();
         cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
@@ -768,8 +768,8 @@ describe('JS-TEST-APP', () => {
         cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
         cy.get(groupHeader).click();
         cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').click();
-        cy.expectPathToBe('/home/one');
+        cy.get('[data-testid="profile-child-privacy"]').click();
+        cy.expectPathToBe('/home/two');
       });
 
       it('Should close submenu when clicking elsewhere in the menu', () => {
