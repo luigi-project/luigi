@@ -172,6 +172,7 @@ jobs:
       - run: ls test
       - name: Run e2e-js tests 30 times
         run: |
+          export USE_CYPRESS_DASHBOARD=false
           for i in $(seq 1 30); do
             echo "::group::e2e-js iteration $i / 30"
             bash ./test/e2e-js.sh || { echo "::error::e2e-js failed on iteration $i"; exit 1; }
