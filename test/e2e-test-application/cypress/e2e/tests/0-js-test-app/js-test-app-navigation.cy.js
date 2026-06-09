@@ -730,47 +730,47 @@ describe('JS-TEST-APP', () => {
       //   cy.get('[data-testid="profile-child-privacy"]').should('exist');
       // });
 
-      // it('Should collapse group on second click', () => {
-      //   const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-      //   const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
+      it('Should collapse group on second click', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
 
-      //   cy.visitTestApp('/home/one', newConfig);
-      //   cy.waitForLuigiHandshake();
-      //   cy.waitForLuigiSettled();
-      //   cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-      //   cy.waitForLuigiSettled();
-      //   cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-      //   cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
 
-      //   cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
-      //   cy.get(groupHeader).click();
-      //   cy.waitForLuigiSettled();
-      //   cy.get(sublist).should('be.visible');
-      //   cy.get('[data-testid="profile-child-profile"]').should('be.visible');
-      //   cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get(sublist).should('be.visible');
+        cy.get('[data-testid="profile-child-profile"]').should('be.visible');
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
 
-      //   cy.get(groupHeader).click();
-      //   cy.waitForLuigiSettled();
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
 
-      //   cy.get(sublist).should('not.exist');
-      //   cy.get('[data-testid="profile-child-profile"]').should('not.exist');
-      // });
+        cy.get(sublist).should('not.exist');
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
 
-      // it('Should navigate when clicking a child item', () => {
-      //   const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-      //   cy.visitTestApp('/home/one', newConfig);
-      //   cy.waitForLuigiHandshake();
-      //   cy.waitForLuigiSettled();
-      //   cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-      //   cy.waitForLuigiSettled();
-      //   cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-      //   cy.get('[data-testid="profile-flat-about"]').should('exist');
-      //   cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-      //   cy.get(groupHeader).click();
-      //   cy.waitForLuigiSettled();
-      //   cy.get('[data-testid="profile-child-privacy"]').click();
-      //   cy.expectPathToBe('/home/two');
-      // });
+      it('Should navigate when clicking a child item', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-privacy"]').click();
+        cy.expectPathToBe('/home/two');
+      });
 
       it('Should close submenu when clicking elsewhere in the menu', () => {
         const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
