@@ -1,10 +1,12 @@
+enum ChangeDetectionMock {
+  OnPush = 0,
+  Eager = 1,
+  Default = 1
+}
+
 jest.mock('@angular/core', () => ({
   Component: () => (target: any) => target,
-  ChangeDetectionStrategy: () => ({
-    OnPush: 0,
-    Eager: 1,
-    Default: 1
-  })
+  ChangeDetectionStrategy: ChangeDetectionMock
 }));
 
 import { LuigiPreloadComponent } from './luigi.preload.component';
