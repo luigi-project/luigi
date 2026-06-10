@@ -447,13 +447,28 @@ window.onload = () => {
         customSearchResultRenderer: undefined,
         inputPlaceholder: 'Type some text to search...',
         onEnter: undefined,
-        onEscape: undefined,
+        onEscape: () => {
+          console.log('searchProvider - onEscape');
+          Luigi.globalSearch().closeSearchResult();
+        },
         onInput: () => {
           console.log('searchProvider - onInput');
         },
-        onSearchResultItemSelected: undefined,
+        onSearchResultItemSelected: (pathData) => {
+          console.log('searchProvider - onSearchResultItemSelected');
+          console.log(pathData);
+          if (pathData?.externalLink) {
+            window.open(pathData.externalLink.url, '_blank', 'noopener,noreferrer');
+          } else if (pathData?.link && !pathData?.params) {
+            Luigi.navigation().navigate(pathData.link);
+          } else if (pathData?.link && pathData?.params) {
+            Luigi.navigation().withParams(pathData.params).navigate(pathData.link);
+          }
+          Luigi.globalSearch().closeSearchResult();
+          Luigi.globalSearch().clearSearchField();
+        },
         toggleSearch: (element, visible) => {
-          console.log('searchProvider - toggleSearch:');
+          console.log('searchProvider - toggleSearch');
           console.log(element);
           console.log(visible);
         }
