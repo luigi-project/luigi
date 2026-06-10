@@ -554,7 +554,10 @@ const connector = {
           }
         });
         searchResultList.addEventListener('item-click', (event) => {
-          if (searchConfig.onSearchResultItemSelected && typeof searchConfig.onSearchResultItemSelected === 'function') {
+          if (
+            searchConfig.onSearchResultItemSelected &&
+            typeof searchConfig.onSearchResultItemSelected === 'function'
+          ) {
             const searchItem = event.detail.item;
             const pathData = JSON.parse(searchItem?.getAttribute('path-data')) || {};
 
