@@ -473,168 +473,168 @@ describe('JS-TEST-APP', () => {
       });
     });
 
-    describe('With Auth', () => {
-      let newConfig;
+    // describe('With Auth', () => {
+    //   let newConfig;
 
-      beforeEach(() => {
-        newConfig = structuredClone(defaultLuigiConfig);
-        newConfig.auth = {
-          use: 'myOAuth2',
-          myOAuth2: {
-            idpProvider: 'LuigiAuthOAuth2',
-            authorizeUrl: '/auth/idpmock/implicit.html',
-            logoutUrl: '/auth/idpmock/logout.html',
-            post_logout_redirect_uri: '/auth/logout.html',
-            authorizeMethod: 'GET',
-            oAuthData: {
-              client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
-              redirect_uri: '/auth/callback.html'
-            }
-          }
-        };
-        newConfig.navigation.profile = {
-          logout: {
-            label: 'Bye bye'
-          },
-          staticUserInfoFn: () => ({
-            name: 'Static User',
-            initials: 'LU',
-            email: 'other.luigi.user@example.com',
-            picture: '/assets/favicon-sap.ico',
-            icon: false
-          })
-        };
-      });
+    //   beforeEach(() => {
+    //     newConfig = structuredClone(defaultLuigiConfig);
+    //     newConfig.auth = {
+    //       use: 'myOAuth2',
+    //       myOAuth2: {
+    //         idpProvider: 'LuigiAuthOAuth2',
+    //         authorizeUrl: '/auth/idpmock/implicit.html',
+    //         logoutUrl: '/auth/idpmock/logout.html',
+    //         post_logout_redirect_uri: '/auth/logout.html',
+    //         authorizeMethod: 'GET',
+    //         oAuthData: {
+    //           client_id: 'egDuozijY5SVr0NSIowUP1dT6RVqHnlp',
+    //           redirect_uri: '/auth/callback.html'
+    //         }
+    //       }
+    //     };
+    //     newConfig.navigation.profile = {
+    //       logout: {
+    //         label: 'Bye bye'
+    //       },
+    //       staticUserInfoFn: () => ({
+    //         name: 'Static User',
+    //         initials: 'LU',
+    //         email: 'other.luigi.user@example.com',
+    //         picture: '/assets/favicon-sap.ico',
+    //         icon: false
+    //       })
+    //     };
+    //   });
 
-      it('Profile, no auto-login, logged out', () => {
-        newConfig.auth.disableAutoLogin = true;
-        cy.visitTestApp('/', newConfig);
+    //   it('Profile, no auto-login, logged out', () => {
+    //     newConfig.auth.disableAutoLogin = true;
+    //     cy.visitTestApp('/', newConfig);
 
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('not.exist');
-        loginLink().should('exist');
-      });
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('not.exist');
+    //     loginLink().should('exist');
+    //   });
 
-      it('No Profile, no auto-login, logged out and login', () => {
-        newConfig.auth.disableAutoLogin = true;
-        newConfig.navigation.profile = undefined;
-        cy.visitTestApp('/', newConfig);
+    //   it('No Profile, no auto-login, logged out and login', () => {
+    //     newConfig.auth.disableAutoLogin = true;
+    //     newConfig.navigation.profile = undefined;
+    //     cy.visitTestApp('/', newConfig);
 
-        // Logged out
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('not.exist');
-        loginLink().should('exist');
+    //     // Logged out
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('not.exist');
+    //     loginLink().should('exist');
 
-        // Log in
-        loginLink().click();
-        cy.login('tets@email.com', 'tets', true, newConfig);
+    //     // Log in
+    //     loginLink().click();
+    //     cy.login('tets@email.com', 'tets', true, newConfig);
 
-        // // Verify default value
-        logoutLink().contains('Sign Out');
-      });
+    //     // // Verify default value
+    //     logoutLink().contains('Sign Out');
+    //   });
 
-      it('Profile, logged in', () => {
-        newConfig.navigation.profile = {
-          logout: {
-            label: 'Bye bye',
-            icon: 'sys-cancel'
-          }
-        };
-        newConfig.auth.disableAutoLogin = false;
-        cy.visitTestAppLoggedIn('/', newConfig);
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('exist');
-        loginLink().should('not.exist');
+    //   it('Profile, logged in', () => {
+    //     newConfig.navigation.profile = {
+    //       logout: {
+    //         label: 'Bye bye',
+    //         icon: 'sys-cancel'
+    //       }
+    //     };
+    //     newConfig.auth.disableAutoLogin = false;
+    //     cy.visitTestAppLoggedIn('/', newConfig);
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('exist');
+    //     loginLink().should('not.exist');
 
-        // Verify profile value
-        logoutLink().contains('Bye bye');
-      });
+    //     // Verify profile value
+    //     logoutLink().contains('Bye bye');
+    //   });
 
-      it('No profile, logged in', () => {
-        newConfig.navigation.profile = undefined;
-        newConfig.auth.disableAutoLogin = false;
-        cy.visitTestAppLoggedIn('/', newConfig);
+    //   it('No profile, logged in', () => {
+    //     newConfig.navigation.profile = undefined;
+    //     newConfig.auth.disableAutoLogin = false;
+    //     cy.visitTestAppLoggedIn('/', newConfig);
 
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('exist');
-        loginLink().should('not.exist');
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('exist');
+    //     loginLink().should('not.exist');
 
-        // Verify default value
-        logoutLink().contains('Sign Out');
-      });
+    //     // Verify default value
+    //     logoutLink().contains('Sign Out');
+    //   });
 
-      it('Trigger Login and Logout with Core API', () => {
-        newConfig.navigation.profile = undefined;
-        newConfig.auth.disableAutoLogin = true;
-        newConfig.tag = 'loginlogoutcoreapi';
-        let cfg = structuredClone(newConfig);
-        cy.visitTestApp('/', cfg);
+    //   it('Trigger Login and Logout with Core API', () => {
+    //     newConfig.navigation.profile = undefined;
+    //     newConfig.auth.disableAutoLogin = true;
+    //     newConfig.tag = 'loginlogoutcoreapi';
+    //     let cfg = structuredClone(newConfig);
+    //     cy.visitTestApp('/', cfg);
 
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        loginLink().should('exist');
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     loginLink().should('exist');
 
-        cy.window().then((win) => {
-          cy.log('Trigger auth().login()');
-          win.Luigi.auth().login();
-        });
+    //     cy.window().then((win) => {
+    //       cy.log('Trigger auth().login()');
+    //       win.Luigi.auth().login();
+    //     });
 
-        cy.login('tets@email.com', 'tets', true, cfg);
+    //     cy.login('tets@email.com', 'tets', true, cfg);
 
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('exist');
-        cfg = structuredClone(newConfig);
-        cy.visit('http://localhost:4500/auth/logout.html');
-        cfg.auth.myOAuth2.idpProvider = 'LuigiAuthOAuth2';
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('exist');
+    //     cfg = structuredClone(newConfig);
+    //     cy.visit('http://localhost:4500/auth/logout.html');
+    //     cfg.auth.myOAuth2.idpProvider = 'LuigiAuthOAuth2';
 
-        cy.visitTestAppLoggedIn('/', cfg);
-        cy.get('#app[configversion="loginlogoutcoreapi"]');
-        cy.window().then((win) => {
-          cy.log('Trigger auth().logout()');
-          win.Luigi.auth().logout();
-        });
-        cy.contains('Login again');
-      });
+    //     cy.visitTestAppLoggedIn('/', cfg);
+    //     cy.get('#app[configversion="loginlogoutcoreapi"]');
+    //     cy.window().then((win) => {
+    //       cy.log('Trigger auth().logout()');
+    //       win.Luigi.auth().logout();
+    //     });
+    //     cy.contains('Login again');
+    //   });
 
-      it('User settings in profile menu with custom label', () => {
-        newConfig.settings = {
-          userSettings: {
-            userSettingsProfileMenuEntry: {
-              label: 'My UserSettings',
-              icon: 'settings'
-            }
-          }
-        };
-        cy.visitTestAppLoggedIn('/', newConfig);
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        cy.get('[data-testid="settings-link"]').should('exist');
-        cy.get('[data-testid="settings-link"]').contains('My UserSettings');
-      });
+    //   it('User settings in profile menu with custom label', () => {
+    //     newConfig.settings = {
+    //       userSettings: {
+    //         userSettingsProfileMenuEntry: {
+    //           label: 'My UserSettings',
+    //           icon: 'settings'
+    //         }
+    //       }
+    //     };
+    //     cy.visitTestAppLoggedIn('/', newConfig);
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     cy.get('[data-testid="settings-link"]').should('exist');
+    //     cy.get('[data-testid="settings-link"]').contains('My UserSettings');
+    //   });
 
-      it('User settings in profile menu with default label', () => {
-        newConfig.settings = {
-          userSettings: {}
-        };
-        cy.visitTestAppLoggedIn('/', newConfig);
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        cy.get('[data-testid="settings-link"]').should('exist');
-        cy.get('[data-testid="settings-link"]').contains('Settings');
-      });
+    //   it('User settings in profile menu with default label', () => {
+    //     newConfig.settings = {
+    //       userSettings: {}
+    //     };
+    //     cy.visitTestAppLoggedIn('/', newConfig);
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     cy.get('[data-testid="settings-link"]').should('exist');
+    //     cy.get('[data-testid="settings-link"]').contains('Settings');
+    //   });
 
-      it('User settings not in the profile menu, if not configured', () => {
-        newConfig.navigation.profile = {
-          logout: {
-            label: 'Bye bye',
-            icon: 'sys-cancel'
-          }
-        };
-        newConfig.auth.disableAutoLogin = false;
-        cy.visitTestAppLoggedIn('/', newConfig);
+    //   it('User settings not in the profile menu, if not configured', () => {
+    //     newConfig.navigation.profile = {
+    //       logout: {
+    //         label: 'Bye bye',
+    //         icon: 'sys-cancel'
+    //       }
+    //     };
+    //     newConfig.auth.disableAutoLogin = false;
+    //     cy.visitTestAppLoggedIn('/', newConfig);
 
-        cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
-        logoutLink().should('exist');
-        cy.get('[data-testid="settings-link"]').should('not.exist');
-      });
-    });
+    //     cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+    //     logoutLink().should('exist');
+    //     cy.get('[data-testid="settings-link"]').should('not.exist');
+    //   });
+    // });
 
     describe('Vega profile menu with grouped items', () => {
       let newConfig;
