@@ -918,5 +918,63 @@ describe('JS-TEST-APP', () => {
         .shadow()
         .contains('/wc/test');
     });
+
+    describe('Collapsed category highlights when child is selected (#5172)', () => {
+      let newConfig;
+
+      beforeEach(() => {
+        newConfig = structuredClone(defaultLuigiConfig);
+        // Mark the parent of 'Section one' as a collapsible category so that
+        // 'Section one' (nodes[0].children[0]) lives inside the collapsible group.
+        newConfig.navigation.nodes[0].children[0].category = {
+          label: 'Test Category 5172',
+          collapsible: true
+        };
+        newConfig.tag = 'leftnav-collapsed-cat-highlight-5172';
+      });
+
+      it('adds is-selected to a collapsed category when one of its children is the active node', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        // Sanity: the category is rendered, collapsed, and not (yet) marked selected.
+        cy.get('.lui-collapsible-item').as('cat');
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('not.have.class', 'is-selected');
+
+        // Navigate to the leaf inside the collapsed category.
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // The category is still collapsed and now carries is-selected on its category link
+        // (the first descendant fd-nested-list__link).
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('have.class', 'is-selected');
+      });
+
+      it('removes is-selected from the category and gives it to the leaf when expanded', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // Pre-condition: collapsed and the category link is marked.
+        cy.get('.lui-collapsible-item').should('not.have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('have.class', 'is-selected');
+
+        // Expand the category by clicking its expand button.
+        cy.get('.lui-collapsible-item button').click();
+
+        // Category itself is no longer marked; the active leaf inside it is.
+        cy.get('.lui-collapsible-item').should('have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('not.have.class', 'is-selected');
+        cy.get('.lui-collapsible-item .fd-nested-list--text-only .fd-nested-list__link.is-selected').should('exist');
+      });
+    });
   });
 });
