@@ -446,13 +446,55 @@ window.onload = () => {
         customSearchResultItemRenderer: undefined,
         customSearchResultRenderer: undefined,
         inputPlaceholder: 'Type some text to search...',
-        onEnter: undefined,
+        onEnter: () => {
+          console.log('searchProvider - onEnter');
+        },
         onEscape: () => {
           console.log('searchProvider - onEscape');
           Luigi.globalSearch().closeSearchResult();
         },
         onInput: () => {
           console.log('searchProvider - onInput');
+          let searchResult;
+
+          if (Luigi.globalSearch().getSearchString() === '') {
+            searchResult = [];
+            Luigi.globalSearch().closeSearchResult();
+          } else {
+            searchResult = [{
+              pathObject: {
+                link: '/home2/c1',
+                params: {}
+              },
+              label: 'Search item A',
+              description: 'Some AAA description',
+              // onActivate() {
+              //   Luigi.globalSearch().closeSearchResult();
+              // }
+            },
+            {
+              pathObject: {
+                link: '/home2/c2',
+                params: {}
+              },
+              label: 'Search item B',
+              description: 'Some BBB description',
+              // onActivate() {
+              //   Luigi.globalSearch().closeSearchResult();
+              // }
+            },{
+              pathObject: {
+                externalLink: {
+                  url: 'https://docs.luigi-project.io/docs/getting-started',
+                  sameWindow: false
+                }
+              },
+              label: 'Search item C',
+              description: 'Some CCC description'
+            }];
+
+            Luigi.globalSearch().showSearchResult(searchResult?.length ? searchResult : []);
+          }
         },
         onSearchResultItemSelected: (pathData) => {
           console.log('searchProvider - onSearchResultItemSelected');
