@@ -461,37 +461,40 @@ window.onload = () => {
             searchResult = [];
             Luigi.globalSearch().closeSearchResult();
           } else {
-            searchResult = [{
-              pathObject: {
-                link: '/home2/c1',
-                params: {}
+            searchResult = [
+              {
+                pathObject: {
+                  link: '/home2/c1',
+                  params: {}
+                },
+                label: 'Search item A',
+                description: 'Some AAA description'
+                // onActivate() {
+                //   Luigi.globalSearch().closeSearchResult();
+                // }
               },
-              label: 'Search item A',
-              description: 'Some AAA description',
-              // onActivate() {
-              //   Luigi.globalSearch().closeSearchResult();
-              // }
-            },
-            {
-              pathObject: {
-                link: '/home2/c2',
-                params: {}
+              {
+                pathObject: {
+                  link: '/home2/c2',
+                  params: {}
+                },
+                label: 'Search item B',
+                description: 'Some BBB description'
+                // onActivate() {
+                //   Luigi.globalSearch().closeSearchResult();
+                // }
               },
-              label: 'Search item B',
-              description: 'Some BBB description',
-              // onActivate() {
-              //   Luigi.globalSearch().closeSearchResult();
-              // }
-            },{
-              pathObject: {
-                externalLink: {
-                  url: 'https://docs.luigi-project.io/docs/getting-started',
-                  sameWindow: false
-                }
-              },
-              label: 'Search item C',
-              description: 'Some CCC description'
-            }];
+              {
+                pathObject: {
+                  externalLink: {
+                    url: 'https://docs.luigi-project.io/docs/getting-started',
+                    sameWindow: false
+                  }
+                },
+                label: 'Search item C',
+                description: 'Some CCC description'
+              }
+            ];
 
             Luigi.globalSearch().showSearchResult(searchResult?.length ? searchResult : []);
           }

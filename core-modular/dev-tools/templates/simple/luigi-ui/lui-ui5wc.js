@@ -585,10 +585,14 @@ const connector = {
               currentResultItem = 'first';
               firstItem?.classList?.add('is-focused');
               firstItem?.setAttribute('aria-selected', true);
-              setTimeout(() => {firstItem?.shadowRoot?.children[0]?.focus()}, 1);
+              setTimeout(() => {
+                firstItem?.shadowRoot?.children[0]?.focus();
+              }, 1);
             } else if (typeof searchConfig.onInput === 'function') {
               searchConfig.onInput();
-              setTimeout(() => {searchInput.focus()}, 1);
+              setTimeout(() => {
+                searchInput.focus();
+              }, 1);
             }
           } else {
             console.warn('GlobalSearch is not available.');
