@@ -50,7 +50,7 @@
     "@babel/preset-env": "7.28.5",
     "@babel/preset-typescript": "7.28.5",
     "cli-color": "2.0.4",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.3",
     "diff": "4.0.4",
     "jsdoc-babel": "0.5.0",
     "jsdoc-to-markdown": "9.1.3",
