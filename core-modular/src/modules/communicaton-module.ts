@@ -6,27 +6,10 @@ import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule, type AlertSettings, type ConfirmationModalSettings } from './ux-module';
-import type { NavigationRequestParams } from '../types/navigation';
+import type { NavigationRequestParams, NavigationRequestDetail } from '../types/navigation';
 import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
-interface NavigationRequestDetail {
-  drawer: unknown;
-  link: string;
-  intent: boolean;
-  preserveView: string;
-  modal: unknown;
-  newTab: boolean;
-  withoutSync: boolean;
-  preventContextUpdate: boolean;
-  preventHistoryEntry: boolean;
-  fromVirtualTreeRoot: boolean;
-  fromContext: boolean;
-  fromClosestContext: boolean;
-  fromParent: boolean;
-  relative: boolean;
-  nodeParams: Record<string, string>;
-}
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
