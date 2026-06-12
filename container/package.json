@@ -59,7 +59,7 @@
     "chokidar-cli": "3.0.0",
     "cli-color": "2.0.4",
     "concurrently": "7.6.0",
-    "cypress": "15.11.0",
+    "cypress": "15.17.0",
     "eslint": "9.39.3",
     "eslint-plugin-svelte": "2.46.1",
     "jest": "30.3.0",
@@ -93,7 +93,6 @@
     "report-dir": "e2e-coverage"
   },
   "overrides": {
-    "@cypress/request": "4.0.0",
     "qs": "^6.15.2"
   },
   "engines": {
