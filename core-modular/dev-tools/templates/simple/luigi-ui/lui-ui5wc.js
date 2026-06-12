@@ -369,6 +369,54 @@ function updateOverlays() {
   // TODO: confirmation modal ...
 }
 
+function renderSearchResults(searchResultItems, searchQuery, onShowResultCallback) {
+  const searchResult = document.querySelector('#searchresult-popover');
+  const searchList = searchResult?.querySelector('.lui-search-results');
+
+  if (!searchList) {
+    return;
+  }
+
+  searchList.innerHTML = '';
+
+  if (searchResultItems?.length) {
+    searchList.setAttribute('selection-mode', 'Single');
+    searchResultItems.forEach((item, index) => {
+      const searchItem = document.createElement('ui5-li');
+
+      if (searchResultItems.length > 1) {
+        if (index === 0) {
+          searchItem.classList.add('lui-search-result--first');
+        }
+
+        if (index === searchResultItems.length - 1) {
+          searchItem.classList.add('lui-search-result--last');
+        }
+      }
+
+      searchItem.setAttribute('icon', 'navigation-right-arrow');
+      searchItem.setAttribute('icon-end', true);
+      searchItem.setAttribute('description', item.description);
+      searchItem.setAttribute('path-data', JSON.stringify(item.pathObject));
+      searchItem.innerText = item.label;
+      searchList.appendChild(searchItem);
+    });
+  } else {
+    const searchItem = document.createElement('ui5-li');
+
+    searchItem.innerText = `No results found for query '${searchQuery}'`;
+    searchList.setAttribute('selection-mode', 'None');
+    searchList.appendChild(searchItem);
+  }
+
+  searchResult.opener = 'searchresult-opener';
+  searchResult.open = true;
+
+  if (onShowResultCallback && typeof onShowResultCallback === 'function') {
+    onShowResultCallback();
+  }
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -449,12 +497,14 @@ const connector = {
       shellbar.innerHTML = html;
 
       if (topNavData.globalSearchConfig) {
+        const searchConfig = topNavData.globalSearchConfig;
         const searchInput = document.createElement('ui5-input');
+        let currentResultItem;
 
         searchInput.classList.add('lui-search-field');
         searchInput.setAttribute('id', 'searchresult-opener');
         searchInput.setAttribute('slot', 'searchField');
-        searchInput.setAttribute('placeholder', topNavData.globalSearchConfig.inputPlaceholder || 'Type to search');
+        searchInput.setAttribute('placeholder', searchConfig.inputPlaceholder || 'Type to search');
 
         shellbar.appendChild(searchInput);
         document.querySelector('ui5-navigation-layout > #searchresult-popover')?.remove();
@@ -463,9 +513,55 @@ const connector = {
         const searchResultPopover = document.createElement('ui5-popover');
 
         searchResultList.classList.add('lui-search-results');
+        searchResultList.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && typeof searchConfig.onEscape === 'function') {
+            searchConfig.onEscape();
+            searchInput.focus();
+          } else {
+            [...searchResultList.querySelectorAll('ui5-li')].forEach((item) => {
+              item.classList.remove('is-focused');
+              item.removeAttribute('aria-selected');
+            });
+
+            document.activeElement.setAttribute('aria-selected', true);
+
+            if (event.key === 'ArrowUp' && currentResultItem === 'first') {
+              const lastItem = searchResultList.querySelector('ui5-li:last-child');
+
+              document.activeElement.removeAttribute('aria-selected');
+              lastItem?.classList?.add('is-focused');
+              lastItem?.setAttribute('aria-selected', true);
+              lastItem?.shadowRoot?.children[0]?.focus();
+            }
+
+            if (event.key === 'ArrowDown' && currentResultItem === 'last') {
+              const firstItem = searchResultList.querySelector('ui5-li:first-child');
+
+              document.activeElement.removeAttribute('aria-selected');
+              firstItem?.classList?.add('is-focused');
+              firstItem?.setAttribute('aria-selected', true);
+              firstItem?.shadowRoot?.children[0]?.focus();
+            }
+
+            if (document.activeElement.classList.contains('lui-search-result--first')) {
+              currentResultItem = 'first';
+            } else if (document.activeElement.classList.contains('lui-search-result--last')) {
+              currentResultItem = 'last';
+            } else {
+              currentResultItem = 'default';
+            }
+          }
+        });
         searchResultList.addEventListener('item-click', (event) => {
-          console.log('searchResultListClick:');
-          console.log(event);
+          if (
+            searchConfig.onSearchResultItemSelected &&
+            typeof searchConfig.onSearchResultItemSelected === 'function'
+          ) {
+            const searchItem = event.detail.item;
+            const pathData = JSON.parse(searchItem?.getAttribute('path-data')) || {};
+
+            searchConfig.onSearchResultItemSelected(pathData);
+          }
         });
         searchResultPopover.setAttribute('id', 'searchresult-popover');
         searchResultPopover.setAttribute('header-text', 'Search results');
@@ -473,6 +569,34 @@ const connector = {
 
         searchResultPopover.appendChild(searchResultList);
         document.querySelector('ui5-navigation-layout').appendChild(searchResultPopover);
+
+        searchInput.addEventListener('keyup', (event) => {
+          if (searchConfig) {
+            globalThis.Luigi.globalSearch().setSearchString(searchInput.value || '');
+
+            if (event.key === 'Enter' && typeof searchConfig.onEnter === 'function') {
+              searchConfig.onEnter();
+            } else if (event.key === 'Escape' && typeof searchConfig.onEscape === 'function') {
+              searchConfig.onEscape();
+            } else if (event.key === 'ArrowDown' && searchResultList.children?.length) {
+              const firstItem = searchResultList.querySelector('ui5-li:first-child');
+
+              currentResultItem = 'first';
+              firstItem?.classList?.add('is-focused');
+              firstItem?.setAttribute('aria-selected', true);
+              setTimeout(() => {
+                firstItem?.shadowRoot?.children[0]?.focus();
+              }, 1);
+            } else if (typeof searchConfig.onInput === 'function') {
+              searchConfig.onInput();
+              setTimeout(() => {
+                searchInput.focus();
+              }, 1);
+            }
+          } else {
+            console.warn('GlobalSearch is not available.');
+          }
+        });
       }
 
       if (topNavData.profile) {
@@ -1051,43 +1175,8 @@ const connector = {
     });
   },
 
-  showSearchResult: (searchResultItems, onShowResultCallback) => {
-    const searchResult = document.querySelector('#searchresult-popover');
-    const searchList = searchResult?.querySelector('.lui-search-results');
-
-    if (!searchList) {
-      return;
-    }
-
-    searchList.innerHTML = '';
-
-    if (searchResultItems?.length) {
-      searchList.setAttribute('selection-mode', 'Single');
-      searchResultItems.forEach((item) => {
-        const searchItem = document.createElement('ui5-li');
-
-        searchItem.setAttribute('icon', 'navigation-right-arrow');
-        searchItem.setAttribute('icon-end', true);
-        searchItem.setAttribute('description', item.description);
-        searchItem.setAttribute('link', item.pathObject?.link);
-        searchItem.innerText = item.label;
-        searchList.appendChild(searchItem);
-      });
-    } else {
-      const searchItem = document.createElement('ui5-li');
-      const searchQuery = globalThis.Luigi.globalSearch().getSearchString() || '';
-
-      searchItem.innerText = `No results found for query '${searchQuery}'`;
-      searchList.setAttribute('selection-mode', 'None');
-      searchList.appendChild(searchItem);
-    }
-
-    searchResult.opener = 'searchresult-opener';
-    searchResult.open = true;
-
-    if (onShowResultCallback && typeof onShowResultCallback === 'function') {
-      onShowResultCallback();
-    }
+  showSearchResult: (searchResultItems, searchQuery, onShowResultCallback) => {
+    renderSearchResults(searchResultItems, searchQuery, onShowResultCallback);
   },
 
   closeSearchResult: () => {
