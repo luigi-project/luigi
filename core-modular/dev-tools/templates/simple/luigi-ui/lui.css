@@ -74,6 +74,14 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
+.lui-search-results ui5-li.is-focused::part(native-li):after {
+    border: 1.6px solid var(--sapContent_FocusColor, #0032a5);
+    content: '';
+    inset: .125rem;
+    pointer-events: none;
+    position: absolute;
+}
+
 .breadcrumb-wrapper {
     clear: both;
     padding: 1rem 1.5rem 0;
