@@ -6,6 +6,22 @@
 
 
 
+## [v2.31.0] (2026-06-12)
+
+#### :rocket: Added
+
+* [#5175](https://github.com/luigi-project/luigi/pull/5175) category selection indicator ([@hardl](https://github.com/hardl))
+* [#5166](https://github.com/luigi-project/luigi/pull/5166) setDirtyStatus for webcomponent client api ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+
+* [#5176](https://github.com/luigi-project/luigi/pull/5176) topnav dropdown blur handling ([@hardl](https://github.com/hardl))
+* [#5173](https://github.com/luigi-project/luigi/pull/5173) Profile item groups small fix ([@hardl](https://github.com/hardl))
+* [#5169](https://github.com/luigi-project/luigi/pull/5169) Statusbadge alignment ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.30.0] (2026-06-01)
 
 #### :rocket: Added
@@ -2143,3 +2159,4 @@
 [v2.28.0]: https://github.com/luigi-project/luigi/compare/v2.27.0...v2.28.0
 [v2.29.0]: https://github.com/luigi-project/luigi/compare/v2.28.0...v2.29.0
 [v2.30.0]: https://github.com/luigi-project/luigi/compare/v2.29.0...v2.30.0
+[v2.31.0]: https://github.com/luigi-project/luigi/compare/v2.30.0...v2.31.0
