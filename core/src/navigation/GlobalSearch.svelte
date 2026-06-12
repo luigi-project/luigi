@@ -14,6 +14,11 @@
   let submitBtn = TOP_NAV_DEFAULTS.globalSearchSubmitButton;
   let getTranslation = getContext('getTranslation');
   let globalSearchHelper;
+  // When globalSearch.style === 'vega', render the modern layout: in-pill submit/cancel
+  // addons matching the Fundamental Styles shellbar reference, with the outside toggle
+  // hidden while expanded so the pill visually wraps around it. Default (any other value)
+  // keeps the original two-button layout.
+  $: isVegaStyle = globalSearchConfig && globalSearchConfig.style === 'vega';
 
   onMount(async () => {
     submitBtn = search.globalSearchSubmitButton ? search.globalSearchSubmitButton : submitBtn;
@@ -48,6 +53,14 @@
   export function toggleSearch() {
     globalSearchHelper.toggleSearch(isSearchFieldVisible, displaySearchResult, inputElem, customSearchItemRendererSlot);
   }
+
+  function clearSearch() {
+    globalSearchHelper.clearSearchField(inputElem, displaySearchResult);
+  }
+
+  function submitSearch() {
+    globalSearchHelper.onSearchBtnClick(inputElem, displaySearchResult);
+  }
 </script>
 
 <svelte:window on:click={closeSearchResult} on:blur={closeSearchResult} />
@@ -55,6 +68,7 @@
   <div class="fd-popover">
     <div
       class="fd-popover__control luigi-search"
+      class:luigi-search--vega={isVegaStyle}
       on:click|stopPropagation={() => {}}
       aria-hidden={!isSearchFieldVisible}
       aria-haspopup="true"
@@ -83,6 +97,35 @@
             on:blur={(event) => event.target.parentNode.classList.remove('is-focus')}
             bind:this={inputElem}
           />
+        {/if}
+        {#if isVegaStyle}
+          <!-- cancel (X): hidden by FS via :placeholder-shown sibling rule until input has text -->
+          <div
+            class="fd-input-group__addon fd-shellbar__search-field-addon fd-shellbar__search-cancel fd-input-group__addon--button"
+          >
+            <button
+              class="fd-shellbar__button fd-button fd-button--transparent"
+              aria-label="Clear search"
+              on:click|stopPropagation={clearSearch}
+              tabindex="-1"
+              data-testid="luigi-search-cancel"
+            >
+              <i class="sap-icon sap-icon--decline" />
+            </button>
+          </div>
+          <!-- submit magnifier: inside the search-field pill -->
+          <div
+            class="fd-input-group__addon fd-shellbar__search-field-addon fd-shellbar__search-submit fd-input-group__addon--button"
+          >
+            <button
+              class="fd-shellbar__button fd-button fd-button--transparent"
+              aria-label={$getTranslation(submitBtn)}
+              on:click|stopPropagation={submitSearch}
+              data-testid="luigi-search-submit"
+            >
+              <i class="sap-icon sap-icon--search" />
+            </button>
+          </div>
         {/if}
         <div class="fd-shellbar__search-field-helper" />
       </div>
@@ -133,7 +176,10 @@
     </div>
   </div>
 </div>
-<div class="fd-shellbar__action fd-shellbar__action--desktop">
+<div
+  class="fd-shellbar__action fd-shellbar__action--desktop luigi-search-btn-toggle"
+  class:luigi-search-btn-toggle--hidden={isVegaStyle && isSearchFieldVisible}
+>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div role="presentation" on:click|stopPropagation={() => {}}>
@@ -158,19 +204,23 @@
     }
   }
 
-  .fd-popover:has(.luigi-search) {
+  .luigi-search-btn-toggle--hidden {
+    display: none;
+  }
+
+  .fd-popover:has(.luigi-search:not(.luigi-search--vega)) {
     margin-top: -1px;
     max-height: calc(var(--sapElement_LineHeight) - 2px);
+  }
+
+  .luigi-search:not(.luigi-search--vega) .luigi-search__input {
+    width: 184px;
   }
 
   .luigi-search {
     &[aria-hidden='true'] {
       visibility: hidden;
       width: 0;
-    }
-
-    &__input {
-      width: 184px;
     }
 
     &-popover__body {
