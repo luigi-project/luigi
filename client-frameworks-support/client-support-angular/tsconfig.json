@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
@@ -16,16 +15,15 @@
     "target": "ES2022",
     "module": "ES2022",
     "paths": {
-      "@angular/*": ["node_modules/@angular/*"],
+      "@angular/*": ["./node_modules/@angular/*"],
       "client-support-angular": [
-        "dist/client-support-angular/client-support-angular",
-        "dist/client-support-angular"
+        "./dist/client-support-angular/client-support-angular",
+        "./dist/client-support-angular"
       ]
     },
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true,

@@ -218,12 +218,6 @@
   }
 
   function onWindowBlur() {
-    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-      return;
-    }
-    if (document.hasFocus()) {
-      return;
-    }
     closeAllDropdowns();
   }
 
