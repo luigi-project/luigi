@@ -369,7 +369,7 @@ function updateOverlays() {
   // TODO: confirmation modal ...
 }
 
-function renderSearchResults(searchResultItems, onShowResultCallback) {
+function renderSearchResults(searchResultItems, searchQuery, onShowResultCallback) {
   const searchResult = document.querySelector('#searchresult-popover');
   const searchList = searchResult?.querySelector('.lui-search-results');
 
@@ -403,7 +403,6 @@ function renderSearchResults(searchResultItems, onShowResultCallback) {
     });
   } else {
     const searchItem = document.createElement('ui5-li');
-    const searchQuery = globalThis.Luigi.globalSearch().getSearchString() || '';
 
     searchItem.innerText = `No results found for query '${searchQuery}'`;
     searchList.setAttribute('selection-mode', 'None');
@@ -1176,8 +1175,8 @@ const connector = {
     });
   },
 
-  showSearchResult: (searchResultItems, onShowResultCallback) => {
-    renderSearchResults(searchResultItems, onShowResultCallback);
+  showSearchResult: (searchResultItems, searchQuery, onShowResultCallback) => {
+    renderSearchResults(searchResultItems, searchQuery, onShowResultCallback);
   },
 
   closeSearchResult: () => {

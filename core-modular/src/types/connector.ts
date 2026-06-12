@@ -89,7 +89,7 @@ export interface LuigiConnector {
 
   clearSearchField(): void;
 
-  showSearchResult(searchResultItems: SearchResultItem[], onShowCallback: (rendererSlot?: any) => void): void;
+  showSearchResult(searchResultItems: SearchResultItem[], searchQuery: string, onShowCallback: (rendererSlot?: any) => void): void;
 
   closeSearchResult(): void;
 

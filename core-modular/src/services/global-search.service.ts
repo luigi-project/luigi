@@ -25,7 +25,7 @@ export class GlobalSearchService {
 
   showSearchResult(searchResultItems: SearchResultItem[]): void {
     if (searchResultItems?.length) {
-      this.luigi.getEngine()._connector?.showSearchResult(searchResultItems, (rendererSlot?: any) => {
+      this.luigi.getEngine()._connector?.showSearchResult(searchResultItems, this.searchQuery, (rendererSlot?: any) => {
         if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
           GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
         } else {
