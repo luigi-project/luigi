@@ -27,7 +27,7 @@
     "@agentofuser/rehype-section": "1.0.5",
     "@luigi-project/client": "^2.29.0",
     "@luigi-project/core": "^2.29.0",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "hast-util-has-property": "3.0.0",
     "lodash.orderby": "4.18.0",
     "rehype-raw": "7.0.0",
