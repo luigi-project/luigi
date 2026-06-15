@@ -211,6 +211,13 @@ async function prepareRelease() {
 
       const changelogPath = './CHANGELOG.md';
 
+      const tagPattern = /^client-support-angular\/v[\d.]+$/;
+      if (!tagPattern.test(lastRelease.tag_name)) {
+        logError(`Unexpected tag format: ${lastRelease.tag_name}`);
+        rl.close();
+        return;
+      }
+
       const lastline = `\n[v${version}]: https://github.com/luigi-project/luigi/compare/${lastRelease.tag_name}...${TAG_PREFIX}${version}`;
 
       fs.readFileSync(changelogPath, 'utf8');
