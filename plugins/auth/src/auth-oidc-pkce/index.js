@@ -91,15 +91,12 @@ export default class openIdConnect {
       url_state: window.location.href
     };
 
+    authOnLogoutFn();
+
     return this.client
       .signoutRedirect(signoutData)
-      .then((req) => {
-        authOnLogoutFn();
-        window.location = req.url;
-      })
       .catch(function (err) {
         console.error('[OIDC] logout() Error', err);
-        authOnLogoutFn();
       });
   }
 
