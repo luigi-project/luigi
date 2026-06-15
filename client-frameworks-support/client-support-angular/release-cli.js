@@ -49,23 +49,35 @@ const getNpmPublishDate = async (version) => {
 };
 
 const listPullRequests = async (params) => {
-  const queryString = params ? new URLSearchParams(params).toString() : '';
+  let allPulls = [];
+  let page = 1;
+  const perPage = 100;
 
   try {
-    const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls?${queryString}`, {
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: 'application/vnd.github.v3+json'
-      },
-      method: 'GET'
-    });
+    while (true) {
+      const queryString = new URLSearchParams({ ...params, per_page: perPage, page }).toString();
+      const response = await fetch(`${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github.v3+json'
+        },
+        method: 'GET'
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      allPulls = allPulls.concat(data);
+
+      if (data.length < perPage) {
+        break;
+      }
+      page++;
     }
 
-    const data = await response.json();
-    return data;
+    return allPulls;
   } catch (error) {
     console.error('Fetch error:', error.message);
   }
