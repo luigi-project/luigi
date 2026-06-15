@@ -38,7 +38,7 @@
     "@types/jest": "29.5.14",
     "@types/node": "20.19.30",
     "angular-eslint": "22.0.0",
-    "esbuild": "0.27.5",
+    "esbuild": "0.28.1",
     "eslint": "9.39.2",
     "express": "4.22.2",
     "jest": "30.3.0",
