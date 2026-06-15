@@ -963,9 +963,10 @@ export class NavigationService {
 
     const normalizedPath = computedPath.replace(/\/\/+/g, '/');
     const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
-    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path;
+    const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
 
-    if (GenericHelpers.trimLeadingSlash(currentPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
+    if (GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
       return;
     }
 
