@@ -44,6 +44,11 @@ export class Navigation {
     splitViewSettings?: any,
     drawerSettings?: any
   ): Promise<void> => {
+    if (path === '/' && (modalSettings || drawerSettings)) {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
     const relativePath = path[0] !== '/';
     this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
@@ -93,6 +98,11 @@ export class Navigation {
   };
 
   openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+    if (path === '/') {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
     if (!modalSettings?.keepPrevious) {
       const closed = await this.modalService.closeModalsWithDirtyCheck();
       if (!closed) return;
@@ -115,6 +125,11 @@ export class Navigation {
   };
 
   openAsDrawer = async (path: string, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+    if (path === '/') {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
     const normalizedPath = path.replace(/\/\/+/g, '/');
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
     if (!redirectPath) return;
