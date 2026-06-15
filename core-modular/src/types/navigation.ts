@@ -313,6 +313,24 @@ export interface NavigationRequestEvent {
   detail: NavigationRequestBase;
 }
 
+export interface NavigationRequestDetail {
+  drawer: unknown;
+  link: string;
+  intent: boolean;
+  preserveView: string;
+  modal: unknown;
+  newTab: boolean;
+  withoutSync: boolean;
+  preventContextUpdate: boolean;
+  preventHistoryEntry: boolean;
+  fromVirtualTreeRoot: boolean;
+  fromContext: boolean;
+  fromClosestContext: boolean;
+  fromParent: boolean;
+  relative: boolean;
+  nodeParams: Record<string, string>;
+}
+
 /**
  * Configuration for compound web components in Luigi.
  * Compound allows you to layout multiple web components in one micro frontend.
