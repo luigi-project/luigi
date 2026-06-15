@@ -59,7 +59,7 @@
     "copy-webpack-plugin": "14.0.0",
     "cypress": "15.17.0",
     "cypress-plugin-tab": "1.0.5",
-    "esbuild": "0.27.7",
+    "esbuild": "0.28.1",
     "eslint": "9.39.4",
     "express": "4.22.1",
     "http-proxy-middleware": "2.0.9",
