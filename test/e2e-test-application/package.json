@@ -67,7 +67,7 @@
     "lodash": "4.18.1",
     "sass": "1.99.0",
     "serialize-javascript": "7.0.5",
-    "tar": "7.5.13",
+    "tar": "7.5.16",
     "ts-node": "3.2.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.53.0",
