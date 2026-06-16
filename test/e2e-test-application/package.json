@@ -77,7 +77,13 @@
   },
   "overrides": {
     "ip-address": "10.1.1",
-    "qs": "^6.15.2"
+    "qs": "^6.15.2",
+    "@angular/build": {
+      "esbuild": "$esbuild"
+    },
+    "vite": {
+      "esbuild": "$esbuild"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
