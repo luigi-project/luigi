@@ -92,6 +92,7 @@ export interface LuigiConnector {
   showSearchResult(
     searchResultItems: SearchResultItem[],
     searchQuery: string,
+    isCentered: boolean,
     onShowCallback: (rendererSlot?: any) => void
   ): void;
 

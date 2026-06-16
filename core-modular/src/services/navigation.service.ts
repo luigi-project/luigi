@@ -536,6 +536,10 @@ export class NavigationService {
       globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(this.luigi);
     }
 
+    if (globalSearchConfig?.searchFieldCentered) {
+      globalSearchConfig.searchFieldCentered = !!this.luigi.getConfigValue('settings.experimental.globalSearchCentered');
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       globalSearchConfig,

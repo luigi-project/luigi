@@ -8,13 +8,14 @@ export const GlobalSearchHelpers = {
     searchResultItems: SearchResultItem[],
     rendererSlot: any
   ): void {
-    if (!searchProvider.customSearchResultRenderer) {
+    if (!searchProvider?.customSearchResultRenderer) {
       return;
     }
 
     const searchApiObj = {
+      customSearchResultItemRenderer: searchProvider?.customSearchResultItemRenderer,
       fireItemSelected: (item: any) => {
-        if (searchProvider.onSearchResultItemSelected) {
+        if (searchProvider?.onSearchResultItemSelected && typeof searchProvider.onSearchResultItemSelected === 'function') {
           searchProvider.onSearchResultItemSelected(item);
         }
       }

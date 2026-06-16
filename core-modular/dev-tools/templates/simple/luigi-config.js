@@ -375,6 +375,9 @@ window.onload = () => {
     },
     settings: {
       responsiveNavigation: 'Fiori3',
+      experimental: {
+        globalSearchCentered: false
+      },
       header: {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
@@ -443,8 +446,58 @@ window.onload = () => {
 
     globalSearch: {
       searchProvider: {
-        customSearchResultItemRenderer: undefined,
-        customSearchResultRenderer: undefined,
+        /*
+        customSearchResultItemRenderer: (itemData, searchApiObj) => {
+          const searchItem = document.createElement('li');
+
+          searchItem.innerHTML = `
+            <b>${itemData.label}</b><br>
+            ${itemData.description}
+          `;
+
+          if (searchApiObj?.fireItemSelected) {
+            searchItem.addEventListener('click', (event) => {
+              searchApiObj.fireItemSelected(itemData?.pathObject);
+            });
+          }
+
+          return searchItem;
+        },
+        customSearchResultRenderer: (searchResultItems, rendererSlot, searchApiObj) => {
+          console.log('searchProvider - customSearchResultRenderer');
+          if (!rendererSlot) {
+            console.warn('There is no renderer slot for search results')
+            return;
+          }
+
+          const searchList = document.createElement('ol');
+
+          if (searchResultItems?.length) {
+            searchResultItems.forEach((itemData) => {
+              let searchItem;
+
+              if (searchApiObj.customSearchResultItemRenderer) {
+                searchItem = searchApiObj.customSearchResultItemRenderer(itemData, searchApiObj);
+              } else {
+                searchItem = document.createElement('li');
+                searchItem.innerText = `${itemData.label}`;
+              }
+
+              searchItem.setAttribute('tabindex', '0');
+              searchList.appendChild(searchItem);
+            });
+          } else {
+            const searchItem = document.createElement('li');
+
+            searchItem.innerText = `No results found for search query`;
+            searchList.appendChild(searchItem);
+          }
+
+          rendererSlot.appendChild(searchList);
+        },
+        */
+        disableInputHandlers: false,
+        searchFieldCentered: false,
         inputPlaceholder: 'Type some text to search...',
         onEnter: () => {
           console.log('searchProvider - onEnter');
@@ -461,43 +514,43 @@ window.onload = () => {
             searchResult = [];
             Luigi.globalSearch().closeSearchResult();
           } else {
-            searchResult = [
-              {
-                pathObject: {
-                  link: '/home2/c1',
-                  params: {}
-                },
-                label: 'Search item A',
-                description: 'Some AAA description'
-                // onActivate() {
-                //   Luigi.globalSearch().closeSearchResult();
-                // }
+            searchResult = [{
+              pathObject: {
+                link: '/home2/c1',
+                params: {}
               },
-              {
-                pathObject: {
-                  link: '/home2/c2',
-                  params: {}
-                },
-                label: 'Search item B',
-                description: 'Some BBB description'
-                // onActivate() {
-                //   Luigi.globalSearch().closeSearchResult();
-                // }
+              label: 'Search item A',
+              description: 'Some AAA description',
+              // onActivate() {
+              //   Luigi.globalSearch().closeSearchResult();
+              // }
+            },
+            {
+              pathObject: {
+                link: '/home2/c2',
+                params: {}
               },
-              {
-                pathObject: {
-                  externalLink: {
-                    url: 'https://docs.luigi-project.io/docs/getting-started',
-                    sameWindow: false
-                  }
-                },
-                label: 'Search item C',
-                description: 'Some CCC description'
-              }
-            ];
+              label: 'Search item B',
+              description: 'Some BBB description',
+              // onActivate() {
+              //   Luigi.globalSearch().closeSearchResult();
+              // }
+            },{
+              pathObject: {
+                externalLink: {
+                  url: 'https://docs.luigi-project.io/docs/getting-started',
+                  sameWindow: false
+                }
+              },
+              label: 'Search item C',
+              description: 'Some CCC description'
+            }];
 
             Luigi.globalSearch().showSearchResult(searchResult?.length ? searchResult : []);
           }
+        },
+        onSearchBtnClick: () => {
+          console.log('searchProvider - onSearchBtnClick');
         },
         onSearchResultItemSelected: (pathData) => {
           console.log('searchProvider - onSearchResultItemSelected');

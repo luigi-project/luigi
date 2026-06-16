@@ -74,6 +74,12 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
+#searchresult-popover ol > li,
+.lui-search-results ui5-li {
+    position: relative;
+}
+
+#searchresult-popover ol > li.is-focused:after,
 .lui-search-results ui5-li.is-focused::part(native-li):after {
     border: 1.6px solid var(--sapContent_FocusColor, #0032a5);
     content: '';
