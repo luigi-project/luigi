@@ -29,14 +29,16 @@ export class GlobalSearchService {
       this.luigi.getConfigValue('settings.experimental.globalSearchCentered');
 
     if (searchResultItems?.length) {
-      this.luigi.getEngine()._connector?.showSearchResult(searchResultItems, this.searchQuery, !!isCentered, (rendererSlot?: any) => {
-        if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
-          GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
-        } else {
-          this.isSearchResultVisible = true;
-          this.searchResult = searchResultItems;
-        }
-      });
+      this.luigi
+        .getEngine()
+        ._connector?.showSearchResult(searchResultItems, this.searchQuery, !!isCentered, (rendererSlot?: any) => {
+          if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
+            GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
+          } else {
+            this.isSearchResultVisible = true;
+            this.searchResult = searchResultItems;
+          }
+        });
     } else {
       console.warn('Search result array is empty.');
     }

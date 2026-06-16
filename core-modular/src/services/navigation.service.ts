@@ -537,7 +537,9 @@ export class NavigationService {
     }
 
     if (globalSearchConfig?.searchFieldCentered) {
-      globalSearchConfig.searchFieldCentered = !!this.luigi.getConfigValue('settings.experimental.globalSearchCentered');
+      globalSearchConfig.searchFieldCentered = !!this.luigi.getConfigValue(
+        'settings.experimental.globalSearchCentered'
+      );
     }
 
     return {

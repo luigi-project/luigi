@@ -497,8 +497,7 @@ const connector = {
         const searchConfig = topNavData.globalSearchConfig;
         const searchInput = document.createElement('ui5-input');
         const isCustomSearchRenderer =
-          searchConfig.customSearchResultRenderer &&
-          typeof searchConfig.customSearchResultRenderer === 'function';
+          searchConfig.customSearchResultRenderer && typeof searchConfig.customSearchResultRenderer === 'function';
         let currentResultItem;
 
         searchInput.classList.add('lui-search-field');
@@ -603,17 +602,19 @@ const connector = {
               currentResultItem = 'first';
               firstItem?.classList?.add('is-focused');
               firstItem?.setAttribute('aria-selected', true);
-              setTimeout(() => {firstItem?.shadowRoot?.children[0]?.focus()}, 1);
+              setTimeout(() => {
+                firstItem?.shadowRoot?.children[0]?.focus();
+              }, 1);
             }
           } else {
             console.warn('GlobalSearch is not available.');
           }
         });
 
-        const debounceFn = function(fn, delay) {
+        const debounceFn = function (fn, delay) {
           let inputTimer;
 
-          return function(...args) {
+          return function (...args) {
             clearTimeout(inputTimer);
             inputTimer = setTimeout(() => {
               fn.apply(this, args);
@@ -621,20 +622,25 @@ const connector = {
           };
         };
 
-        searchInput.addEventListener('input', debounceFn(() => {
-          if (searchConfig && !searchConfig.disableInputHandlers) {
-            const searchQuery = searchInput.value.trim() || '';
+        searchInput.addEventListener(
+          'input',
+          debounceFn(() => {
+            if (searchConfig && !searchConfig.disableInputHandlers) {
+              const searchQuery = searchInput.value.trim() || '';
 
-            if (searchQuery?.length && typeof searchConfig.onInput === 'function') {
-              globalThis.Luigi.globalSearch().setSearchString(searchQuery);
-              setTimeout(() => {searchInput.focus()}, 1);
+              if (searchQuery?.length && typeof searchConfig.onInput === 'function') {
+                globalThis.Luigi.globalSearch().setSearchString(searchQuery);
+                setTimeout(() => {
+                  searchInput.focus();
+                }, 1);
+              } else {
+                globalThis.Luigi.globalSearch().closeSearchResult();
+              }
             } else {
-              globalThis.Luigi.globalSearch().closeSearchResult();
+              console.warn('GlobalSearch is not available.');
             }
-          } else {
-            console.warn('GlobalSearch is not available.');
-          }
-        }, 400));
+          }, 400)
+        );
       }
 
       if (topNavData.profile) {

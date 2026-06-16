@@ -15,7 +15,10 @@ export const GlobalSearchHelpers = {
     const searchApiObj = {
       customSearchResultItemRenderer: searchProvider?.customSearchResultItemRenderer,
       fireItemSelected: (item: any) => {
-        if (searchProvider?.onSearchResultItemSelected && typeof searchProvider.onSearchResultItemSelected === 'function') {
+        if (
+          searchProvider?.onSearchResultItemSelected &&
+          typeof searchProvider.onSearchResultItemSelected === 'function'
+        ) {
           searchProvider.onSearchResultItemSelected(item);
         }
       }
