@@ -1,6 +1,31 @@
 import { UserManager, WebStorageStateStore, InMemoryWebStorage } from 'oidc-client-ts';
 import { Helpers } from '../helpers';
 
+const DEPRECATED_KEYS = {
+  accessTokenExpiringNotificationTime: 'accessTokenExpiringNotificationTimeInSeconds',
+  silentRequestTimeout: 'silentRequestTimeoutInSeconds',
+  checkSessionInterval: 'checkSessionIntervalInSeconds',
+  revokeAccessTokenOnSignout: 'revokeTokensOnSignout',
+  clockSkew: 'clockSkewInSeconds',
+  staleStateAge: 'staleStateAgeInSeconds'
+};
+
+function applyDeprecationShim(settings) {
+  const patched = { ...settings };
+  for (const [oldKey, newKey] of Object.entries(DEPRECATED_KEYS)) {
+    if (oldKey in patched) {
+      if (!(newKey in patched)) {
+        patched[newKey] = patched[oldKey];
+        console.warn(
+          `[OIDC] Setting "${oldKey}" has been renamed to "${newKey}". Please update your configuration. The old key will be removed in a future release.`
+        );
+      }
+      delete patched[oldKey];
+    }
+  }
+  return patched;
+}
+
 export default class openIdConnect {
   constructor(settings = {}) {
     const defaultSettings = {
@@ -14,7 +39,7 @@ export default class openIdConnect {
       silent_redirect_uri: window.location.origin + '/assets/auth-oidc-pkce/silent-callback.html'
     };
 
-    const mergedSettings = Helpers.deepMerge(defaultSettings, settings);
+    const mergedSettings = Helpers.deepMerge(defaultSettings, applyDeprecationShim(settings));
 
     // Prepend current url to redirect_uri, if it is a relative path
     ['redirect_uri', 'post_logout_redirect_uri'].forEach((key) => {
