@@ -375,6 +375,9 @@ window.onload = () => {
     },
     settings: {
       responsiveNavigation: 'Fiori3',
+      experimental: {
+        globalSearchCentered: false
+      },
       header: {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
@@ -443,8 +446,58 @@ window.onload = () => {
 
     globalSearch: {
       searchProvider: {
-        customSearchResultItemRenderer: undefined,
-        customSearchResultRenderer: undefined,
+        /*
+        customSearchResultItemRenderer: (itemData, searchApiObj) => {
+          const searchItem = document.createElement('li');
+
+          searchItem.innerHTML = `
+            <b>${itemData.label}</b><br>
+            ${itemData.description}
+          `;
+
+          if (searchApiObj?.fireItemSelected) {
+            searchItem.addEventListener('click', (event) => {
+              searchApiObj.fireItemSelected(itemData?.pathObject);
+            });
+          }
+
+          return searchItem;
+        },
+        customSearchResultRenderer: (searchResultItems, rendererSlot, searchApiObj) => {
+          console.log('searchProvider - customSearchResultRenderer');
+          if (!rendererSlot) {
+            console.warn('There is no renderer slot for search results')
+            return;
+          }
+
+          const searchList = document.createElement('ol');
+
+          if (searchResultItems?.length) {
+            searchResultItems.forEach((itemData) => {
+              let searchItem;
+
+              if (searchApiObj.customSearchResultItemRenderer) {
+                searchItem = searchApiObj.customSearchResultItemRenderer(itemData, searchApiObj);
+              } else {
+                searchItem = document.createElement('li');
+                searchItem.innerText = `${itemData.label}`;
+              }
+
+              searchItem.setAttribute('tabindex', '0');
+              searchList.appendChild(searchItem);
+            });
+          } else {
+            const searchItem = document.createElement('li');
+
+            searchItem.innerText = `No results found for search query`;
+            searchList.appendChild(searchItem);
+          }
+
+          rendererSlot.appendChild(searchList);
+        },
+        */
+        disableInputHandlers: false,
+        searchFieldCentered: false,
         inputPlaceholder: 'Type some text to search...',
         onEnter: () => {
           console.log('searchProvider - onEnter');
@@ -498,6 +551,9 @@ window.onload = () => {
 
             Luigi.globalSearch().showSearchResult(searchResult?.length ? searchResult : []);
           }
+        },
+        onSearchBtnClick: () => {
+          console.log('searchProvider - onSearchBtnClick');
         },
         onSearchResultItemSelected: (pathData) => {
           console.log('searchProvider - onSearchResultItemSelected');
