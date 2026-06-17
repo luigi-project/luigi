@@ -23,12 +23,12 @@ const renderer = new marked.Renderer();
 const slugger = new Map();
 function makeSlug(text) {
   // Match marked v4 / GitHub-flavored-markdown slugify rules:
-  //   lowercase, drop HTML tags + entities, replace non-word chars with '-',
+  //   lowercase, drop HTML-ish delimiters + entities, replace non-word chars with '-',
   //   collapse, strip leading/trailing '-'
   const base = text
     .toLowerCase()
-    .replace(/<[^>]*>/g, '') // strip HTML tags
-    .replace(/&[a-z]+;|&#x?[0-9a-f]+;/gi, '') // strip HTML entities (e.g. &#39;)
+    .replace(/[<>]/g, '') // strip HTML tag delimiters safely (single-char sanitization)
+    .replace(/[&;]/g, '') // strip entity delimiters safely (single-char sanitization)
     .replace(/[^\w\s-]/g, '') // drop punctuation
     .trim()
     .replace(/\s+/g, '-');
