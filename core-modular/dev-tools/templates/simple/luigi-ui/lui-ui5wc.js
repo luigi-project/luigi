@@ -256,7 +256,7 @@ function renderProfilePopover(profileObj, avatar) {
     profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
-     profileObj.settings.openUserSettings();
+      profileObj.settings.openUserSettings();
     });
 
     profileList.appendChild(profileLi);
@@ -1215,7 +1215,11 @@ const connector = {
 
     function renderSettingControl(groupKey, settingKey, settingDef, currentValue) {
       const container = document.createDocumentFragment();
-      const labelEl = el('ui5-label', { for: `us-${groupKey}-${settingKey}`, 'show-colon': true }, settingDef.label || settingKey);
+      const labelEl = el(
+        'ui5-label',
+        { for: `us-${groupKey}-${settingKey}`, 'show-colon': true },
+        settingDef.label || settingKey
+      );
       container.appendChild(labelEl);
 
       if (settingDef.type === 'enum' && settingDef.options) {
@@ -1301,10 +1305,14 @@ const connector = {
     }
 
     // Assemble dialog
-    const dialog = el('ui5-user-settings-dialog', {
-      id: 'luigi-user-settings',
-      'header-text': settings?.dialogHeader || 'Settings'
-    }, settingsItems);
+    const dialog = el(
+      'ui5-user-settings-dialog',
+      {
+        id: 'luigi-user-settings',
+        'header-text': settings?.dialogHeader || 'Settings'
+      },
+      settingsItems
+    );
 
     dialog.addEventListener('close', async () => {
       settings.onCloseCallback(storedUserSettings, previousUserSettings);

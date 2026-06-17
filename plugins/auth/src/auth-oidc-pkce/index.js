@@ -93,11 +93,9 @@ export default class openIdConnect {
 
     authOnLogoutFn();
 
-    return this.client
-      .signoutRedirect(signoutData)
-      .catch(function (err) {
-        console.error('[OIDC] logout() Error', err);
-      });
+    return this.client.signoutRedirect(signoutData).catch(function (err) {
+      console.error('[OIDC] logout() Error', err);
+    });
   }
 
   setTokenExpirationAction() {
