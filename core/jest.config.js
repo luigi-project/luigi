@@ -10,7 +10,7 @@ const config = {
   transform: {
     '\\.[jt]sx?$': 'babel-jest'
   },
-  transformIgnorePatterns: ['/node_modules/(?!(svelte)/)'],
+  transformIgnorePatterns: ['/node_modules/(?!(svelte|esm-env)/)'],
   verbose: true
 };
 

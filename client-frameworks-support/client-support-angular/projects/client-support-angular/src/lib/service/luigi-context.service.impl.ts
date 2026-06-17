@@ -14,6 +14,11 @@ export class LuigiContextServiceImpl implements LuigiContextService {
   private currentContext!: IContextMessage;
   private ngZone = inject(NgZone);
 
+  /**
+   * Get a signal that emits when context is set.
+   */
+  public contextSignal: Signal<IContextMessage | undefined> = this.signalContext.asReadonly();
+
   constructor() {
     addInitListener((initContext: Context) => {
       this.addListener(ILuigiContextTypes.INIT, initContext);
@@ -28,13 +33,6 @@ export class LuigiContextServiceImpl implements LuigiContextService {
       contextType,
       context
     } as IContextMessage);
-  }
-
-  /**
-   * Get a signal that emits when context is set.
-   */
-  public contextSignal(): Signal<IContextMessage | undefined> {
-    return this.signalContext.asReadonly();
   }
 
   /**

@@ -25,7 +25,7 @@ const onwarn = (warning, warn) => {
   if (warning.code === 'CIRCULAR_DEPENDENCY') return;
 
   // Suppress Svelte unused CSS warnings
-  if (warning.code === 'css-unused-selector') return;
+  if (warning.code === 'css-unused-selector' || warning.code === 'css_unused_selector') return;
 
   // Let everything else through
   warn(warning);
@@ -159,8 +159,8 @@ export default [
         },
         emitCss: true,
         onwarn: (warning, handler) => {
-          // Suppress unused CSS selector warnings
-          if (warning.code === 'css-unused-selector') return;
+          if (warning.code === 'css-unused-selector' || warning.code === 'css_unused_selector') return;
+          if (warning.code === 'element_invalid_self_closing_tag') return;
           handler(warning);
         },
         preprocess: autoPreprocess({

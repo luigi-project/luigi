@@ -206,8 +206,19 @@ Cypress.Commands.add('getIframeBody', (getIframeOpts = {}, index = 0, containerS
 });
 
 Cypress.Commands.add('waitForLuigiHandshake', (containerSelector = '.iframeContainer') => {
-  cy.get(`${containerSelector} iframe`).should(($f) => {
-    expect($f[0].luigi?.initOk, 'iframe handshake complete').to.be.true;
+  // Resolve the container first, then check whichever child it contains:
+  // - iframe MFE: wait for the postMessage handshake (`iframe.luigi.initOk`).
+  // - web-component MFE: wait for a `<luigi-wc-*>` custom element inside the
+  //   `.wcContainer`. WC MFEs have no postMessage handshake — once the custom
+  //   element is in the DOM and upgraded, it's ready.
+  cy.get(containerSelector).should(($container) => {
+    const iframe = $container.find('iframe')[0];
+    if (iframe) {
+      expect(iframe.luigi?.initOk, 'iframe handshake complete').to.be.true;
+      return;
+    }
+    const wc = $container.find('.wcContainer > [lui_web_component="true"]')[0];
+    expect(wc, 'web component MFE rendered').to.exist;
   });
 });
 

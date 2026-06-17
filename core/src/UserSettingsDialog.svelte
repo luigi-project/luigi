@@ -523,20 +523,11 @@
     align-items: center;
   }
 
-  #app:not(.vega) .lui-usersettings-left-nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--left-fd-side-nav-width);
-    height: 100%;
-    z-index: 2;
-  }
-
-  #app.vega .lui-usersettings-left-nav .fd-list__avatar {
+  :global(#app.vega) .lui-usersettings-left-nav .fd-list__avatar {
     position: relative;
   }
 
-  #app.vega .lui-usersettings-left-nav .fd-list__avatar:not(:has(.fd-avatar)) .fd-list__icon {
+  :global(#app.vega) .lui-usersettings-left-nav .fd-list__avatar:not(:has(.fd-avatar)) .fd-list__icon {
     padding-left: 5px;
   }
 
@@ -599,16 +590,10 @@
     border-bottom: 1px solid var(--sapList_GroupHeaderBorderColor, #d9d9d9);
   }
 
-  #app:not(.vega) .fd-settings .fd-settings__header {
+  :global(#app:not(.vega) .fd-settings) .fd-settings__header {
     --fdBar_Padding_Bottom: 0.25rem;
     --fdSettings_Header_Margin_Top: 0.5px;
     --fdBar_Height: 3rem;
-  }
-
-  /*customization of FD Styles to align with Fiori 3*/
-  #app:not(.vega) h5.fd-title {
-    font-size: var(--sapFontHeader3Size, 20px);
-    color: var(--sapGroup_TitleTextColor);
   }
 
   .fd-side-nav__group-header {
@@ -633,7 +618,7 @@
     background-color: var(--fdAvatar_BackgroundColor, var(--sapAccentColor6, #286eb4));
   }
 
-  #app.vega .lui-usersettings-left-nav .lui-profile-initials {
+  :global(#app.vega) .lui-usersettings-left-nav .lui-profile-initials {
     left: 0;
   }
 

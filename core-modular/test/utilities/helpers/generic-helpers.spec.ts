@@ -68,6 +68,14 @@ describe('Generic-helpers', () => {
     expect(GenericHelpers.addLeadingSlash('luigi')).toEqual('/luigi');
   });
 
+  it('addTrailingSlash', () => {
+    expect(GenericHelpers.addTrailingSlash('luigi')).toEqual('luigi/');
+  });
+
+  it('normalizePath', () => {
+    expect(GenericHelpers.normalizePath('luigi')).toEqual('/luigi/');
+  });
+
   it('getNodeList', () => {
     expect(GenericHelpers.getNodeList('body').length).toEqual(1);
     expect(GenericHelpers.getNodeList('luigi-container').length).toEqual(0);

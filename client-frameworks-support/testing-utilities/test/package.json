@@ -15,11 +15,10 @@
   },
   "devDependencies": {
     "cross-spawn": "7.0.6",
-    "cypress": "15.14.2",
+    "cypress": "15.17.0",
     "live-server": "1.2.2"
   },
   "overrides": {
-    "@cypress/request": "4.0.0",
     "qs": "^6.15.2"
   }
 }

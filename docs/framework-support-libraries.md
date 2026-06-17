@@ -42,7 +42,7 @@ npm install @luigi-project/client-support-angular -s
 
 ```javascript
 providers: [
-  importProvidersFrom(LuigiAngularSupportModule)
+  provideLuigiAngular()
 ]
 ```
 
@@ -86,7 +86,7 @@ constructor(private luigiContextService: LuigiContextService) {
 
   // check context data via Signal
   effect(() => {
-    const data: IContextMessage = luigiContextService.contextSignal()();
+    const data: IContextMessage = luigiContextService.contextSignal();
 
     if (data) {
       this.contextSignal.set(data.context || {});

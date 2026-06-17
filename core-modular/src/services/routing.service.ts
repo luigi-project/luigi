@@ -107,11 +107,11 @@ export class RoutingService {
 
     try {
       if (this.dirtyStatusService?.shouldShowUnsavedChangesModal()) {
-        const newUrl = window.location.href;
         const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
         if (oldUrl) {
           history.pushState((window as any).state, '', oldUrl);
         }
+        return;
       }
     } catch (e) {
       return;

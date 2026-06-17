@@ -473,6 +473,180 @@ describe('JS-TEST-APP', () => {
       });
     });
 
+    describe('Vega profile menu with grouped items', () => {
+      let newConfig;
+
+      beforeEach(() => {
+        // Vega tests run after the "With Auth" block which leaves authentication state in
+        // storage. Without clearing it, AuthorizationVegaProfileMenu.svelte sees auth as
+        // still enabled, skips setProfileUserData(), and the staticUserInfoFn data never
+        // populates — causing tests after the first Vega test to flake intermittently.
+        cy.clearLocalStorage();
+        cy.clearAllSessionStorage();
+        cy.clearCookies();
+        newConfig = structuredClone(defaultLuigiConfig);
+        newConfig.auth = undefined;
+        // Swap iframe MFEs for web-component MFEs in the routes these specs visit.
+        // Iframe insertion fires window-blur on the parent (focus moves into the
+        // iframe content window), and TopNav's blur handler closes all dropdowns
+        // — racing the spec's click-on-profile-button and intermittently closing
+        // the popover before assertions run. WC MFEs render in the same window,
+        // so no blur fires.
+        const homeNode = newConfig.navigation.nodes.find((n) => n.pathSegment === 'home');
+        homeNode.viewUrl = '/examples/microfrontends/helloWorldWC.js';
+        homeNode.webcomponent = true;
+        homeNode.children = homeNode.children.map((child) => ({
+          ...child,
+          viewUrl: '/examples/microfrontends/helloWorldWC.js',
+          webcomponent: true
+        }));
+        newConfig.settings.profileType = 'vega';
+        newConfig.navigation.profile = {
+          logout: {
+            label: 'Sign Out',
+            icon: 'log'
+          },
+          staticUserInfoFn: () => ({
+            name: 'Test User',
+            initials: 'TU',
+            email: 'test@example.com'
+          }),
+          items: [
+            {
+              label: 'Account Settings',
+              icon: 'account',
+              testId: 'profile-group-account',
+              children: [
+                { label: 'Profile', icon: 'person-placeholder', link: '/home/one', testId: 'profile-child-profile' },
+                { label: 'Privacy', icon: 'locked', link: '/home/two', testId: 'profile-child-privacy' }
+              ]
+            },
+            { label: 'About', icon: 'hint', link: '/home/one', testId: 'profile-flat-about' }
+          ]
+        };
+      });
+
+      it('Should render group items with submenu arrow', () => {
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-group-account"]').should('exist');
+        cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
+      });
+
+      it('Should render flat items without submenu arrow', () => {
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
+      });
+
+      it('Should expand group on click and show children', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
+        // so the element Cypress validated may have been replaced by the time .click()
+        // fires. Re-querying with a fresh cy.get() lets Cypress retry against the latest
+        // DOM node.
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        cy.get('[data-testid="profile-child-privacy"]').should('exist');
+      });
+
+      it('Should collapse group on second click', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
+
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get(sublist).should('be.visible');
+        cy.get('[data-testid="profile-child-profile"]').should('be.visible');
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
+
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+
+        cy.get(sublist).should('not.exist');
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
+
+      it('Should navigate when clicking a child item', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-privacy"]').click();
+        cy.expectPathToBe('/home/two');
+      });
+
+      it('Should close submenu when clicking elsewhere in the menu', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        cy.get('.fd-user-menu__header').click();
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
+
+      it('Should reset submenu state when profile menu is reopened', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        // Close profile menu
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
+        // Reopen
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
+    });
+
     describe('With Auth', () => {
       let newConfig;
 
@@ -635,166 +809,6 @@ describe('JS-TEST-APP', () => {
         cy.get('[data-testid="settings-link"]').should('not.exist');
       });
     });
-
-    describe('Vega profile menu with grouped items', () => {
-      let newConfig;
-
-      beforeEach(() => {
-        // Vega tests run after the "With Auth" block which leaves authentication state in
-        // storage. Without clearing it, AuthorizationVegaProfileMenu.svelte sees auth as
-        // still enabled, skips setProfileUserData(), and the staticUserInfoFn data never
-        // populates — causing tests after the first Vega test to flake intermittently.
-        cy.clearLocalStorage();
-        cy.clearAllSessionStorage();
-        cy.clearCookies();
-        newConfig = structuredClone(defaultLuigiConfig);
-        newConfig.auth = undefined;
-        newConfig.settings.profileType = 'vega';
-        newConfig.navigation.profile = {
-          logout: {
-            label: 'Sign Out',
-            icon: 'log'
-          },
-          staticUserInfoFn: () => ({
-            name: 'Test User',
-            initials: 'TU',
-            email: 'test@example.com'
-          }),
-          items: [
-            {
-              label: 'Account Settings',
-              icon: 'account',
-              testId: 'profile-group-account',
-              children: [
-                { label: 'Profile', icon: 'person-placeholder', link: '/home/one', testId: 'profile-child-profile' },
-                { label: 'Privacy', icon: 'locked', link: '/home/two', testId: 'profile-child-privacy' }
-              ]
-            },
-            { label: 'About', icon: 'hint', link: '/home/one', testId: 'profile-flat-about' }
-          ]
-        };
-      });
-
-      it('Should render group items with submenu arrow', () => {
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-group-account"]').should('exist');
-        cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
-      });
-
-      it('Should render flat items without submenu arrow', () => {
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
-      });
-
-      it('Should expand group on click and show children', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
-        // so the element Cypress validated may have been replaced by the time .click()
-        // fires. Re-querying with a fresh cy.get() lets Cypress retry against the latest
-        // DOM node.
-        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').should('exist');
-        cy.get('[data-testid="profile-child-privacy"]').should('exist');
-      });
-
-      it('Should collapse group on second click', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
-
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-
-        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get(sublist).should('be.visible');
-        cy.get('[data-testid="profile-child-profile"]').should('be.visible');
-        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
-
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-
-        cy.get(sublist).should('not.exist');
-        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
-      });
-
-      it('Should navigate when clicking a child item', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/two', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').click();
-        cy.expectPathToBe('/home/one');
-      });
-
-      it('Should close submenu when clicking elsewhere in the menu', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').should('exist');
-        cy.get('.fd-user-menu__header').click();
-        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
-      });
-
-      it('Should reset submenu state when profile menu is reopened', () => {
-        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
-        cy.visitTestApp('/home/one', newConfig);
-        cy.waitForLuigiHandshake();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
-        cy.get('[data-testid="profile-flat-about"]').should('exist');
-        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
-        cy.get(groupHeader).click();
-        cy.waitForLuigiSettled();
-        cy.get('[data-testid="profile-child-profile"]').should('exist');
-        // Close profile menu
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
-        // Reopen
-        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
-        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
-      });
-    });
   });
 
   describe('First topNav node has no viewURL and empty children', () => {
@@ -903,6 +917,64 @@ describe('JS-TEST-APP', () => {
       )
         .shadow()
         .contains('/wc/test');
+    });
+
+    describe('Collapsed category highlights when child is selected (#5172)', () => {
+      let newConfig;
+
+      beforeEach(() => {
+        newConfig = structuredClone(defaultLuigiConfig);
+        // Mark the parent of 'Section one' as a collapsible category so that
+        // 'Section one' (nodes[0].children[0]) lives inside the collapsible group.
+        newConfig.navigation.nodes[0].children[0].category = {
+          label: 'Test Category 5172',
+          collapsible: true
+        };
+        newConfig.tag = 'leftnav-collapsed-cat-highlight-5172';
+      });
+
+      it('adds is-selected to a collapsed category when one of its children is the active node', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        // Sanity: the category is rendered, collapsed, and not (yet) marked selected.
+        cy.get('.lui-collapsible-item').as('cat');
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('not.have.class', 'is-selected');
+
+        // Navigate to the leaf inside the collapsed category.
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // The category is still collapsed and now carries is-selected on its category link
+        // (the first descendant fd-nested-list__link).
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('have.class', 'is-selected');
+      });
+
+      it('removes is-selected from the category and gives it to the leaf when expanded', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // Pre-condition: collapsed and the category link is marked.
+        cy.get('.lui-collapsible-item').should('not.have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('have.class', 'is-selected');
+
+        // Expand the category by clicking its expand button.
+        cy.get('.lui-collapsible-item button').click();
+
+        // Category itself is no longer marked; the active leaf inside it is.
+        cy.get('.lui-collapsible-item').should('have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('not.have.class', 'is-selected');
+        cy.get('.lui-collapsible-item .fd-nested-list--text-only .fd-nested-list__link.is-selected').should('exist');
+      });
     });
   });
 });

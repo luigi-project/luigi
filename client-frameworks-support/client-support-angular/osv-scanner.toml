@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-gv7w-rqvm-qjhr"
+reason = "esbuild is a transitive build-time dependency only (nested under Vite); not shipped in the published @luigi-project/client-support-angular package. CVE requires Deno + malicious NPM_CONFIG_REGISTRY, neither of which apply to our Node-based build. Will revisit when @angular/build moves to Vite 8."

@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
-import type { AppSwitcher, Node, PathData, TitleResolver } from '../../types/navigation';
+import type { AppSwitcher, ExternalLink, Node, PathData, TitleResolver } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
 import { GenericHelpers } from './generic-helpers';
 import { RoutingHelpers } from './routing-helpers';
@@ -295,5 +295,21 @@ export const NavigationHelpers = {
       label: label || resolver.fallbackTitle,
       icon: this.getPropertyChainValue(data, resolver.iconPropertyChain, resolver.fallbackIcon)
     };
+  },
+
+  openExternalLink(externalLink: ExternalLink, pathParams?: Record<string, any>): void {
+    let url = externalLink.url!;
+    if (pathParams) {
+      url = GenericHelpers.replaceVars(url, pathParams, ':', false);
+    }
+    if (externalLink.sameWindow) {
+      window.location.href = url;
+    } else {
+      const newWindow = window.open(url, '_blank', 'noopener noreferrer');
+      if (newWindow) {
+        newWindow.opener = null;
+        newWindow.focus();
+      }
+    }
   }
 };

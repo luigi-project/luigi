@@ -218,12 +218,6 @@
   }
 
   function onWindowBlur() {
-    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-      return;
-    }
-    if (document.hasFocus()) {
-      return;
-    }
     closeAllDropdowns();
   }
 
@@ -769,10 +763,6 @@
   /*Remove Safari bug with blue outlines of dropdowns in the shellbar*/
   .fd-shellbar:focus {
     outline: none;
-  }
-
-  #app:not(.vega) .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
-    padding: 0 0.5rem;
   }
 
   .fd-shellbar {

@@ -109,6 +109,13 @@ export declare interface UxManager {
   getDirtyStatus: () => boolean;
 
   /**
+   * Sets the dirty status, which indicates that there are unsaved changes.
+   * @param {boolean} isDirty - indicates if there are any unsaved changes
+   * @memberof uxManager
+   */
+  setDirtyStatus: (isDirty: boolean) => void;
+
+  /**
    * Removes the backdrop.
    * @memberof uxManager
    */

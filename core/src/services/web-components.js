@@ -115,6 +115,13 @@ class WebComponentSvcClass {
                   location: GenericHelpers.calcMFELocation(wc)
                 });
               };
+            } else if (prop === 'setDirtyStatus') {
+              return (isDirty) => {
+                window.postMessage({
+                  msg: 'luigi.set-page-dirty',
+                  dirty: isDirty
+                });
+              };
             }
             return target[prop];
           }
@@ -139,12 +146,7 @@ class WebComponentSvcClass {
         const node = {
           clientPermissions: wc.extendedContext.clientPermissions
         };
-        RoutingHelpers.addSearchParamsFromClient(
-          node,
-          searchParams,
-          keepBrowserHistory,
-          preventLuigiConfigUpdate
-        );
+        RoutingHelpers.addSearchParamsFromClient(node, searchParams, keepBrowserHistory, preventLuigiConfigUpdate);
       },
       getClientPermissions: () => (wc.extendedContext?.clientPermissions ? wc.extendedContext.clientPermissions : {}),
       addNodeParams: (params, keepBrowserHistory) => {

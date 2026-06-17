@@ -205,6 +205,10 @@
     dispatch('toggleDropdownState');
   }
 
+  function getIconsClassForSublist(children) {
+    return children.some((child) => child.icon) ? 'fd-menu__sublist--icons' : '';
+  }
+
   $: if (isHidden) expandedGroupIndex = null;
 
   export let showUserInfo;
@@ -266,10 +270,10 @@
                     <!-- <i class="sap-icon--action-settings" role="presentation"></i> -->
                     {#if profileNav.settings?.icon}
                       {#if hasOpenUIicon(profileNav.settings)}
-                        <i class="fd-top-nav__icon {getSapIconStr(profileNav.settings.icon)}" />
+                        <i class={getSapIconStr(profileNav.settings.icon)}></i>
                       {:else}
                         <img
-                          class="fd-top-nav__icon nav-icon"
+                          class="nav-icon"
                           src={profileNav.settings.icon}
                           alt={profileNav.settings.altText ? profileNav.settings.altText : ''}
                         />
@@ -321,7 +325,7 @@
                     <div class="lui-profile-sublist">
                       <div class="lui-profile-sublist__spacer"></div>
                       <ul
-                        class="fd-menu__sublist fd-menu__sublist--icons"
+                        class="fd-menu__sublist {getIconsClassForSublist(profileItem.children)}"
                         id="profile-group-{index}"
                         aria-hidden="false"
                         role="menu"
@@ -397,10 +401,10 @@
                     {#if profileItem.icon}
                       <span class="fd-menu__addon-before">
                         {#if hasOpenUIicon(profileItem)}
-                          <i class="fd-top-nav__icon {getSapIconStr(profileItem.icon)}" />
+                          <i class={getSapIconStr(profileItem.icon)}></i>
                         {:else}
                           <img
-                            class="fd-top-nav__icon nav-icon"
+                            class="nav-icon"
                             src={profileItem.icon}
                             alt={profileItem.altText ? profileItem.altText : ''}
                           />
@@ -430,14 +434,9 @@
 {/if}
 
 <style lang="scss">
-  .fd-top-nav__icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
-  }
-
   .nav-icon {
-    height: 2em;
+    height: var(--sapFontLargeSize);
+    margin-right: 0;
   }
 
   .fd-user-menu__header-container {

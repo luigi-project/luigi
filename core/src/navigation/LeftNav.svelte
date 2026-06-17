@@ -1177,7 +1177,7 @@
                                 on:keyup={!addNavHrefForAnchor ? (event) => handleEnterPressed(event, node) : undefined}
                                 data-testid={NavigationHelpers.getTestId(node)}
                                 on:mouseup={(event) => {
-                                  isSemiCollapsed && event.target.blur();
+                                  isSemiCollapsed && event.currentTarget.blur();
                                 }}
                               >
                                 <div class="fd-navigation-list__content-container">
@@ -1242,7 +1242,11 @@
                       >
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <a
-                          class="fd-navigation-list__content"
+                          class="fd-navigation-list__content {!isSemiCollapsed &&
+                          !isExpanded(nodes, expandedCategories) &&
+                          nodes.indexOf(selectedNode) >= 0
+                            ? 'is-selected'
+                            : ''}"
                           role="treeitem"
                           tabindex="0"
                           aria-expanded={isSemiCollapsed
@@ -1496,9 +1500,16 @@
                           on:keypress={(event) => handleExpandCollapseCategories(event, nodes)}
                           tabindex={isSemiCollapsed ? '0' : '-1'}
                         >
+                          <!-- svelte-ignore a11y_missing_attribute -->
                           <a
                             title={resolveTooltipText(nodes, $getTranslation(key))}
-                            class="fd-nested-list__link {isExpanded(nodes, expandedCategories) ? 'is-expanded' : ''}"
+                            class="fd-nested-list__link {isExpanded(nodes, expandedCategories)
+                              ? 'is-expanded'
+                              : ''} {!isSemiCollapsed &&
+                            !isExpanded(nodes, expandedCategories) &&
+                            nodes.indexOf(selectedNode) >= 0
+                              ? 'is-selected'
+                              : ''}"
                             tabindex={isSemiCollapsed ? '-1' : '0'}
                             role={!addNavHrefForAnchor ? 'button' : undefined}
                             id="collapsible_listnode_{index}"
@@ -2068,6 +2079,8 @@
     align-items: center;
     :global(.fd-object-status) {
       margin-left: auto;
+      right: var(--fdNavigationList_Content_Padding_Inline_End, 1rem);
+      position: absolute;
     }
   }
 

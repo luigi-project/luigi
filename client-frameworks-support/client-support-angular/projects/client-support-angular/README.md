@@ -12,7 +12,7 @@ If you want to know more about Luigi, please have a look at the [Luigi homepage]
 npm install @luigi-project/client-support-angular -s
 ```
 
-2. Once the library is imported and saved in your Angular project, provide the module `LuigiAngularSupportModule` in your app configuration:
+2. Once the library is imported and saved in your Angular project, add necessary providers in your app configuration:
 
 ```javascript
 providers: [
@@ -60,7 +60,7 @@ constructor(private luigiContextService: LuigiContextService) {
 
   // check context data via Signal
   effect(() => {
-    const data: IContextMessage = luigiContextService.contextSignal()();
+    const data: IContextMessage = luigiContextService.contextSignal();
 
     if (data) {
       this.contextSignal.set(data.context || {});

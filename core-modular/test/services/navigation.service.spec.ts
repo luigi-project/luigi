@@ -5,6 +5,7 @@ import { AsyncHelpers } from '../../src/utilities/helpers/async-helpers';
 import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../../src/utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
+import { ContextSwitcherHelpers } from '../../src/utilities/helpers/context-switcher-helpers';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -1717,6 +1718,78 @@ describe('NavigationService', () => {
         expect(onResolve).not.toHaveBeenCalled();
         expect(result.items?.every((i) => !i.pending)).toBe(true);
       });
+    });
+  });
+
+  describe('buildContextSwitcher', () => {
+    const optionsMocker = () =>
+      [...Array(3).keys()]
+        .filter((n) => n !== 0)
+        .map((n) => ({
+          customRendererCategory: undefined,
+          testId: undefined,
+          label: 'Environment ' + n,
+          id: 'env' + n,
+          link: '/environments/env' + n
+        }));
+    const configMock = {
+      navigation: {
+        contextSwitcher: {
+          defaultLabel: 'Select Environment',
+          parentNodePath: '/environments',
+          lazyloadOptions: true,
+          options: optionsMocker(),
+          actions: [
+            {
+              label: '+ New Environment (top)',
+              link: '/create-environment'
+            },
+            {
+              label: '+ New Environment (bottom)',
+              link: '/create-environment',
+              position: 'bottom'
+            },
+            {
+              label: '+ New Project',
+              link: '/projects',
+              position: 'bottom'
+            }
+          ],
+          fallbackLabelResolver: (id) => (id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment')
+        }
+      }
+    };
+
+    beforeEach(() => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+      luigiMock.getConfigValueAsync.mockReturnValue(configMock.navigation.contextSwitcher.actions);
+      ContextSwitcherHelpers.fetchOptions = jest.fn().mockReturnValue(configMock.navigation.contextSwitcher.options);
+    });
+
+    it('should create data for context switcher when configuration is set', async () => {
+      luigiMock.getConfigValue.mockReturnValue(configMock.navigation.contextSwitcher);
+
+      const resetFallbackLabelCacheSpy = jest.spyOn(ContextSwitcherHelpers, 'resetFallbackLabelCache');
+      const result = await (navigationService as any).buildContextSwitcher();
+
+      expect(resetFallbackLabelCacheSpy).toHaveBeenCalled();
+      expect(result).toEqual({
+        actions: configMock.navigation.contextSwitcher.actions,
+        config: configMock.navigation.contextSwitcher,
+        options: configMock.navigation.contextSwitcher.options,
+        selectedLabel: undefined,
+        selectedNodePath: undefined,
+        selectedOption: undefined,
+        switcherChange: expect.any(Function)
+      });
+    });
+
+    it('should not create data for context switcher when configuration is not set', async () => {
+      luigiMock.getConfigValue.mockReturnValue(undefined);
+
+      const result = await (navigationService as any).buildContextSwitcher();
+
+      expect(result).toEqual(undefined);
     });
   });
 });
