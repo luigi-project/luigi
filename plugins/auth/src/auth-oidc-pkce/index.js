@@ -17,7 +17,7 @@ function applyDeprecationShim(settings) {
       if (!(newKey in patched)) {
         patched[newKey] = patched[oldKey];
         console.warn(
-          `[OIDC] Setting "${oldKey}" has been renamed to "${newKey}". Please update your configuration. The old key will be removed in a future release.`
+          `[OIDC] Setting "${oldKey}" is deprecated. Please use "${newKey}" instead. The old key might be removed in a future release.`
         );
       }
       delete patched[oldKey];
