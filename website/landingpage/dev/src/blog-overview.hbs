@@ -1,0 +1,45 @@
+---
+layout: blog
+title: Overview
+seoMetaDescription: All blog posts from the Luigi project
+permalink: /blog/overview/index.html
+---
+{{!--
+  First 5 entries inline; the remainder is rendered into JSON the load-more JS
+  (in app.js) reads to inject additional batches. Mirrors the legacy build's
+  blog-chunks output but inline'd into the overview HTML rather than written
+  to /blog/blog-chunks/blog-chunkN.html files.
+--}}
+
+{{#each (sliceFirst collections.blog 5)}}
+  <div class="blog-entry">
+    <div class="title-2">{{ data.title }}</div>
+    <div class="sub-title"><span class="text">{{ joinAuthors data.author }} @Luigi on {{ formatDate data.date }}</span></div>
+    {{{ data.excerpt }}}
+    <p><a href="/blog/{{ data.slug }}" class="button read-more-btn">Read more </a></p>
+  </div>
+{{/each}}
+
+<div id="blog-chunks-data"
+  data-chunk-step="5"
+  data-chunk-total="{{ collections.blog.length }}"></div>
+
+<template id="blog-remaining-entries">
+{{#each (sliceFrom collections.blog 5)}}
+  <div class="blog-entry">
+    <div class="title-2">{{ data.title }}</div>
+    <div class="sub-title"><span class="text">{{ joinAuthors data.author }} @Luigi on {{ formatDate data.date }}</span></div>
+    {{{ data.excerpt }}}
+    <p><a href="/blog/{{ data.slug }}" class="button read-more-btn">Read more </a></p>
+  </div>
+{{/each}}
+</template>
+
+<div id="blog-chunk"></div>
+
+<div class="row" id="blog-actions">
+  <div class="column">
+    <a id="load-more-blogs-btn" href="#blog-chunk" class="btn-primary">Load more entries</a>
+    <a id="back-to-top-btn" href="#stickyAnchor" class="btn-primary hide">Back to top</a>
+  </div>
+</div>

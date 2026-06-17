@@ -1,0 +1,337 @@
+@use 'sass:math';
+
+// ---------------------------------------------------------------------------
+// Foundation 6 replacement shim.
+// ---------------------------------------------------------------------------
+// This file replaces the parts of Foundation 6 the Luigi landingpage actually
+// uses. It is NOT a general-purpose Foundation port -- only the classes and
+// behaviors found in this site's templates and component SCSS are implemented.
+//
+// Original Foundation includes that this file replaces:
+//   @include foundation-global-styles  (just the box-sizing reset)
+//   @include foundation-typography     (kept minimal -- most type rules are
+//                                       in components/_general.scss already)
+//   @include foundation-xy-grid-classes
+//   @include foundation-flex-grid
+//   @include foundation-flex-classes
+//   @include foundation-visibility-classes
+//   @include foundation-sticky         (replaced with `position: sticky`)
+//   @include foundation-forms          (unused in templates -- dropped)
+//
+// Breakpoints and grid match the values previously set in legacy _settings.scss.
+// ---------------------------------------------------------------------------
+
+// Breakpoints (must match Foundation legacy values exactly for visual parity).
+$bp-small: 0;
+$bp-medium: 480px;
+$bp-large: 768px;
+$bp-xlarge: 1024px;
+$bp-xxlarge: 1290px;
+$bp-huge: 1680px;
+$bp-xhuge: 2100px;
+
+$grid-columns: 12;
+$grid-gutter-small: 20px;
+$grid-gutter-medium: 30px;
+$grid-max-width: 1290px;
+
+// ---------------------------------------------------------------------------
+// Global / box-sizing reset + base typography.
+// Replaces foundation-global-styles + the parts of foundation-typography the
+// site actually relies on (body font-family, no link underlines, list resets).
+// ---------------------------------------------------------------------------
+*, *::before, *::after { box-sizing: inherit; }
+html { box-sizing: border-box; font-size: 100%; }
+body {
+  margin: 0;
+  font-family: $body-font-family;
+  font-weight: normal;
+  line-height: 1.5;
+  color: $body-font-color;
+  background: $body-background;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; height: auto; -ms-interpolation-mode: bicubic; display: inline-block; vertical-align: middle; }
+button {
+  cursor: pointer;
+  font-family: inherit;
+  // Strip the browser's default button chrome so component SCSS owns the look.
+  // Foundation's button reset normalized these; without it, bare <button>
+  // elements (.menu-btn, #closeMainNavigation, .theme-switch) ship with the
+  // UA border + padding + native appearance.
+  padding: 0;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: inherit;
+}
+
+// Headings -- match Foundation's defaults: inherit body font, normal weight
+// (component CSS overrides per-class), 1.4 line-height. Sizes match Foundation 6.
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.4;
+  margin: 0 0 0.5rem;
+  color: inherit;
+  text-rendering: optimizeLegibility;
+}
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.1875rem; }
+h4 { font-size: 1.125rem; }
+h5 { font-size: 1.0625rem; }
+h6 { font-size: 1rem; }
+@media (min-width: $bp-medium) {
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.5rem; }
+  h3 { font-size: 1.9375rem; }
+  h4 { font-size: 1.5625rem; }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1rem; }
+}
+
+// Anchors -- no underline by default (was Foundation's $anchor-text-decoration: none).
+a {
+  color: $anchor-color;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover, &:focus { color: $anchor-color; }
+}
+
+// Paragraphs -- Foundation's typography reset. The 1.6 line-height matters:
+// `.read-more-btn:before { top: 8px }` is positioned relative to the parent
+// <p>'s line box, so a tighter line-height (e.g. body's 1.5) shifts the arrow
+// visually upward relative to the text.
+p {
+  margin: 0 0 1rem;
+  font-size: inherit;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+// Lists -- Foundation removes default padding/margin on .menu / nav lists; we
+// only do that when those classes opt in. The site uses `ul.menu` etc. which
+// are styled in component SCSS; here we just ensure plain ul/ol look sensible.
+// The selectors are class-only (not `ul.foo`) to keep specificity at (0,1,0)
+// so component CSS like `.sticky-navigation { padding: 25px 0 }` (also 0,1,0,
+// declared later) wins on padding -- declaration order, not specificity.
+//
+// `line-height: 1.6` matches Foundation's typography defaults and is inherited
+// by anchor children. Without it, .main-nav menu items render at 14px × 1.5 =
+// 21px instead of the legacy 14px × 1.6 = 22.4px, making the header column
+// shorter and shifting any vertically-aligned siblings.
+ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; line-height: 1.6; }
+.menu, .social-links, .list-type-1, .clients-list, .benefits-list,
+.theme-menu, .sticky-navigation, .links-list, .blog-overview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Grid -- `.row` / `.column` / `.columns` with .{breakpoint}-{n} sizing.
+// Implemented as flexbox, matching foundation-flex-grid's actual behaviour:
+//   - `.row`     centers via `margin: 0 auto`, wraps with flexbox, NO padding.
+//   - `.column`  carries the gutter as left+right padding (30px at small/medium,
+//                25px at xlarge+). The first/last columns therefore push their
+//                content inward by the gutter on each side, which is what
+//                Foundation's grid actually does. Earlier versions of this shim
+//                split the padding between row and column -- that produced the
+//                same row width but the outermost columns lost half their
+//                gutter, breaking visual parity with the legacy build.
+//   - Nested `.row .row` uses negative margins to bleed back into the parent
+//                column's padding.
+// ---------------------------------------------------------------------------
+.row {
+  display: flex;
+  flex-flow: row wrap;
+  max-width: $grid-max-width;
+  margin-left: auto;
+  margin-right: auto;
+}
+.row .row {
+  margin-left: -$grid-gutter-medium;
+  margin-right: -$grid-gutter-medium;
+  max-width: none;
+}
+@media (min-width: $bp-xlarge) {
+  .row .row {
+    margin-left: -25px;
+    margin-right: -25px;
+  }
+}
+
+.column, .columns {
+  flex: 1 1 0;
+  padding-left: $grid-gutter-medium;   // 30px at small/medium
+  padding-right: $grid-gutter-medium;
+  min-width: 0; // prevent flex children from overflowing on narrow content
+}
+@media (min-width: $bp-xlarge) {
+  .column, .columns {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+}
+
+// Generate column-width classes for each breakpoint.
+@mixin grid-cols($prefix) {
+  @for $i from 1 through $grid-columns {
+    .#{$prefix}-#{$i} {
+      flex: 0 0 math.percentage(math.div($i, $grid-columns));
+      max-width: math.percentage(math.div($i, $grid-columns));
+    }
+  }
+  @for $i from 0 through $grid-columns {
+    .#{$prefix}-offset-#{$i} {
+      margin-left: math.percentage(math.div($i, $grid-columns));
+    }
+  }
+}
+
+@include grid-cols('small');
+@media (min-width: $bp-medium) { @include grid-cols('medium'); }
+@media (min-width: $bp-large)  { @include grid-cols('large'); }
+@media (min-width: $bp-xlarge) { @include grid-cols('xlarge'); }
+
+// xxlarge-collapse: remove gutters on .row / .columns at this breakpoint.
+@media (min-width: $bp-xxlarge) {
+  .xxlarge-collapse > .column,
+  .xxlarge-collapse > .columns {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .row.xxlarge-collapse {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Flex helpers used by the templates.
+// ---------------------------------------------------------------------------
+.align-center  { justify-content: center; }
+.align-justify { justify-content: space-between; }
+.align-middle  { align-items: center; }
+
+// ---------------------------------------------------------------------------
+// Visibility helpers -- only the breakpoints actually used by templates.
+// Foundation's behavior: `show-for-*` is hidden below the breakpoint, then
+// REVERTS to its natural display at and above. Critically it does NOT force
+// `display: block` on inline-block buttons (which would break inline layouts
+// like the side-by-side .btn-primary + .btn-secondary in s-stage).
+// ---------------------------------------------------------------------------
+@media (min-width: $bp-large)  { .hide-for-large  { display: none !important; } }
+@media (min-width: $bp-xlarge) { .hide-for-xlarge { display: none !important; } }
+
+.show-for-large, .show-for-xlarge { display: none !important; }
+@media (min-width: $bp-large)  { .show-for-large  { display: revert !important; } }
+@media (min-width: $bp-xlarge) { .show-for-xlarge { display: revert !important; } }
+
+// Generic `.hide` toggle used by JS (load-more / back-to-top buttons).
+.hide { display: none !important; }
+.invisible { visibility: hidden; }
+
+// ---------------------------------------------------------------------------
+// Sticky -- replaces `@include foundation-sticky` and Foundation's JS-based
+// sticky behavior. Foundation's `data-sticky-container` / `data-sticky` /
+// `data-anchor` / `data-margin-top` HTML attributes are kept on existing
+// markup but become inert; CSS `position: sticky` does the same job natively
+// for the blog sidebar use case.
+// ---------------------------------------------------------------------------
+[data-sticky-container] { position: relative; }
+[data-sticky] {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 6em; // matches data-margin-top="6" on the blog template
+}
+
+// ---------------------------------------------------------------------------
+// Foundation utility functions kept as a compatibility layer for component SCSS
+// that still calls them. `rem-calc()` is used heavily in components; provide a
+// minimal implementation so we don't have to rewrite every call site.
+// ---------------------------------------------------------------------------
+@function rem-calc($values, $base: 16px) {
+  @if length($values) > 1 {
+    $rem: ();
+    @each $value in $values { $rem: append($rem, rem-calc($value, $base)); }
+    @return $rem;
+  }
+  @if unit($values) == 'rem' { @return $values; }
+  @if unit($values) == '%'   { @return $values; }
+  $value: $values;
+  @if unit($value) == '' { $value: $value * 1px; }
+  @return math.div($value, $base) * 1rem;
+}
+
+// `breakpoint(<name>)` mixin used by component SCSS. Maps Foundation's syntax to
+// regular media queries. Supports the suffixes legacy code uses:
+//   breakpoint(large)         -> min-width: 768px        (alias for `large up`)
+//   breakpoint(large up)      -> min-width: 768px
+//   breakpoint(medium down)   -> max-width: 767.98px     (everything below `large`)
+//   breakpoint(large only)    -> 768px..1023.98px
+// Numeric values pass through as min-width.
+@mixin breakpoint($query) {
+  $parts: if(type-of($query) == 'list', $query, ($query));
+  $name: nth($parts, 1);
+  $modifier: if(length($parts) >= 2, nth($parts, 2), 'up');
+
+  $bp-map: (
+    small: $bp-small,
+    medium: $bp-medium,
+    large: $bp-large,
+    xlarge: $bp-xlarge,
+    xxlarge: $bp-xxlarge,
+    huge: $bp-huge,
+    xhuge: $bp-xhuge,
+  );
+
+  // Resolve named breakpoint to its value (or pass numeric values through).
+  $value: if(map-has-key($bp-map, $name), map-get($bp-map, $name), $name);
+
+  // Find the next breakpoint up (used for `down` and `only`).
+  $names: (small, medium, large, xlarge, xxlarge, huge, xhuge);
+  $next-value: null;
+  @if map-has-key($bp-map, $name) {
+    $found: false;
+    @each $n in $names {
+      @if $found and $next-value == null {
+        $next-value: map-get($bp-map, $n);
+      }
+      @if $n == $name { $found: true; }
+    }
+  }
+
+  @if $modifier == 'up' {
+    @if $value == 0 {
+      @content; // small up = always
+    } @else {
+      @media (min-width: $value) { @content; }
+    }
+  } @else if $modifier == 'down' {
+    @if $next-value == null {
+      @content; // largest breakpoint down = always
+    } @else {
+      @media (max-width: $next-value - 0.02px) { @content; }
+    }
+  } @else if $modifier == 'only' {
+    @if $next-value == null {
+      @if $value == 0 {
+        @content;
+      } @else {
+        @media (min-width: $value) { @content; }
+      }
+    } @else {
+      @if $value == 0 {
+        @media (max-width: $next-value - 0.02px) { @content; }
+      } @else {
+        @media (min-width: $value) and (max-width: $next-value - 0.02px) { @content; }
+      }
+    }
+  }
+}
