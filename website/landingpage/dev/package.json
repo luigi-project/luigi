@@ -67,6 +67,7 @@
   "overrides": {
     "chokidar": "3.5.1",
     "glob-parent": "^6.0.0",
+    "ws": "8.21.0",
     "panini": {
       "marked": "^4.0.10",
       "highlight.js": "^11.0.0"
