@@ -352,4 +352,47 @@ describe('Navigation-helpers', () => {
       jest.useRealTimers();
     });
   });
+
+  describe('openExternalLink', () => {
+    let windowOpenSpy: jest.SpyInstance;
+    const originalLocation = window.location;
+
+    beforeEach(() => {
+      windowOpenSpy = jest.spyOn(window, 'open').mockReturnValue({ opener: null, focus: jest.fn() } as any);
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { ...originalLocation, href: '' }
+      });
+    });
+
+    afterEach(() => {
+      windowOpenSpy.mockRestore();
+      Object.defineProperty(window, 'location', { writable: true, value: originalLocation });
+    });
+
+    it('should open external link in new tab by default', () => {
+      NavigationHelpers.openExternalLink({ url: 'https://example.com', sameWindow: false });
+
+      expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com', '_blank', 'noopener noreferrer');
+    });
+
+    it('should open external link in same window when sameWindow is true', () => {
+      NavigationHelpers.openExternalLink({ url: 'https://example.com', sameWindow: true });
+
+      expect(window.location.href).toBe('https://example.com');
+      expect(windowOpenSpy).not.toHaveBeenCalled();
+    });
+
+    it('should substitute path params in external link URL', () => {
+      NavigationHelpers.openExternalLink({ url: 'https://example.com/:id/details', sameWindow: false }, { id: '42' });
+
+      expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com/42/details', '_blank', 'noopener noreferrer');
+    });
+
+    it('should not substitute params when pathParams is undefined', () => {
+      NavigationHelpers.openExternalLink({ url: 'https://example.com/:id', sameWindow: false });
+
+      expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com/:id', '_blank', 'noopener noreferrer');
+    });
+  });
 });

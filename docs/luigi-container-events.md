@@ -38,10 +38,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- data: {},
- id: 'some-id'
-}
+{ data: {}, id: 'some-id'}
 ```
 
 * * *
@@ -53,14 +50,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- fromClosestContext: false,
- fromContext: null,
- fromParent: true,
- fromVirtualTreeRoot: false,
- link: '/test/route',
- nodeParams: {}
-}
+{ fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, link: '/test/route', nodeParams: {}}
 ```
 
 * * *
@@ -73,17 +63,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- text: 'Custom alert message',
- type: 'info',
- links: {
-  goToHome: { text: 'Homepage', url: '/overview' },
-  goToOtherProject: { text: 'Other project', url: '/projects/pr2' },
-  relativePath: { text: 'Hide side nav', url: 'hideSideNav' },
-  neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
- },
- closeAfter: 3000
-}
+{ text: 'Custom alert message', type: 'info', links: {  goToHome: { text: 'Homepage', url: '/overview' },  goToOtherProject: { text: 'Other project', url: '/projects/pr2' },  relativePath: { text: 'Hide side nav', url: 'hideSideNav' },  neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000}
 ```
 
 * * *
@@ -102,10 +82,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- data: {},
- keepBrowserHistory: false
-}
+{ data: {}, keepBrowserHistory: false}
 ```
 
 * * *
@@ -117,10 +94,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- data: {},
- keepBrowserHistory: false
-}
+{ data: {}, keepBrowserHistory: false}
 ```
 
 * * *
@@ -133,12 +107,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- header: 'Confirmation',
- body: 'Are you sure you want to do this?',
- buttonConfirm: 'Yes',
- buttonDismiss: 'No'
-}
+{ header: 'Confirmation', body: 'Are you sure you want to do this?', buttonConfirm: 'Yes', buttonDismiss: 'No'}
 ```
 
 * * *
@@ -164,9 +133,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- currentLocale: 'en'
-}
+{ currentLocale: 'en'}
 ```
 
 * * *
@@ -178,10 +145,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- key: 'luigi-version',
- value: '2.21.0'
-}
+{ key: 'luigi-version', value: '2.21.0'}
 ```
 
 * * *
@@ -219,13 +183,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- fromClosestContext: false,
- fromContext: null,
- fromParent: true,
- fromVirtualTreeRoot: false,
- nodeParams: {}
-}
+{ fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, nodeParams: {}}
 ```
 
 * * *
@@ -244,16 +202,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- fromClosestContext: false,
- fromContext: null,
- fromParent: true,
- fromVirtualTreeRoot: false,
- history: true,
- link: '/test/route',
- modal: { title: 'Some modal' },
- nodeParams: {}
-}
+{ fromClosestContext: false, fromContext: null, fromParent: true, fromVirtualTreeRoot: false, history: true, link: '/test/route', modal: { title: 'Some modal' }, nodeParams: {}}
 ```
 
 * * *
@@ -266,10 +215,7 @@ Payload: <a href="https://github.com/luigi-project/luigi/blob/main/container/typ
   
 **Example**  
 ```js
-{
- addHistoryEntry: true,
- updatedModalSettings: {}
-}
+{ addHistoryEntry: true, updatedModalSettings: {}}
 ```
 
 * * *
@@ -281,9 +227,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- link: '/test/route'
-}
+{ link: '/test/route'}
 ```
 
 * * *
@@ -295,9 +239,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- dirty: true
-}
+{ dirty: true}
 ```
 
 * * *
@@ -309,9 +251,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- vg: 'some data'
-}
+{ vg: 'some data'}
 ```
 
 * * *
@@ -323,9 +263,7 @@ Payload: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
   
 **Example**  
 ```js
-{
- ctx: 'some context'
-}
+{ ctx: 'some context'}
 ```
 
 * * *

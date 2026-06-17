@@ -1,8 +1,10 @@
 import { type AlertSettings, type ConfirmationModalSettings, type UserSettings } from '../modules/ux-module';
 import { DirtyStatusService } from '../services/dirty-status.service';
 import { serviceRegistry } from '../services/service-registry';
+import type { UserSettingsDialogSettings } from '../types/navigation';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
+import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { get } from '../utilities/store';
 import type { Luigi } from './luigi';
 
@@ -69,15 +71,28 @@ export class UX {
     });
   };
 
-  processUserSettingGroups = (): any[] => {
+  openUserSettings = async () => {
     const userSettings = this.luigi.getConfigValue('userSettings');
+    if (!userSettings) {
+      return;
+    }
     const storedSettings = this.luigi.getConfigValue('settings');
 
-    return UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
-  };
+    const previousUserSettings = await this.luigi.readUserSettings();
+    const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
 
-  openUserSettings = (settings: UserSettings) => {
-    this.luigi.getEngine()._connector?.openUserSettings(settings);
+    const userSettingsDialog = userSettings.userSettingsDialog || {};
+    const dialogHeader = userSettingsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
+    const saveBtn = userSettingsDialog.saveBtn || TOP_NAV_DEFAULTS.userSettingsDialog.saveBtn;
+    const dismissBtn = userSettingsDialog.dismissBtn || TOP_NAV_DEFAULTS.userSettingsDialog.dismissBtn;
+    const userSettingsDialogSettings: UserSettingsDialogSettings = {
+      dialogHeader: this.luigi.i18n().getTranslation(dialogHeader),
+      saveBtn: this.luigi.i18n().getTranslation(saveBtn),
+      dismissBtn: this.luigi.i18n().getTranslation(dismissBtn)
+    };
+    this.luigi
+      .getEngine()
+      ._ui?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings, this.luigi);
   };
 
   closeUserSettings = () => {

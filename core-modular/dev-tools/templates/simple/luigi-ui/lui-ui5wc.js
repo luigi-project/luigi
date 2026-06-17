@@ -134,13 +134,13 @@ function renderProductSwitcherItems(productSwitcherConfig) {
     item.icon && productSwitchItem.setAttribute('icon', item.icon);
     item.testId && productSwitchItem.setAttribute('data-testid', item.testId);
     item.subTitle && productSwitchItem.setAttribute('subtitle-text', item.subTitle);
-    if (item.link) {
-      productSwitchItem.setAttribute('luigi-route', item.link);
-    } else if (item.externalLink?.url) {
-      productSwitchItem.setAttribute('luigi-external-route', item.externalLink.url);
-      item.externalLink.sameWindow ??
-        productSwitchItem.setAttribute('luigi-external-route-samewindow', item.externalLink.sameWindow);
+    if (item.externalLink?.url) {
+      productSwitchItem.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
     }
+    productSwitchItem.addEventListener('click', () => {
+      productSwitcherConfig.productSwitcherItemClick?.(item);
+      document.getElementById('productswitch-popover').open = false;
+    });
     productSwitch.appendChild(productSwitchItem);
   });
 
@@ -201,15 +201,49 @@ function renderProfilePopover(profileObj, avatar) {
   profilePopover.setAttribute('id', 'profile-popover');
   profilePopover.setAttribute('placement', 'Bottom');
 
-  profileObj.items?.forEach((item) => {
+  profileObj.items?.forEach((item, index) => {
     const profileLi = document.createElement('ui5-li');
 
     profileLi.setAttribute('text', item.label);
     profileLi.innerText = item.label;
 
-    profileLi.addEventListener('click', () => {
-      window.open(item.externalLink.url, item.externalLink.sameWindow ? '_self' : '_blank');
-    });
+    if (item.children?.length) {
+      const childPopover = document.createElement('ui5-popover');
+      const childList = document.createElement('ui5-list');
+
+      profileLi.setAttribute('id', 'profile-opener-' + index);
+      profileLi.setAttribute('type', 'Navigation');
+      profileLi.addEventListener('click', () => {
+        childPopover.open = !childPopover.open;
+      });
+
+      childPopover.setAttribute('opener', 'profile-opener-' + index);
+      childPopover.setAttribute('placement', 'Start');
+
+      item.children.forEach((child) => {
+        const childLi = document.createElement('ui5-li');
+
+        childLi.setAttribute('text', child.label);
+        childLi.innerText = child.label;
+
+        if (child.icon) {
+          childLi.setAttribute('icon', child.icon);
+        }
+
+        childLi.addEventListener('click', () => {
+          profileObj.itemClick(child);
+        });
+
+        childList.appendChild(childLi);
+      });
+
+      childPopover.appendChild(childList);
+      document.querySelector('ui5-navigation-layout').appendChild(childPopover);
+    } else {
+      profileLi.addEventListener('click', () => {
+        profileObj.itemClick(item);
+      });
+    }
 
     profileList.appendChild(profileLi);
   });
@@ -222,10 +256,7 @@ function renderProfilePopover(profileObj, avatar) {
     profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
-      connector.openUserSettings({
-        size: 'm',
-        title: 'User Settings'
-      });
+     profileObj.settings.openUserSettings();
     });
 
     profileList.appendChild(profileLi);
@@ -251,9 +282,9 @@ function renderProfilePopover(profileObj, avatar) {
   profileObj.onUserInfoUpdate((userInfo) => {
     uInfoWrapper.innerHTML = userInfo.picture ? `<div><img src="${userInfo.picture}" style="width: 100px"/></div>` : '';
     uInfoWrapper.innerHTML += /*html*/ `
-      <div>${userInfo.name}</div>
-      <div>${userInfo.email}</div>
-      <div>${userInfo.description}</div>
+      <div>${userInfo.name || ''}</div>
+      <div>${userInfo.email || ''}</div>
+      <div>${userInfo.description || ''}</div>
     `;
     if (userInfo.picture) {
       avatar.setAttribute('data-testid', 'luigi-topnav-profile-btn');
@@ -303,8 +334,13 @@ function renderNodeOrCategory(item, leftNavData) {
     el.setAttribute('text', item.label);
     el.setAttribute('tooltip', item.tooltip);
     if (item.icon) el.setAttribute('icon', item.icon);
-    el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-    if (item.href) el.setAttribute('href', item.href);
+    if (item.externalLink?.url) {
+      el.setAttribute('href', item.externalLink.url);
+      el.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
+    } else {
+      el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
+      if (item.href) el.setAttribute('href', item.href);
+    }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
@@ -325,7 +361,13 @@ function renderNodeOrCategory(item, leftNavData) {
         sub.setAttribute('tooltip', nodeWrapper.tooltip);
         if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
         sub._luigiItem = nodeWrapper;
-        sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+        if (nodeWrapper.externalLink?.url) {
+          sub.setAttribute('href', nodeWrapper.externalLink.url);
+          sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
+        } else {
+          sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+          if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+        }
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
       });
@@ -408,24 +450,6 @@ const connector = {
           toggleButton.icon = toggleButton.pressed ? 'sap-icon://da-2' : 'sap-icon://da';
         });
       });
-      const items = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-route]');
-      if (items) {
-        items.forEach((item) => {
-          item.addEventListener('click', () => {
-            globalThis.Luigi.navigation().navigate(item.getAttribute('luigi-route'));
-            document.getElementById('productswitch-popover').open = false;
-          });
-        });
-      }
-      const itemsExternalLink = document.querySelector('ui5-product-switch').querySelectorAll('[luigi-external-route]');
-      if (itemsExternalLink) {
-        itemsExternalLink.forEach((item) => {
-          item.addEventListener('click', () => {
-            const sameWindow = item.getAttribute('luigi-external-route-samewindow');
-            window.open(item.getAttribute('luigi-external-route'), sameWindow ? '_self' : '_blank').focus();
-          });
-        });
-      }
     }
 
     if (!shellbar._lastTopNavData) {
@@ -447,6 +471,137 @@ const connector = {
       }
 
       shellbar.innerHTML = html;
+
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const wrapper = data.config.customOptionsRenderer ? 'select' : 'ui5-combobox';
+        const switcher = document.createElement(wrapper);
+        const createSwitcherOption = function (item, type) {
+          let label = item.label;
+          let option;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(item.id);
+          }
+
+          if (data.config.customOptionsRenderer) {
+            if (data.selectedOption?.link === item.link && data.config.customSelectedOptionRenderer) {
+              option = data.config.customSelectedOptionRenderer(data.selectedOption);
+            } else {
+              option = data.config.customOptionsRenderer(item, label === data.selectedLabel);
+            }
+          } else {
+            const link = data.config.preserveSubPathOnSwitch && type === 'option' ? item.linkFromPath : item.link;
+
+            option = document.createElement('ui5-cb-item');
+            option.setAttribute('text', label);
+            option.setAttribute('value', link);
+          }
+
+          option.setAttribute('type', type);
+
+          return option;
+        };
+
+        switcher.classList.add('lui-context-switcher');
+        switcher.setAttribute('name', 'context-switcher');
+        switcher.setAttribute('slot', 'content');
+
+        if (data.config.defaultLabel) {
+          if (data.config.customOptionsRenderer) {
+            const option = document.createElement('option');
+
+            option.setAttribute('value', '');
+            option.textContent = data.config.defaultLabel;
+
+            switcher.prepend(option);
+          } else {
+            switcher.setAttribute('placeholder', data.config.defaultLabel);
+          }
+        }
+
+        if (data.selectedOption) {
+          let label = data.selectedOption.label;
+
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+
+          switcher.setAttribute('selected-value', data.selectedOption.link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
+
+        const eventType = data.config.customOptionsRenderer ? 'change' : 'selection-change';
+
+        switcher.addEventListener(eventType, function (event) {
+          let selectedValue;
+          let selectedType;
+
+          if (eventType === 'selection-change') {
+            selectedValue = event.detail?.item?.getAttribute('value') || '';
+            selectedType = event.detail?.item?.getAttribute('type') || undefined;
+          } else {
+            selectedValue = event.target.value || '';
+
+            if (event.target.children?.length) {
+              const selectedOption = [...event.target.children].find((child) => child.selected);
+
+              selectedType = selectedOption ? selectedOption?.attributes?.type?.value : undefined;
+            }
+          }
+
+          if (data.switcherChange) {
+            data.switcherChange(selectedValue, selectedType);
+          } else {
+            console.warn('There is no context switcher change handler defined in configuration.');
+          }
+        });
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position !== 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === filteredActions.length - 1) {
+              item.classList.add('lui-switcher-item--top-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.options?.length) {
+          data.options.forEach((option) => {
+            const item = createSwitcherOption(option, 'option');
+
+            switcher.appendChild(item);
+          });
+        }
+
+        if (data.actions?.length) {
+          const filteredActions = data.actions.filter((action) => action.position === 'bottom');
+
+          filteredActions.forEach((action, index) => {
+            const item = createSwitcherOption(action, 'action');
+
+            if (index === 0) {
+              item.classList.add('lui-switcher-item--bottom-separator');
+            }
+
+            switcher.appendChild(item);
+          });
+        }
+
+        shellbar.appendChild(switcher);
+      }
 
       if (topNavData.profile) {
         if ((topNavData.profile.authEnabled && topNavData.profile.signedIn) || !topNavData.profile.authEnabled) {
@@ -508,6 +663,43 @@ const connector = {
         (topNavData.topNodes || []).forEach((item) => {
           addShellbarItem(shellbar, item, topNavData.navClick);
         });
+      }
+      if (topNavData.contextSwitcher) {
+        const data = { ...topNavData.contextSwitcher };
+        const switcher = shellbar.querySelector('.lui-context-switcher');
+        if (!switcher) {
+          return;
+        }
+        if (data.selectedOption) {
+          const link = data.selectedOption.link;
+          let label = data.selectedOption.label;
+          if (!label && data.config.fallbackLabelResolver) {
+            label = data.config.fallbackLabelResolver(data.selectedOption.id);
+          }
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              if (option.value === link) {
+                const newOption = data.config.customSelectedOptionRenderer(data.selectedOption);
+                option.replaceWith(newOption);
+              } else {
+                option.classList.remove('is-selected');
+              }
+            });
+          }
+          switcher.setAttribute('selected-value', link);
+          switcher.setAttribute('value', label);
+        } else {
+          switcher.removeAttribute('selected-value');
+          switcher.removeAttribute('value');
+          if (data.config.customSelectedOptionRenderer) {
+            [...switcher.children].forEach((option) => {
+              option.classList.remove('is-selected');
+            });
+          }
+          if (data.config.customOptionsRenderer) {
+            switcher.value = '';
+          }
+        }
       }
     }
     shellbar._lastTopNavData = topNavData;
@@ -806,125 +998,145 @@ const connector = {
     dialog.open = true;
   },
 
-  openUserSettings: async (settings) => {
-    if (!settings) {
-      settings = {
-        title: 'User Settings'
-      };
-    }
+  openUserSettings: async (settings, userSettingData, previousUserSettings, lc) => {
+    const storedUserSettings = previousUserSettings ? { ...previousUserSettings } : {};
 
-    const storedUserSettings = {};
-    const previousUserSettings = await globalThis.Luigi.readUserSettings();
-    const userSettingData = globalThis.Luigi.ux().processUserSettingGroups();
-    const dialog = document.createElement('ui5-dialog');
-    const lc = document.createElement('div');
-    const bar = document.createElement('ui5-bar');
-    const toolbar = document.createElement('ui5-toolbar');
-    const cancelBtn = document.createElement('ui5-toolbar-button');
-    const saveBtn = document.createElement('ui5-toolbar-button');
-    const containerWrapper = globalThis.Luigi.getEngine()._connector?.getContainerWrapper();
-    let userSettingsGroup;
-
-    if (containerWrapper) {
-      let viewGroupContainer;
-
-      [...containerWrapper.childNodes].forEach((element) => {
-        if (element.tagName?.indexOf('LUIGI-') === 0) {
-          viewGroupContainer = element;
-        }
-      });
-
-      if (viewGroupContainer) {
-        userSettingsGroup = viewGroupContainer.userSettingsGroup;
+    function el(tag, attrs, children) {
+      const node = document.createElement(tag);
+      if (attrs) {
+        Object.entries(attrs).forEach(([k, v]) => {
+          if (v === true) node.setAttribute(k, '');
+          else if (v !== false && v != null) node.setAttribute(k, v);
+        });
       }
+      if (children) {
+        (Array.isArray(children) ? children : [children]).forEach((child) => {
+          if (typeof child === 'string') node.appendChild(document.createTextNode(child));
+          else if (child) node.appendChild(child);
+        });
+      }
+      return node;
     }
 
-    dialog.classList.add('lui-dialog');
-    dialog.setAttribute('header-text', settings?.title);
-    setDialogSize(dialog, settings);
+    function renderSettingControl(groupKey, settingKey, settingDef, currentValue) {
+      const container = document.createDocumentFragment();
+      const labelEl = el('ui5-label', { for: `us-${groupKey}-${settingKey}`, 'show-colon': true }, settingDef.label || settingKey);
+      container.appendChild(labelEl);
 
-    bar.setAttribute('slot', 'header');
-    bar.innerHTML = `<ui5-title level="H5" slot="startContent">${settings?.title}</ui5-title>`;
-    dialog.appendChild(bar);
+      if (settingDef.type === 'enum' && settingDef.options) {
+        const combobox = el('ui5-combobox', {
+          id: `us-${groupKey}-${settingKey}`,
+          placeholder: settingDef.placeholder || settingDef.label || settingKey,
+          value: currentValue || settingDef.options[0] || ''
+        });
+        settingDef.options.forEach((option) => {
+          combobox.appendChild(el('ui5-cb-item', { text: option }));
+        });
+        combobox.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.value;
+        });
+        container.appendChild(combobox);
+      } else if (settingDef.type === 'boolean') {
+        const switchEl = el('ui5-switch', {
+          id: `us-${groupKey}-${settingKey}`,
+          checked: currentValue === true || currentValue === 'true' ? true : false
+        });
+        switchEl.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.checked;
+        });
+        container.appendChild(switchEl);
+      } else {
+        const input = el('ui5-input', {
+          id: `us-${groupKey}-${settingKey}`,
+          placeholder: settingDef.placeholder || '',
+          value: currentValue || ''
+        });
+        input.addEventListener('change', (e) => {
+          if (!storedUserSettings[groupKey]) storedUserSettings[groupKey] = {};
+          storedUserSettings[groupKey][settingKey] = e.target.value;
+        });
+        container.appendChild(input);
+      }
 
-    toolbar.setAttribute('slot', 'footer');
-    dialog.appendChild(toolbar);
+      return container;
+    }
 
-    cancelBtn.onclick = () => {
-      connector.closeUserSettings();
-    };
-    cancelBtn.setAttribute('text', 'Cancel');
-    toolbar.appendChild(cancelBtn);
+    async function renderSettingsGroup(groupKey, groupConfig, isFirst) {
+      const attrs = {
+        text: groupConfig.label || groupKey,
+        tooltip: groupConfig.title || groupConfig.label || groupKey,
+        'header-text': groupConfig.title || groupConfig.label || groupKey
+      };
+      if (groupConfig.icon) attrs.icon = groupConfig.icon;
+      if (isFirst) attrs.selected = true;
 
-    saveBtn.onclick = async () => {
-      const select = document.querySelector('#timeFormatSelector');
+      const groupStoredSettings = previousUserSettings?.[groupKey] || {};
 
-      if (select) {
-        storedUserSettings.time = `${select.value} h`;
-
-        await globalThis.Luigi.storeUserSettings(storedUserSettings, previousUserSettings).then(() => {
-          connector.closeUserSettings();
-          globalThis.Luigi.ux().showAlert({
-            text: 'User settings are stored successfully!',
-            type: 'success'
-          });
+      let content;
+      if (groupConfig.viewUrl) {
+        const luigiContainer = await settings.renderMicroFrontendContainer(groupConfig, groupKey);
+        luigiContainer.style.width = '100%';
+        luigiContainer.style.height = '100%';
+        luigiContainer.style.minHeight = '300px';
+        content = luigiContainer;
+      } else if (groupConfig.settings) {
+        content = el('div', { class: 'luigi-usersettings-form' });
+        Object.entries(groupConfig.settings).forEach(([settingKey, settingDef]) => {
+          const currentValue = groupStoredSettings[settingKey];
+          content.appendChild(renderSettingControl(groupKey, settingKey, settingDef, currentValue));
         });
       } else {
-        connector.closeUserSettings();
-        globalThis.Luigi.ux().showAlert({
-          text: 'There are no user settings to store :(',
-          type: 'info'
-        });
+        content = el('ui5-text', null, 'No settings available.');
       }
-    };
-    saveBtn.setAttribute('design', 'Positive');
-    saveBtn.setAttribute('text', 'Save');
-    toolbar.appendChild(saveBtn);
 
-    if (Array.isArray(userSettingData) && userSettingData.length > 0) {
-      const userSettingsItems = userSettingData.filter((obj) => Object.keys(obj)[0] === userSettingsGroup);
-      const userSettingsObj = userSettingsItems.length ? userSettingsItems[0][userSettingsGroup] : {};
-      const timeFormat =
-        previousUserSettings && previousUserSettings[userSettingsGroup]
-          ? previousUserSettings[userSettingsGroup].time
-          : userSettingsObj?.settings?.time?.options[0];
-
-      storedUserSettings.privacy = null;
-      storedUserSettings.time = timeFormat;
-
-      lc.innerHTML = `
-        <ui5-title level="H3">${userSettingsObj?.label || 'No settings in config'}</ui5-title>
-        <p>${userSettingsObj?.settings?.policy?.label || ''}</p>
-        <p>${userSettingsObj?.settings?.time?.label || ''} - ${timeFormat || ''}</p>
-        <form>
-          <label for="timeFormatSelector">Switch time format:</label><br>
-          <select id="timeFormatSelector" name="timeFormatSelector">
-            <option value="12" ${timeFormat === '12 h' ? 'selected' : ''}>12 h</option>
-            <option value="24" ${timeFormat === '24 h' ? 'selected' : ''}>24 h</option>
-          </select>
-        </form>
-      `;
-    } else {
-      lc.innerHTML = `
-        <ui5-title level="H3">No user setting groups</ui5-title>
-        <p>There are no user setting groups in the settings section of the Luigi config defined.}</p>
-      `;
+      return el('ui5-user-settings-item', attrs, [content]);
     }
 
-    dialog.appendChild(lc);
+    // Build settings items from config
+    const settingsItems = [];
+    if (Array.isArray(userSettingData)) {
+      for (let index = 0; index < userSettingData.length; index++) {
+        const groupObj = userSettingData[index];
+        const groupKey = Object.keys(groupObj)[0];
+        const groupConfig = groupObj[groupKey];
+        settingsItems.push(await renderSettingsGroup(groupKey, groupConfig, index === 0));
+      }
+    }
+
+    // Assemble dialog
+    const dialog = el('ui5-user-settings-dialog', {
+      id: 'luigi-user-settings',
+      'header-text': settings?.dialogHeader || 'Settings'
+    }, settingsItems);
+
+    dialog.addEventListener('close', async () => {
+      settings.onCloseCallback(storedUserSettings, previousUserSettings);
+      if (dialog.parentElement) {
+        document.body.removeChild(dialog);
+      }
+      const profilePopover = document.getElementById('profile-popover');
+      if (profilePopover) {
+        profilePopover.open = false;
+      }
+    });
+
     document.body.appendChild(dialog);
     dialog.open = true;
   },
 
   closeUserSettings: () => {
-    const dialog = document.querySelector('ui5-dialog');
+    const dialog = document.querySelector('#luigi-user-settings');
 
     if (!dialog) {
       return;
     }
 
     dialog.open = false;
-    document.body.removeChild(dialog);
+    if (dialog.parentElement) {
+      document.body.removeChild(dialog);
+    }
   },
 
   showLoadingIndicator: (parentNode) => {

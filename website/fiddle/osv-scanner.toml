@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "webpack-dev-server is intended for local development only"

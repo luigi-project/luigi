@@ -20,12 +20,12 @@ describe('JS-TEST-APP', () => {
       it('Core API navigate and open and close modal', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('#app[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().navigate('/home/two');
         });
         cy.expectPathToBe('/home/two');
 
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/settings', {
             title: 'Preserved View',
             size: 'm'
@@ -33,16 +33,14 @@ describe('JS-TEST-APP', () => {
         });
 
         cy.contains('Preserved View');
-        cy.get('body')
-          .find('[aria-label="close"]', { timeout: 5000 })
-          .click();
+        cy.get('body').find('[aria-label="close"]', { timeout: 5000 }).click();
         cy.expectPathToBe('/home/two');
       });
 
       it('Open modal via core api with "fullscreen"', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { size: 'fullscreen' });
         });
         cy.get('.lui-modal-mf')
@@ -54,19 +52,17 @@ describe('JS-TEST-APP', () => {
       it('Open modal via core api with "px"', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { width: '500px', height: '500px' });
         });
-        cy.get('.lui-modal-mf')
-          .should('have.css', 'width', '500px')
-          .and('have.css', 'height', '500px');
+        cy.get('.lui-modal-mf').should('have.css', 'width', '500px').and('have.css', 'height', '500px');
         cy.get('[aria-label="close"]').click();
       });
 
       it('Open modal via core api with "%"', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { width: '20%', height: '40%' });
         });
         cy.get('.lui-modal-mf').should('have.attr', 'style', 'width:20%;height:40%;');
@@ -76,7 +72,7 @@ describe('JS-TEST-APP', () => {
       it('Open modal via core api with "rem"', localRetries, () => {
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { width: '50rem', height: '70rem' });
         });
         cy.get('.lui-modal-mf').should('have.attr', 'style', 'width:50rem;height:70rem;');
@@ -86,7 +82,7 @@ describe('JS-TEST-APP', () => {
       it('Open modal via core api with "rem" and  "non existent unit"', localRetries, () => {
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { width: '34psx', height: '70rm' });
         });
         cy.get('.lui-modal-mf').should('have.attr', 'style', 'width:80%;height:80%;');
@@ -97,7 +93,7 @@ describe('JS-TEST-APP', () => {
         newConfig.routing.showModalPathInUrl = true;
         cy.visitTestApp('/', newConfig);
         cy.get('[configversion="js-test-app-core-api-nav-test"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().openAsModal('/home/two', { width: '50rem', height: '70rem' });
         });
         cy.get('.lui-modal-mf').should('have.attr', 'style', 'width:50rem;height:70rem;');
@@ -105,10 +101,8 @@ describe('JS-TEST-APP', () => {
           .should('include', 'width%22%3A%2250rem')
           .and('include', 'height%22%3A%2270rem')
           .and('not.contain', '/title%22%3A%22test/');
-        cy.getIframeBody({}, 0, '.iframeModalCtn').then(result => {
-          cy.wrap(result)
-            .contains('updateModalSettings')
-            .click();
+        cy.getIframeBody({}, 0, '.iframeModalCtn').then((result) => {
+          cy.wrap(result).contains('updateModalSettings').click();
           cy.url()
             .should('include', 'width%22%3A%2250rem')
             .and('include', 'height%22%3A%2270rem')
@@ -129,7 +123,7 @@ describe('JS-TEST-APP', () => {
       it('defaultChildNode', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('#app[configversion="normal-navigation"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.navigation().navigate('/home');
           cy.expectPathToBe('/home/two');
         });
@@ -138,11 +132,13 @@ describe('JS-TEST-APP', () => {
       it('navigateToIntent', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('#app[configversion="normal-navigation"]');
-        cy.window().then(win => {
-          win.Luigi.navigation().navigate('/home').then(() => {
-            win.Luigi.navigation().navigateToIntent('Sales-setting');
-            cy.expectPathToBe('/home/two/#?intent=Sales-setting');
-          });
+        cy.window().then((win) => {
+          win.Luigi.navigation()
+            .navigate('/home')
+            .then(() => {
+              win.Luigi.navigation().navigateToIntent('Sales-setting');
+              cy.expectPathToBe('/home/two/#?intent=Sales-setting');
+            });
         });
       });
 
@@ -150,7 +146,7 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/', newConfig);
         cy.get('#app[configversion="normal-navigation"]');
         cy.get('.fd-shellbar').should('exist');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           win.Luigi.getConfig().settings.header.disabled = true;
           win.Luigi.configChanged('settings');
         });
@@ -177,9 +173,7 @@ describe('JS-TEST-APP', () => {
         cy.get('#app[configversion="tooltip-test"]');
         cy.get('.lui-collapsible-item').contains('Test Category');
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Expand test category');
-        cy.get('.lui-collapsible-item')
-          .contains('Test Category')
-          .click();
+        cy.get('.lui-collapsible-item').contains('Test Category').click();
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Collapse test category');
       });
 
@@ -190,9 +184,7 @@ describe('JS-TEST-APP', () => {
         cy.get('#app[configversion="tooltip-test-2"]');
         cy.get('.lui-collapsible-item').contains('Test Category');
         cy.get('.lui-collapsible-item button').should('not.have.attr', 'title');
-        cy.get('.lui-collapsible-item')
-          .contains('Test Category')
-          .click();
+        cy.get('.lui-collapsible-item').contains('Test Category').click();
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Collapse test category');
       });
 
@@ -203,9 +195,7 @@ describe('JS-TEST-APP', () => {
         cy.get('#app[configversion="tooltip-test-3"]');
         cy.get('.lui-collapsible-item').contains('Test Category');
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Expand test category');
-        cy.get('.lui-collapsible-item')
-          .contains('Test Category')
-          .click();
+        cy.get('.lui-collapsible-item').contains('Test Category').click();
         cy.get('.lui-collapsible-item button').should('not.have.attr', 'title');
       });
 
@@ -222,9 +212,7 @@ describe('JS-TEST-APP', () => {
         cy.get('#app[configversion="tooltip-test-4"]');
         cy.get('.lui-collapsible-item').contains('Test Category');
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Expand test category');
-        cy.get('.lui-collapsible-item')
-          .contains('Test Category')
-          .click();
+        cy.get('.lui-collapsible-item').contains('Test Category').click();
         cy.get('.lui-collapsible-item button').should('have.attr', 'title', 'Default collapse tooltip');
       });
     });
@@ -270,12 +258,9 @@ describe('JS-TEST-APP', () => {
         cy.visitTestApp('/home/mfe1', newConfig);
         cy.get('#app[configversion="viewgroup-live-settings"]');
         cy.get('.fd-app__sidebar').should('not.contain', 'MFE 1 Luigi rocks');
-        cy.getIframeBody({}, 0, '.iframeContainer').then(result => {
+        cy.getIframeBody({}, 0, '.iframeContainer').then((result) => {
           $iframeBody = result;
-          cy.wrap($iframeBody)
-            .find('#vgDataUpdate')
-            .contains('Set view group data')
-            .click();
+          cy.wrap($iframeBody).find('#vgDataUpdate').contains('Set view group data').click();
         });
 
         cy.get('.fd-app__sidebar').contains('MFE 1 Luigi rocks');
@@ -303,7 +288,7 @@ describe('JS-TEST-APP', () => {
         defaultLabel: 'Select Environment',
         parentNodePath: '/environments',
         lazyloadOptions: true,
-        options: function() {
+        options: function () {
           return [
             {
               label: 'Environment 1',
@@ -317,7 +302,7 @@ describe('JS-TEST-APP', () => {
             }
           ];
         },
-        customSelectedOptionRenderer: function(option) {
+        customSelectedOptionRenderer: function (option) {
           if (option.customRendererCategory === 'production') {
             return `<label style='color: rgb(136, 255, 0); font-weight:700'>
                   ${option.label}
@@ -334,23 +319,15 @@ describe('JS-TEST-APP', () => {
     it('custom selected option renderer', () => {
       cy.visitTestApp('/', newConfig);
 
-      cy.contains('Select Environment')
-        .should('exist')
-        .click();
-      cy.contains('Environment 1')
-        .should('exist')
-        .click();
+      cy.contains('Select Environment').should('exist').click();
+      cy.contains('Environment 1').should('exist').click();
       cy.get('[data-testid=luigi-contextswitcher-button]')
         .find('label')
         .should('have.css', 'color', 'rgb(136, 255, 0)')
         .and('have.css', 'font-weight', '700');
 
-      cy.get('[data-testid=luigi-contextswitcher-button]')
-        .should('exist')
-        .click();
-      cy.contains('Environment 2')
-        .should('exist')
-        .click();
+      cy.get('[data-testid=luigi-contextswitcher-button]').should('exist').click();
+      cy.contains('Environment 2').should('exist').click();
       cy.get('[data-testid=luigi-contextswitcher-button]')
         .find('label')
         .should('have.css', 'color', 'rgb(0, 136, 255)')
@@ -362,7 +339,7 @@ describe('JS-TEST-APP', () => {
 
     it('using fallbackLabelResolver', () => {
       newConfig.navigation.contextSwitcher.customSelectedOptionRenderer = undefined;
-      newConfig.navigation.contextSwitcher.fallbackLabelResolver = id => id.toUpperCase();
+      newConfig.navigation.contextSwitcher.fallbackLabelResolver = (id) => id.toUpperCase();
       newConfig.navigation.contextSwitcher.options = [{ pathValue: 'env1' }, { pathValue: 'env2' }];
 
       cy.visitTestApp('/', newConfig);
@@ -401,12 +378,9 @@ describe('JS-TEST-APP', () => {
       cy.visitTestApp('/virtual', newConfig);
       let $iframeBody;
 
-      cy.getIframeBody({}, 0, '.iframeContainer').then(result => {
+      cy.getIframeBody({}, 0, '.iframeContainer').then((result) => {
         $iframeBody = result;
-        cy.wrap($iframeBody)
-          .find('button')
-          .contains('virtual')
-          .click();
+        cy.wrap($iframeBody).find('button').contains('virtual').click();
       });
       cy.expectPathToBe('/virtual/this/is/a/tree');
     });
@@ -422,7 +396,7 @@ describe('JS-TEST-APP', () => {
 
     it('Core API unload', () => {
       let config;
-      cy.window().then(win => {
+      cy.window().then((win) => {
         config = win.Luigi.getConfig();
         config.navigation.nodes = [
           {
@@ -435,13 +409,13 @@ describe('JS-TEST-APP', () => {
 
       cy.get('.fd-shellbar').should('be.visible');
 
-      cy.window().then(win => {
+      cy.window().then((win) => {
         win.Luigi.unload();
       });
 
       cy.get('.fd-shellbar').should('not.exist');
 
-      cy.window().then(win => {
+      cy.window().then((win) => {
         win.Luigi.setConfig(config);
       });
 
@@ -478,7 +452,7 @@ describe('JS-TEST-APP', () => {
         loginLink().should('not.exist');
 
         let profileLogout;
-        cy.window().then(win => {
+        cy.window().then((win) => {
           const config = win.Luigi.getConfig();
           profileLogout = config.navigation.profile.logout;
           profileLogout.customLogoutFn = () => {
@@ -490,14 +464,186 @@ describe('JS-TEST-APP', () => {
         });
 
         // Verify profile value
-        logoutLink()
-          .contains('Bye bye')
-          .click();
+        logoutLink().contains('Bye bye').click();
 
         // need to wrap 'expect' into some cypress function, else it executes immediately
-        cy.window().then(win => {
+        cy.window().then((win) => {
           expect(profileLogout.customLogoutFn).to.be.called;
         });
+      });
+    });
+
+    describe('Vega profile menu with grouped items', () => {
+      let newConfig;
+
+      beforeEach(() => {
+        // Vega tests run after the "With Auth" block which leaves authentication state in
+        // storage. Without clearing it, AuthorizationVegaProfileMenu.svelte sees auth as
+        // still enabled, skips setProfileUserData(), and the staticUserInfoFn data never
+        // populates — causing tests after the first Vega test to flake intermittently.
+        cy.clearLocalStorage();
+        cy.clearAllSessionStorage();
+        cy.clearCookies();
+        newConfig = structuredClone(defaultLuigiConfig);
+        newConfig.auth = undefined;
+        // Swap iframe MFEs for web-component MFEs in the routes these specs visit.
+        // Iframe insertion fires window-blur on the parent (focus moves into the
+        // iframe content window), and TopNav's blur handler closes all dropdowns
+        // — racing the spec's click-on-profile-button and intermittently closing
+        // the popover before assertions run. WC MFEs render in the same window,
+        // so no blur fires.
+        const homeNode = newConfig.navigation.nodes.find((n) => n.pathSegment === 'home');
+        homeNode.viewUrl = '/examples/microfrontends/helloWorldWC.js';
+        homeNode.webcomponent = true;
+        homeNode.children = homeNode.children.map((child) => ({
+          ...child,
+          viewUrl: '/examples/microfrontends/helloWorldWC.js',
+          webcomponent: true
+        }));
+        newConfig.settings.profileType = 'vega';
+        newConfig.navigation.profile = {
+          logout: {
+            label: 'Sign Out',
+            icon: 'log'
+          },
+          staticUserInfoFn: () => ({
+            name: 'Test User',
+            initials: 'TU',
+            email: 'test@example.com'
+          }),
+          items: [
+            {
+              label: 'Account Settings',
+              icon: 'account',
+              testId: 'profile-group-account',
+              children: [
+                { label: 'Profile', icon: 'person-placeholder', link: '/home/one', testId: 'profile-child-profile' },
+                { label: 'Privacy', icon: 'locked', link: '/home/two', testId: 'profile-child-privacy' }
+              ]
+            },
+            { label: 'About', icon: 'hint', link: '/home/one', testId: 'profile-flat-about' }
+          ]
+        };
+      });
+
+      it('Should render group items with submenu arrow', () => {
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-group-account"]').should('exist');
+        cy.get('[data-testid="profile-group-account"] .fd-menu__addon-after--submenu').should('exist');
+      });
+
+      it('Should render flat items without submenu arrow', () => {
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get('[data-testid="profile-flat-about"] .fd-menu__addon-after--submenu').should('not.exist');
+      });
+
+      it('Should expand group on click and show children', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        // Don't chain .should().click() — Svelte re-renders the span on reactive updates,
+        // so the element Cypress validated may have been replaced by the time .click()
+        // fires. Re-querying with a fresh cy.get() lets Cypress retry against the latest
+        // DOM node.
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        cy.get('[data-testid="profile-child-privacy"]').should('exist');
+      });
+
+      it('Should collapse group on second click', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        const sublist = '[data-testid="profile-group-account"] .lui-profile-sublist .fd-menu__sublist';
+
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get(sublist).should('be.visible');
+        cy.get('[data-testid="profile-child-profile"]').should('be.visible');
+        cy.get(groupHeader).should('have.attr', 'aria-expanded', 'true');
+
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+
+        cy.get(sublist).should('not.exist');
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
+
+      it('Should navigate when clicking a child item', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-privacy"]').click();
+        cy.expectPathToBe('/home/two');
+      });
+
+      it('Should close submenu when clicking elsewhere in the menu', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        cy.get('.fd-user-menu__header').click();
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
+      });
+
+      it('Should reset submenu state when profile menu is reopened', () => {
+        const groupHeader = '[data-testid="profile-group-account"] .fd-menu__link.has-child';
+        cy.visitTestApp('/home/one', newConfig);
+        cy.waitForLuigiHandshake();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').should('contain.text', 'TU').click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="luigi-topnav-profile-username"]').should('be.visible');
+        cy.get('[data-testid="profile-flat-about"]').should('exist');
+        cy.get(groupHeader).should('be.visible').and('have.attr', 'aria-expanded', 'false');
+        cy.get(groupHeader).click();
+        cy.waitForLuigiSettled();
+        cy.get('[data-testid="profile-child-profile"]').should('exist');
+        // Close profile menu
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
+        // Reopen
+        cy.get('[data-testid="luigi-topnav-profile-initials"]').click();
+        cy.get('[data-testid="profile-child-profile"]').should('not.exist');
       });
     });
 
@@ -601,7 +747,7 @@ describe('JS-TEST-APP', () => {
         cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
         loginLink().should('exist');
 
-        cy.window().then(win => {
+        cy.window().then((win) => {
           cy.log('Trigger auth().login()');
           win.Luigi.auth().login();
         });
@@ -616,7 +762,7 @@ describe('JS-TEST-APP', () => {
 
         cy.visitTestAppLoggedIn('/', cfg);
         cy.get('#app[configversion="loginlogoutcoreapi"]');
-        cy.window().then(win => {
+        cy.window().then((win) => {
           cy.log('Trigger auth().logout()');
           win.Luigi.auth().logout();
         });
@@ -678,17 +824,11 @@ describe('JS-TEST-APP', () => {
     it('TopNav nodes should be visible either first node has no view', () => {
       cy.visitTestAppLoggedIn('/', newConfig);
       cy.expectPathToBe('/firstnode/');
-      cy.get('.fd-app__sidebar .fd-nested-list')
-        .children()
-        .should('have.length', 0);
+      cy.get('.fd-app__sidebar .fd-nested-list').children().should('have.length', 0);
       cy.get('.fd-shellbar').contains('First Node');
-      cy.get('.fd-shellbar')
-        .contains('Home')
-        .click();
+      cy.get('.fd-shellbar').contains('Home').click();
       cy.expectPathToBe('/home');
-      cy.get('.fd-app__sidebar .fd-nested-list')
-        .children()
-        .should('have.length', 2);
+      cy.get('.fd-app__sidebar .fd-nested-list').children().should('have.length', 2);
       cy.get('.fd-app__sidebar').contains('Section one');
     });
   });
@@ -777,6 +917,64 @@ describe('JS-TEST-APP', () => {
       )
         .shadow()
         .contains('/wc/test');
+    });
+
+    describe('Collapsed category highlights when child is selected (#5172)', () => {
+      let newConfig;
+
+      beforeEach(() => {
+        newConfig = structuredClone(defaultLuigiConfig);
+        // Mark the parent of 'Section one' as a collapsible category so that
+        // 'Section one' (nodes[0].children[0]) lives inside the collapsible group.
+        newConfig.navigation.nodes[0].children[0].category = {
+          label: 'Test Category 5172',
+          collapsible: true
+        };
+        newConfig.tag = 'leftnav-collapsed-cat-highlight-5172';
+      });
+
+      it('adds is-selected to a collapsed category when one of its children is the active node', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        // Sanity: the category is rendered, collapsed, and not (yet) marked selected.
+        cy.get('.lui-collapsible-item').as('cat');
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('not.have.class', 'is-selected');
+
+        // Navigate to the leaf inside the collapsed category.
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // The category is still collapsed and now carries is-selected on its category link
+        // (the first descendant fd-nested-list__link).
+        cy.get('@cat').should('not.have.class', 'lui-item-expanded');
+        cy.get('@cat').find('.fd-nested-list__link').first().should('have.class', 'is-selected');
+      });
+
+      it('removes is-selected from the category and gives it to the leaf when expanded', () => {
+        cy.visitTestApp('/', newConfig);
+        cy.get('#app[configversion="leftnav-collapsed-cat-highlight-5172"]');
+
+        cy.window().then((win) => {
+          win.Luigi.navigation().navigate('/home/one');
+        });
+        cy.expectPathToBe('/home/one');
+
+        // Pre-condition: collapsed and the category link is marked.
+        cy.get('.lui-collapsible-item').should('not.have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('have.class', 'is-selected');
+
+        // Expand the category by clicking its expand button.
+        cy.get('.lui-collapsible-item button').click();
+
+        // Category itself is no longer marked; the active leaf inside it is.
+        cy.get('.lui-collapsible-item').should('have.class', 'lui-item-expanded');
+        cy.get('.lui-collapsible-item .fd-nested-list__link').first().should('not.have.class', 'is-selected');
+        cy.get('.lui-collapsible-item .fd-nested-list--text-only .fd-nested-list__link.is-selected').should('exist');
+      });
     });
   });
 });

@@ -1,6 +1,7 @@
 import App from './App.svelte';
 import { LuigiConfig, LuigiI18N, LuigiElements } from './core-api';
 import { writable, readable } from 'svelte/store';
+import { mount } from 'svelte';
 import { AuthLayerSvc } from './services';
 /* istanbul ignore file */
 
@@ -65,7 +66,7 @@ const configReadyCallback = () => {
           document.getElementsByTagName('html')[0].classList.add('luigi-app-in-custom-container');
         }
 
-        app = new App({
+        app = mount(App, {
           target: LuigiElements.getLuigiContainer(),
           props: {
             store,
@@ -140,7 +141,7 @@ const configReadyCallback = () => {
         };
 
         //adding App.svelte to a internal Luigi variable
-        Luigi._app = app.$$;
+        Luigi._app = app;
         resolve();
       });
     });

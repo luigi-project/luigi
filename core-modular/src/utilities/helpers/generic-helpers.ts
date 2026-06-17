@@ -106,12 +106,35 @@ export const GenericHelpers = {
   },
 
   /**
+   * Adds a trailing slash to a string if it has none
+   * @param {string} str string to be checked
+   * @returns {string} string with a trailing slash
+   */
+  addTrailingSlash: (str: string): string => {
+    return GenericHelpers.isString(str) ? str.replace(/\/?$/, '/') : '';
+  },
+
+  /**
    * Prepend current url to redirect_uri, if it is a relative path
    * @param {string} str string from which any number of trailing slashes should be removed
    * @returns {string} string without any trailing slash
    */
   trimTrailingSlash: (str: string): string => {
     return GenericHelpers.isString(str) ? str.replace(/\/+$/, '') : '';
+  },
+
+  /**
+   * Returns a path that starts and end with one (and only one) slash, regardless of the slashes being already present in the path given as input
+   * @param {string} str path to normalize
+   * @returns {string} path that starts and ends with a slash
+   */
+
+  normalizePath: (str: string): string => {
+    if (typeof str !== 'string') {
+      return str;
+    }
+
+    return GenericHelpers.addLeadingSlash(GenericHelpers.addTrailingSlash(str));
   },
 
   /**

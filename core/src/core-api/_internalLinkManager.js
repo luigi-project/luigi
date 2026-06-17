@@ -179,7 +179,7 @@ export class linkManager extends LuigiCoreAPIBase {
    * @returns The current route by invoking the buildPathForGetCurrentRoute method from App.svelte, which is assigned to the _app property of the Luigi object.
    */
   getCurrentRoute() {
-    return Luigi._app.ctx[Luigi._app.props.buildPathForGetCurrentRoute](this.options);
+    return Luigi._app.buildPathForGetCurrentRoute(this.options);
   }
 
   sendPostMessageToLuigiCore(msg) {

@@ -132,6 +132,34 @@ describe('WebComponentService', function () {
       });
     });
 
+    it('check setting dirty status in UX manager', async () => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      expect(expectedCmp.LuigiClient.uxManager().setDirtyStatus).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().setDirtyStatus(true);
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.set-page-dirty',
+        dirty: true
+      });
+    });
+
+    it('check unsetting dirty status in UX manager', async () => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      expect(expectedCmp.LuigiClient.uxManager().setDirtyStatus).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().setDirtyStatus(false);
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.set-page-dirty',
+        dirty: false
+      });
+    });
+
     it('check post-processing', () => {
       const wc_id = 'my-wc';
       const MyLuigiElement = class extends LuigiElement {
