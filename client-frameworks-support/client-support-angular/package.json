@@ -9,7 +9,8 @@
     "lint": "ng lint",
     "build:lib": "ng build client-support-angular --configuration production",
     "bundle": "ng build client-support-angular --configuration production",
-    "bundle-develop": "ng build client-support-angular --watch"
+    "bundle-develop": "ng build client-support-angular --watch",
+    "release": "node release-cli.js"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@angular/build": "^22.0.1",
+    "cli-color": "2.0.4",
     "@angular/cli": "22.0.1",
     "@angular/compiler-cli": "22.0.1",
     "@happy-dom/jest-environment": "20.8.9",

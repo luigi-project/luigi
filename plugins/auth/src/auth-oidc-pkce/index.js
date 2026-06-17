@@ -113,18 +113,15 @@ export default class openIdConnect {
   logout(authData, authOnLogoutFn) {
     const signoutData = {
       id_token_hint: authData && authData.idToken,
-      state: encodeURI(window.location.href)
+      url_state: window.location.href
     };
 
-    return this.client._client
-      .createSignoutRequest(signoutData)
-      .then((req) => {
-        authOnLogoutFn();
-        window.location = req.url;
-      })
+    authOnLogoutFn();
+
+    return this.client
+      .signoutRedirect(signoutData)
       .catch(function (err) {
         console.error('[OIDC] logout() Error', err);
-        authOnLogoutFn();
       });
   }
 
@@ -167,8 +164,8 @@ export default class openIdConnect {
     return new Promise((resolve, reject) => {
       // TODO: dex logout does not yet support proper logout
       if (window.location.href.indexOf('?logout') >= 0) {
-        this.client._client
-          .processSignoutResponse()
+        this.client
+          .signoutRedirectCallback()
           .then((response) => {
             Luigi.auth().store.removeAuthData();
             resolve(response);
@@ -177,6 +174,7 @@ export default class openIdConnect {
             reject(err);
             console.error('[OIDC] Logout Error', err);
           });
+        return;
       }
       resolve(true);
     });
