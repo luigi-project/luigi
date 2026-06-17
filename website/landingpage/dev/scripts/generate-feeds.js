@@ -25,10 +25,11 @@ function makeSlug(text) {
   // Match marked v4 / GitHub-flavored-markdown slugify rules:
   //   lowercase, drop HTML tags + entities, replace non-word chars with '-',
   //   collapse, strip leading/trailing '-'
-  const base = text.toLowerCase()
-    .replace(/<[^>]*>/g, '')          // strip HTML tags
-    .replace(/&[a-z]+;|&#x?[0-9a-f]+;/gi, '')  // strip HTML entities (e.g. &#39;)
-    .replace(/[^\w\s-]/g, '')         // drop punctuation
+  const base = text
+    .toLowerCase()
+    .replace(/<[^>]*>/g, '') // strip HTML tags
+    .replace(/&[a-z]+;|&#x?[0-9a-f]+;/gi, '') // strip HTML entities (e.g. &#39;)
+    .replace(/[^\w\s-]/g, '') // drop punctuation
     .trim()
     .replace(/\s+/g, '-');
   // De-duplicate within a single document.
@@ -48,8 +49,7 @@ function renderMarkdown(body) {
   // marked v4 left a blank line between the comment and the following heading;
   // marked v18 collapses it. Restore the blank line for byte-for-byte parity
   // with the existing live feed.
-  return marked.parse(body, { renderer })
-    .replace(/<!-- Excerpt -->/g, '<!-- Excerpt -->\n');
+  return marked.parse(body, { renderer }).replace(/<!-- Excerpt -->/g, '<!-- Excerpt -->\n');
 }
 
 export function generateFeeds(results) {
@@ -80,8 +80,8 @@ export function generateFeeds(results) {
         date,
         title: fm.title || '',
         description: fm.seoMetaDescription || '',
-        authors: Array.isArray(fm.author) ? fm.author : (fm.author ? [fm.author] : []),
-        htmlContent: renderMarkdown(parsed.content),
+        authors: Array.isArray(fm.author) ? fm.author : fm.author ? [fm.author] : [],
+        htmlContent: renderMarkdown(parsed.content)
       };
     })
     // Match the legacy blogprocessor.js ordering: sort by filename descending,
@@ -103,13 +103,13 @@ export function generateFeeds(results) {
     generator: 'Luigi Project',
     feedLinks: {
       json: `${SITE_URL}/blog/feeds/feed.json`,
-      atom: `${SITE_URL}/blog/feeds/atom.xml`,
+      atom: `${SITE_URL}/blog/feeds/atom.xml`
     },
     author: {
       name: 'Luigi project authors',
       email: 'luigi-project@sap.com',
-      link: SITE_URL,
-    },
+      link: SITE_URL
+    }
   });
 
   feed.addCategory('Technology');
@@ -122,7 +122,7 @@ export function generateFeeds(results) {
       description: post.description,
       content: post.htmlContent,
       author: post.authors.map((name) => ({ name })),
-      date: post.date,
+      date: post.date
     });
   }
 

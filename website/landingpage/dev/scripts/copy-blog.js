@@ -49,4 +49,3 @@ for (const f of posts) {
 }
 
 console.log(`copy-blog: copied ${posts.length} blog post${posts.length === 1 ? '' : 's'} from ${SRC} to ${DEST}`);
-

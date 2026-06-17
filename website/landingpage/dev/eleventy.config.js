@@ -111,12 +111,12 @@ export default function (eleventyConfig) {
       input: 'src',
       output: '../public',
       includes: '_includes',
-      data: '_data',
+      data: '_data'
     },
     // Use Handlebars for HTML to keep partials/syntax close to the original.
     htmlTemplateEngine: 'hbs',
     markdownTemplateEngine: 'hbs',
-    templateFormats: ['hbs', 'html', 'md', '11ty.js'],
+    templateFormats: ['hbs', 'html', 'md', '11ty.js']
   };
 }
 
