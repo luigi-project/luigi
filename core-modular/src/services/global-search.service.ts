@@ -6,13 +6,24 @@ import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers'
 export class GlobalSearchService {
   isSearchFieldVisible = false;
   isSearchResultVisible = false;
-  searchProvider: GlobalSearchProvider;
   searchQuery = '';
   searchResult: SearchResultItem[] = [];
 
   constructor(private luigi: Luigi) {
     this.luigi = luigi;
-    this.searchProvider = this.luigi.getConfigValue('globalSearch.searchProvider');
+  }
+
+  get searchProvider(): GlobalSearchProvider {
+    return this.luigi.getConfigValue('globalSearch.searchProvider');
+  }
+
+  hasSearchProvider(): boolean {
+    if (!this.searchProvider) {
+      console.warn('No search provider defined.');
+      return false;
+    }
+
+    return true;
   }
 
   getFieldVisibility(): boolean {

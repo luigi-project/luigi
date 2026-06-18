@@ -43,6 +43,18 @@ describe('GlobalSearchService', () => {
     globalSearchService = new GlobalSearchService(luigiMock);
   });
 
+  describe('hasSearchProvider', () => {
+    it('should check search provider and return true', () => {
+      jest.spyOn(globalSearchService, 'searchProvider', 'get').mockReturnValue({});
+      expect(globalSearchService.hasSearchProvider()).toEqual(true);
+    });
+
+    it('should check search provider and return false', () => {
+      jest.spyOn(globalSearchService, 'searchProvider', 'get').mockReturnValue(undefined);
+      expect(globalSearchService.hasSearchProvider()).toEqual(false);
+    });
+  });
+
   describe('getFieldVisibility', () => {
     it.each([false, true])('should get field visibility', (value) => {
       globalSearchService.isSearchFieldVisible = value;

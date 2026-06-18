@@ -49,7 +49,8 @@ describe('GlobalSearch', () => {
       closeSearchResult: jest.fn(),
       showSearchResult: jest.fn(),
       setSearchInputPlaceholder: jest.fn(),
-      toggleSearch: jest.fn()
+      toggleSearch: jest.fn(),
+      hasSearchProvider: jest.fn().mockReturnValue(true)
     };
     jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
       if (service === GlobalSearchService) return mockGlobalSearchService;

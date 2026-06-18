@@ -25,12 +25,10 @@ export interface SearchResultItem {
 export class GlobalSearch {
   luigi: Luigi;
   globalSearchService: GlobalSearchService;
-  searchProvider: GlobalSearchProvider;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
     this.globalSearchService = serviceRegistry.get(GlobalSearchService);
-    this.searchProvider = this.luigi.getConfigValue('globalSearch.searchProvider');
   }
 
   /**
@@ -38,7 +36,7 @@ export class GlobalSearch {
    * @example Luigi.globalSearch().openSearchField();
    */
   openSearchField(): void {
-    if (this.checkSearchProvider(this.searchProvider)) {
+    if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(true);
       this.luigi.getEngine()._connector?.openSearchField();
     }
@@ -49,7 +47,7 @@ export class GlobalSearch {
    * @example Luigi.globalSearch().closeSearchField();
    */
   closeSearchField(): void {
-    if (this.checkSearchProvider(this.searchProvider)) {
+    if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(false);
       this.luigi.getEngine()._connector?.closeSearchField();
     }
@@ -60,7 +58,7 @@ export class GlobalSearch {
    * @example Luigi.globalSearch().clearSearchField();
    */
   clearSearchField(): void {
-    if (this.checkSearchProvider(this.searchProvider)) {
+    if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setSearchQuery('');
       this.luigi.getEngine()._connector?.clearSearchField();
       this.closeSearchResult();
@@ -83,7 +81,7 @@ export class GlobalSearch {
    * Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
    */
   showSearchResult(searchResultItems: SearchResultItem[]): void {
-    if (this.checkSearchProvider(this.searchProvider)) {
+    if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.showSearchResult(searchResultItems);
     }
   }
@@ -121,14 +119,5 @@ export class GlobalSearch {
    */
   setSearchInputPlaceholder(placeholder: string) {
     this.globalSearchService.setSearchInputPlaceholder(placeholder);
-  }
-
-  private checkSearchProvider(searchProvider: GlobalSearchProvider): boolean {
-    if (!searchProvider) {
-      console.warn('No search provider defined.');
-      return false;
-    } else {
-      return true;
-    }
   }
 }
