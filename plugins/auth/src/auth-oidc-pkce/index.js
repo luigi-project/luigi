@@ -1,6 +1,31 @@
 import { UserManager, WebStorageStateStore, InMemoryWebStorage } from 'oidc-client-ts';
 import { Helpers } from '../helpers';
 
+const DEPRECATED_KEYS = {
+  accessTokenExpiringNotificationTime: 'accessTokenExpiringNotificationTimeInSeconds',
+  silentRequestTimeout: 'silentRequestTimeoutInSeconds',
+  checkSessionInterval: 'checkSessionIntervalInSeconds',
+  revokeAccessTokenOnSignout: 'revokeTokensOnSignout',
+  clockSkew: 'clockSkewInSeconds',
+  staleStateAge: 'staleStateAgeInSeconds'
+};
+
+function applyDeprecationShim(settings) {
+  const patched = { ...settings };
+  for (const [oldKey, newKey] of Object.entries(DEPRECATED_KEYS)) {
+    if (oldKey in patched) {
+      if (!(newKey in patched)) {
+        patched[newKey] = patched[oldKey];
+        console.warn(
+          `[OIDC] Setting "${oldKey}" is deprecated. Please use "${newKey}" instead. The old key might be removed in a future release.`
+        );
+      }
+      delete patched[oldKey];
+    }
+  }
+  return patched;
+}
+
 export default class openIdConnect {
   constructor(settings = {}) {
     const defaultSettings = {
@@ -14,7 +39,7 @@ export default class openIdConnect {
       silent_redirect_uri: window.location.origin + '/assets/auth-oidc-pkce/silent-callback.html'
     };
 
-    const mergedSettings = Helpers.deepMerge(defaultSettings, settings);
+    const mergedSettings = Helpers.deepMerge(defaultSettings, applyDeprecationShim(settings));
 
     // Prepend current url to redirect_uri, if it is a relative path
     ['redirect_uri', 'post_logout_redirect_uri'].forEach((key) => {
@@ -88,18 +113,15 @@ export default class openIdConnect {
   logout(authData, authOnLogoutFn) {
     const signoutData = {
       id_token_hint: authData && authData.idToken,
-      state: encodeURI(window.location.href)
+      url_state: window.location.href
     };
 
-    return this.client._client
-      .createSignoutRequest(signoutData)
-      .then((req) => {
-        authOnLogoutFn();
-        window.location = req.url;
-      })
+    authOnLogoutFn();
+
+    return this.client
+      .signoutRedirect(signoutData)
       .catch(function (err) {
         console.error('[OIDC] logout() Error', err);
-        authOnLogoutFn();
       });
   }
 
@@ -142,8 +164,8 @@ export default class openIdConnect {
     return new Promise((resolve, reject) => {
       // TODO: dex logout does not yet support proper logout
       if (window.location.href.indexOf('?logout') >= 0) {
-        this.client._client
-          .processSignoutResponse()
+        this.client
+          .signoutRedirectCallback()
           .then((response) => {
             Luigi.auth().store.removeAuthData();
             resolve(response);
@@ -152,6 +174,7 @@ export default class openIdConnect {
             reject(err);
             console.error('[OIDC] Logout Error', err);
           });
+        return;
       }
       resolve(true);
     });
