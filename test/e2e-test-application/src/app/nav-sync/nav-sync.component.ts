@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { linkManager } from '@luigi-project/client';
 import { Subscription } from 'rxjs';
@@ -18,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './nav-sync.component.html',
   styleUrls: ['./nav-sync.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class NavSyncComponent implements OnInit, OnDestroy {
   segments: String[] = ['one', 'two', 'three', 'four'];
@@ -27,7 +21,10 @@ export class NavSyncComponent implements OnInit, OnDestroy {
   subs: Subscription = new Subscription();
   linkManager = linkManager;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.subs.add(
@@ -41,12 +38,10 @@ export class NavSyncComponent implements OnInit, OnDestroy {
           }
           this.currentSegment.set(segment);
           const nextIndex = this.segments.indexOf(this.currentSegment()) + 1;
-          this.nextSegment = this.segments[nextIndex]
-            ? this.segments[nextIndex]
-            : this.segments[0];
+          this.nextSegment = this.segments[nextIndex] ? this.segments[nextIndex] : this.segments[0];
         },
-        (err) => {},
-      ),
+        (err) => {}
+      )
     );
     this.updateLuigiConfig(true);
   }

@@ -5,7 +5,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './code-snippet.component.html',
   styleUrls: ['./code-snippet.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class CodeSnippetComponent {
   @Input() public data: string;

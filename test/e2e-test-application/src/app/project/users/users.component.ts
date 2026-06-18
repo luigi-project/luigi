@@ -6,7 +6,7 @@ import { ActivatedRoute, Params } from '@angular/router';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class UsersComponent implements OnInit {
   projectId: string;

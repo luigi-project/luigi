@@ -4,7 +4,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-hide-side-nav',
   templateUrl: './hide-side-nav.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class HideSideNavComponent implements OnInit {
   constructor() {}

@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './anonymous.component.html',
   styleUrls: ['./anonymous.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class AnonymousComponent implements OnInit {
   exclusive: false;
@@ -16,7 +16,7 @@ export class AnonymousComponent implements OnInit {
       (params) => {
         this.exclusive = params.exclusive;
       },
-      (err) => {},
+      (err) => {}
     );
   }
 

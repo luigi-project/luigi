@@ -5,7 +5,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './restricted.component.html',
   styleUrls: ['./restricted.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class RestrictedComponent implements OnInit {
   constructor() {}

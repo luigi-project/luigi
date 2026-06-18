@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { getPathParams, linkManager } from '@luigi-project/client';
 
 import { LuigiContextService } from '@luigi-project/client-support-angular';
@@ -16,7 +10,7 @@ import { toTitleCase } from '../../../../../services/helpers';
   templateUrl: './group-settings.component.html',
   styleUrls: ['./group-settings.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class GroupSettingsComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;
@@ -26,22 +20,17 @@ export class GroupSettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private luigiService: LuigiContextService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.lcSubscription = this.luigiService
-      .contextObservable()
-      .subscribe((ctx) => {
-        this.pathParams = getPathParams();
-        this.groupLabel =
-          this.pathParams &&
-          this.pathParams.group &&
-          toTitleCase(this.pathParams.group);
-        if (!this.cdr['destroyed']) {
-          this.cdr.detectChanges();
-        }
-      });
+    this.lcSubscription = this.luigiService.contextObservable().subscribe((ctx) => {
+      this.pathParams = getPathParams();
+      this.groupLabel = this.pathParams && this.pathParams.group && toTitleCase(this.pathParams.group);
+      if (!this.cdr['destroyed']) {
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngOnDestroy() {

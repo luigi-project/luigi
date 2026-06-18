@@ -8,18 +8,11 @@ import {
   ChangeDetectorRef,
   signal,
   computed,
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  addInitListener,
-  Context,
-  removeInitListener,
-} from '@luigi-project/client';
-import {
-  IContextMessage,
-  LuigiContextService,
-} from '@luigi-project/client-support-angular';
+import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
+import { IContextMessage, LuigiContextService } from '@luigi-project/client-support-angular';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -27,7 +20,7 @@ import { first } from 'rxjs/operators';
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class DevelopersComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
@@ -41,7 +34,7 @@ export class DevelopersComponent implements OnInit, OnDestroy {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private luigiContextService: LuigiContextService,
+    private luigiContextService: LuigiContextService
   ) {
     effect(() => {
       const data: IContextMessage = luigiContextService.contextSignal();

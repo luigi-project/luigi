@@ -6,7 +6,7 @@ import { linkManager } from '@luigi-project/client';
   templateUrl: './groups.component.html',
   styleUrls: ['./groups.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class GroupsComponent {
   public linkManager = linkManager;
@@ -15,12 +15,12 @@ export class GroupsComponent {
     {
       link: 'stakeholders',
       text: 'stakeholders',
-      description: 'a dynamic node',
+      description: 'a dynamic node'
     },
     {
       link: 'customers',
       text: 'customers',
-      description: 'a dynamic node',
-    },
+      description: 'a dynamic node'
+    }
   ];
 }

@@ -5,7 +5,7 @@ import {
   Output,
   EventEmitter,
   SimpleChanges,
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { uxManager } from '@luigi-project/client';
@@ -15,7 +15,7 @@ import { uxManager } from '@luigi-project/client';
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class ModalComponent implements OnChanges {
   @Input() public modalActive: boolean;

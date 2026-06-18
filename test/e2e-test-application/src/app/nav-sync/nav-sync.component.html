@@ -10,9 +10,9 @@
       <p>
         This page uses the Angular router to navigate between pages. The URL of the
         microfrontend is updated through the
-        <code>LuigiAutoRoutingService</code> of the
-        <code>provideLuigiAngular</code>, which utilized router events to update the
-        URL on Luigi Core side by using the <code>LuigiClient.linkManager()</code>.
+        <code>LuigiAutoRoutingService</code> of the <code>provideLuigiAngular</code>,
+        which utilized router events to update the URL on Luigi Core side by using the
+        <code>LuigiClient.linkManager()</code>.
       </p>
     </div>
   </div>
@@ -26,7 +26,9 @@
         navigate to a path relative to the closest navigation context.
       </p>
       <ul class="fd-list">
-        <li class="fd-list__item" data-testid="curr-path-segment">Current pathsegment: {{ currentSegment() }}</li>
+        <li class="fd-list__item" data-testid="curr-path-segment">
+          Current pathsegment: {{ currentSegment() }}
+        </li>
         <li class="fd-list__item">
           Go to:&nbsp;<a
             class="fd-link"

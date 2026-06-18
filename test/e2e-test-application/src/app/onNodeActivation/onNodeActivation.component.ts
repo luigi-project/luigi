@@ -6,7 +6,7 @@ import { linkManager } from '@luigi-project/client';
   templateUrl: './onNodeActivation.component.html',
   styleUrls: ['./onNodeActivation.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class OnNodeActivationComponent {
   public linkManager = linkManager;

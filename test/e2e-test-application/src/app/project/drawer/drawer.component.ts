@@ -6,7 +6,7 @@ import { linkManager, uxManager } from '@luigi-project/client';
   templateUrl: './drawer.component.html',
   styleUrls: ['./drawer.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  standalone: false
 })
 export class DrawerComponent {
   public linkManager = linkManager;
