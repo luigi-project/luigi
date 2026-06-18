@@ -221,17 +221,20 @@ ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; line-height: 1.6; }
 
 // ---------------------------------------------------------------------------
 // Visibility helpers -- only the breakpoints actually used by templates.
-// Foundation's behavior: `show-for-*` is hidden below the breakpoint, then
-// REVERTS to its natural display at and above. Critically it does NOT force
-// `display: block` on inline-block buttons (which would break inline layouts
-// like the side-by-side .btn-primary + .btn-secondary in s-stage).
+//
+// Foundation's pattern: only HIDE at the wrong breakpoint. Never force a
+// `display` value at the right breakpoint -- let the element's own CSS take
+// over there. Forcing `display: revert` (or `block`) in the visible state
+// clobbers the element's intended display: e.g. `<a class="btn-secondary
+// show-for-large">` would lose its `inline-block` from `.btn-secondary` and
+// reset to the user-agent default `inline`, breaking padding and causing
+// mid-text wrapping.
 // ---------------------------------------------------------------------------
 @media (min-width: $bp-large)  { .hide-for-large  { display: none !important; } }
 @media (min-width: $bp-xlarge) { .hide-for-xlarge { display: none !important; } }
 
-.show-for-large, .show-for-xlarge { display: none !important; }
-@media (min-width: $bp-large)  { .show-for-large  { display: revert !important; } }
-@media (min-width: $bp-xlarge) { .show-for-xlarge { display: revert !important; } }
+@media (max-width: ($bp-large - 0.02px))  { .show-for-large  { display: none !important; } }
+@media (max-width: ($bp-xlarge - 0.02px)) { .show-for-xlarge { display: none !important; } }
 
 // Generic `.hide` toggle used by JS (load-more / back-to-top buttons).
 .hide { display: none !important; }
