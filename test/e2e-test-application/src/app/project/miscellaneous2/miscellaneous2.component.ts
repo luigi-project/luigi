@@ -1,11 +1,21 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { uxManager, addInitListener, addContextUpdateListener } from '@luigi-project/client';
+import {
+  Component,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import {
+  uxManager,
+  addInitListener,
+  addContextUpdateListener,
+} from '@luigi-project/client';
 
 @Component({
   selector: 'app-miscellaneous2',
   templateUrl: './miscellaneous2.component.html',
   styleUrls: ['./miscellaneous2.component.css'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class Miscellaneous2Component implements OnInit {
   consoleText = signal<string>('InitListener called');

@@ -1,15 +1,31 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  OnDestroy,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { getPathParams, getNodeParams, linkManager, PathParams, NodeParams } from '@luigi-project/client';
-import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
+import {
+  getPathParams,
+  getNodeParams,
+  linkManager,
+  PathParams,
+  NodeParams,
+} from '@luigi-project/client';
+import {
+  LuigiContextService,
+  IContextMessage,
+} from '@luigi-project/client-support-angular';
 import { toTitleCase } from '../../services/helpers';
 
 @Component({
   selector: 'app-dynamic',
   templateUrl: './dynamic.component.html',
   styleUrls: ['./dynamic.component.css'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class DynamicComponent implements OnInit, OnDestroy {
   public linkManager = linkManager;
@@ -29,33 +45,38 @@ export class DynamicComponent implements OnInit, OnDestroy {
 
   constructor(
     private luigiService: LuigiContextService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.lcSubscription.add(
-      this.luigiService.contextObservable().subscribe((ctx: IContextMessage) => {
-        if (!ctx.context) {
-          console.warn(
-            `To use this component properly, node configuration requires context.label to be defined.
-            context.links can be defined as array of strings to generate links to children`
+      this.luigiService
+        .contextObservable()
+        .subscribe((ctx: IContextMessage) => {
+          if (!ctx.context) {
+            console.warn(
+              `To use this component properly, node configuration requires context.label to be defined.
+            context.links can be defined as array of strings to generate links to children`,
+            );
+            return;
+          }
+          const lastPathParam = Object.values(getPathParams() || {}).pop();
+
+          // We can directly access our specified context values here
+          this.nodeLabel = toTitleCase(
+            ctx.context.label || lastPathParam || 'hello',
           );
-          return;
-        }
-        const lastPathParam = Object.values(getPathParams() || {}).pop();
+          this.links = ctx.context.links;
 
-        // We can directly access our specified context values here
-        this.nodeLabel = toTitleCase(ctx.context.label || lastPathParam || 'hello');
-        this.links = ctx.context.links;
+          // preserveView and node params
+          this.hasBack = linkManager().hasBack();
+          this.nodeParams =
+            Object.keys(getNodeParams()).length > 0 ? getNodeParams() : null;
 
-        // preserveView and node params
-        this.hasBack = linkManager().hasBack();
-        this.nodeParams = Object.keys(getNodeParams()).length > 0 ? getNodeParams() : null;
-
-        if (!this.cdr['destroyed']) {
-          this.cdr.detectChanges();
-        }
-      })
+          if (!this.cdr['destroyed']) {
+            this.cdr.detectChanges();
+          }
+        }),
     );
   }
   ngOnDestroy() {

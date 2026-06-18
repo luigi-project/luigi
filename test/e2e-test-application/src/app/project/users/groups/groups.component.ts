@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { linkManager } from '@luigi-project/client';
 
 @Component({
   selector: 'app-groups',
   templateUrl: './groups.component.html',
   styleUrls: ['./groups.component.css'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class GroupsComponent {
   public linkManager = linkManager;
@@ -14,12 +15,12 @@ export class GroupsComponent {
     {
       link: 'stakeholders',
       text: 'stakeholders',
-      description: 'a dynamic node'
+      description: 'a dynamic node',
     },
     {
       link: 'customers',
       text: 'customers',
-      description: 'a dynamic node'
-    }
+      description: 'a dynamic node',
+    },
   ];
 }

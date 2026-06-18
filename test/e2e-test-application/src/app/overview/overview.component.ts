@@ -1,11 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { linkManager, uxManager, sendCustomMessage, addCustomMessageListener } from '@luigi-project/client';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  linkManager,
+  uxManager,
+  sendCustomMessage,
+  addCustomMessageListener,
+} from '@luigi-project/client';
 
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class OverviewComponent implements OnInit {
   public linkManager = linkManager;
@@ -16,21 +22,21 @@ export class OverviewComponent implements OnInit {
         this.linkManager().navigate('/projects/pr1');
       },
       text: 'uxManager()',
-      description: 'backdrop, confirmation modal, alerts and more'
+      description: 'backdrop, confirmation modal, alerts and more',
     },
     {
       clickHandler: () => {
         this.linkManager().navigate('/ext');
       },
       text: 'uxManager()',
-      description: 'loading indicator'
+      description: 'loading indicator',
     },
     {
       clickHandler: () => {
         this.linkManager().navigate('/projects/pr2');
       },
       text: 'linkManager()',
-      description: 'navigation methods'
+      description: 'navigation methods',
     },
     {
       clickHandler: () => {
@@ -38,57 +44,64 @@ export class OverviewComponent implements OnInit {
       },
       text: 'sendCustomMessage()',
       description:
-        'send a custom message that will execute some logic on the Luigi Core app if that app is properly configured for that'
+        'send a custom message that will execute some logic on the Luigi Core app if that app is properly configured for that',
     },
     {
       clickHandler: () => {
         this.linkManager().navigate('/projects/storage');
       },
       text: 'storageManager()',
-      description: 'API to store, load, remove item in Browser local storage'
-    }
+      description: 'API to store, load, remove item in Browser local storage',
+    },
   ];
 
   public luigiCoreLinks: any[] = [
     {
       link: '/projects/pr1/dps',
       text: 'defaultChildNode',
-      description: 'navigation node configuration to set a specific node as an initial target'
+      description:
+        'navigation node configuration to set a specific node as an initial target',
     },
     {
       link: '/projects/pr1/users/groups',
       text: 'dynamic nodes',
-      description: 'navigation node configuration to set a specific node as dynamic'
+      description:
+        'navigation node configuration to set a specific node as dynamic',
     },
     {
       link: '/projects/pr1',
       text: 'external URL node',
-      description: 'navigation node configuration to direct to an external website'
+      description:
+        'navigation node configuration to direct to an external website',
     },
     {
       link: '/projects/pr1/avengers',
       text: 'keepSelectedForChildren',
-      description: 'navigation node configuration to focus on a navigation menu and omit the children'
+      description:
+        'navigation node configuration to focus on a navigation menu and omit the children',
     },
     {
       link: '/projects/pr2',
       text: 'Node with link to another node',
-      description: 'navigation node configuration to redirect to another path'
+      description: 'navigation node configuration to redirect to another path',
     },
     {
       link: '/projects/pr1/on-node-activation',
       text: 'Navigation node with node activation hook',
       description:
-        'The navigation is not triggered when the method returns either false or a promise that resolves to false'
-    }
+        'The navigation is not triggered when the method returns either false or a promise that resolves to false',
+    },
   ];
 
   public isDirty = false;
 
   ngOnInit() {
-    addCustomMessageListener('luigi.my-custom-message-for-client', (customMessage, listenerId) => {
-      console.info('Received Custom Message', customMessage, listenerId);
-    });
+    addCustomMessageListener(
+      'luigi.my-custom-message-for-client',
+      (customMessage, listenerId) => {
+        console.info('Received Custom Message', customMessage, listenerId);
+      },
+    );
   }
 
   public sendDirtyEvent() {

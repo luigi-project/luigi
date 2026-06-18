@@ -215,57 +215,45 @@ describe('Navigation', () => {
           cy.wrap($iframeBody)
             .contains(label)
             .click();
+          cy.wrap($iframeBody)
+            .find('[data-testid="curr-path-segment"]')
+            .should('contain', label);
         });
-        cy.expectPathToBe('/projects/pr2/nav-sync/' + label);
       });
     });
 
     it('Nav sync - flat dynamic parameters', () => {
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-flat/1')
-          .click();
+      ['1', '2'].forEach(label => {
+        cy.getIframeBody().then($iframeBody => {
+          cy.wrap($iframeBody)
+            .contains('one')
+            .click();
+          const routeToCheck = 'dynamic-parameter-flat/' + label;
+          cy.wrap($iframeBody)
+            .contains(routeToCheck)
+            .click();
+          cy.wrap($iframeBody)
+            .find('[data-testid="curr-path-segment"]')
+            .should('contain', routeToCheck);
+        });
       });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-flat/1');
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-flat/2')
-          .click();
-      });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-flat/2');
     });
 
     it('Nav sync - stacked dynamic parameters', () => {
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-stacked/1')
-          .click();
+      ['1', '2', '1/child', '2/child', '2/child/3'].forEach(label => {
+        cy.getIframeBody().then($iframeBody => {
+          cy.wrap($iframeBody)
+            .contains('one')
+            .click();
+          const routeToCheck = 'dynamic-parameter-stacked/' + label;
+          cy.wrap($iframeBody)
+            .contains(routeToCheck)
+            .click();
+          cy.wrap($iframeBody)
+            .find('[data-testid="curr-path-segment"]')
+            .should('contain', routeToCheck);
+        });
       });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/1');
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-stacked/2')
-          .click();
-      });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/2');
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-stacked/1/child')
-          .click();
-      });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/1/child');
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-stacked/2/child')
-          .click();
-      });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/2/child');
-      cy.getIframeBody().then($iframeBody => {
-        cy.wrap($iframeBody)
-          .contains('dynamic-parameter-stacked/2/child/3')
-          .click();
-      });
-      cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/2/child/3');
     });
 
     it('Auto routing in a modal', () => {

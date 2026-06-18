@@ -34,20 +34,17 @@
       <div
         class="clickable"
         (click)="
-        linkManager().navigate(
-          '/projects/pr1/users/groups/test2/settings', null, true
-        )
-      "
+          linkManager().navigate(
+            '/projects/pr1/users/groups/test2/settings',
+            null,
+            true
+          )
+        "
       >
         projects/pr1/users/groups/test2/settings
       </div>
       <br />
-      <div
-        class="clickable"
-        (click)="
-        linkManager().goBack(true)
-      "
-      >
+      <div class="clickable" (click)="linkManager().goBack(true)">
         <b>Go Back</b>
       </div>
       <br />
@@ -56,10 +53,13 @@
         (click)="
           linkManager()
             .fromContext('project')
-            .navigate('/users/groups/' + pathParams?.group)
+            .navigate(
+              '/users/groups/' + $safeNavigationMigration(pathParams?.group)
+            )
         "
       >
-        <span class="sap-icon--navigation-left-arrow"></span> Back to {{ groupLabel }}
+        <span class="sap-icon--navigation-left-arrow"></span> Back to
+        {{ groupLabel }}
       </a>
     </div>
   </div>

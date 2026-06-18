@@ -1,4 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
@@ -7,9 +14,12 @@ import {
   getClientPermissions,
   addContextUpdateListener,
   removeContextUpdateListener,
-  storageManager
+  storageManager,
 } from '@luigi-project/client';
-import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
+import {
+  LuigiContextService,
+  IContextMessage,
+} from '@luigi-project/client-support-angular';
 import { from, Subscription } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
@@ -17,7 +27,8 @@ import { delay } from 'rxjs/operators';
   selector: 'app-project',
   templateUrl: './project.component.html',
   styleUrls: ['./project.component.scss'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   @ViewChild('luigiAlertForm') luigiAlertForm: NgForm;
@@ -45,11 +56,11 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public constructor(
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private luigiService: LuigiContextService
+    private luigiService: LuigiContextService,
   ) {
     this.pathExists = {
       formValue: '/projects/pr2',
-      result: null
+      result: null,
     };
   }
 
@@ -69,14 +80,18 @@ export class ProjectComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const settings = {
         text: 'Information alert sent from an inactive iFrame',
-        type
+        type,
       };
       uxManager().showAlert(settings);
     }, 2000);
   }
 
   navigatePreservedViewGoBack() {
-    linkManager().navigate('/projects/pr1/users/groups/test1/settings', null, true);
+    linkManager().navigate(
+      '/projects/pr1/users/groups/test1/settings',
+      null,
+      true,
+    );
   }
 
   navigateWithSync(path) {
@@ -88,19 +103,21 @@ export class ProjectComponent implements OnInit, OnDestroy {
     // We suggest to use a centralized approach of LuigiClient.addContextUpdateListener
     // Take a look at ngOnInit in this component and app.component.ts where we set the listeners.
     this.lcSubscription.add(
-      this.luigiService.contextObservable().subscribe((ctx: IContextMessage) => {
-        this.projectId = ctx.context.currentProject;
-        this.preservedViewCallbackContext = ctx.context.goBackContext;
-        this.currentLocale = uxManager().getCurrentLocale();
-        this.canChangeLocale = getClientPermissions().changeCurrentLocale;
-        // Since Luigi runs outside of Zone.js, changes need
-        // to be updated manually
-        // Be sure to check for destroyed ChangeDetectorRef,
-        // else you get runtime Errors
-        if (!this.cdr['destroyed']) {
-          this.cdr.detectChanges();
-        }
-      })
+      this.luigiService
+        .contextObservable()
+        .subscribe((ctx: IContextMessage) => {
+          this.projectId = ctx.context.currentProject;
+          this.preservedViewCallbackContext = ctx.context.goBackContext;
+          this.currentLocale = uxManager().getCurrentLocale();
+          this.canChangeLocale = getClientPermissions().changeCurrentLocale;
+          // Since Luigi runs outside of Zone.js, changes need
+          // to be updated manually
+          // Be sure to check for destroyed ChangeDetectorRef,
+          // else you get runtime Errors
+          if (!this.cdr['destroyed']) {
+            this.cdr.detectChanges();
+          }
+        }),
     );
 
     this.activatedRoute.params.subscribe((params: Params) => {
@@ -134,7 +151,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     linkManager()
       .openAsModal('/projects/pr2/settings', {
         title: 'microfrontend in a modal',
-        size: 'm'
+        size: 'm',
       })
       .then(() => {
         document.getElementById('promiseTest').innerHTML = 'promise resolved!';
@@ -151,7 +168,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         aliqua. Ut enim ad minim veniam, <br/><br/>quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
       buttonConfirm: 'Confirm',
-      buttonDismiss: 'Cancel'
+      buttonDismiss: 'Cancel',
     };
 
     uxManager()
@@ -162,7 +179,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         },
         () => {
           this.confirmationModalResult = 'dismissed';
-        }
+        },
       );
   }
 
@@ -176,7 +193,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         aliqua. Ut enim ad minim veniam, <small>quis nostrud exercitation ullamco</small> laboris nisi ut aliquip ex ea commodo consequat.
         Duis aute irure dolor in <del>reprehenderit</del> in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
       buttonConfirm: false,
-      buttonDismiss: 'Close'
+      buttonDismiss: 'Close',
     };
 
     uxManager()
@@ -187,7 +204,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         },
         () => {
           this.confirmationModalResult = 'dismissed';
-        }
+        },
       );
   }
 
@@ -203,13 +220,16 @@ export class ProjectComponent implements OnInit, OnDestroy {
         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`,
       withLink: `Ut enim ad minim veniam, {goToHome} quis nostrud exercitation
         ullamco {relativePath} laboris nisi ut aliquip ex ea commodo consequat.
-        Duis aute irure dolor {goToOtherProject} in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. {neverShowItAgain}.`
+        Duis aute irure dolor {goToOtherProject} in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. {neverShowItAgain}.`,
     };
     const exampleLinks = {
       goToHome: { text: 'homepage', url: '/overview' },
       goToOtherProject: { text: 'other project', url: '/projects/pr2' },
       relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },
-      neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
+      neverShowItAgain: {
+        text: 'Never show it again',
+        dismissKey: 'neverShowItAgain',
+      },
     };
 
     const textData = !text ? '' : links ? texts.withLink : texts.withoutLink;
@@ -219,7 +239,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       text: textData,
       type,
       links: linkData,
-      closeAfter
+      closeAfter,
     };
 
     uxManager()
@@ -254,10 +274,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   public openSplitView() {
-    this.splitViewHandle = linkManager().withParams({ test: 'true' }).openAsSplitView('/settings', {
-      title: 'Logs',
-      size: 30
-    });
+    this.splitViewHandle = linkManager()
+      .withParams({ test: 'true' })
+      .openAsSplitView('/settings', {
+        title: 'Logs',
+        size: 30,
+      });
 
     this.splitViewHandle.on('resize', (newSize) => {
       console.info('on:resize: split view got resized to', newSize);
@@ -266,7 +288,11 @@ export class ProjectComponent implements OnInit, OnDestroy {
       }
     });
     this.splitViewHandle.on('expand', () => {
-      console.info('on:expand: split view got expanded', 'size:', this.splitViewHandle.getSize());
+      console.info(
+        'on:expand: split view got expanded',
+        'size:',
+        this.splitViewHandle.getSize(),
+      );
       if (!this.cdr['destroyed']) {
         this.cdr.detectChanges();
       }
@@ -291,12 +317,19 @@ export class ProjectComponent implements OnInit, OnDestroy {
     if (this.validateKeyAndValue()) {
       return;
     }
-    const promiseStorage = storageManager().setItem(this.storageDemoKey, this.storageDemoValue);
+    const promiseStorage = storageManager().setItem(
+      this.storageDemoKey,
+      this.storageDemoValue,
+    );
     this.executeWithTimeout(
       promiseStorage,
       100,
       (result) => 'success',
-      (result) => 'Key ' + this.storageDemoKey + 'successfully stored with value ' + this.storageDemoValue
+      (result) =>
+        'Key ' +
+        this.storageDemoKey +
+        'successfully stored with value ' +
+        this.storageDemoValue,
     );
   }
 
@@ -310,7 +343,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
       100,
       (result) => (result ? 'info' : 'warning'),
       (result) =>
-        result ? 'Value for key ' + this.storageDemoKey + ' is ' + result : 'No value for key ' + this.storageDemoKey
+        result
+          ? 'Value for key ' + this.storageDemoKey + ' is ' + result
+          : 'No value for key ' + this.storageDemoKey,
     );
   }
 
@@ -319,13 +354,16 @@ export class ProjectComponent implements OnInit, OnDestroy {
       return;
     }
     const promiseStorage = storageManager().removeItem(this.storageDemoKey);
-    const messageOk = 'Value for key ' + this.storageDemoKey + ' had been removed';
-    const messageKo = 'Nothing to delete: we could not find any value for key ' + this.storageDemoKey;
+    const messageOk =
+      'Value for key ' + this.storageDemoKey + ' had been removed';
+    const messageKo =
+      'Nothing to delete: we could not find any value for key ' +
+      this.storageDemoKey;
     this.executeWithTimeout(
       promiseStorage,
       100,
       (result) => (result ? 'success' : 'warning'),
-      (result) => (result ? messageOk : messageKo)
+      (result) => (result ? messageOk : messageKo),
     );
   }
 
@@ -335,7 +373,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       promiseStorage,
       100,
       (result) => 'success',
-      (result) => 'Clear all the storage'
+      (result) => 'Clear all the storage',
     );
   }
 
@@ -350,7 +388,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       promiseStorage,
       100,
       (result) => (result ? 'info' : 'warning'),
-      (result) => (result ? messageOk : messageKo)
+      (result) => (result ? messageOk : messageKo),
     );
   }
 
@@ -360,7 +398,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       promiseStorage,
       100,
       (result) => 'info',
-      (keys) => 'All keys present:<br/><br/>' + keys.join('<br/>')
+      (keys) => 'All keys present:<br/><br/>' + keys.join('<br/>'),
     );
   }
 
@@ -378,7 +416,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
         },
         () => {
           this.finishStorageOperation();
-        }
+        },
       );
   }
 
@@ -405,7 +443,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   validateKey() {
-    const notValidInput = !this.storageDemoKey || this.storageDemoKey.trim().length === 0;
+    const notValidInput =
+      !this.storageDemoKey || this.storageDemoKey.trim().length === 0;
     if (notValidInput) {
       this.storageShowAlert('error', 'Please fill Key field');
     }
@@ -415,7 +454,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   storageShowAlert(type, text) {
     uxManager().showAlert({
       type,
-      text
+      text,
     });
   }
 }

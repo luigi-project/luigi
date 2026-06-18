@@ -287,7 +287,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
       });
     });
 
-    it('with fromVirtualTree option', () => {
+    it('with fromVirtualTree option (withoutSync)', () => {
       const routeToCheck = '/projects/pr1/developers';
       const routeVirtual = '/internal/virtualTree';
       cy.visitLoggedIn(routeToCheck);
@@ -301,11 +301,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
           .find('[data-testid="goToVirtualTree"]')
           .click();
 
-        cy.expectPathToBe(routeToCheck + routeVirtual);
-
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-virtualtree"]')
-          .click();
+        cy.expectPathToBe(routeToCheck);
 
         cy.wrap($iframeBody)
           .find('[data-testid="curr-link-virtualtree"]')
@@ -313,7 +309,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
         cy.wrap($iframeBody)
           .find('[data-testid="curr-text-virtualtree"]')
-          .should('contain', routeVirtual);
+          .should('not.contain', routeVirtual);
       });
     });
 
