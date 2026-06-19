@@ -81,7 +81,8 @@
     "@babel/core": "$@babel/core",
     "@angular/build": {
       "esbuild": "$esbuild",
-      "piscina": "^5.2.0"
+      "piscina": "^5.2.0",
+      "undici": "^7.28.0"
     },
     "vite": {
       ".": "$vite",
