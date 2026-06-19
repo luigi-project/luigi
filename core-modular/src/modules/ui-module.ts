@@ -250,6 +250,15 @@ export const UIModule = {
         currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
       }
 
+      const resolvedViewUrl = currentNode.viewUrl
+        ? serviceRegistry
+            .get(ViewUrlDecoratorSvc)
+            .applyDecorators(
+              RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
+              currentNode.decodeViewUrl ?? false
+            )
+        : '';
+
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') !== 0) return;
 
@@ -268,6 +277,13 @@ export const UIModule = {
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
             viewGroupContainer = element;
+          } else if (
+            !currentNode.viewGroup &&
+            element.viewurl &&
+            resolvedViewUrl &&
+            GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)
+          ) {
+            viewGroupContainer = element;
           } else {
             element.remove();
           }
@@ -282,14 +298,7 @@ export const UIModule = {
       if (viewGroupContainer) {
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
-          viewGroupContainer.viewurl = currentNode.viewUrl
-            ? serviceRegistry
-                .get(ViewUrlDecoratorSvc)
-                .applyDecorators(
-                  RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
-                  currentNode.decodeViewUrl ?? false
-                )
-            : '';
+          viewGroupContainer.viewurl = resolvedViewUrl;
           viewGroupContainer.nodeParams = nodeParams;
           viewGroupContainer.pathParams = pathParams;
           viewGroupContainer.clientPermissions = currentNode.clientPermissions;

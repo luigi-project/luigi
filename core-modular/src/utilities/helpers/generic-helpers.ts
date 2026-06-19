@@ -64,6 +64,29 @@ export const GenericHelpers = {
   },
 
   /**
+   * Returns the URL without the hash fragment
+   * @param {string} url
+   * @returns {string}
+   */
+  getUrlWithoutHash: (url: string): string => {
+    if (!url) return '';
+    const hashIndex = url.indexOf('#');
+    return hashIndex === -1 ? url : url.substring(0, hashIndex);
+  },
+
+  /**
+   * Checks if two URLs are the same when ignoring the hash fragment.
+   * Used to determine if a container/iframe can be reused.
+   * @param {string} url1
+   * @param {string} url2
+   * @returns {boolean}
+   */
+  isSameUrl: (url1: string, url2: string): boolean => {
+    if (!url1 || !url2) return false;
+    return GenericHelpers.getUrlWithoutHash(url1) === GenericHelpers.getUrlWithoutHash(url2);
+  },
+
+  /**
    * Removes leading hash of a string
    * @param {string} path
    * @returns {string}
