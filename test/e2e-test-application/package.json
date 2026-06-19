@@ -62,7 +62,7 @@
     "esbuild": "0.28.1",
     "eslint": "9.39.4",
     "express": "4.22.1",
-    "http-proxy-middleware": "2.0.9",
+    "http-proxy-middleware": "3.0.7",
     "http-server": "14.1.1",
     "lodash": "4.18.1",
     "sass": "1.99.0",
@@ -78,10 +78,14 @@
   "overrides": {
     "ip-address": "10.1.1",
     "qs": "^6.15.2",
+    "@babel/core": "$@babel/core",
     "@angular/build": {
-      "esbuild": "$esbuild"
+      "esbuild": "$esbuild",
+      "piscina": "^5.2.0",
+      "undici": "^7.28.0"
     },
     "vite": {
+      ".": "$vite",
       "esbuild": "$esbuild"
     }
   },

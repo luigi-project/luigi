@@ -25,12 +25,10 @@
       };
 
       const getHashParams = () => {
-        const hash = encodeURIComponent(window.location.hash.substring(1));
-        return decodeURIComponent(hash)
-          .split('&')
-          .reduce(function (result, item) {
-            var parts = item.split('=');
-            result[parts[0]] = parts[1];
+        return new URLSearchParams(window.location.hash.substring(1))
+          .entries()
+          .reduce(function (result, [key, value]) {
+            result[key] = value;
             return result;
           }, Object.create(null));
       };

@@ -1,8 +1,9 @@
-.DS_Store
-node_modules
-npm-debug.log
-bower_components
-dist
-*.swp
-.cache
-.idea
+# Dependencies
+node_modules/
+
+# Build artifacts (output goes to ../public/, but defensive in case of misconfig)
+public/
+
+# Blog posts are copied from /blog/ at repo root by scripts/copy-blog.js as a
+# build step. Only the directory data file (blog.11tydata.cjs) is committed.
+src/blog/*.md

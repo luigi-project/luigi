@@ -1,0 +1,115 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{{ title }} - Luigi Blog</title>
+    <meta name="description" content="{{ seoMetaDescription }}" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/app.css" />
+
+    <link rel="alternate" title="Luigi Blog" type="application/json" href="/blog/feeds/feed.json" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feeds/rss.xml" />
+  </head>
+
+  <body class="has-dark-bg">
+    <script>
+      // Apply the saved theme before first paint. See default.hbs for rationale.
+      if (/(?:^|;\s*)dark-mode=false(?:;|$)/.test(document.cookie)) {
+        document.body.classList.remove('has-dark-bg');
+      }
+    </script>
+    {{> partials/header}}
+
+    <div class="main-content">
+      <section>
+        <div class="row" id="stickyAnchor" data-something>
+          <div class="column small-12 medium-9">
+            {{!--
+              The same layout is used for the overview page (src/blog-overview.hbs)
+              and for individual blog posts (src/blog/*.md). Posts have `tags`
+              including 'blog' (set in blog.11tydata.cjs); the overview does not.
+              We use that as the discriminator rather than fileSlug, which 11ty
+              strips date prefixes from in unhelpful ways.
+            --}}
+            {{#if tags.length}}
+              <a id="back-to-blog" href="/blog/overview" class="back-to-blog">Back to Blog</a>
+              <div class="blog-entry">
+                <div class="title-2">{{ title }}</div>
+                <div class="sub-title"><span class="text">{{ joinAuthors author }} @Luigi on {{ formatDate date }}</span></div>
+                {{{ content }}}
+              </div>
+            {{else}}
+              {{{ content }}}
+            {{/if}}
+          </div>
+
+          <div class="columns small-12 medium-3 right show-for-xlarge" data-sticky-container>
+            <div class="sticky" data-sticky data-margin-top="6" data-anchor="stickyAnchor">
+              {{#unless tags.length}}
+                <a
+                  href="/blog/feeds/rss.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link-rss-feed"
+                  title="Show RSS Feed"
+                  aria-label="Show RSS Feed"
+                >
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M128.081 415.959c0 35.369-28.672 64.041-64.041 64.041S0 451.328 0 415.959s28.672-64.041 64.041-64.041 64.04 28.673 64.04 64.041zm175.66 47.25c-8.354-154.6-132.185-278.587-286.95-286.95C7.656 175.765 0 183.105 0 192.253v48.069c0 8.415 6.49 15.472 14.887 16.018 111.832 7.284 201.473 96.702 208.772 208.772.547 8.397 7.604 14.887 16.018 14.887h48.069c9.149.001 16.489-7.655 15.995-16.79zm144.249.288C439.596 229.677 251.465 40.445 16.503 32.01 7.473 31.686 0 38.981 0 48.016v48.068c0 8.625 6.835 15.645 15.453 15.999 191.179 7.839 344.627 161.316 352.465 352.465.353 8.618 7.373 15.453 15.999 15.453h48.068c9.034-.001 16.329-7.474 16.005-16.504z"
+                    ></path>
+                  </svg>
+                </a>
+              {{/unless}}
+
+              <ul class="list-type-1 sticky-navigation">
+                <li><a href="https://docs.luigi-project.io">Read Documentation</a></li>
+                <li>
+                  <a href="https://slack.luigi-project.io" target="_blank" rel="noopener noreferrer">Community</a>
+                </li>
+                <li>
+                  <a href="https://docs.luigi-project.io/docs/getting-started">How to get started</a>
+                </li>
+                <li>
+                  <a rel="noopener noreferrer" target="_blank" href="https://www.youtube.com/channel/UC5WsYsHapDlg2K3iXS4n4AQ">Our Youtube Channel</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="s-gradient">
+        <div class="row">
+          <div class="column small-12 large-6 content">
+            <div class="sub-title"><span class="text">Our Youtube Channel</span></div>
+            <h3 class="title-3">Get the latest from Luigi</h3>
+            <p class="description">
+              Always stay up to date with our growing collection of news, innvovations and video tutorials.
+            </p>
+            <p>
+              <a class="btn-primary" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/channel/UC5WsYsHapDlg2K3iXS4n4AQ">Browse Channel</a>
+            </p>
+          </div>
+          <div class="column small-12 large-6 image">
+            <img src="/assets/img/youtube.svg" alt="Luigi - Our Youtube Channel - Youtube" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    {{> partials/footer}}
+
+    <script src="/assets/js/app.js"></script>
+  </body>
+</html>
