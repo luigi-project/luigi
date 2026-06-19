@@ -16,7 +16,7 @@ export function provideLuigiAngular() {
       useClass: LuigiRouteStrategy
     },
     provideEnvironmentInitializer(() => {
-      inject(LuigiAutoRoutingService)
+      inject(LuigiAutoRoutingService);
     })
   ]);
 }
