@@ -80,7 +80,8 @@
     "qs": "^6.15.2",
     "@babel/core": "$@babel/core",
     "@angular/build": {
-      "esbuild": "$esbuild"
+      "esbuild": "$esbuild",
+      "piscina": "^5.2.0"
     },
     "vite": {
       ".": "$vite",
