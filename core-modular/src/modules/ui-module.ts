@@ -176,6 +176,15 @@ export const UIModule = {
 
     if (
       noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata')
+    ) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+    }
+
+    if (
+      noScopes ||
       scopes.includes('settings.header') ||
       scopes.includes('settings') ||
       scopes.includes('navigation') ||
@@ -193,7 +202,6 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
-      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
       const uiConnector = UIModule.luigi.getEngine()._connector;
@@ -209,7 +217,6 @@ export const UIModule = {
       scopes.includes('navigation.nodes') ||
       scopes.includes('navigation.viewgroupdata')
     ) {
-      serviceRegistry.get(NodeDataManagementService).deleteCache();
       if (croute.path) {
         const pathData = await UIModule.navService.getPathData(croute.path);
         const currentNode = pathData?.selectedNode ?? croute.node;
