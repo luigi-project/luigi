@@ -147,7 +147,7 @@
           <app-code-snippet
             data="linkManager().fromVirtualTreeRoot().getCurrentRoute().then(...)"
           ></app-code-snippet>
-          <p data-testid="curr-text-virtualtree">{{currentRouteVirtual}}</p>
+          <p data-testid="curr-text-virtualtree">{{currentRouteVirtual()}}</p>
         </li>
         <li class="fd-list__item">
           <a
@@ -160,7 +160,7 @@
           <app-code-snippet
             data="linkManager().getCurrentRoute().then(...)"
           ></app-code-snippet>
-          <p data-testid="curr-text-no-option">{{currentRoute}}</p>
+          <p data-testid="curr-text-no-option">{{currentRoute()}}</p>
         </li>
         <li class="fd-list__item">
           <a

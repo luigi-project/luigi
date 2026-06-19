@@ -1,5 +1,5 @@
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
   addInitListener,
@@ -32,8 +32,8 @@ export class SettingsComponent implements OnInit {
   lcSubscription: Subscription;
   preservedViewCallbackContext: any;
   testFeatureToggleActive = false;
-  currentRouteVirtual: string;
-  currentRoute: string;
+  currentRouteVirtual = signal('');
+  currentRoute = signal('');
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -99,7 +99,7 @@ export class SettingsComponent implements OnInit {
       .fromVirtualTreeRoot()
       .getCurrentRoute()
       .then((route) => {
-        this.currentRouteVirtual = route;
+        this.currentRouteVirtual.set(route);
       });
   }
 
@@ -107,7 +107,7 @@ export class SettingsComponent implements OnInit {
     linkManager()
       .getCurrentRoute()
       .then((route) => {
-        this.currentRoute = route;
+        this.currentRoute.set(route);
       });
   }
 

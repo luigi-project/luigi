@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, provideZoneChangeDetection } from '@angular/core';
+import { inject, NgModule, provideEnvironmentInitializer, provideZoneChangeDetection } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { provideLuigiAngular } from '@luigi-project/client-support-angular';
+import { provideLuigiAngular, LuigiAutoRoutingService } from '@luigi-project/client-support-angular';
 import { AppComponent } from './app.component';
 import { PreloadComponent } from './preload/preload.component';
 import { ProjectComponent } from './project/project.component';
@@ -60,7 +60,14 @@ import { ViewGroupComponent } from './project/view-group/view-group.component';
     ViewGroupComponent
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [provideZoneChangeDetection(), provideLuigiAngular()],
+  providers: [
+    provideZoneChangeDetection(),
+    provideLuigiAngular(),
+    // TODO remove when newer `@luigi-project/client-support-angular` is released
+    provideEnvironmentInitializer(() => {
+      inject(LuigiAutoRoutingService)
+    })
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

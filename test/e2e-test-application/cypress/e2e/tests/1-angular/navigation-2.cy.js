@@ -163,6 +163,7 @@ describe('Navigation', () => {
         cy.getIframeBody().then(($iframeBody) => {
           cy.wrap($iframeBody).contains(label).click();
           cy.wrap($iframeBody).find('[data-testid="curr-path-segment"]').should('contain', label);
+          cy.expectPathToBe('/projects/pr2/nav-sync/' + label);
         });
       });
     });
@@ -174,6 +175,7 @@ describe('Navigation', () => {
           const routeToCheck = 'dynamic-parameter-flat/' + label;
           cy.wrap($iframeBody).contains(routeToCheck).click();
           cy.wrap($iframeBody).find('[data-testid="curr-path-segment"]').should('contain', routeToCheck);
+          cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-flat/' + label);
         });
       });
     });
@@ -185,6 +187,7 @@ describe('Navigation', () => {
           const routeToCheck = 'dynamic-parameter-stacked/' + label;
           cy.wrap($iframeBody).contains(routeToCheck).click();
           cy.wrap($iframeBody).find('[data-testid="curr-path-segment"]').should('contain', routeToCheck);
+          cy.expectPathToBe('/projects/pr2/nav-sync/dynamic-parameter-stacked/' + label);
         });
       });
     });
