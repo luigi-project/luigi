@@ -48,18 +48,14 @@
 
 <section class="fd-section">
   <div class="fd-section__header">
-    <h3 *ngIf="projectId" class="fd-section__title">
-      Settings of {{ projectId }}
-    </h3>
+    <h3 *ngIf="projectId" class="fd-section__title">Settings of {{ projectId }}</h3>
     <h3 *ngIf="!projectId" class="fd-section__title">Global Settings</h3>
   </div>
 
   <div class="fd-layout-panel fd-has-margin-bottom-small">
     <div class="fd-layout-panel__header">
       <div class="fd-layout-panel__head">
-        <h3 class="fd-layout-panel__title">
-          LuigiClient hasBack/GoBack
-        </h3>
+        <h3 class="fd-layout-panel__title">LuigiClient hasBack/GoBack</h3>
       </div>
     </div>
     <div class="fd-layout-panel__body">
@@ -92,9 +88,7 @@
   <div *ngIf="isModal" class="fd-layout-panel fd-has-margin-bottom-small">
     <div class="fd-layout-panel__header">
       <div class="fd-layout-panel__head">
-        <h3 class="fd-layout-panel__title">
-          LuigiClient Modal
-        </h3>
+        <h3 class="fd-layout-panel__title">LuigiClient Modal</h3>
       </div>
     </div>
     <div class="fd-layout-panel__body">
@@ -111,9 +105,7 @@
   >
     <div class="fd-layout-panel__header">
       <div class="fd-layout-panel__head">
-        <h3 class="fd-layout-panel__title">
-          LuigiClient User Settings
-        </h3>
+        <h3 class="fd-layout-panel__title">LuigiClient User Settings</h3>
       </div>
     </div>
     <div class="fd-layout-panel__body">
@@ -230,7 +222,9 @@
             (click)="linkManager().navigate('/projects/pr2')"
             >absolute: to /projects/pr2</a
           >
-          <app-code-snippet data="linkManager().navigate('/projects/pr2')"></app-code-snippet>
+          <app-code-snippet
+            data="linkManager().navigate('/projects/pr2')"
+          ></app-code-snippet>
         </li>
         <li class="fd-list__item">
           <a

@@ -65,7 +65,7 @@ import { ViewGroupComponent } from './project/view-group/view-group.component';
     provideLuigiAngular(),
     // TODO remove when newer `@luigi-project/client-support-angular` is released
     provideEnvironmentInitializer(() => {
-      inject(LuigiAutoRoutingService)
+      inject(LuigiAutoRoutingService);
     })
   ],
   bootstrap: [AppComponent]
