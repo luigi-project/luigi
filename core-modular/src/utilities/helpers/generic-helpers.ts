@@ -64,6 +64,33 @@ export const GenericHelpers = {
   },
 
   /**
+   * Returns the URL without the hash fragment, normalized to an absolute URL.
+   * Relative URLs are prepended with window.location.origin.
+   * @param {string} url
+   * @returns {string}
+   */
+  getUrlWithoutHash: (url: string): string => {
+    if (!url) return '';
+    const urlWithoutHash = url.split('#')[0];
+    if (!urlWithoutHash.startsWith('http')) {
+      return window.location.origin + (urlWithoutHash.startsWith('/') ? '' : '/') + urlWithoutHash;
+    }
+    return urlWithoutHash;
+  },
+
+  /**
+   * Checks if two URLs are the same when ignoring the hash fragment.
+   * Used to determine if a container/iframe can be reused.
+   * @param {string} url1
+   * @param {string} url2
+   * @returns {boolean}
+   */
+  isSameUrl: (url1: string, url2: string): boolean => {
+    if (!url1 || !url2) return false;
+    return GenericHelpers.getUrlWithoutHash(url1) === GenericHelpers.getUrlWithoutHash(url2);
+  },
+
+  /**
    * Removes leading hash of a string
    * @param {string} path
    * @returns {string}
