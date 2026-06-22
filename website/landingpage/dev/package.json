@@ -27,6 +27,7 @@
     "esbuild": "0.28.1",
     "feed": "5.2.0",
     "gray-matter": "4.0.3",
+    "js-yaml": "4.2.0",
     "marked": "18.0.5",
     "npm-run-all": "4.1.5",
     "postcss": "8.5.15",
@@ -35,5 +36,10 @@
   },
   "engines": {
     "node": ">=20.19.0"
+  },
+  "overrides": {
+    "gray-matter": {
+      "js-yaml": "^4.2.0"
+    }
   }
 }
