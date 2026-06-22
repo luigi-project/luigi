@@ -9,7 +9,8 @@ describe('Generic-helpers', () => {
     originalLocation = window.location;
     Object.defineProperty(window, 'location', {
       get: () => ({
-        search: locationSearchString
+        search: locationSearchString,
+        origin: 'http://localhost'
       }),
       configurable: true
     });
@@ -99,6 +100,79 @@ describe('Generic-helpers', () => {
     const path = '#/tets';
 
     expect(GenericHelpers.getPathWithoutHash(path)).toEqual('tets');
+  });
+
+  describe('getUrlWithoutHash', () => {
+    it('should return normalized URL without hash fragment', () => {
+      expect(GenericHelpers.getUrlWithoutHash('/developers.html#developers')).toEqual(
+        'http://localhost/developers.html'
+      );
+    });
+
+    it('should return normalized URL when no hash present', () => {
+      expect(GenericHelpers.getUrlWithoutHash('/developers.html')).toEqual('http://localhost/developers.html');
+    });
+
+    it('should return empty string for empty input', () => {
+      expect(GenericHelpers.getUrlWithoutHash('')).toEqual('');
+    });
+
+    it('should return empty string for undefined/null input', () => {
+      expect(GenericHelpers.getUrlWithoutHash(undefined as any)).toEqual('');
+      expect(GenericHelpers.getUrlWithoutHash(null as any)).toEqual('');
+    });
+
+    it('should handle URLs with multiple hash characters', () => {
+      expect(GenericHelpers.getUrlWithoutHash('/app.html#/path#extra')).toEqual('http://localhost/app.html');
+    });
+
+    it('should keep absolute URLs as-is', () => {
+      expect(GenericHelpers.getUrlWithoutHash('http://localhost:4200/app.html#/route')).toEqual(
+        'http://localhost:4200/app.html'
+      );
+    });
+
+    it('should prepend origin for relative URLs without leading slash', () => {
+      expect(GenericHelpers.getUrlWithoutHash('app.html#/route')).toEqual('http://localhost/app.html');
+    });
+  });
+
+  describe('isSameUrl', () => {
+    it('should return true for URLs differing only in hash', () => {
+      expect(GenericHelpers.isSameUrl('/developers.html#developers', '/developers.html#settings')).toBe(true);
+    });
+
+    it('should return true for identical URLs', () => {
+      expect(GenericHelpers.isSameUrl('/app.html#/route', '/app.html#/route')).toBe(true);
+    });
+
+    it('should return false for different base URLs', () => {
+      expect(GenericHelpers.isSameUrl('/developers.html#dev', '/settings.html#dev')).toBe(false);
+    });
+
+    it('should return false when one URL is empty', () => {
+      expect(GenericHelpers.isSameUrl('', '/developers.html#dev')).toBe(false);
+      expect(GenericHelpers.isSameUrl('/developers.html#dev', '')).toBe(false);
+    });
+
+    it('should return false for null/undefined inputs', () => {
+      expect(GenericHelpers.isSameUrl(null as any, '/app.html')).toBe(false);
+      expect(GenericHelpers.isSameUrl('/app.html', undefined as any)).toBe(false);
+    });
+
+    it('should return true for same base URL without any hash', () => {
+      expect(GenericHelpers.isSameUrl('/microfrontend.html', '/microfrontend.html')).toBe(true);
+    });
+
+    it('should return true for mixed relative and absolute URLs with same origin', () => {
+      expect(GenericHelpers.isSameUrl('/app.html#/a', 'http://localhost/app.html#/b')).toBe(true);
+    });
+
+    it('should return false for absolute URLs with different origins', () => {
+      expect(GenericHelpers.isSameUrl('http://localhost:4200/app.html#/a', 'http://localhost:8080/app.html#/b')).toBe(
+        false
+      );
+    });
   });
 });
 
