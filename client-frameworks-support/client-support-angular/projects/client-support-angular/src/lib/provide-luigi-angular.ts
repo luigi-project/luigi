@@ -1,9 +1,9 @@
-import { makeEnvironmentProviders } from '@angular/core';
-import { LuigiContextService } from './service/luigi-context.service';
-import { LuigiContextServiceImpl } from './service/luigi-context.service.impl';
+import { inject, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
 import { RouteReuseStrategy } from '@angular/router';
 import { LuigiRouteStrategy } from './route/luigi-route-strategy';
 import { LuigiAutoRoutingService } from './service/luigi-auto-routing.service';
+import { LuigiContextService } from './service/luigi-context.service';
+import { LuigiContextServiceImpl } from './service/luigi-context.service.impl';
 
 export function provideLuigiAngular() {
   return makeEnvironmentProviders([
@@ -15,6 +15,8 @@ export function provideLuigiAngular() {
       provide: RouteReuseStrategy,
       useClass: LuigiRouteStrategy
     },
-    LuigiAutoRoutingService
+    provideEnvironmentInitializer(() => {
+      inject(LuigiAutoRoutingService);
+    })
   ]);
 }
