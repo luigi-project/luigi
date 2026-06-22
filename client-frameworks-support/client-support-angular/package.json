@@ -49,7 +49,15 @@
     "typescript-eslint": "8.60.1"
   },
   "overrides": {
-    "ip-address": "10.1.1"
+    "ip-address": "10.1.1",
+    "@babel/core": "^7.29.6",
+    "js-yaml": "^4.2.0",
+    "@angular/build": {
+      "piscina": "^5.2.0"
+    },
+    "vite": {
+      "esbuild": "^0.28.1"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
