@@ -279,6 +279,7 @@ export const UIModule = {
             viewGroupContainer = element;
           } else if (
             !currentNode.viewGroup &&
+            !currentNode.isolateView &&
             element.viewurl &&
             resolvedViewUrl &&
             GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)

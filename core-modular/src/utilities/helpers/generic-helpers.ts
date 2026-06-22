@@ -64,14 +64,19 @@ export const GenericHelpers = {
   },
 
   /**
-   * Returns the URL without the hash fragment
+   * Returns the URL without the hash fragment, normalized to an absolute URL.
+   * Relative URLs are prepended with window.location.origin.
    * @param {string} url
    * @returns {string}
    */
   getUrlWithoutHash: (url: string): string => {
     if (!url) return '';
-    const hashIndex = url.indexOf('#');
-    return hashIndex === -1 ? url : url.substring(0, hashIndex);
+    console.log('getUrlWithoutHash called with url:', url);
+    const urlWithoutHash = url.split('#')[0];
+    if (!urlWithoutHash.startsWith('http')) {
+      return window.location.origin + (urlWithoutHash.startsWith('/') ? '' : '/') + urlWithoutHash;
+    }
+    return urlWithoutHash;
   },
 
   /**

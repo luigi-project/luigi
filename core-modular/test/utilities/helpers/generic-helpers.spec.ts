@@ -9,7 +9,8 @@ describe('Generic-helpers', () => {
     originalLocation = window.location;
     Object.defineProperty(window, 'location', {
       get: () => ({
-        search: locationSearchString
+        search: locationSearchString,
+        origin: 'http://localhost'
       }),
       configurable: true
     });
@@ -102,12 +103,14 @@ describe('Generic-helpers', () => {
   });
 
   describe('getUrlWithoutHash', () => {
-    it('should return URL without hash fragment', () => {
-      expect(GenericHelpers.getUrlWithoutHash('/developers.html#developers')).toEqual('/developers.html');
+    it('should return normalized URL without hash fragment', () => {
+      expect(GenericHelpers.getUrlWithoutHash('/developers.html#developers')).toEqual(
+        'http://localhost/developers.html'
+      );
     });
 
-    it('should return full URL when no hash present', () => {
-      expect(GenericHelpers.getUrlWithoutHash('/developers.html')).toEqual('/developers.html');
+    it('should return normalized URL when no hash present', () => {
+      expect(GenericHelpers.getUrlWithoutHash('/developers.html')).toEqual('http://localhost/developers.html');
     });
 
     it('should return empty string for empty input', () => {
@@ -120,13 +123,17 @@ describe('Generic-helpers', () => {
     });
 
     it('should handle URLs with multiple hash characters', () => {
-      expect(GenericHelpers.getUrlWithoutHash('/app.html#/path#extra')).toEqual('/app.html');
+      expect(GenericHelpers.getUrlWithoutHash('/app.html#/path#extra')).toEqual('http://localhost/app.html');
     });
 
-    it('should handle full URLs with origin', () => {
+    it('should keep absolute URLs as-is', () => {
       expect(GenericHelpers.getUrlWithoutHash('http://localhost:4200/app.html#/route')).toEqual(
         'http://localhost:4200/app.html'
       );
+    });
+
+    it('should prepend origin for relative URLs without leading slash', () => {
+      expect(GenericHelpers.getUrlWithoutHash('app.html#/route')).toEqual('http://localhost/app.html');
     });
   });
 
@@ -157,10 +164,14 @@ describe('Generic-helpers', () => {
       expect(GenericHelpers.isSameUrl('/microfrontend.html', '/microfrontend.html')).toBe(true);
     });
 
-    it('should handle full URLs with origin', () => {
-      expect(
-        GenericHelpers.isSameUrl('http://localhost:4200/app.html#/a', 'http://localhost:4200/app.html#/b')
-      ).toBe(true);
+    it('should return true for mixed relative and absolute URLs with same origin', () => {
+      expect(GenericHelpers.isSameUrl('/app.html#/a', 'http://localhost/app.html#/b')).toBe(true);
+    });
+
+    it('should return false for absolute URLs with different origins', () => {
+      expect(GenericHelpers.isSameUrl('http://localhost:4200/app.html#/a', 'http://localhost:8080/app.html#/b')).toBe(
+        false
+      );
     });
   });
 });
