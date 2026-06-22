@@ -168,6 +168,7 @@ export interface Node {
   titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
+  isolateView?: boolean;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
   virtualTree?: boolean;
@@ -311,6 +312,24 @@ export interface NavigationRequestParams extends NavigationRequestBase {
 
 export interface NavigationRequestEvent {
   detail: NavigationRequestBase;
+}
+
+export interface NavigationRequestDetail {
+  drawer: unknown;
+  link: string;
+  intent: boolean;
+  preserveView: string;
+  modal: unknown;
+  newTab: boolean;
+  withoutSync: boolean;
+  preventContextUpdate: boolean;
+  preventHistoryEntry: boolean;
+  fromVirtualTreeRoot: boolean;
+  fromContext: boolean;
+  fromClosestContext: boolean;
+  fromParent: boolean;
+  relative: boolean;
+  nodeParams: Record<string, string>;
 }
 
 /**

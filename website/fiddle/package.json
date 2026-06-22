@@ -7,11 +7,11 @@
     "dev": "node patch.js && node build_patch_ui5.js && webpack serve  --static public"
   },
   "dependencies": {
-    "@luigi-project/client": "^2.29.0",
-    "@luigi-project/container": "^1.7.6",
-    "@luigi-project/core": "^2.29.0",
-    "@luigi-project/plugin-auth-oauth2": "^2.29.0",
-    "@luigi-project/plugin-auth-oidc": "^2.29.0",
+    "@luigi-project/client": "^2.31.0",
+    "@luigi-project/container": "^1.7.7",
+    "@luigi-project/core": "^2.31.0",
+    "@luigi-project/plugin-auth-oauth2": "^2.31.0",
+    "@luigi-project/plugin-auth-oidc": "^2.31.0",
     "@luigi-project/plugin-auth-oidc-pkce": "^0.42.0",
     "@ui5/webcomponents": "2.20.1",
     "@ui5/webcomponents-fiori": "2.20.1",
@@ -33,9 +33,12 @@
     "svelte-loader": "3.2.4",
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.4"
+    "webpack-dev-server": "5.2.5"
   },
   "engines": {
     "node": ">=20.19.0"
+  },
+  "overrides": {
+    "http-proxy-middleware": "3.0.7"
   }
 }

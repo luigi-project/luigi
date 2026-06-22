@@ -20,7 +20,7 @@
     "react-router-dom": "7.13.2"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
+    "@babel/core": "7.29.6",
     "@babel/preset-env": "7.29.0",
     "@babel/preset-react": "7.28.5",
     "babel-loader": "9.2.1",
@@ -32,6 +32,6 @@
     "serve-static": "1.16.2",
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.4"
+    "webpack-dev-server": "5.2.5"
   }
 }
