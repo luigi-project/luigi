@@ -6,6 +6,7 @@
 
 import { Feed } from 'feed';
 import matter from 'gray-matter';
+import yaml from 'js-yaml';
 import { marked } from 'marked';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -72,7 +73,12 @@ export function generateFeeds(results) {
       const date = dateMatch ? new Date(dateMatch[1]) : new Date();
 
       const raw = readFileSync(r.inputPath, 'utf8');
-      const parsed = matter(raw);
+      // Pass an explicit YAML engine: gray-matter@4.0.3 still calls the removed
+      // `safeLoad`/`safeDump` symbols from js-yaml 3.x, but the `js-yaml` we
+      // resolve project-wide is v4 (overridden to drop the v3 DoS advisory
+      // GHSA-h67p-54hq-rp68). Providing the engine here bypasses gray-matter's
+      // built-in default and uses v4's `load` directly.
+      const parsed = matter(raw, { engines: { yaml: (s) => yaml.load(s) } });
       const fm = parsed.data;
 
       return {
