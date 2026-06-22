@@ -71,7 +71,6 @@ export const GenericHelpers = {
    */
   getUrlWithoutHash: (url: string): string => {
     if (!url) return '';
-    console.log('getUrlWithoutHash called with url:', url);
     const urlWithoutHash = url.split('#')[0];
     if (!urlWithoutHash.startsWith('http')) {
       return window.location.origin + (urlWithoutHash.startsWith('/') ? '' : '/') + urlWithoutHash;
