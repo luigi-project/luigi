@@ -451,6 +451,16 @@ export class NavigationService {
       return;
     }
 
+    if (node.link) {
+      const isAbsolute = node.link.startsWith('/');
+      if (isAbsolute) {
+        return this.luigi.navigation().navigate(node.link);
+      }
+      const parentPath = node.parent ? RoutingHelpers.getNodePath(node.parent) : '';
+      const resolvedPath = `${parentPath}/${node.link}`.replace(/\/\/+/g, '/');
+      return this.luigi.navigation().navigate(resolvedPath);
+    }
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
