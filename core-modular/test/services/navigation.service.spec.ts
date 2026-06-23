@@ -746,7 +746,12 @@ describe('NavigationService', () => {
     });
 
     it('should mark selected node as selected', () => {
-      const node1: Node = { pathSegment: 'node1', label: 'Node 1', children: [], badgeCounter: { count: () => 1, label: '' } };
+      const node1: Node = {
+        pathSegment: 'node1',
+        label: 'Node 1',
+        children: [],
+        badgeCounter: { count: () => 1, label: '' }
+      };
       const node2: Node = { pathSegment: 'node2', label: 'Node 2', children: [] };
       const selectedNode: Node = node2;
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
@@ -786,8 +791,20 @@ describe('NavigationService', () => {
 
     it('should group nodes by category', () => {
       const category = { id: 'cat1', label: 'Category 1' };
-      const node1: Node = { pathSegment: 'node1', label: 'Node 1', category, children: [], badgeCounter: { count: () => 1 } };
-      const node2: Node = { pathSegment: 'node2', label: 'Node 2', category, children: [], badgeCounter: { count: () => 2 } };
+      const node1: Node = {
+        pathSegment: 'node1',
+        label: 'Node 1',
+        category,
+        children: [],
+        badgeCounter: { count: () => 1 }
+      };
+      const node2: Node = {
+        pathSegment: 'node2',
+        label: 'Node 2',
+        category,
+        children: [],
+        badgeCounter: { count: () => 2 }
+      };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
       const pathData = {
         selectedNode: undefined,

@@ -203,9 +203,13 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): {
-    items: NavItem[],
-    totalBadgeNode: BadgeCounter
+  buildNavItems(
+    nodes: Node[],
+    selectedNode: Node | undefined,
+    pathData: PathData
+  ): {
+    items: NavItem[];
+    totalBadgeNode: BadgeCounter;
   } {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
@@ -314,7 +318,7 @@ export class NavigationService {
       label: ''
     };
 
-    return {items, totalBadgeNode};
+    return { items, totalBadgeNode };
   }
 
   async getCurrentNode(path: string): Promise<Node | undefined> {
