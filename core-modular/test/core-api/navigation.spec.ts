@@ -32,6 +32,7 @@ describe('Navigation', () => {
     luigiMock = {
       getConfig: jest.fn().mockReturnValue({ routing: { useHashRouting: false } }),
       getConfigValue: jest.fn(),
+      configChanged: jest.fn(),
       navigation: jest.fn(() => ({ navigate: jest.fn(), navService: mockNavService })),
       getEngine: jest.fn().mockReturnValue({
         _ui: {
@@ -330,6 +331,16 @@ describe('Navigation', () => {
       navigation.navigateToIntent(data.slug, data.params);
 
       expect(handleNavigationRequestSpy).toHaveBeenCalledWith(navRequestParams, undefined);
+    });
+  });
+
+  describe('updateTopNavigation', () => {
+    it('should trigger config change for navigation', async () => {
+      const configChangedSpy = jest.spyOn(luigiMock, 'configChanged');
+
+      await navigation.updateTopNavigation();
+
+      expect(configChangedSpy).toHaveBeenCalledWith('navigation');
     });
   });
 });
