@@ -86,7 +86,7 @@
 
     .wr {
       border-radius: 7px;
-      border: 4px solid white;
+      border: 4px solid var(--fg-color);
       padding: 30px;
       text-align: center;
       color: $primary-color;
@@ -134,7 +134,7 @@
       letter-spacing: 2px;
 
       a {
-        color: white;
+        color: var(--fg-color);
         display: inline-block;
         position: relative;
         padding-bottom: 20px;

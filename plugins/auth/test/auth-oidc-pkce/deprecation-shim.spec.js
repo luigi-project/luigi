@@ -46,7 +46,7 @@ describe('auth-oidc-pkce deprecation shim', () => {
       const passedSettings = UserManager.mock.calls[0][0];
       expect(passedSettings[newKey]).toBe(42);
       expect(passedSettings[oldKey]).toBeUndefined();
-      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining(`"${oldKey}" has been renamed to "${newKey}"`));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining(`"${oldKey}" is deprecated`));
     });
 
     it('does not warn when only the new key is set', async () => {
