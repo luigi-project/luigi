@@ -203,19 +203,20 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(
+  async buildNavItems(
     nodes: Node[],
     selectedNode: Node | undefined,
-    pathData: PathData
-  ): {
+    pathData: PathData,
+    addBadges = false
+  ): Promise<{
     items: NavItem[];
-    totalBadgeNode: BadgeCounter;
-  } {
+    totalBadgeNode: BadgeCounter | undefined;
+  }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
     const badgeCountsToSumUp: number[] = [];
 
-    nodes?.forEach(async (node) => {
+    for (const node of nodes) {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
@@ -224,25 +225,20 @@ export class NavigationService {
           this.luigi
         )
       ) {
-        return;
+        continue;
       }
 
-      const hasBadge = !!node.badgeCounter;
+      const hasBadge = !!node.badgeCounter && addBadges;
       let badgeCount = 0;
 
-      if (node.badgeCounter) {
-        if (GenericHelpers.isPromise(node.badgeCounter.count)) {
-          badgeCount = await (node.badgeCounter.count as () => Promise<number>)();
-        } else {
-          badgeCount = (node.badgeCounter.count as () => number)();
-        }
+      if (addBadges && node.badgeCounter) {
+        badgeCount = await (node.badgeCounter.count as any)();
       }
 
       if (node.category) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
-        let badgeCounter = undefined;
 
         if (!catNode) {
           catNode = {
@@ -258,33 +254,23 @@ export class NavigationService {
           };
           catMap[catId] = catNode;
           items.push(catNode);
-        }
+        } else {
+          if (hasBadge) {
+            if (catNode.badgeCounter) {
+              const nodeBadgeCount = await (catNode.badgeCounter.count as any)();
 
-        if (hasBadge) {
-          if (!node.badgeCounter) {
-            badgeCounter = {
-              count: () => Number(badgeCount),
-              label: ''
-            };
-          } else {
-            let nodeBadgeCount: number;
-
-            if (GenericHelpers.isPromise(node.badgeCounter.count)) {
-              nodeBadgeCount = await (node.badgeCounter.count as () => Promise<number>)();
+              catNode.badgeCounter.count = () => Number(nodeBadgeCount + badgeCount);
             } else {
-              nodeBadgeCount = (node.badgeCounter.count as () => number)();
+              catNode.badgeCounter = {
+                count: () => Number(badgeCount),
+                label: ''
+              };
             }
-
-            badgeCounter = {
-              count: () => Number(nodeBadgeCount + badgeCount),
-              label: ''
-            };
           }
         }
 
         catNode.category?.nodes?.push({
           altText: node.altText,
-          badgeCounter: badgeCounter,
           externalLink: node.externalLink,
           href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
@@ -296,7 +282,7 @@ export class NavigationService {
       } else {
         items.push({
           altText: node.altText,
-          badgeCounter: node.badgeCounter,
+          badgeCounter: addBadges ? node.badgeCounter : undefined,
           externalLink: node.externalLink,
           href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
@@ -307,16 +293,16 @@ export class NavigationService {
         });
       }
 
-      if (badgeCount) {
+      if (badgeCount && addBadges) {
         badgeCountsToSumUp.push(badgeCount);
       }
-    });
+    }
 
     const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
-    const totalBadgeNode: BadgeCounter = {
+    const totalBadgeNode: BadgeCounter | undefined = addBadges ? {
       count: () => badgeCountSum,
       label: ''
-    };
+    } : undefined;
 
     return { items, totalBadgeNode };
   }
@@ -485,7 +471,7 @@ export class NavigationService {
     }
 
     const children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
-    const navData = this.buildNavItems(children, activeNode, pathData);
+    const navData = await this.buildNavItems(children, activeNode, pathData);
 
     navItems = navData.items;
 
@@ -612,7 +598,7 @@ export class NavigationService {
         }
       }
     };
-    const navData = this.buildNavItems(pathData.rootNodes, activeNode, pathData);
+    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData, true);
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
@@ -684,7 +670,7 @@ export class NavigationService {
     const pathDataTruncatedChildren = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
-    const navData = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
+    const navData = await this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
 
     return {
       selectedNode,

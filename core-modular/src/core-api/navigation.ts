@@ -244,6 +244,6 @@ export class Navigation {
    * Luigi.navigation().updateTopNavigation();
    */
   async updateTopNavigation(): Promise<void> {
-    this.luigi.configChanged('navigation');
+    this.luigi.configChanged('navigation.badges');
   }
 }
