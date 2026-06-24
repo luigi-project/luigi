@@ -40,7 +40,7 @@ export class GlobalSearchService {
 
   showSearchResult(searchResultItems: SearchResultItem[]): void {
     const isCentered =
-      this.searchProvider.searchFieldCentered &&
+      this.luigi.getConfigValue('globalSearch.searchFieldCentered') &&
       this.luigi.getConfigValue('settings.experimental.globalSearchCentered');
 
     if (searchResultItems?.length) {

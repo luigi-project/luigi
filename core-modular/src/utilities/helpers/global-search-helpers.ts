@@ -29,29 +29,29 @@ export const GlobalSearchHelpers = {
 
   getSearchPlaceholder(luigi: Luigi): string | undefined {
     const searchProvider = luigi.getConfigValue('globalSearch.searchProvider');
+    const placeholder = searchProvider?.inputPlaceholder;
 
-    if (!searchProvider?.inputPlaceholder) {
+    if (!placeholder) {
       return undefined;
     }
 
-    if (GenericHelpers.isFunction(searchProvider.inputPlaceholder)) {
-      return searchProvider.inputPlaceholder();
+    if (typeof placeholder === 'function') {
+      return placeholder();
     }
 
-    if (typeof searchProvider.inputPlaceholder === 'string') {
-      const translated = luigi.i18n().getTranslation(searchProvider.inputPlaceholder);
+    if (typeof placeholder === 'string') {
+      const translated = luigi.i18n().getTranslation(placeholder);
 
       if (!!translated && translated.trim().length > 0) {
         return translated;
       }
 
-      return searchProvider.inputPlaceholder;
+      return placeholder;
     }
 
-    const currentLocale = luigi.i18n().getCurrentLocale();
-
-    if (typeof searchProvider.inputPlaceholder === 'object') {
-      return searchProvider.inputPlaceholder[currentLocale];
+    if (typeof placeholder === 'object') {
+      const currentLocale = luigi.i18n().getCurrentLocale();
+      return placeholder[currentLocale];
     }
   },
 
