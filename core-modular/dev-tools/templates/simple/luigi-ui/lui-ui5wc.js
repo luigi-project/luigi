@@ -587,10 +587,7 @@ const connector = {
           }
         });
         searchResultList.addEventListener('item-click', (event) => {
-          if (
-            provider.onSearchResultItemSelected &&
-            typeof provider.onSearchResultItemSelected === 'function'
-          ) {
+          if (provider.onSearchResultItemSelected && typeof provider.onSearchResultItemSelected === 'function') {
             const searchItem = event.detail.item;
             const pathData = JSON.parse(searchItem?.getAttribute('path-data')) || {};
 
