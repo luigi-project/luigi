@@ -1,4 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
+import type { GlobalSearchProvider } from '../core-api/global-search';
 import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
@@ -30,6 +31,7 @@ import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { ContextSwitcherHelpers } from '../utilities/helpers/context-switcher-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
@@ -538,6 +540,7 @@ export class NavigationService {
       }
     };
 
+    const globalSearchConfig: GlobalSearchProvider = cfg?.globalSearch?.searchProvider;
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
@@ -553,8 +556,19 @@ export class NavigationService {
       }
     };
 
+    if (globalSearchConfig?.inputPlaceholder) {
+      globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(this.luigi);
+    }
+
+    if (globalSearchConfig?.searchFieldCentered) {
+      globalSearchConfig.searchFieldCentered = !!this.luigi.getConfigValue(
+        'settings.experimental.globalSearchCentered'
+      );
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      globalSearchConfig,
       logo: cfg.settings?.header?.logo,
       topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
       contextSwitcher,
