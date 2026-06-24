@@ -74,6 +74,20 @@ ui5-shellbar {
     grid-row: 1 / 2;
 }
 
+#searchresult-popover ol > li,
+.lui-search-results ui5-li {
+    position: relative;
+}
+
+#searchresult-popover ol > li.is-focused:after,
+.lui-search-results ui5-li.is-focused::part(native-li):after {
+    border: 1.6px solid var(--sapContent_FocusColor, #0032a5);
+    content: '';
+    inset: .125rem;
+    pointer-events: none;
+    position: absolute;
+}
+
 .lui-switcher-item--top-separator {
     border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
 }
