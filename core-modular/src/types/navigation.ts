@@ -1,4 +1,4 @@
-import type { GlobalSearchProvider } from '../core-api/global-search';
+import type { GlobalSearchProvider } from './global-search';
 
 export interface TopNavData {
   appSwitcher?: AppSwitcher;

@@ -1,5 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
-import type { GlobalSearchProvider } from '../core-api/global-search';
+import type { GlobalSearchProvider } from '../types/global-search';
 import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,

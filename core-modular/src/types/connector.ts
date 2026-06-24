@@ -1,4 +1,4 @@
-import type { SearchResultItem } from '../core-api/global-search';
+import type { SearchResultItem } from './global-search';
 import type {
   AlertHandler,
   AlertSettings,

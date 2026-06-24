@@ -1,4 +1,4 @@
-import type { GlobalSearchProvider, SearchResultItem } from '../core-api/global-search';
+import type { GlobalSearchProvider, SearchResultItem } from '../types/global-search';
 import type { Luigi } from '../core-api/luigi';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
