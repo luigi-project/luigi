@@ -299,10 +299,12 @@ export class NavigationService {
     }
 
     const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
-    const totalBadgeNode: BadgeCounter | undefined = addBadges ? {
-      count: () => badgeCountSum,
-      label: ''
-    } : undefined;
+    const totalBadgeNode: BadgeCounter | undefined = addBadges
+      ? {
+          count: () => badgeCountSum,
+          label: ''
+        }
+      : undefined;
 
     return { items, totalBadgeNode };
   }
