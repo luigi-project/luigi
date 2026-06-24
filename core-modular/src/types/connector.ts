@@ -1,4 +1,5 @@
-import type { SearchResultItem } from './global-search';
+import type { CoreAPISupportedElements } from './dom-elements';
+import type { GlobalSearchHandler } from './global-search';
 import type {
   AlertHandler,
   AlertSettings,
@@ -75,35 +76,11 @@ export interface LuigiConnector {
 
   showFatalError(error: string): void;
 
-  getCoreAPISupportedElements(): {
-    getShellbarElement(): HTMLElement | null;
-    getShellbarActions(): HTMLElement | null;
-    getLuigiContainer(): HTMLElement | null;
-    getNavFooterContainer(): HTMLElement | null;
-  };
+  getCoreAPISupportedElements(): CoreAPISupportedElements;
 
   unload(): void;
 
-  openSearchField(): void;
-
-  closeSearchField(): void;
-
-  clearSearchField(): void;
-
-  showSearchResult(
-    searchResultItems: SearchResultItem[],
-    searchQuery: string,
-    isCentered: boolean,
-    onShowCallback: (rendererSlot?: any) => void
-  ): void;
-
-  closeSearchResult(): void;
-
-  setSearchString(searchString: string, onSetCallback: (inputElem?: HTMLInputElement) => void): void;
-
-  setSearchInputPlaceholder(placeholder: string): void;
-
-  toggleSearch(isSearchFieldVisible: boolean, onToggleCallback: (inputElem?: HTMLInputElement) => void): void;
+  getGlobalSearchHandler?(): GlobalSearchHandler;
 }
 
 export type { Node };

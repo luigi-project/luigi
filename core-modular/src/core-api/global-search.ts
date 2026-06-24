@@ -19,7 +19,7 @@ export class GlobalSearch {
   openSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(true);
-      this.luigi.getEngine()._connector?.openSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.().openSearchField();
     }
   }
 
@@ -30,7 +30,7 @@ export class GlobalSearch {
   closeSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(false);
-      this.luigi.getEngine()._connector?.closeSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.().closeSearchField();
     }
   }
 
@@ -41,7 +41,7 @@ export class GlobalSearch {
   clearSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setSearchQuery('');
-      this.luigi.getEngine()._connector?.clearSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.().clearSearchField();
       this.closeSearchResult();
     }
   }
@@ -73,7 +73,7 @@ export class GlobalSearch {
    */
   closeSearchResult() {
     this.globalSearchService.closeSearchResult();
-    this.luigi.getEngine()._connector?.closeSearchResult();
+    this.luigi.getEngine()._connector?.getGlobalSearchHandler?.().closeSearchResult();
   }
 
   /**
