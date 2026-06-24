@@ -172,6 +172,7 @@ export interface Node {
   titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
+  isolateView?: boolean;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
   virtualTree?: boolean;
