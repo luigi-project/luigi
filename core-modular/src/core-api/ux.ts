@@ -1,4 +1,4 @@
-import { type AlertSettings, type ConfirmationModalSettings } from '../modules/ux-module';
+import { type AlertSettings, type ConfirmationModalSettings } from '../types/ux';
 import { DirtyStatusService } from '../services/dirty-status.service';
 import { serviceRegistry } from '../services/service-registry';
 import type { UserSettingsDialogSettings } from '../types/navigation';

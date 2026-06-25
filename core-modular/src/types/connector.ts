@@ -1,11 +1,6 @@
 import type { CoreAPISupportedElements } from './dom-elements';
 import type { GlobalSearchHandler } from './global-search';
-import type {
-  AlertHandler,
-  AlertSettings,
-  ConfirmationModalHandler,
-  ConfirmationModalSettings
-} from '../modules/ux-module';
+import type { AlertHandler, AlertSettings, ConfirmationModalHandler, ConfirmationModalSettings } from './ux';
 import type {
   ModalSettings,
   LeftNavData,
