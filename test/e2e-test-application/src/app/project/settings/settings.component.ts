@@ -1,5 +1,5 @@
 import { LuigiContextService, IContextMessage } from '@luigi-project/client-support-angular';
-import { Component, OnInit, ChangeDetectorRef, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, signal } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
   addInitListener,
@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SettingsComponent implements OnInit {
