@@ -6,7 +6,13 @@ import type { AlertSettings, ConfirmationModalSettings, Link } from '../types/ux
 import { writable } from '../utilities/store';
 
 // Re-exported for backwards-compatibility with consumers that imported these from this module.
-export type { AlertHandler, AlertSettings, ConfirmationModalHandler, ConfirmationModalSettings, Link } from '../types/ux';
+export type {
+  AlertHandler,
+  AlertSettings,
+  ConfirmationModalHandler,
+  ConfirmationModalSettings,
+  Link
+} from '../types/ux';
 
 export interface ProcessedAlertSettings {
   settings: AlertSettings;
