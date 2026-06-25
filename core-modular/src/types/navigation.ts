@@ -246,9 +246,13 @@ export interface BreadcrumbData {
   selectedNode?: Node;
 }
 
+export interface DrawerHeader {
+  title: string;
+}
+
 export interface DrawerSettings {
   backdrop?: boolean;
-  header?: any;
+  header?: DrawerHeader;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
 }
@@ -289,11 +293,11 @@ export interface ExternalLink {
 }
 
 export interface NavigationOptions {
-  fromContext?: any;
+  fromContext?: string | null;
   fromClosestContext?: boolean;
   fromVirtualTreeRoot?: boolean;
   fromParent?: boolean;
-  relative?: any;
+  relative?: boolean;
   nodeParams?: Record<string, any>;
 }
 
@@ -328,7 +332,7 @@ export interface NavigationRequestDetail {
   preventContextUpdate: boolean;
   preventHistoryEntry: boolean;
   fromVirtualTreeRoot: boolean;
-  fromContext: boolean;
+  fromContext: string | null;
   fromClosestContext: boolean;
   fromParent: boolean;
   relative: boolean;

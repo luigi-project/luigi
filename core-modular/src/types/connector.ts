@@ -4,8 +4,7 @@ import type {
   AlertHandler,
   AlertSettings,
   ConfirmationModalHandler,
-  ConfirmationModalSettings,
-  UserSettings
+  ConfirmationModalSettings
 } from '../modules/ux-module';
 import type {
   ModalSettings,
@@ -32,14 +31,14 @@ export interface LuigiConnector {
     modalSettings: ModalSettings,
     onCloseCallback?: () => void,
     onCloseRequest?: () => void
-  ): any;
+  ): void;
 
   renderDrawer(
     content: HTMLElement,
     drawerSettings: DrawerSettings,
     onCloseCallback?: () => void,
     onCloseRequest?: () => void
-  ): any;
+  ): void;
 
   renderTabNav(data: TabNavData): void;
 
@@ -64,7 +63,11 @@ export interface LuigiConnector {
 
   removeBackdrop(): void;
 
-  openUserSettings(dialogSettings: UserSettingsDialogSettings, userSettingData: any[], previousUserSettings: any): void;
+  openUserSettings(
+    dialogSettings: UserSettingsDialogSettings,
+    userSettingData: Record<string, any>[],
+    previousUserSettings: Record<string, any> | null
+  ): void;
 
   closeUserSettings(): void;
 
