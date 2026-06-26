@@ -60,10 +60,7 @@ import { ViewGroupComponent } from './project/view-group/view-group.component';
     ViewGroupComponent
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [
-    provideZoneChangeDetection(),
-    provideLuigiAngular()
-  ],
+  providers: [provideZoneChangeDetection(), provideLuigiAngular()],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
