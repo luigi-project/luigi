@@ -6,9 +6,9 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Signal,
   signal,
-  computed
+  computed,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
@@ -19,6 +19,7 @@ import { first } from 'rxjs/operators';
   selector: 'app-developers',
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DevelopersComponent implements OnInit, OnDestroy {
