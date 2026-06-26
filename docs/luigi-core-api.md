@@ -45,26 +45,7 @@ Sets the configuration for Luigi initially. Can also be called at a later point 
   
 **Example**  
 ```js
-Luigi.setConfig({
-  navigation: {
-    nodes: () => [
-      {
-        pathSegment: 'home',
-        label: 'Home',
-        children: [
-          {
-            pathSegment: 'hello',
-            label: 'Hello Luigi!',
-            viewUrl: '/assets/basicexternal.html'
-          }
-        ]
-      }
-    ]
-  },
-  routing: {
-    useHashRouting: true
-  }
-})
+Luigi.setConfig({  navigation: {    nodes: () => [      {        pathSegment: 'home',        label: 'Home',        children: [          {            pathSegment: 'hello',            label: 'Hello Luigi!',            viewUrl: '/assets/basicexternal.html'          }        ]      }    ]  },  routing: {    useHashRouting: true  }})
 ```
 ### getConfig&nbsp;  
 Returns the current active configuration
@@ -80,20 +61,7 @@ Tells Luigi that the configuration has been changed. Luigi will update the appli
 
 **Params**
 
-- ...scope <code>string</code> - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.
-<p>
-The supported scope selectors are:
-<p>
-<ul>
-  <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>
-  <li><code>navigation.nodes</code>: navigation nodes were changed.</li>
-  <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>
-  <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>
-  <li><code>navigation.profile</code>: profile menu was changed.</li>
-  <li><code>settings</code>: settings were changed.</li>
-  <li><code>settings.header</code>: header settings (title, icon) were changed.</li>
-  <li><code>settings.footer</code>: left navigation footer settings were changed.</li>
-</ul>
+- ...scope <code>string</code> - one or more scope selectors specifying what parts of the configuration were changed. If no scope selector is provided, the whole configuration is considered changed.<p>The supported scope selectors are:<p><ul>  <li><code>navigation</code>: the navigation part of the configuration was changed. This includes navigation nodes, the context switcher, the product switcher and the profile menu.</li>  <li><code>navigation.nodes</code>: navigation nodes were changed.</li>  <li><code>navigation.contextSwitcher</code>: context switcher related data were changed.</li>  <li><code>navigation.productSwitcher</code>: product switcher related data were changed.</li>  <li><code>navigation.profile</code>: profile menu was changed.</li>  <li><code>settings</code>: settings were changed.</li>  <li><code>settings.header</code>: header settings (title, icon) were changed.</li>  <li><code>settings.footer</code>: left navigation footer settings were changed.</li></ul>
 
   
 ### getConfigValue&nbsp;  
@@ -106,12 +74,10 @@ Gets value of the given property on Luigi config object. Target can be a value o
   
 **Example**  
 ```js
-Luigi.getConfigValue('auth.use')
-Luigi.getConfigValue('settings.sideNavFooterText')
+Luigi.getConfigValue('auth.use')Luigi.getConfigValue('settings.sideNavFooterText')
 ```
 ### getConfigBooleanValue&nbsp;  
-Gets boolean value of the given property on Luigi config object.
-Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
+Gets boolean value of the given property on Luigi config object.Function return true if the property value is equal true or 'true'. Otherwise the function returns false.
 
 **Params**
 
@@ -123,9 +89,7 @@ Function return true if the property value is equal true or 'true'. Otherwise th
 Luigi.getConfigBooleanValue('settings.hideNavigation')
 ```
 ### getConfigValueAsync&nbsp;  
-Gets value of the given property on the Luigi config object.
-If the value is a Function it is called (with the given parameters) and the result of that call is the value.
-If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
+Gets value of the given property on the Luigi config object.If the value is a Function it is called (with the given parameters) and the result of that call is the value.If the value is not a Promise it is wrapped to a Promise so that the returned value is definitely a Promise.
 
 **Params**
 
@@ -135,9 +99,7 @@ If the value is not a Promise it is wrapped to a Promise so that the returned va
   
 **Example**  
 ```js
-Luigi.getConfigValueAsync('navigation.nodes')
-Luigi.getConfigValueAsync('navigation.profile.items')
-Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
+Luigi.getConfigValueAsync('navigation.nodes')Luigi.getConfigValueAsync('navigation.profile.items')Luigi.getConfigValueAsync('navigation.contextSwitcher.options')
 ```
 ### ~~isAuthorizationEnabled~~&nbsp;  
 Detects if authorization is enabled via configuration.
@@ -159,9 +121,7 @@ Luigi.unload()
 **Meta**:  
 * **since:** 1.2.2
 ### readUserSettings&nbsp;  
-Reads the user settings object.
-You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.
-By default, the user settings will be read from the **localStorage**
+Reads the user settings object.You can choose a custom storage to read the user settings by implementing the `userSettings.readUserSettings` function in the settings section of the Luigi configuration.By default, the user settings will be read from the **localStorage**
 
   
 **Example**  
@@ -173,9 +133,7 @@ Luigi.readUserSettings();
 **Meta**:  
 * **since:** 1.7.1
 ### storeUserSettings&nbsp;  
-Stores the user settings object.
-You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configuration
-By default, the user settings will be written from the **localStorage**
+Stores the user settings object.You can choose a custom storage to write the user settings by implementing the `userSetting.storeUserSettings` function in the settings section of the Luigi configurationBy default, the user settings will be written from the **localStorage**
 
 **Params**
 
@@ -233,8 +191,7 @@ Get the global context object.
 **Meta**:  
 * **since:** 2.5.0
 ### updateContextValues&nbsp;  
-Updates the context values for all micro frontends currently in the DOM (iframes and web components).
-Note: the updated context values are not persisted. The developers have to do it on their own.
+Updates the context values for all micro frontends currently in the DOM (iframes and web components).Note: the updated context values are not persisted. The developers have to do it on their own.
 
 **Params**
 

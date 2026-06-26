@@ -1,5 +1,5 @@
 import type { Luigi } from '../core-api/luigi';
-import type { GlobalSearchProvider } from '../core-api/global-search';
+import type { GlobalSearch } from '../types/global-search';
 import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
@@ -498,6 +498,16 @@ export class NavigationService {
       return;
     }
 
+    if (node.link) {
+      const isAbsolute = node.link.startsWith('/');
+      if (isAbsolute) {
+        return this.luigi.navigation().navigate(node.link);
+      }
+      const parentPath = node.parent ? RoutingHelpers.getNodePath(node.parent) : '';
+      const resolvedPath = `${parentPath}/${node.link}`.replace(/\/\/+/g, '/');
+      return this.luigi.navigation().navigate(resolvedPath);
+    }
+
     let fullPath = RoutingHelpers.getNodePath(node);
     let pathParams = pathData?.pathParams;
 
@@ -585,7 +595,7 @@ export class NavigationService {
       }
     };
 
-    const globalSearchConfig: GlobalSearchProvider = cfg?.globalSearch?.searchProvider;
+    const userGlobalSearch: GlobalSearch | undefined = cfg?.globalSearch;
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
@@ -602,19 +612,28 @@ export class NavigationService {
     };
     const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData);
 
-    if (globalSearchConfig?.inputPlaceholder) {
-      globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(this.luigi);
+    let globalSearch: GlobalSearch | undefined = userGlobalSearch;
+
+    if (userGlobalSearch?.searchProvider?.inputPlaceholder) {
+      globalSearch = {
+        ...globalSearch,
+        searchProvider: {
+          ...globalSearch?.searchProvider,
+          inputPlaceholder: GlobalSearchHelpers.getSearchPlaceholder(this.luigi)
+        }
+      };
     }
 
-    if (globalSearchConfig?.searchFieldCentered) {
-      globalSearchConfig.searchFieldCentered = !!this.luigi.getConfigValue(
-        'settings.experimental.globalSearchCentered'
-      );
+    if (userGlobalSearch?.searchFieldCentered) {
+      globalSearch = {
+        ...globalSearch,
+        searchFieldCentered: !!this.luigi.getConfigValue('settings.experimental.globalSearchCentered')
+      };
     }
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
-      globalSearchConfig,
+      globalSearch,
       logo: cfg.settings?.header?.logo,
       topNodes: navData.items,
       totalBadgeNode: navData.totalBadgeNode,

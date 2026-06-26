@@ -546,6 +546,89 @@ describe('NavigationService', () => {
 
       expect(navigateSpy).not.toHaveBeenCalled();
     });
+
+    it('should navigate to absolute link path', async () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        link: '/home/settings',
+        label: 'Go to absolute path'
+      };
+
+      await navigationService.navItemClick(node as any);
+
+      expect(navigateSpy).toHaveBeenCalledWith('/home/settings');
+    });
+
+    it('should resolve relative link path against parent node', async () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const parentNode = {
+        pathSegment: 'pr1',
+        parent: { pathSegment: 'projects', parent: null }
+      };
+
+      const node = {
+        link: 'dps/dps1',
+        label: 'Go to relative path',
+        parent: parentNode
+      };
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/projects/pr1');
+
+      await navigationService.navItemClick(node as any);
+
+      expect(RoutingHelpers.getNodePath).toHaveBeenCalledWith(parentNode);
+      expect(navigateSpy).toHaveBeenCalledWith('/projects/pr1/dps/dps1');
+    });
+
+    it('should resolve relative link path without parent to root-relative', async () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        link: 'some/path',
+        label: 'Relative without parent',
+        parent: undefined
+      };
+
+      await navigationService.navItemClick(node as any);
+
+      expect(navigateSpy).toHaveBeenCalledWith('/some/path');
+    });
+
+    it('should resolve relative link path when parent has dynamic path parameters', async () => {
+      const navigateSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const parentNode = {
+        pathSegment: ':projectId',
+        parent: { pathSegment: 'projects', parent: null }
+      };
+
+      const node = {
+        link: 'settings/general',
+        label: 'Go to settings',
+        parent: parentNode
+      };
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/projects/:projectId');
+
+      await navigationService.navItemClick(node as any);
+
+      expect(RoutingHelpers.getNodePath).toHaveBeenCalledWith(parentNode);
+      expect(navigateSpy).toHaveBeenCalledWith('/projects/:projectId/settings/general');
+    });
   });
 
   describe('NavigationService.handleNavigationRequest', () => {

@@ -1,4 +1,4 @@
-import type { GlobalSearchProvider, SearchResultItem } from '../core-api/global-search';
+import type { GlobalSearchHandler, GlobalSearchProvider, SearchResultItem } from '../types/global-search';
 import type { Luigi } from '../core-api/luigi';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
@@ -15,6 +15,10 @@ export class GlobalSearchService {
 
   get searchProvider(): GlobalSearchProvider {
     return this.luigi.getConfigValue('globalSearch.searchProvider');
+  }
+
+  private getHandler(): GlobalSearchHandler | undefined {
+    return this.luigi.getEngine()._connector?.getGlobalSearchHandler?.();
   }
 
   hasSearchProvider(): boolean {
@@ -36,20 +40,18 @@ export class GlobalSearchService {
 
   showSearchResult(searchResultItems: SearchResultItem[]): void {
     const isCentered =
-      this.searchProvider.searchFieldCentered &&
+      this.luigi.getConfigValue('globalSearch.searchFieldCentered') &&
       this.luigi.getConfigValue('settings.experimental.globalSearchCentered');
 
     if (searchResultItems?.length) {
-      this.luigi
-        .getEngine()
-        ._connector?.showSearchResult(searchResultItems, this.searchQuery, !!isCentered, (rendererSlot?: any) => {
-          if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
-            GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
-          } else {
-            this.isSearchResultVisible = true;
-            this.searchResult = searchResultItems;
-          }
-        });
+      this.getHandler()?.showSearchResult(searchResultItems, this.searchQuery, !!isCentered, (rendererSlot?: any) => {
+        if (rendererSlot && GenericHelpers.isFunction(this.searchProvider.customSearchResultRenderer)) {
+          GlobalSearchHelpers.handleSearchResultRenderer(this.searchProvider, searchResultItems, rendererSlot);
+        } else {
+          this.isSearchResultVisible = true;
+          this.searchResult = searchResultItems;
+        }
+      });
     } else {
       console.warn('Search result array is empty.');
     }
@@ -66,7 +68,7 @@ export class GlobalSearchService {
 
   setSearchQuery(value: string): void {
     this.searchQuery = value || '';
-    this.luigi.getEngine()._connector?.setSearchString(this.searchQuery, (inputElem?: HTMLInputElement) => {
+    this.getHandler()?.setSearchString(this.searchQuery, (inputElem?: HTMLInputElement) => {
       if (inputElem) {
         inputElem.value = this.searchQuery;
 
@@ -84,14 +86,15 @@ export class GlobalSearchService {
       placeholder = GlobalSearchHelpers.getSearchPlaceholder(this.luigi) || '';
     }
 
-    this.luigi.getEngine()._connector?.setSearchInputPlaceholder(placeholder);
+    this.getHandler()?.setSearchInputPlaceholder(placeholder);
   }
 
   toggleSearch(): void {
     this.setFieldVisibility(!this.isSearchFieldVisible);
-    this.luigi.getEngine()._connector?.toggleSearch(this.isSearchFieldVisible, (inputElem?: HTMLInputElement) => {
+    const handler = this.getHandler();
+    handler?.toggleSearch(this.isSearchFieldVisible, (inputElem?: HTMLInputElement) => {
       GlobalSearchHelpers.toggleSearch(this.isSearchFieldVisible, this.searchProvider, inputElem);
     });
-    this.luigi.getEngine()._connector?.clearSearchField();
+    handler?.clearSearchField();
   }
 }
