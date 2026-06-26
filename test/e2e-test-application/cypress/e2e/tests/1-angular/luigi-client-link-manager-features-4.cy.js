@@ -4,7 +4,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
     beforeEach(() => {
       cy.visitLoggedIn('/projects/pr2');
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
         cy.goToLinkManagerMethods($iframeBody);
         cy.get('.drawer').should('not.exist');
@@ -12,9 +12,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Open and close drawer component with default settings', () => {
-      cy.wrap($iframeBody)
-        .contains('Open drawer with default settings')
-        .click();
+      cy.wrap($iframeBody).contains('Open drawer with default settings').click();
 
       cy.get('.drawer').should('exist');
       cy.expectPathToBe('/projects/pr2');
@@ -25,20 +23,16 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Open and close drawer component with go back button', () => {
-      cy.wrap($iframeBody)
-        .contains('Open view in drawer component')
-        .click();
+      cy.wrap($iframeBody).contains('Open view in drawer component').click();
       cy.get('.drawer').should('exist');
       cy.expectPathToBe('/projects/pr2');
       cy.get('.drawer .fd-dialog__close').should('not.exist');
-      cy.wrap($iframeBody)
-        .contains('go back: single iframe, standard history back')
-        .click();
+      cy.wrap($iframeBody).contains('go back: single iframe, standard history back').click();
       cy.get('.drawer').should('not.exist');
     });
 
     it('Open and close drawer component with webcomponent', () => {
-      cy.window().then(win => {
+      cy.window().then((win) => {
         win.Luigi.navigation().openAsDrawer('/projects/pr1/webcomponent');
         cy.get('.drawer').should('exist');
         cy.expectPathToBe('/projects/pr2');
@@ -49,19 +43,15 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Check main iframe width after Open and close drawer component with default settings', () => {
-      cy.window().then(win => {
-        cy.get('.fd-page.iframeContainer iframe').then($container => {
-          cy.get('#app').then($page => {
+      cy.window().then((win) => {
+        cy.get('.fd-page.iframeContainer iframe').then(($container) => {
+          cy.get('#app').then(($page) => {
             const containerWidth = parseFloat(win.getComputedStyle($container[0]).width);
             const pageWidth = parseFloat(win.getComputedStyle($page[0]).width);
 
-            cy.get('.iframeContainer iframe')
-              .invoke('width')
-              .should('eq', containerWidth);
+            cy.get('.iframeContainer iframe').invoke('width').should('eq', containerWidth);
 
-            cy.wrap($iframeBody)
-              .contains('Open drawer with no overlap')
-              .click();
+            cy.wrap($iframeBody).contains('Open drawer with no overlap').click();
 
             cy.get('.drawer-dialog')
               .invoke('width')
@@ -77,15 +67,13 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Check main iframe width after Open and close drawer component with webcomponent', () => {
-      cy.window().then(win => {
-        cy.get('.fd-page.iframeContainer iframe').then($container => {
-          cy.get('#app').then($page => {
+      cy.window().then((win) => {
+        cy.get('.fd-page.iframeContainer iframe').then(($container) => {
+          cy.get('#app').then(($page) => {
             const containerWidth = parseFloat(win.getComputedStyle($container[0]).width);
             const pageWidth = parseFloat(win.getComputedStyle($page[0]).width);
 
-            cy.get('.iframeContainer iframe')
-              .invoke('width')
-              .should('eq', containerWidth);
+            cy.get('.iframeContainer iframe').invoke('width').should('eq', containerWidth);
 
             win.Luigi.navigation().openAsDrawer('/projects/pr1/webcomponent', { overlap: false });
 
@@ -100,9 +88,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
             cy.get('.drawer-dialog button[aria-label="close"]').click();
 
-            cy.get('.iframeContainer iframe')
-              .invoke('width')
-              .should('eq', containerWidth);
+            cy.get('.iframeContainer iframe').invoke('width').should('eq', containerWidth);
           });
         });
       });
@@ -114,7 +100,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
     beforeEach(() => {
       cy.visitLoggedIn('/projects/pr2');
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
         cy.goToLinkManagerMethods($iframeBody);
         cy.get('.lui-split-view').should('not.exist');
@@ -122,33 +108,25 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Open Split View component with default settings', () => {
-      cy.wrap($iframeBody)
-        .contains('open view in split view with params')
-        .click();
+      cy.wrap($iframeBody).contains('open view in split view with params').click();
 
       cy.get('.lui-split-view').should('exist');
       cy.expectPathToBe('/projects/pr2');
     });
 
     it('Check main iframe height after open Split View component with default settings', () => {
-      cy.window().then(win => {
-        cy.get('.fd-page.iframeContainer').then($iframe => {
+      cy.window().then((win) => {
+        cy.get('.fd-page.iframeContainer').then(($iframe) => {
           const iframeHeight = parseFloat(win.getComputedStyle($iframe[0]).height);
 
-          cy.get('.iframeContainer')
-            .invoke('height')
-            .should('eq', iframeHeight);
+          cy.get('.iframeContainer').invoke('height').should('eq', iframeHeight);
 
-          cy.wrap($iframeBody)
-            .contains('open view in split view with params')
-            .click();
+          cy.wrap($iframeBody).contains('open view in split view with params').click();
 
-          cy.get('.splitViewContainer').then($splitViewContainer => {
+          cy.get('.splitViewContainer').then(($splitViewContainer) => {
             const splitViewHeight = parseFloat(win.getComputedStyle($splitViewContainer[0]).height);
 
-            cy.get('.splitViewContainer')
-              .invoke('height')
-              .should('eq', splitViewHeight);
+            cy.get('.splitViewContainer').invoke('height').should('eq', splitViewHeight);
 
             expect(`${splitViewHeight}px`).to.equal(win.getComputedStyle($iframe[0]).marginBottom);
 
@@ -159,20 +137,16 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('Check main iframe height after open and close Split View component with default settings', () => {
-      cy.window().then(win => {
-        cy.get('.fd-page.iframeContainer').then($iframe => {
+      cy.window().then((win) => {
+        cy.get('.fd-page.iframeContainer').then(($iframe) => {
           const iframeHeight = parseFloat(win.getComputedStyle($iframe[0]).height);
 
-          cy.get('.iframeContainer')
-            .invoke('height')
-            .should('eq', iframeHeight);
+          cy.get('.iframeContainer').invoke('height').should('eq', iframeHeight);
 
-          cy.wrap($iframeBody)
-            .contains('open view in split view with params')
-            .click();
+          cy.wrap($iframeBody).contains('open view in split view with params').click();
 
           cy.get('.lui-collapse-btn').click();
-          cy.get('.splitViewContainer').should($splitViewContainer => {
+          cy.get('.splitViewContainer').should(($splitViewContainer) => {
             const splitViewHeight = parseFloat(win.getComputedStyle($splitViewContainer[0]).height);
 
             expect(`${splitViewHeight}px`).to.equal(win.getComputedStyle($iframe[0]).marginBottom);
@@ -189,24 +163,15 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     });
 
     it('open webcomponent with visibleForFeatureToggles', () => {
-      cy.get('.wcContainer>div>div>[nodeid="input1"]')
-        .shadow()
-        .contains('p', 'Some input text !ft')
-        .should('exist');
+      cy.get('.wcContainer>div>div>[nodeid="input1"]').shadow().contains('p', 'Some input text !ft').should('exist');
     });
   });
 
   describe('Webcomponent compound view test', () => {
     beforeEach(() => {
       cy.visitLoggedIn('/projects/pr1/wc_grid_compound');
-      cy.get('.wcContainer>div>div>[nodeid="btn"]')
-        .shadow()
-        .find('button')
-        .as('btn');
-      cy.get('.wcContainer>div>div>[nodeid="timer"]')
-        .shadow()
-        .find('p')
-        .as('timer');
+      cy.get('.wcContainer>div>div>[nodeid="btn"]').shadow().find('button').as('btn');
+      cy.get('.wcContainer>div>div>[nodeid="timer"]').shadow().find('p').as('timer');
     });
 
     it('open webcomponent btn', () => {
@@ -269,21 +234,15 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
       cy.expectPathToBe(routeToCheck);
 
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
         cy.wrap($iframeBody).contains('This is a dynamic node with');
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-button"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-button"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-button"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-button"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-text"]')
-          .should('contain', routeFromContext);
+        cy.wrap($iframeBody).find('[data-testid="curr-text"]').should('contain', routeFromContext);
       });
     });
 
@@ -293,27 +252,17 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
       cy.visitLoggedIn(routeToCheck);
       cy.expectPathToBe(routeToCheck);
 
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
         cy.wrap($iframeBody).contains('Developers content.');
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="goToVirtualTree"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="goToVirtualTree"]').click();
 
         cy.expectPathToBe(routeToCheck + routeVirtual);
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-virtualtree"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-virtualtree"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-virtualtree"]')
-          .click();
-
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-text-virtualtree"]')
-          .should('contain', routeVirtual);
+        cy.wrap($iframeBody).find('[data-testid="curr-text-virtualtree"]').should('contain', routeVirtual);
       });
     });
 
@@ -322,20 +271,14 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
       cy.visitLoggedIn(routeToCheck);
       cy.expectPathToBe(routeToCheck);
 
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-no-option"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-no-option"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-no-option"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-no-option"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-text-no-option"]')
-          .should('contain', routeToCheck);
+        cy.wrap($iframeBody).find('[data-testid="curr-text-no-option"]').should('contain', routeToCheck);
       });
     });
 
@@ -344,20 +287,14 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
       cy.visitLoggedIn(routeToCheck);
       cy.expectPathToBe(routeToCheck);
 
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-from-parent"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-from-parent"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-from-parent"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-from-parent"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-text-from-parent"]')
-          .should('contain', '/avengers');
+        cy.wrap($iframeBody).find('[data-testid="curr-text-from-parent"]').should('contain', '/avengers');
       });
     });
 
@@ -366,15 +303,11 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
       cy.visitLoggedIn(routeToCheck);
       cy.expectPathToBe(routeToCheck);
 
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-from-closest-context"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-from-closest-context"]').click();
 
-        cy.wrap($iframeBody)
-          .find('[data-testid="curr-link-from-closest-context"]')
-          .click();
+        cy.wrap($iframeBody).find('[data-testid="curr-link-from-closest-context"]').click();
 
         cy.wrap($iframeBody)
           .find('[data-testid="curr-text-from-closest-context"]')
@@ -414,7 +347,7 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
     beforeEach(() => {
       cy.visitLoggedIn('/projects/tabNav');
-      cy.getIframeBody().then(result => {
+      cy.getIframeBody().then((result) => {
         $iframeBody = result;
         cy.expectPathToBe('/projects/tabNav');
         cy.get(drawerSelector).should('not.exist');
@@ -426,59 +359,49 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
 
       cy.get(drawerSelector).should('not.exist');
 
-      cy.get(mfIframeSelector).should($element => {
+      cy.get(mfIframeSelector).should(($element) => {
         expectToNotBeResized($element);
       });
 
-      cy.get(tabNavSelector).should($element => {
+      cy.get(tabNavSelector).should(($element) => {
         expectToNotBeResized($element);
       });
     });
 
     it('resizes the microfrontend and tab navigation when opening the drawer', () => {
-      cy.wrap($iframeBody)
-        .contains(openDrawerButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openDrawerButtonText).click();
 
       cy.get(drawerSelector).should('exist');
 
-      cy.get(mfIframeSelector).should($element => {
+      cy.get(mfIframeSelector).should(($element) => {
         expectToBeResized($element);
       });
 
-      cy.get(tabNavSelector).should($element => {
+      cy.get(tabNavSelector).should(($element) => {
         expectToBeResized($element);
       });
     });
 
     it('resizes the split view when opening the drawer after the split view', () => {
-      cy.wrap($iframeBody)
-        .contains(openSplitviewButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openSplitviewButtonText).click();
 
-      cy.wrap($iframeBody)
-        .contains(openDrawerButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openDrawerButtonText).click();
 
       cy.get(drawerSelector).should('exist');
 
-      cy.get(splitViewSelector).should($element => {
+      cy.get(splitViewSelector).should(($element) => {
         expectToBeResized($element);
       });
     });
 
     it('resizes the split view when opening the drawer before the split view', () => {
-      cy.wrap($iframeBody)
-        .contains(openDrawerButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openDrawerButtonText).click();
 
-      cy.wrap($iframeBody)
-        .contains(openSplitviewButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openSplitviewButtonText).click();
 
       cy.get(drawerSelector).should('exist');
 
-      cy.get(splitViewSelector).should($element => {
+      cy.get(splitViewSelector).should(($element) => {
         expectToBeResized($element);
       });
     });
@@ -486,21 +409,17 @@ describe('Luigi Client linkManager Webcomponent, Drawer', () => {
     it('does not resize several times if the drawer is opened several times', () => {
       let mfIframeWidthAfterFirstResize;
 
-      cy.wrap($iframeBody)
-        .contains(openDrawerButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openDrawerButtonText).click();
 
       cy.get(drawerSelector).should('exist');
 
-      cy.get(mfIframeSelector).should($element => {
+      cy.get(mfIframeSelector).should(($element) => {
         mfIframeWidthAfterFirstResize = expectToBeResized($element);
       });
 
-      cy.wrap($iframeBody)
-        .contains(openDrawerButtonText)
-        .click();
+      cy.wrap($iframeBody).contains(openDrawerButtonText).click();
 
-      cy.get(mfIframeSelector).should($element => {
+      cy.get(mfIframeSelector).should(($element) => {
         expect(mfIframeWidthAfterFirstResize).to.equal(expectToBeResized($element));
       });
     });

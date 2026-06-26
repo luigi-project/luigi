@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { getPathParams, linkManager } from '@luigi-project/client';
 
 import { LuigiContextService } from '@luigi-project/client-support-angular';
@@ -9,6 +9,7 @@ import { toTitleCase } from '../../../../../services/helpers';
   selector: 'app-group-settings',
   templateUrl: './group-settings.component.html',
   styleUrls: ['./group-settings.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class GroupSettingsComponent implements OnInit, OnDestroy {
