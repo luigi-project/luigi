@@ -10,7 +10,7 @@ describe('StorageManager', () => {
       execute: jest.fn(),
       createPendingOperation: jest.fn(),
       sendMessage: jest.fn()
-    }
+    };
   });
 
   afterEach(() => {
@@ -28,12 +28,14 @@ describe('StorageManager', () => {
     it('should store an item for a specific key', async () => {
       const storageKey = 'test';
 
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        if (!pendingOperation.has(storageKey)) {
-          pendingOperation.set(storageKey, params);
-          resolve(params);
-        }
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          if (!pendingOperation.has(storageKey)) {
+            pendingOperation.set(storageKey, params);
+            resolve(params);
+          }
+        });
 
       const storedParams = await storageManager.setItem('keyExample', 'valueExample');
 
@@ -59,11 +61,13 @@ describe('StorageManager', () => {
       const storageKey = 'test';
 
       pendingOperation.set(storageKey, { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        if (pendingOperation.has(storageKey)) {
-          resolve(pendingOperation.get(storageKey));
-        }
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          if (pendingOperation.has(storageKey)) {
+            resolve(pendingOperation.get(storageKey));
+          }
+        });
 
       const storedItem = await storageManager.getItem(storageKey);
 
@@ -83,12 +87,14 @@ describe('StorageManager', () => {
       const storageKey = 'test';
 
       pendingOperation.set(storageKey, { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        if (pendingOperation.has(storageKey)) {
-          resolve(pendingOperation.get(storageKey));
-          pendingOperation.delete(storageKey);
-        }
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          if (pendingOperation.has(storageKey)) {
+            resolve(pendingOperation.get(storageKey));
+            pendingOperation.delete(storageKey);
+          }
+        });
 
       expect(pendingOperation.size).toEqual(1);
 
@@ -109,12 +115,14 @@ describe('StorageManager', () => {
     it('should remove all stored items', async () => {
       pendingOperation.set('foo', { key: 'keyFoo' });
       pendingOperation.set('bar', { key: 'keyBar' });
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        if (pendingOperation.size) {
-          resolve();
-          pendingOperation.clear();
-        }
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          if (pendingOperation.size) {
+            resolve();
+            pendingOperation.clear();
+          }
+        });
 
       expect(pendingOperation.size).toEqual(2);
 
@@ -137,9 +145,11 @@ describe('StorageManager', () => {
       { input: 'bbb', output: false }
     ])('should check if item exists for a specific key', async (data) => {
       pendingOperation.set('aaa', { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        resolve(pendingOperation.has(data.input));
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          resolve(pendingOperation.has(data.input));
+        });
 
       const result = await storageManager.has(data.input);
 
@@ -157,11 +167,13 @@ describe('StorageManager', () => {
     it('should get all the keys used in the storage', async () => {
       pendingOperation.set('foo', { key: 'keyFoo' });
       pendingOperation.set('bar', { key: 'keyBar' });
-      storageManager.storageEventProcessor.execute = jest.fn().mockImplementation((resolve, reject, operation, params) => {
-        if (pendingOperation.size) {
-          resolve(Array.from(pendingOperation.keys()));
-        }
-      });
+      storageManager.storageEventProcessor.execute = jest
+        .fn()
+        .mockImplementation((resolve, reject, operation, params) => {
+          if (pendingOperation.size) {
+            resolve(Array.from(pendingOperation.keys()));
+          }
+        });
 
       const result = await storageManager.getAllKeys();
 
