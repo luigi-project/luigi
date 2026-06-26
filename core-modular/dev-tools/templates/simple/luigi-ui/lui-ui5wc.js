@@ -256,7 +256,7 @@ function renderProfilePopover(profileObj, avatar) {
     profileLi.setAttribute('icon', profileObj.settings.icon);
 
     profileLi.addEventListener('click', () => {
-     profileObj.settings.openUserSettings();
+      profileObj.settings.openUserSettings();
     });
 
     profileList.appendChild(profileLi);
@@ -411,6 +411,51 @@ function updateOverlays() {
   // TODO: confirmation modal ...
 }
 
+function renderSearchResults(searchResultItems, searchQuery, isCentered, onShowResultCallback) {
+  const searchResult = document.querySelector('#searchresult-popover');
+  const searchList = searchResult?.querySelector('.lui-search-results');
+
+  if (!searchList && onShowResultCallback && typeof onShowResultCallback === 'function') {
+    searchResult.innerHTML = '';
+    onShowResultCallback(searchResult);
+  } else {
+    searchList.innerHTML = '';
+
+    if (searchResultItems?.length) {
+      searchList.setAttribute('selection-mode', 'Single');
+      searchResultItems.forEach((item, index) => {
+        const searchItem = document.createElement('ui5-li');
+
+        if (searchResultItems.length > 1) {
+          if (index === 0) {
+            searchItem.classList.add('lui-search-result--first');
+          }
+
+          if (index === searchResultItems.length - 1) {
+            searchItem.classList.add('lui-search-result--last');
+          }
+        }
+
+        searchItem.setAttribute('icon', 'navigation-right-arrow');
+        searchItem.setAttribute('icon-end', true);
+        searchItem.setAttribute('description', item.description);
+        searchItem.setAttribute('path-data', JSON.stringify(item.pathObject));
+        searchItem.innerText = item.label;
+        searchList.appendChild(searchItem);
+      });
+    } else {
+      const searchItem = document.createElement('ui5-li');
+
+      searchItem.innerText = `No results found for query '${searchQuery}'`;
+      searchList.setAttribute('selection-mode', 'None');
+      searchList.appendChild(searchItem);
+    }
+  }
+
+  searchResult.opener = 'searchresult-opener';
+  searchResult.open = true;
+}
+
 /** @type {LuigiConnector} */
 const connector = {
   renderMainLayout: () => {
@@ -471,6 +516,154 @@ const connector = {
       }
 
       shellbar.innerHTML = html;
+
+      if (topNavData.globalSearch) {
+        const globalSearch = topNavData.globalSearch;
+        const provider = globalSearch.searchProvider || {};
+        const searchInput = document.createElement('ui5-input');
+        const isCustomSearchRenderer =
+          provider.customSearchResultRenderer && typeof provider.customSearchResultRenderer === 'function';
+        let currentResultItem;
+
+        searchInput.classList.add('lui-search-field');
+        searchInput.setAttribute('id', 'searchresult-opener');
+        searchInput.setAttribute('slot', 'searchField');
+
+        if (globalSearch.searchFieldCentered) {
+          searchInput.setAttribute('placeholder', 'searchFieldCentered enabled');
+          shellbar.addEventListener('search-button-click', () => {
+            if (provider.onSearchBtnClick && typeof provider.onSearchBtnClick === 'function') {
+              provider.onSearchBtnClick();
+            }
+          });
+        } else {
+          searchInput.setAttribute('placeholder', provider.inputPlaceholder || 'Type to search');
+        }
+
+        shellbar.appendChild(searchInput);
+        document.querySelector('ui5-navigation-layout > #searchresult-popover')?.remove();
+
+        const searchResultList = document.createElement('ui5-list');
+        const searchResultPopover = document.createElement('ui5-popover');
+
+        searchResultList.classList.add('lui-search-results');
+        searchResultList.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && typeof provider.onEscape === 'function') {
+            provider.onEscape();
+            searchInput.focus();
+          } else {
+            [...searchResultList.querySelectorAll('ui5-li')].forEach((item) => {
+              item.classList.remove('is-focused');
+              item.removeAttribute('aria-selected');
+            });
+
+            document.activeElement.setAttribute('aria-selected', true);
+
+            if (event.key === 'ArrowUp' && currentResultItem === 'first') {
+              const lastItem = searchResultList.querySelector('ui5-li:last-child');
+
+              document.activeElement.removeAttribute('aria-selected');
+              lastItem?.classList?.add('is-focused');
+              lastItem?.setAttribute('aria-selected', true);
+              lastItem?.shadowRoot?.children[0]?.focus();
+            }
+
+            if (event.key === 'ArrowDown' && currentResultItem === 'last') {
+              const firstItem = searchResultList.querySelector('ui5-li:first-child');
+
+              document.activeElement.removeAttribute('aria-selected');
+              firstItem?.classList?.add('is-focused');
+              firstItem?.setAttribute('aria-selected', true);
+              firstItem?.shadowRoot?.children[0]?.focus();
+            }
+
+            if (document.activeElement.classList.contains('lui-search-result--first')) {
+              currentResultItem = 'first';
+            } else if (document.activeElement.classList.contains('lui-search-result--last')) {
+              currentResultItem = 'last';
+            } else {
+              currentResultItem = 'default';
+            }
+          }
+        });
+        searchResultList.addEventListener('item-click', (event) => {
+          if (provider.onSearchResultItemSelected && typeof provider.onSearchResultItemSelected === 'function') {
+            const searchItem = event.detail.item;
+            const pathData = JSON.parse(searchItem?.getAttribute('path-data')) || {};
+
+            provider.onSearchResultItemSelected(pathData);
+          }
+        });
+
+        searchResultPopover.setAttribute('id', 'searchresult-popover');
+        searchResultPopover.setAttribute('placement', 'Bottom');
+
+        if (!isCustomSearchRenderer) {
+          searchResultPopover.setAttribute('header-text', 'Search results');
+          searchResultPopover.appendChild(searchResultList);
+        } else {
+          searchResultPopover.setAttribute('header-text', 'Custom search results');
+        }
+
+        document.querySelector('ui5-navigation-layout').appendChild(searchResultPopover);
+        searchInput.addEventListener('keyup', (event) => {
+          if (!globalSearch.disableInputHandlers) {
+            if (event.key === 'Enter' && typeof provider.onEnter === 'function') {
+              provider.onEnter();
+            } else if (event.key === 'Escape' && typeof provider.onEscape === 'function') {
+              provider.onEscape();
+            } else if (event.key === 'ArrowDown') {
+              let firstItem;
+
+              if (globalSearch.searchFieldCentered) {
+                firstItem = searchResultPopover.querySelector('ol li:first-child');
+              } else {
+                firstItem = searchResultList.querySelector('ui5-li:first-child');
+              }
+
+              currentResultItem = 'first';
+              firstItem?.classList?.add('is-focused');
+              firstItem?.setAttribute('aria-selected', true);
+              setTimeout(() => {
+                firstItem?.shadowRoot?.children[0]?.focus();
+              }, 1);
+            }
+          } else {
+            console.warn('GlobalSearch is not available.');
+          }
+        });
+
+        const debounceFn = function (fn, delay) {
+          let inputTimer;
+
+          return function (...args) {
+            clearTimeout(inputTimer);
+            inputTimer = setTimeout(() => {
+              fn.apply(this, args);
+            }, delay);
+          };
+        };
+
+        searchInput.addEventListener(
+          'input',
+          debounceFn(() => {
+            if (!globalSearch.disableInputHandlers) {
+              const searchQuery = searchInput.value.trim() || '';
+
+              if (searchQuery?.length && typeof provider.onInput === 'function') {
+                globalThis.Luigi.globalSearch().setSearchString(searchQuery);
+                setTimeout(() => {
+                  searchInput.focus();
+                }, 1);
+              } else {
+                globalThis.Luigi.globalSearch().closeSearchResult();
+              }
+            } else {
+              console.warn('GlobalSearch is not available.');
+            }
+          }, 400)
+        );
+      }
 
       if (topNavData.contextSwitcher) {
         const data = { ...topNavData.contextSwitcher };
@@ -1020,7 +1213,11 @@ const connector = {
 
     function renderSettingControl(groupKey, settingKey, settingDef, currentValue) {
       const container = document.createDocumentFragment();
-      const labelEl = el('ui5-label', { for: `us-${groupKey}-${settingKey}`, 'show-colon': true }, settingDef.label || settingKey);
+      const labelEl = el(
+        'ui5-label',
+        { for: `us-${groupKey}-${settingKey}`, 'show-colon': true },
+        settingDef.label || settingKey
+      );
       container.appendChild(labelEl);
 
       if (settingDef.type === 'enum' && settingDef.options) {
@@ -1106,10 +1303,14 @@ const connector = {
     }
 
     // Assemble dialog
-    const dialog = el('ui5-user-settings-dialog', {
-      id: 'luigi-user-settings',
-      'header-text': settings?.dialogHeader || 'Settings'
-    }, settingsItems);
+    const dialog = el(
+      'ui5-user-settings-dialog',
+      {
+        id: 'luigi-user-settings',
+        'header-text': settings?.dialogHeader || 'Settings'
+      },
+      settingsItems
+    );
 
     dialog.addEventListener('close', async () => {
       settings.onCloseCallback(storedUserSettings, previousUserSettings);
@@ -1195,6 +1396,85 @@ const connector = {
       type: 'info'
     });
   },
+
+  getGlobalSearchHandler: () => ({
+    openSearchField: () => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+        if (btn.getAttribute('aria-expanded') === 'false') {
+          btn.click();
+        }
+      });
+    },
+
+    closeSearchField: () => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+        if (btn.getAttribute('aria-expanded') === 'true') {
+          btn.click();
+        }
+      });
+    },
+
+    clearSearchField: () => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchInput = shellBar.querySelector('.lui-search-field');
+
+      if (searchInput) {
+        searchInput.value = '';
+      }
+    },
+
+    toggleSearch: (isSearchFieldVisible, onToggleCallback) => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchBtn = shellBar.getSearchButtonDomRef().then((btn) => {
+        const searchInput = shellBar.querySelector('.lui-search-field');
+
+        btn?.click();
+
+        if (onToggleCallback && typeof onToggleCallback === 'function') {
+          onToggleCallback(searchInput);
+        }
+      });
+    },
+
+    showSearchResult: (searchResultItems, searchQuery, isCentered, onShowResultCallback) => {
+      renderSearchResults(searchResultItems, searchQuery, isCentered, onShowResultCallback);
+    },
+
+    closeSearchResult: () => {
+      const searchResult = document.querySelector('#searchresult-popover');
+      if (!searchResult) return;
+
+      const searchList = searchResult.querySelector('.lui-search-results');
+
+      if (searchList) {
+        searchList.innerHTML = '';
+      } else {
+        searchResult.innerHTML = '';
+      }
+
+      searchResult.open = false;
+    },
+
+    setSearchString: (searchString, onSetStringCallback) => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchInput = shellBar.querySelector('.lui-search-field');
+
+      if (onSetStringCallback && typeof onSetStringCallback === 'function') {
+        onSetStringCallback(searchInput);
+      }
+    },
+
+    setSearchInputPlaceholder: (inputPlaceholder) => {
+      const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+      const searchInput = shellBar.querySelector('.lui-search-field');
+
+      if (searchInput) {
+        searchInput.setAttribute('placeholder', inputPlaceholder);
+      }
+    }
+  }),
 
   showFatalError: (errorMsg) => {
     var errorTextNode = document.createTextNode(errorMsg);
