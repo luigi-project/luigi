@@ -205,7 +205,11 @@ export class NavigationService {
     return result;
   }
 
-  async buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): Promise<{
+  async buildNavItems(
+    nodes: Node[],
+    selectedNode: Node | undefined,
+    pathData: PathData
+  ): Promise<{
     items: NavItem[];
     totalBadgeNode: BadgeCounter | undefined;
   }> {
