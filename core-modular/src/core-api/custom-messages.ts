@@ -10,6 +10,18 @@ export class CustomMessages {
     this.luigi = luigi;
   }
 
+  /**
+   * Sends a custom message to all opened micro frontends.
+   * @param {Object} message - an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side.
+   * @param {string} message.id - the id of the message
+   * @param {*} message.MY_DATA_FIELD - any other message data field
+   * @example
+   * Luigi.customMessages().sendToAll({
+   *     id: 'myprefix.my-custom-message-for-client',
+   *     dataField1: 'here goes some data',
+   *     moreData: 'here goes some more'
+   * });
+   */
   sendToAll(message: Record<string, any>) {
     const containers = LuigiContainerHelpers.getAllLuigiContainerIframe(this.luigi);
     if (!containers) {
@@ -30,6 +42,20 @@ export class CustomMessages {
     }
   }
 
+  /**
+   * Sends a message to specific micro frontend identified with an id.
+   * Use Luigi.elements().getMicrofrontends() to get the iframe id.
+   * @param {string} microfrontendId - the id of the micro frontend
+   * @param {Object} message - an object containing data to be sent to the micro frontend to process it further. This object is set as an input parameter of the custom message listener on the micro frontend side
+   * @param {string} message.id - the id of the message
+   * @param {*} message.MY_DATA_FIELD - any other message data field
+   * @example
+   * Luigi.customMessages().send(microfrontend.id, {
+   *     id: 'myprefix.my-custom-message-for-client',
+   *     dataField1: 'here goes some data',
+   *     moreData: 'here goes some more'
+   * });
+   */
   send(microfrontendId: string, message: Record<string, any>) {
     const containers = LuigiContainerHelpers.getAllLuigiContainerIframe(this.luigi);
     if (!containers) {

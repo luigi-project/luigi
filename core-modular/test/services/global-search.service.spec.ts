@@ -2,9 +2,20 @@ import { GlobalSearchService } from '../../src/services/global-search.service';
 
 describe('GlobalSearchService', () => {
   let luigiMock: any;
+  let globalSearchHandler: any;
   let globalSearchService: GlobalSearchService;
 
   beforeEach(() => {
+    globalSearchHandler = {
+      openSearchField: jest.fn(),
+      closeSearchField: jest.fn(),
+      clearSearchField: jest.fn(),
+      showSearchResult: jest.fn(),
+      closeSearchResult: jest.fn(),
+      setSearchString: jest.fn(),
+      setSearchInputPlaceholder: jest.fn(),
+      toggleSearch: jest.fn()
+    };
     luigiMock = {
       getConfig: jest.fn().mockReturnValue({ routing: { useHashRouting: false } }),
       getConfigValue: jest.fn().mockImplementation((key: string) => {
@@ -24,13 +35,7 @@ describe('GlobalSearchService', () => {
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn().mockReturnValue({
         _connector: {
-          openSearchField: jest.fn(),
-          closeSearchField: jest.fn(),
-          clearSearchField: jest.fn(),
-          showSearchResult: jest.fn(),
-          setSearchString: jest.fn(),
-          setSearchInputPlaceholder: jest.fn(),
-          toggleSearch: jest.fn()
+          getGlobalSearchHandler: jest.fn().mockReturnValue(globalSearchHandler)
         }
       }),
       i18n: jest.fn().mockReturnValue({
@@ -73,14 +78,14 @@ describe('GlobalSearchService', () => {
     it('should show search result when data is provided', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn');
       globalSearchService.showSearchResult([{}, {}]);
-      expect(luigiMock.getEngine()._connector.showSearchResult).toHaveBeenCalled();
+      expect(globalSearchHandler.showSearchResult).toHaveBeenCalled();
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
     it('should not show search result when data is not provided', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn');
       globalSearchService.showSearchResult(undefined);
-      expect(luigiMock.getEngine()._connector.showSearchResult).not.toHaveBeenCalled();
+      expect(globalSearchHandler.showSearchResult).not.toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledWith('Search result array is empty.');
     });
   });
@@ -104,14 +109,14 @@ describe('GlobalSearchService', () => {
     it('should set search query', () => {
       globalSearchService.setSearchQuery('test');
       expect(globalSearchService.searchQuery).toEqual('test');
-      expect(luigiMock.getEngine()._connector.setSearchString).toHaveBeenCalled();
+      expect(globalSearchHandler.setSearchString).toHaveBeenCalled();
     });
   });
 
   describe('setSearchInputPlaceholder', () => {
     it('should set search input placeholder', () => {
       globalSearchService.setSearchInputPlaceholder('test');
-      expect(luigiMock.getEngine()._connector.setSearchInputPlaceholder).toHaveBeenCalledWith('test');
+      expect(globalSearchHandler.setSearchInputPlaceholder).toHaveBeenCalledWith('test');
     });
   });
 
@@ -120,11 +125,11 @@ describe('GlobalSearchService', () => {
       globalSearchService.isSearchFieldVisible = true;
       globalSearchService.toggleSearch();
       expect(globalSearchService.isSearchFieldVisible).toEqual(false);
-      expect(luigiMock.getEngine()._connector.toggleSearch).toHaveBeenCalledWith(
+      expect(globalSearchHandler.toggleSearch).toHaveBeenCalledWith(
         globalSearchService.isSearchFieldVisible,
         expect.any(Function)
       );
-      expect(luigiMock.getEngine()._connector.clearSearchField).toHaveBeenCalled();
+      expect(globalSearchHandler.clearSearchField).toHaveBeenCalled();
     });
   });
 });

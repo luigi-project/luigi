@@ -606,6 +606,8 @@ window.onload = () => {
     },
 
     globalSearch: {
+      disableInputHandlers: false,
+      searchFieldCentered: false,
       searchProvider: {
         /*
         customSearchResultItemRenderer: (itemData, searchApiObj) => {
@@ -657,8 +659,6 @@ window.onload = () => {
           rendererSlot.appendChild(searchList);
         },
         */
-        disableInputHandlers: false,
-        searchFieldCentered: false,
         inputPlaceholder: 'Type some text to search...',
         onEnter: () => {
           console.log('searchProvider - onEnter');
