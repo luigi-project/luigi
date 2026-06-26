@@ -1,26 +1,7 @@
 import { GlobalSearchService } from '../services/global-search.service';
 import { serviceRegistry } from '../services/service-registry';
+import type { SearchResultItem } from '../types/global-search';
 import type { Luigi } from './luigi';
-
-export interface GlobalSearchProvider {
-  customSearchResultItemRenderer?: (searchResultItem: any, slot: HTMLLIElement, searchApiObj: any) => object;
-  customSearchResultRenderer?: (searchResults: any[], slot: HTMLDivElement, searchApiObj: any) => object;
-  disableInputHandlers?: boolean;
-  inputPlaceholder?: any;
-  onEnter?: () => void;
-  onEscape?: () => void;
-  onInput?: () => void;
-  onSearchBtnClick?: () => void;
-  onSearchResultItemSelected?: (searchResultItem: any) => void;
-  searchFieldCentered?: boolean;
-  toggleSearch?: (element: HTMLInputElement, visible: boolean) => void;
-}
-
-export interface SearchResultItem {
-  description: string;
-  label: string;
-  pathObject: Record<string, any>;
-}
 
 export class GlobalSearch {
   luigi: Luigi;
@@ -38,7 +19,7 @@ export class GlobalSearch {
   openSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(true);
-      this.luigi.getEngine()._connector?.openSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.()?.openSearchField();
     }
   }
 
@@ -49,7 +30,7 @@ export class GlobalSearch {
   closeSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setFieldVisibility(false);
-      this.luigi.getEngine()._connector?.closeSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.()?.closeSearchField();
     }
   }
 
@@ -60,7 +41,7 @@ export class GlobalSearch {
   clearSearchField(): void {
     if (this.globalSearchService.hasSearchProvider()) {
       this.globalSearchService.setSearchQuery('');
-      this.luigi.getEngine()._connector?.clearSearchField();
+      this.luigi.getEngine()._connector?.getGlobalSearchHandler?.()?.clearSearchField();
       this.closeSearchResult();
     }
   }
@@ -92,7 +73,7 @@ export class GlobalSearch {
    */
   closeSearchResult() {
     this.globalSearchService.closeSearchResult();
-    this.luigi.getEngine()._connector?.closeSearchResult();
+    this.luigi.getEngine()._connector?.getGlobalSearchHandler?.()?.closeSearchResult();
   }
 
   /**

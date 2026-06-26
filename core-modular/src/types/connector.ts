@@ -1,11 +1,6 @@
-import type { SearchResultItem } from '../core-api/global-search';
-import type {
-  AlertHandler,
-  AlertSettings,
-  ConfirmationModalHandler,
-  ConfirmationModalSettings,
-  UserSettings
-} from '../modules/ux-module';
+import type { CoreAPISupportedElements } from './dom-elements';
+import type { GlobalSearchHandler } from './global-search';
+import type { AlertHandler, AlertSettings, ConfirmationModalHandler, ConfirmationModalSettings } from './ux';
 import type {
   ModalSettings,
   LeftNavData,
@@ -31,14 +26,14 @@ export interface LuigiConnector {
     modalSettings: ModalSettings,
     onCloseCallback?: () => void,
     onCloseRequest?: () => void
-  ): any;
+  ): void;
 
   renderDrawer(
     content: HTMLElement,
     drawerSettings: DrawerSettings,
     onCloseCallback?: () => void,
     onCloseRequest?: () => void
-  ): any;
+  ): void;
 
   renderTabNav(data: TabNavData): void;
 
@@ -63,7 +58,11 @@ export interface LuigiConnector {
 
   removeBackdrop(): void;
 
-  openUserSettings(dialogSettings: UserSettingsDialogSettings, userSettingData: any[], previousUserSettings: any): void;
+  openUserSettings(
+    dialogSettings: UserSettingsDialogSettings,
+    userSettingData: Record<string, any>[],
+    previousUserSettings: Record<string, any> | null
+  ): void;
 
   closeUserSettings(): void;
 
@@ -75,35 +74,11 @@ export interface LuigiConnector {
 
   showFatalError(error: string): void;
 
-  getCoreAPISupportedElements(): {
-    getShellbarElement(): HTMLElement | null;
-    getShellbarActions(): HTMLElement | null;
-    getLuigiContainer(): HTMLElement | null;
-    getNavFooterContainer(): HTMLElement | null;
-  };
+  getCoreAPISupportedElements(): CoreAPISupportedElements;
 
   unload(): void;
 
-  openSearchField(): void;
-
-  closeSearchField(): void;
-
-  clearSearchField(): void;
-
-  showSearchResult(
-    searchResultItems: SearchResultItem[],
-    searchQuery: string,
-    isCentered: boolean,
-    onShowCallback: (rendererSlot?: any) => void
-  ): void;
-
-  closeSearchResult(): void;
-
-  setSearchString(searchString: string, onSetCallback: (inputElem?: HTMLInputElement) => void): void;
-
-  setSearchInputPlaceholder(placeholder: string): void;
-
-  toggleSearch(isSearchFieldVisible: boolean, onToggleCallback: (inputElem?: HTMLInputElement) => void): void;
+  getGlobalSearchHandler?(): GlobalSearchHandler;
 }
 
 export type { Node };

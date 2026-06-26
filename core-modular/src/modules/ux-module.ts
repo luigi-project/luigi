@@ -2,50 +2,25 @@ import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/cont
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
 import { DirtyStatusService } from '../services/dirty-status.service';
+import type { AlertSettings, ConfirmationModalSettings, Link } from '../types/ux';
 import { writable } from '../utilities/store';
 
-export interface AlertSettings {
-  closeAfter?: number;
-  id?: string;
-  links?: Record<string, Link>;
-  text?: string;
-  ttl?: number;
-  type?: string;
-}
-
-export interface AlertHandler {
-  openFromClient: boolean;
-  close(): void;
-  link(linkKey: string): boolean;
-}
+// Re-exported for backwards-compatibility with consumers that imported these from this module.
+export type {
+  AlertHandler,
+  AlertSettings,
+  ConfirmationModalHandler,
+  ConfirmationModalSettings,
+  Link
+} from '../types/ux';
 
 export interface ProcessedAlertSettings {
   settings: AlertSettings;
 }
 
-export interface Link {
-  elemId: string;
-  url?: string;
-  dismissKey?: string;
-}
-
 export interface ProcessedTextAndLinks {
   sanitizedText: string;
   links: Link[];
-}
-
-export interface ConfirmationModalSettings {
-  icon?: string;
-  type?: string;
-  header?: string;
-  body?: string;
-  buttonConfirm?: string;
-  buttonDismiss?: string;
-}
-
-export interface ConfirmationModalHandler {
-  confirm(): void;
-  dismiss(): void;
 }
 
 export interface UserSettings {
