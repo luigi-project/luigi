@@ -1444,7 +1444,9 @@ const connector = {
 
     closeSearchResult: () => {
       const searchResult = document.querySelector('#searchresult-popover');
-      const searchList = searchResult?.querySelector('.lui-search-results');
+      if (!searchResult) return;
+
+      const searchList = searchResult.querySelector('.lui-search-results');
 
       if (searchList) {
         searchList.innerHTML = '';
