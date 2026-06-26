@@ -915,11 +915,11 @@ describe('Routing Service', () => {
   });
 
   describe('handleViewUrlMisconfigured', () => {
-    let showPageNotFoundErrorSpy: jest.SpyInstance;
+    let showRouteNotFoundAlertSpy: jest.SpyInstance;
     let getDefaultChildNodeSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      showPageNotFoundErrorSpy = jest.spyOn(routingService, 'showPageNotFoundError').mockResolvedValue(undefined);
+      showRouteNotFoundAlertSpy = jest.spyOn(RoutingHelpers, 'showRouteNotFoundAlert').mockImplementation(() => {});
       getDefaultChildNodeSpy = jest.spyOn(RoutingHelpers, 'getDefaultChildNode').mockResolvedValue('/home');
       mockNavService.getPathData.mockResolvedValue({
         rootNodes: [],
@@ -964,7 +964,8 @@ describe('Routing Service', () => {
       expect(result).toBe(true);
       expect(mockNavService.getPathData).toHaveBeenCalledWith('/');
       expect(getDefaultChildNodeSpy).toHaveBeenCalled();
-      expect(showPageNotFoundErrorSpy).toHaveBeenCalledWith('/home', '/test', false);
+      expect(showRouteNotFoundAlertSpy).toHaveBeenCalledWith('/test', false, expect.anything());
+      expect(mockNavService.handleNavigationRequest).toHaveBeenCalledWith({ path: '/home' });
     });
 
     it('should return true and redirect when previous path data has no viewUrl and no compound', async () => {
@@ -978,7 +979,8 @@ describe('Routing Service', () => {
       const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
 
       expect(result).toBe(true);
-      expect(showPageNotFoundErrorSpy).toHaveBeenCalledWith('/home', '/test', false);
+      expect(showRouteNotFoundAlertSpy).toHaveBeenCalledWith('/test', false, expect.anything());
+      expect(mockNavService.handleNavigationRequest).toHaveBeenCalledWith({ path: '/home' });
     });
 
     it('should return true without redirect when previous path data has a viewUrl', async () => {
@@ -992,7 +994,7 @@ describe('Routing Service', () => {
       const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
 
       expect(result).toBe(true);
-      expect(showPageNotFoundErrorSpy).not.toHaveBeenCalled();
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
       expect(mockNavService.handleNavigationRequest).not.toHaveBeenCalled();
     });
 
@@ -1007,7 +1009,7 @@ describe('Routing Service', () => {
       const result = await routingService.handleViewUrlMisconfigured(node, '', previousPathData, '/test');
 
       expect(result).toBe(true);
-      expect(showPageNotFoundErrorSpy).not.toHaveBeenCalled();
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
       expect(mockNavService.handleNavigationRequest).not.toHaveBeenCalled();
     });
 
