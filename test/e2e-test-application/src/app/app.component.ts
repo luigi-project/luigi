@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { addInactiveListener, sendCustomMessage } from '@luigi-project/client';
 import { LuigiContextService } from '@luigi-project/client-support-angular';
 
@@ -7,6 +7,7 @@ import { LuigiContextService } from '@luigi-project/client-support-angular';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AppComponent implements OnInit {

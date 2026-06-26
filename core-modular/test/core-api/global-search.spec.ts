@@ -5,9 +5,17 @@ import { serviceRegistry } from '../../src/services/service-registry';
 describe('GlobalSearch', () => {
   let luigiMock: any;
   let mockGlobalSearchService: any;
+  let globalSearchHandler: any;
   let globalSearch: GlobalSearch;
 
   beforeEach(() => {
+    globalSearchHandler = {
+      openSearchField: jest.fn(),
+      closeSearchField: jest.fn(),
+      clearSearchField: jest.fn(),
+      closeSearchResult: jest.fn(),
+      toggleSearch: jest.fn()
+    };
     luigiMock = {
       getConfig: jest.fn().mockReturnValue({ routing: { useHashRouting: false } }),
       getConfigValue: jest.fn().mockImplementation((key: string) => {
@@ -27,11 +35,7 @@ describe('GlobalSearch', () => {
       navigation: jest.fn(() => ({ navigate: jest.fn() })),
       getEngine: jest.fn().mockReturnValue({
         _connector: {
-          openSearchField: jest.fn(),
-          closeSearchField: jest.fn(),
-          clearSearchField: jest.fn(),
-          closeSearchResult: jest.fn(),
-          toggleSearch: jest.fn()
+          getGlobalSearchHandler: jest.fn().mockReturnValue(globalSearchHandler)
         }
       }),
       i18n: jest.fn().mockReturnValue({
@@ -63,7 +67,7 @@ describe('GlobalSearch', () => {
     it('should set isSearchFieldVisible and call openSearchField via connector', () => {
       globalSearch.openSearchField();
       expect(globalSearch.globalSearchService.setFieldVisibility).toHaveBeenCalledWith(true);
-      expect(luigiMock.getEngine()._connector.openSearchField).toHaveBeenCalled();
+      expect(globalSearchHandler.openSearchField).toHaveBeenCalled();
     });
   });
 
@@ -71,7 +75,7 @@ describe('GlobalSearch', () => {
     it('should set isSearchFieldVisible and call closeSearchField via connector', () => {
       globalSearch.closeSearchField();
       expect(globalSearch.globalSearchService.setFieldVisibility).toHaveBeenCalledWith(false);
-      expect(luigiMock.getEngine()._connector.closeSearchField).toHaveBeenCalled();
+      expect(globalSearchHandler.closeSearchField).toHaveBeenCalled();
     });
   });
 
@@ -80,7 +84,7 @@ describe('GlobalSearch', () => {
       const closeSearchResultSpy = jest.spyOn(globalSearch, 'closeSearchResult');
       globalSearch.clearSearchField();
       expect(globalSearch.globalSearchService.setSearchQuery).toHaveBeenCalledWith('');
-      expect(luigiMock.getEngine()._connector.clearSearchField).toHaveBeenCalled();
+      expect(globalSearchHandler.clearSearchField).toHaveBeenCalled();
       expect(closeSearchResultSpy).toHaveBeenCalled();
     });
   });
@@ -96,7 +100,7 @@ describe('GlobalSearch', () => {
     it('should close search result and call closeSearchResult via connector', () => {
       globalSearch.closeSearchResult();
       expect(globalSearch.globalSearchService.closeSearchResult).toHaveBeenCalled();
-      expect(luigiMock.getEngine()._connector.closeSearchResult).toHaveBeenCalled();
+      expect(globalSearchHandler.closeSearchResult).toHaveBeenCalled();
     });
   });
 
