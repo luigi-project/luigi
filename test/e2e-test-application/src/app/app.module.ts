@@ -62,11 +62,7 @@ import { ViewGroupComponent } from './project/view-group/view-group.component';
   imports: [BrowserModule, FormsModule, AppRoutingModule],
   providers: [
     provideZoneChangeDetection(),
-    provideLuigiAngular(),
-    // TODO remove when newer `@luigi-project/client-support-angular` is released
-    provideEnvironmentInitializer(() => {
-      inject(LuigiAutoRoutingService);
-    })
+    provideLuigiAngular()
   ],
   bootstrap: [AppComponent]
 })
