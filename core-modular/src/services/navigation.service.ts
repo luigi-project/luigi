@@ -205,12 +205,7 @@ export class NavigationService {
     return result;
   }
 
-  async buildNavItems(
-    nodes: Node[],
-    selectedNode: Node | undefined,
-    pathData: PathData,
-    addBadges = false
-  ): Promise<{
+  async buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): Promise<{
     items: NavItem[];
     totalBadgeNode: BadgeCounter | undefined;
   }> {
@@ -230,10 +225,10 @@ export class NavigationService {
         continue;
       }
 
-      const hasBadge = !!node.badgeCounter && addBadges;
+      const hasBadge = !!node.badgeCounter;
       let badgeCount = 0;
 
-      if (addBadges && node.badgeCounter) {
+      if (node.badgeCounter) {
         badgeCount = await (node.badgeCounter.count as any)();
       }
 
@@ -284,7 +279,7 @@ export class NavigationService {
       } else {
         items.push({
           altText: node.altText,
-          badgeCounter: addBadges ? node.badgeCounter : undefined,
+          badgeCounter: node.badgeCounter,
           externalLink: node.externalLink,
           href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
@@ -295,18 +290,16 @@ export class NavigationService {
         });
       }
 
-      if (badgeCount && addBadges) {
+      if (badgeCount) {
         badgeCountsToSumUp.push(badgeCount);
       }
     }
 
     const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
-    const totalBadgeNode: BadgeCounter | undefined = addBadges
-      ? {
-          count: () => badgeCountSum,
-          label: ''
-        }
-      : undefined;
+    const totalBadgeNode: BadgeCounter = {
+      count: () => badgeCountSum,
+      label: ''
+    };
 
     return { items, totalBadgeNode };
   }
@@ -603,7 +596,7 @@ export class NavigationService {
         }
       }
     };
-    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData, true);
+    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData);
 
     if (globalSearchConfig?.inputPlaceholder) {
       globalSearchConfig.inputPlaceholder = GlobalSearchHelpers.getSearchPlaceholder(this.luigi);

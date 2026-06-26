@@ -745,18 +745,6 @@ describe('NavigationService', () => {
       expect(data.totalBadgeNode).toBeTruthy();
     });
 
-    it('should not add totalBadgeNode prop if badge check is not enabled', async () => {
-      const pathData = {
-        selectedNode: undefined,
-        selectedNodeChildren: [],
-        nodesInPath: [],
-        rootNodes: [],
-        pathParams: {}
-      };
-      const data = await navigationService.buildNavItems([], undefined, pathData, false);
-      expect(data.totalBadgeNode).toBeFalsy();
-    });
-
     it('should mark selected node as selected', async () => {
       const node1: Node = {
         pathSegment: 'node1',

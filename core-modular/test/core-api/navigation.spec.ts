@@ -340,7 +340,7 @@ describe('Navigation', () => {
 
       await navigation.updateTopNavigation();
 
-      expect(configChangedSpy).toHaveBeenCalledWith('navigation.badges');
+      expect(configChangedSpy).toHaveBeenCalledWith('navigation');
     });
   });
 });
