@@ -18,7 +18,7 @@ echo yes | $PKG_MGR run eject
 
 # install dependencies
 $PKG_MGR i -P @luigi-project/core @luigi-project/client @sap-theming/theming-base-content react-router-dom@6
-$PKG_MGR i copy-webpack-plugin@9 webpack webpack-cli@4 @babel/core @babel/preset-env babel-loader --save-dev
+$PKG_MGR i copy-webpack-plugin@13 webpack@5 webpack-cli@6 @babel/core@7 @babel/preset-env@7 babel-loader --save-dev
 
 # replace strings in some places
 sed "s/const HtmlWebpackPlugin = require('html-webpack-plugin');/const HtmlWebpackPlugin = require('html-webpack-plugin');const CopyWebpackPlugin = require('copy-webpack-plugin');/g" config/webpack.config.js > config/webpack.config.tmp.js && mv config/webpack.config.tmp.js config/webpack.config.js
