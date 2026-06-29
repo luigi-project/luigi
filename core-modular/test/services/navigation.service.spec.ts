@@ -1073,7 +1073,12 @@ describe('NavigationService', () => {
     });
 
     it('should not include href when node has openNodeInModal set to an object', () => {
-      const node1: Node = { pathSegment: 'settings', label: 'Settings', openNodeInModal: { size: 'm' }, children: [] } as any;
+      const node1: Node = {
+        pathSegment: 'settings',
+        label: 'Settings',
+        openNodeInModal: { size: 'm' },
+        children: []
+      } as any;
       jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
       const pathData: PathData = {

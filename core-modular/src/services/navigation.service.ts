@@ -248,7 +248,9 @@ export class NavigationService {
           altText: node.altText,
           icon: node.icon,
           externalLink: node.externalLink,
-          href: node.openNodeInModal ? undefined : (node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi))
+          href: node.openNodeInModal
+            ? undefined
+            : node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       } else {
         items.push({
@@ -259,7 +261,9 @@ export class NavigationService {
           node,
           selected: node === selectedNode,
           externalLink: node.externalLink,
-          href: node.openNodeInModal ? undefined : (node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi))
+          href: node.openNodeInModal
+            ? undefined
+            : node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
         });
       }
     });
