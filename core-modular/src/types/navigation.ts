@@ -10,6 +10,7 @@ export interface TopNavData {
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   topNodes: NavItem[];
+  totalBadgeNode?: BadgeCounter;
 }
 
 export interface AppSwitcher {
@@ -113,6 +114,7 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
+  totalBadgeNode?: BadgeCounter;
   navClick?: (item: NavItem) => Promise<void>;
 }
 
@@ -130,13 +132,15 @@ export interface RootNode {
   node: Node;
 }
 
+export interface BadgeCounter {
+  count?: () => number | Promise<number>;
+  label?: string;
+}
+
 export interface Node {
   altText?: string;
   anonymousAccess?: any;
-  badgeCounter?: {
-    count?: () => number | Promise<number>;
-    label?: string;
-  };
+  badgeCounter?: BadgeCounter;
   category?: any;
   children?: Node[];
   clientPermissions?: {
@@ -221,6 +225,7 @@ export interface BreadcrumbItem {
 
 export interface NavItem {
   altText?: string;
+  badgeCounter?: BadgeCounter;
   category?: Category;
   externalLink?: ExternalLink;
   href?: string;
@@ -232,10 +237,11 @@ export interface NavItem {
 }
 
 export interface TabNavData {
-  selectedNode?: any;
-  items?: NavItem[];
   basePath?: string;
+  items?: NavItem[];
   navClick?: (item: NavItem) => Promise<void>;
+  selectedNode?: any;
+  totalBadgeNode?: BadgeCounter;
 }
 
 export interface BreadcrumbData {

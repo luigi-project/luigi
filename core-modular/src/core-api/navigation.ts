@@ -237,4 +237,13 @@ export class Navigation {
     }
     return this;
   }
+
+  /**
+   * Refreshes top navigation badge counters by rendering the navigation again.
+   * @example
+   * Luigi.navigation().updateTopNavigation();
+   */
+  async updateTopNavigation(): Promise<void> {
+    this.luigi.configChanged('navigation');
+  }
 }

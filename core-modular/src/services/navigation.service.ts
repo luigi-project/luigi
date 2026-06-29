@@ -4,6 +4,7 @@ import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  BadgeCounter,
   BreadcrumbData,
   BreadcrumbItem,
   ContextSwitcher,
@@ -204,11 +205,19 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
+  async buildNavItems(
+    nodes: Node[],
+    selectedNode: Node | undefined,
+    pathData: PathData
+  ): Promise<{
+    items: NavItem[];
+    totalBadgeNode: BadgeCounter | undefined;
+  }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
+    const badgeCountsToSumUp: number[] = [];
 
-    nodes?.forEach((node) => {
+    for (const node of nodes) {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
@@ -217,7 +226,14 @@ export class NavigationService {
           this.luigi
         )
       ) {
-        return;
+        continue;
+      }
+
+      const hasBadge = !!node.badgeCounter;
+      let badgeCount = 0;
+
+      if (node.badgeCounter) {
+        badgeCount = await (node.badgeCounter.count as any)();
       }
 
       if (node.category) {
@@ -227,6 +243,7 @@ export class NavigationService {
 
         if (!catNode) {
           catNode = {
+            badgeCounter: hasBadge ? { count: () => Number(badgeCount), label: '' } : undefined,
             category: {
               altText: node.category.altText || '',
               icon: node.category.icon,
@@ -238,33 +255,57 @@ export class NavigationService {
           };
           catMap[catId] = catNode;
           items.push(catNode);
+        } else {
+          if (hasBadge) {
+            if (catNode.badgeCounter) {
+              const nodeBadgeCount = await (catNode.badgeCounter.count as any)();
+
+              catNode.badgeCounter.count = () => Number(nodeBadgeCount + badgeCount);
+            } else {
+              catNode.badgeCounter = {
+                count: () => Number(badgeCount),
+                label: ''
+              };
+            }
+          }
         }
 
         catNode.category?.nodes?.push({
+          altText: node.altText,
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          icon: node.icon,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           node,
           selected: node === selectedNode,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
-          altText: node.altText,
-          icon: node.icon,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       } else {
         items.push({
           altText: node.altText,
+          badgeCounter: node.badgeCounter,
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
           selected: node === selectedNode,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       }
-    });
 
-    return items;
+      if (badgeCount) {
+        badgeCountsToSumUp.push(badgeCount);
+      }
+    }
+
+    const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
+    const totalBadgeNode: BadgeCounter = {
+      count: () => badgeCountSum,
+      label: ''
+    };
+
+    return { items, totalBadgeNode };
   }
 
   async getCurrentNode(path: string): Promise<Node | undefined> {
@@ -430,16 +471,20 @@ export class NavigationService {
       parentNode = [...pathToLeftNavParent].pop();
     }
 
-    let children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
-    navItems = this.buildNavItems(children, activeNode, pathData);
+    const children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
+    const navData = await this.buildNavItems(children, activeNode, pathData);
+
+    navItems = navData.items;
 
     // convert
     navItems = this.applyNavGroups(navItems);
+
     return {
       selectedNode: selectedNode || ({} as Node),
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
+      totalBadgeNode: navData.totalBadgeNode,
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
@@ -565,6 +610,7 @@ export class NavigationService {
         }
       }
     };
+    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData);
 
     let globalSearch: GlobalSearch | undefined = userGlobalSearch;
 
@@ -589,7 +635,8 @@ export class NavigationService {
       appTitle: headerTitle || cfg.settings?.header?.title,
       globalSearch,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
+      topNodes: navData.items,
+      totalBadgeNode: navData.totalBadgeNode,
       contextSwitcher,
       productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
@@ -655,11 +702,12 @@ export class NavigationService {
     const pathDataTruncatedChildren = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
+    const navData = await this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
 
-    const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
     return {
       selectedNode,
-      items: navItems,
+      items: navData.items,
+      totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
