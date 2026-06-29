@@ -273,9 +273,7 @@ export class NavigationService {
         catNode.category?.nodes?.push({
           altText: node.altText,
           externalLink: node.externalLink,
-          href: node.openNodeInModal
-            ? undefined
-            : node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           node,
@@ -287,9 +285,7 @@ export class NavigationService {
           altText: node.altText,
           badgeCounter: node.badgeCounter,
           externalLink: node.externalLink,
-          href: node.openNodeInModal
-            ? undefined
-            : node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           node,

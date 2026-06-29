@@ -1086,7 +1086,7 @@ describe('NavigationService', () => {
       jest.restoreAllMocks();
     });
 
-    it('should not include href when node has openNodeInModal set to true', () => {
+    it('should include href on openNodeInModal nodes (same as core, navigation is prevented at UI layer)', () => {
       const node1: Node = { pathSegment: 'settings', label: 'Settings', openNodeInModal: true, children: [] };
       jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
@@ -1099,48 +1099,7 @@ describe('NavigationService', () => {
         matchedPath: ''
       };
       const items = navigationService.buildNavItems([node1], undefined, pathData);
-      expect(items[0].href).toBeUndefined();
-      expect(RoutingHelpers.getNodeHref).not.toHaveBeenCalled();
-      jest.restoreAllMocks();
-    });
-
-    it('should not include href when node has openNodeInModal set to an object', () => {
-      const node1: Node = {
-        pathSegment: 'settings',
-        label: 'Settings',
-        openNodeInModal: { size: 'm' },
-        children: []
-      } as any;
-      jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
-      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData: PathData = {
-        selectedNode: undefined,
-        selectedNodeChildren: [node1],
-        nodesInPath: [],
-        rootNodes: [node1],
-        pathParams: {},
-        matchedPath: ''
-      };
-      const items = navigationService.buildNavItems([node1], undefined, pathData);
-      expect(items[0].href).toBeUndefined();
-      jest.restoreAllMocks();
-    });
-
-    it('should not include href on category node when openNodeInModal is true', () => {
-      const category = { id: 'cat1', label: 'Category 1' };
-      const node1: Node = { pathSegment: 'settings', label: 'Settings', category, openNodeInModal: true, children: [] };
-      jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
-      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData: PathData = {
-        selectedNode: undefined,
-        selectedNodeChildren: [node1],
-        nodesInPath: [],
-        rootNodes: [node1],
-        pathParams: {},
-        matchedPath: ''
-      };
-      const items = navigationService.buildNavItems([node1], undefined, pathData);
-      expect(items[0].category?.nodes?.[0].href).toBeUndefined();
+      expect(items[0].href).toBe('#/settings');
       jest.restoreAllMocks();
     });
   });
