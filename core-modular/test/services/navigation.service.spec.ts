@@ -1086,7 +1086,7 @@ describe('NavigationService', () => {
       jest.restoreAllMocks();
     });
 
-    it('should include href on openNodeInModal nodes (same as core, navigation is prevented at UI layer)', () => {
+    it('should include href on openNodeInModal nodes (same as core, navigation is prevented at UI layer)', async () => {
       const node1: Node = { pathSegment: 'settings', label: 'Settings', openNodeInModal: true, children: [] };
       jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
@@ -1098,8 +1098,8 @@ describe('NavigationService', () => {
         pathParams: {},
         matchedPath: ''
       };
-      const items = navigationService.buildNavItems([node1], undefined, pathData);
-      expect(items[0].href).toBe('#/settings');
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
+      expect(data.items[0].href).toBe('#/settings');
       jest.restoreAllMocks();
     });
   });
