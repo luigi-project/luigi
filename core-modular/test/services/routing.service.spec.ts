@@ -1034,5 +1034,126 @@ describe('Routing Service', () => {
       const result = await routingService.handleViewUrlMisconfigured(node, '   ', undefined as any, '/test');
       expect(result).toBe(true);
     });
+
+    it('should respect ignoreLuigiErrorHandling from pageNotFoundHandler', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue((notFoundPath: string, isAnyPathMatched: boolean) => {
+        return { ignoreLuigiErrorHandling: true };
+      });
+
+      const result = await routingService.handleViewUrlMisconfigured(node, '', undefined as any, '/test');
+
+      expect(result).toBe(true);
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
+      expect(mockNavService.handleNavigationRequest).not.toHaveBeenCalled();
+    });
+
+    it('should respect redirectTo from pageNotFoundHandler', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue((notFoundPath: string, isAnyPathMatched: boolean) => {
+        return { redirectTo: '/404', keepURL: false };
+      });
+
+      const result = await routingService.handleViewUrlMisconfigured(node, '', undefined as any, '/test');
+
+      expect(result).toBe(true);
+      expect(showRouteNotFoundAlertSpy).not.toHaveBeenCalled();
+      expect(mockNavService.handleNavigationRequest).toHaveBeenCalledWith({ path: '/404' });
+    });
+
+    it('should pass isAnyPathMatched=false to showPageNotFoundError', async () => {
+      const node = { compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false } as any;
+      const showPageNotFoundErrorSpy = jest.spyOn(routingService, 'showPageNotFoundError');
+
+      const result = await routingService.handleViewUrlMisconfigured(node, '', undefined as any, '/some/path');
+
+      expect(result).toBe(true);
+      expect(showPageNotFoundErrorSpy).toHaveBeenCalledWith('/home', '/some/path', false);
+    });
+  });
+
+  describe('handleRouteChange - nav re-rendering on blocked route', () => {
+    it('should re-render left and tab nav when handleViewUrlMisconfigured blocks the route', async () => {
+      const emptyViewUrlNode = { pathSegment: 'emptyViewUrl', viewUrl: '', compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false };
+      const mockPathData = {
+        nodesInPath: [{ pathSegment: 'home' }, emptyViewUrlNode],
+        pathParams: {},
+        rootNodes: [{ pathSegment: 'home' }],
+        selectedNode: emptyViewUrlNode
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(emptyViewUrlNode);
+      (mockNavService.getLeftNavData as jest.Mock).mockResolvedValue({ items: [] });
+      (mockNavService.getTabNavData as jest.Mock).mockResolvedValue({ items: [] });
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+
+      routingService.previousPathData = {
+        selectedNode: { viewUrl: '/prev/url' },
+        rootNodes: [],
+        pathParams: {},
+        matchedPath: '/prev',
+        nodesInPath: [{ pathSegment: 'prev' }]
+      } as any;
+
+      await routingService.handleRouteChange({ path: '/home/emptyViewUrl', query: '' });
+
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(mockConnector.renderTopNav).not.toHaveBeenCalled();
+      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+    });
+
+    it('should re-render left and tab nav when handlePageNotFound blocks the route', async () => {
+      const mockPathData = {
+        nodesInPath: [{ pathSegment: 'home' }],
+        pathParams: {},
+        rootNodes: [{ pathSegment: 'home' }],
+        selectedNode: { pathSegment: 'home', viewUrl: '/some/url' },
+        matchedPath: '/home',
+        isExistingRoute: false
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(mockPathData.selectedNode);
+      (mockNavService.getLeftNavData as jest.Mock).mockResolvedValue({ items: [] });
+      (mockNavService.getTabNavData as jest.Mock).mockResolvedValue({ items: [] });
+      jest.spyOn(RoutingHelpers, 'isExistingRoute').mockReturnValue(false);
+      jest.spyOn(RoutingHelpers, 'getPageNotFoundRedirectResult').mockReturnValue({});
+
+      routingService.previousPathData = mockPathData as any;
+
+      await routingService.handleRouteChange({ path: '/home/nonexistent', query: '' });
+
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(mockConnector.renderTopNav).not.toHaveBeenCalled();
+      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+    });
+
+    it('should not re-render nav when route is not blocked', async () => {
+      const childNode = { pathSegment: 'settings', viewUrl: '/some/url' };
+      const mockPathData = {
+        nodesInPath: [{ pathSegment: 'home' }, childNode],
+        pathParams: {},
+        rootNodes: [{ pathSegment: 'home' }],
+        selectedNode: childNode
+      };
+      (mockNavService.getPathData as jest.Mock).mockResolvedValue(mockPathData);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(childNode);
+      (mockNavService.getLeftNavData as jest.Mock).mockResolvedValue({ items: [] });
+      (mockNavService.getTabNavData as jest.Mock).mockResolvedValue({ items: [] });
+      (mockNavService.getTopNavData as jest.Mock).mockResolvedValue({ items: [] });
+      (mockNavService.getBreadcrumbData as jest.Mock).mockResolvedValue({ items: [] });
+      jest.spyOn(routingService, 'handleViewUrlMisconfigured').mockResolvedValue(false);
+      jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
+
+      routingService.previousPathData = mockPathData as any;
+
+      await routingService.handleRouteChange({ path: '/home/settings', query: '' });
+
+      expect(mockConnector.renderTopNav).toHaveBeenCalled();
+      expect(mockConnector.renderLeftNav).toHaveBeenCalled();
+      expect(mockConnector.renderTabNav).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalled();
+    });
   });
 });
