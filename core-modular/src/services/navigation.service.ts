@@ -248,7 +248,7 @@ export class NavigationService {
           altText: node.altText,
           icon: node.icon,
           externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          href: node.openNodeInModal ? undefined : (node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi))
         });
       } else {
         items.push({
@@ -259,7 +259,7 @@ export class NavigationService {
           node,
           selected: node === selectedNode,
           externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          href: node.openNodeInModal ? undefined : (node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi))
         });
       }
     });
@@ -445,6 +445,17 @@ export class NavigationService {
   }
 
   async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    if (node.openNodeInModal) {
+      const fullPath = GenericHelpers.replaceVars(
+        RoutingHelpers.getNodePath(node),
+        pathData?.pathParams || {},
+        ':',
+        false
+      );
+      this.luigi.navigation().openAsModal(fullPath, node.openNodeInModal === true ? {} : node.openNodeInModal);
+      return;
+    }
+
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
@@ -473,6 +484,7 @@ export class NavigationService {
       );
       return;
     }
+
     return this.luigi.navigation().navigate(fullPath);
   }
 

@@ -629,6 +629,98 @@ describe('NavigationService', () => {
       expect(RoutingHelpers.getNodePath).toHaveBeenCalledWith(parentNode);
       expect(navigateSpy).toHaveBeenCalledWith('/projects/:projectId/settings/general');
     });
+
+    it('should open modal instead of navigating when openNodeInModal is true', async () => {
+      const navigateSpy = jest.fn();
+      const openAsModalSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy,
+        openAsModal: openAsModalSpy
+      });
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/projects/pr1/settings');
+      jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue('/projects/pr1/settings');
+
+      const node = {
+        pathSegment: 'settings',
+        label: 'Settings',
+        openNodeInModal: true,
+        children: []
+      };
+
+      const pathData: PathData = {
+        pathParams: {},
+        rootNodes: []
+      };
+
+      await navigationService.navItemClick(node, pathData);
+
+      expect(openAsModalSpy).toHaveBeenCalledWith('/projects/pr1/settings', {});
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should pass modal settings to openAsModal when openNodeInModal is an object', async () => {
+      const navigateSpy = jest.fn();
+      const openAsModalSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy,
+        openAsModal: openAsModalSpy
+      });
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/projects/pr1/settings');
+      jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue('/projects/pr1/settings');
+
+      const modalSettings = { size: 'm', title: 'Settings' };
+      const node = {
+        pathSegment: 'settings',
+        label: 'Settings',
+        openNodeInModal: modalSettings,
+        children: []
+      };
+
+      const pathData: PathData = {
+        pathParams: {},
+        rootNodes: []
+      };
+
+      await navigationService.navItemClick(node, pathData);
+
+      expect(openAsModalSpy).toHaveBeenCalledWith('/projects/pr1/settings', modalSettings);
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should replace path params when opening modal', async () => {
+      const openAsModalSpy = jest.fn();
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: jest.fn(),
+        openAsModal: openAsModalSpy
+      });
+
+      jest.spyOn(RoutingHelpers, 'getNodePath').mockReturnValue('/projects/:projectId/settings');
+      jest.spyOn(GenericHelpers, 'replaceVars').mockReturnValue('/projects/pr1/settings');
+
+      const node = {
+        pathSegment: 'settings',
+        label: 'Settings',
+        openNodeInModal: true,
+        children: []
+      };
+
+      const pathData: PathData = {
+        pathParams: { projectId: 'pr1' },
+        rootNodes: []
+      };
+
+      await navigationService.navItemClick(node, pathData);
+
+      expect(GenericHelpers.replaceVars).toHaveBeenCalledWith(
+        '/projects/:projectId/settings',
+        { projectId: 'pr1' },
+        ':',
+        false
+      );
+      expect(openAsModalSpy).toHaveBeenCalledWith('/projects/pr1/settings', {});
+    });
   });
 
   describe('NavigationService.handleNavigationRequest', () => {
@@ -959,6 +1051,59 @@ describe('NavigationService', () => {
       };
       const items = navigationService.buildNavItems([node1], undefined, pathData);
       expect(items[0].category?.nodes?.[0].href).toBe('/node1');
+      jest.restoreAllMocks();
+    });
+
+    it('should not include href when node has openNodeInModal set to true', () => {
+      const node1: Node = { pathSegment: 'settings', label: 'Settings', openNodeInModal: true, children: [] };
+      jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData: PathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1],
+        nodesInPath: [],
+        rootNodes: [node1],
+        pathParams: {},
+        matchedPath: ''
+      };
+      const items = navigationService.buildNavItems([node1], undefined, pathData);
+      expect(items[0].href).toBeUndefined();
+      expect(RoutingHelpers.getNodeHref).not.toHaveBeenCalled();
+      jest.restoreAllMocks();
+    });
+
+    it('should not include href when node has openNodeInModal set to an object', () => {
+      const node1: Node = { pathSegment: 'settings', label: 'Settings', openNodeInModal: { size: 'm' }, children: [] } as any;
+      jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData: PathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1],
+        nodesInPath: [],
+        rootNodes: [node1],
+        pathParams: {},
+        matchedPath: ''
+      };
+      const items = navigationService.buildNavItems([node1], undefined, pathData);
+      expect(items[0].href).toBeUndefined();
+      jest.restoreAllMocks();
+    });
+
+    it('should not include href on category node when openNodeInModal is true', () => {
+      const category = { id: 'cat1', label: 'Category 1' };
+      const node1: Node = { pathSegment: 'settings', label: 'Settings', category, openNodeInModal: true, children: [] };
+      jest.spyOn(RoutingHelpers, 'getNodeHref').mockReturnValue('#/settings');
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData: PathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [node1],
+        nodesInPath: [],
+        rootNodes: [node1],
+        pathParams: {},
+        matchedPath: ''
+      };
+      const items = navigationService.buildNavItems([node1], undefined, pathData);
+      expect(items[0].category?.nodes?.[0].href).toBeUndefined();
       jest.restoreAllMocks();
     });
   });

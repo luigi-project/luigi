@@ -339,7 +339,7 @@ function renderNodeOrCategory(item, leftNavData) {
       el.setAttribute('target', item.externalLink.sameWindow ? '_self' : '_blank');
     } else {
       el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
-      if (item.href) el.setAttribute('href', item.href);
+      if (item.href && !item.node?.openNodeInModal) el.setAttribute('href', item.href);
     }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
@@ -366,7 +366,7 @@ function renderNodeOrCategory(item, leftNavData) {
           sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
         } else {
           sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
-          if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+          if (nodeWrapper.href && !nodeWrapper.node?.openNodeInModal) sub.setAttribute('href', nodeWrapper.href);
         }
         if (nodeWrapper.selected) sub.setAttribute('selected', '');
         el.appendChild(sub);
