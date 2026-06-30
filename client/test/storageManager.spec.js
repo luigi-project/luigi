@@ -41,12 +41,7 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.setItem(resultMock.key, resultMock.value);
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'setItem',
-        resultMock
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'setItem', resultMock);
       expect(promiseResult).toEqual(resultMock);
     });
 
@@ -73,12 +68,7 @@ describe('StorageManager', () => {
       try {
         await storageManager.setItem(resultMock.key, resultMock.value);
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'setItem',
-          resultMock
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'setItem', resultMock);
         expect(error).toEqual(resultMock);
       }
     });
@@ -107,12 +97,7 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.getItem(keyMock);
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'getItem',
-        { key: keyMock }
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'getItem', { key: keyMock });
       expect(promiseResult).toEqual(resultMock);
     });
 
@@ -140,12 +125,9 @@ describe('StorageManager', () => {
       try {
         await storageManager.getItem(keyMock);
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'getItem',
-          { key: keyMock }
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'getItem', {
+          key: keyMock
+        });
         expect(error).toEqual(resultMock);
       }
     });
@@ -174,12 +156,9 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.removeItem(keyMock);
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'removeItem',
-        { key: keyMock }
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'removeItem', {
+        key: keyMock
+      });
       expect(promiseResult).toEqual(resultMock);
     });
 
@@ -207,12 +186,9 @@ describe('StorageManager', () => {
       try {
         await storageManager.removeItem(keyMock);
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'removeItem',
-          { key: keyMock }
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'removeItem', {
+          key: keyMock
+        });
         expect(error).toEqual(resultMock);
       }
     });
@@ -237,12 +213,7 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.clear();
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'clear',
-        resultMock
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'clear', resultMock);
       expect(promiseResult).toEqual(resultMock);
     });
 
@@ -266,12 +237,7 @@ describe('StorageManager', () => {
       try {
         await storageManager.clear();
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'clear',
-          resultMock
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'clear', resultMock);
         expect(error).toEqual(resultMock);
       }
     });
@@ -296,12 +262,7 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.has(keyMock);
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'has',
-        { key: keyMock }
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'has', { key: keyMock });
       expect(promiseResult).toEqual(true);
     });
 
@@ -325,12 +286,7 @@ describe('StorageManager', () => {
       try {
         await storageManager.has(keyMock);
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'has',
-          { key: keyMock }
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'has', { key: keyMock });
         expect(error).toEqual(false);
       }
     });
@@ -355,12 +311,7 @@ describe('StorageManager', () => {
       const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
       const promiseResult = await storageManager.getAllKeys();
 
-      expect(executeSpy).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        'getAllKeys',
-        {}
-      );
+      expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'getAllKeys', {});
       expect(promiseResult).toEqual(resultMock);
     });
 
@@ -384,12 +335,7 @@ describe('StorageManager', () => {
       try {
         await storageManager.getAllKeys();
       } catch (error) {
-        expect(executeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          'getAllKeys',
-          {}
-        );
+        expect(executeSpy).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), 'getAllKeys', {});
         expect(error).toEqual(resultMock);
       }
     });
