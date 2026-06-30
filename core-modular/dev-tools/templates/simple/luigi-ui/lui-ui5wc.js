@@ -1390,13 +1390,6 @@ const connector = {
     });
   },
 
-  getCurrentLocale: () => {
-    globalThis.Luigi.ux().showAlert({
-      text: 'Current locale equals to: ' + globalThis.Luigi.i18n().getCurrentLocale(),
-      type: 'info'
-    });
-  },
-
   getGlobalSearchHandler: () => ({
     openSearchField: () => {
       const shellBar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
