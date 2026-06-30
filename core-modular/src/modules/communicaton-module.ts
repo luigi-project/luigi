@@ -10,7 +10,6 @@ import type { NavigationRequestParams, NavigationRequestDetail } from '../types/
 import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
-
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {

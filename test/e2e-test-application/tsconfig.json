@@ -17,12 +17,15 @@
       "ES2022",
       "DOM"
     ],
+    "ignoreDeprecations": "6.0",
+    "strictPropertyInitialization": false,
+    "noImplicitAny": false,
+    "strict": false,
     "module": "esnext",
     "baseUrl": "./"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
-    "strictPropertyInitialization": false,
     "strictInjectionParameters": false,
     "strictInputAccessModifiers": false,
     "strictTemplates": false

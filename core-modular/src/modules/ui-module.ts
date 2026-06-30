@@ -163,6 +163,7 @@ export const UIModule = {
       Available scopes:
 
         navigation
+        navigation.badges
         navigation.nodes
         navigation.profile
         navigation.contextSwitcher
@@ -188,6 +189,7 @@ export const UIModule = {
       scopes.includes('settings.header') ||
       scopes.includes('settings') ||
       scopes.includes('navigation') ||
+      scopes.includes('navigation.badges') ||
       scopes.includes('navigation.profile') ||
       scopes.includes('navigation.contextSwitcher') ||
       scopes.includes('navigation.productSwitcher')

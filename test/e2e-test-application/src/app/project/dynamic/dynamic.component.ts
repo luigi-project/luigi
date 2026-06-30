@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { getPathParams, getNodeParams, linkManager, PathParams, NodeParams } from '@luigi-project/client';
@@ -9,6 +9,7 @@ import { toTitleCase } from '../../services/helpers';
   selector: 'app-dynamic',
   templateUrl: './dynamic.component.html',
   styleUrls: ['./dynamic.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DynamicComponent implements OnInit, OnDestroy {

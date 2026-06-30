@@ -1,8 +1,10 @@
 import type { Luigi } from '../core-api/luigi';
+import type { GlobalSearch } from '../types/global-search';
 import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  BadgeCounter,
   BreadcrumbData,
   BreadcrumbItem,
   ContextSwitcher,
@@ -30,6 +32,7 @@ import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 import { ContextSwitcherHelpers } from '../utilities/helpers/context-switcher-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
@@ -202,11 +205,19 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
+  async buildNavItems(
+    nodes: Node[],
+    selectedNode: Node | undefined,
+    pathData: PathData
+  ): Promise<{
+    items: NavItem[];
+    totalBadgeNode: BadgeCounter | undefined;
+  }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
+    const badgeCountsToSumUp: number[] = [];
 
-    nodes?.forEach((node) => {
+    for (const node of nodes) {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
@@ -215,7 +226,14 @@ export class NavigationService {
           this.luigi
         )
       ) {
-        return;
+        continue;
+      }
+
+      const hasBadge = !!node.badgeCounter;
+      let badgeCount = 0;
+
+      if (node.badgeCounter) {
+        badgeCount = await (node.badgeCounter.count as any)();
       }
 
       if (node.category) {
@@ -225,6 +243,7 @@ export class NavigationService {
 
         if (!catNode) {
           catNode = {
+            badgeCounter: hasBadge ? { count: () => Number(badgeCount), label: '' } : undefined,
             category: {
               altText: node.category.altText || '',
               icon: node.category.icon,
@@ -236,33 +255,57 @@ export class NavigationService {
           };
           catMap[catId] = catNode;
           items.push(catNode);
+        } else {
+          if (hasBadge) {
+            if (catNode.badgeCounter) {
+              const nodeBadgeCount = await (catNode.badgeCounter.count as any)();
+
+              catNode.badgeCounter.count = () => Number(nodeBadgeCount + badgeCount);
+            } else {
+              catNode.badgeCounter = {
+                count: () => Number(badgeCount),
+                label: ''
+              };
+            }
+          }
         }
 
         catNode.category?.nodes?.push({
+          altText: node.altText,
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          icon: node.icon,
+          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
           node,
           selected: node === selectedNode,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
-          altText: node.altText,
-          icon: node.icon,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       } else {
         items.push({
           altText: node.altText,
+          badgeCounter: node.badgeCounter,
+          externalLink: node.externalLink,
+          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
           label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
           node,
           selected: node === selectedNode,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi)
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       }
-    });
 
-    return items;
+      if (badgeCount) {
+        badgeCountsToSumUp.push(badgeCount);
+      }
+    }
+
+    const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
+    const totalBadgeNode: BadgeCounter = {
+      count: () => badgeCountSum,
+      label: ''
+    };
+
+    return { items, totalBadgeNode };
   }
 
   async getCurrentNode(path: string): Promise<Node | undefined> {
@@ -428,27 +471,52 @@ export class NavigationService {
       parentNode = [...pathToLeftNavParent].pop();
     }
 
-    let children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
-    navItems = this.buildNavItems(children, activeNode, pathData);
+    const children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
+    const navData = await this.buildNavItems(children, activeNode, pathData);
+
+    navItems = navData.items;
 
     // convert
     navItems = this.applyNavGroups(navItems);
+
     return {
       selectedNode: selectedNode || ({} as Node),
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
+      totalBadgeNode: navData.totalBadgeNode,
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
   async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    if (node.openNodeInModal) {
+      const fullPath = GenericHelpers.replaceVars(
+        RoutingHelpers.getNodePath(node),
+        pathData?.pathParams || {},
+        ':',
+        false
+      );
+      this.luigi.navigation().openAsModal(fullPath, node.openNodeInModal === true ? {} : node.openNodeInModal);
+      return;
+    }
+
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
     if (node.externalLink?.url) {
       NavigationHelpers.openExternalLink(node.externalLink, pathData?.pathParams);
       return;
+    }
+
+    if (node.link) {
+      const isAbsolute = node.link.startsWith('/');
+      if (isAbsolute) {
+        return this.luigi.navigation().navigate(node.link);
+      }
+      const parentPath = node.parent ? RoutingHelpers.getNodePath(node.parent) : '';
+      const resolvedPath = `${parentPath}/${node.link}`.replace(/\/\/+/g, '/');
+      return this.luigi.navigation().navigate(resolvedPath);
     }
 
     let fullPath = RoutingHelpers.getNodePath(node);
@@ -461,6 +529,7 @@ export class NavigationService {
       );
       return;
     }
+
     return this.luigi.navigation().navigate(fullPath);
   }
 
@@ -538,6 +607,7 @@ export class NavigationService {
       }
     };
 
+    const userGlobalSearch: GlobalSearch | undefined = cfg?.globalSearch;
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
@@ -552,11 +622,33 @@ export class NavigationService {
         }
       }
     };
+    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData);
+
+    let globalSearch: GlobalSearch | undefined = userGlobalSearch;
+
+    if (userGlobalSearch?.searchProvider?.inputPlaceholder) {
+      globalSearch = {
+        ...globalSearch,
+        searchProvider: {
+          ...globalSearch?.searchProvider,
+          inputPlaceholder: GlobalSearchHelpers.getSearchPlaceholder(this.luigi)
+        }
+      };
+    }
+
+    if (userGlobalSearch?.searchFieldCentered) {
+      globalSearch = {
+        ...globalSearch,
+        searchFieldCentered: !!this.luigi.getConfigValue('settings.experimental.globalSearchCentered')
+      };
+    }
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      globalSearch,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
+      topNodes: navData.items,
+      totalBadgeNode: navData.totalBadgeNode,
       contextSwitcher,
       productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
@@ -622,11 +714,12 @@ export class NavigationService {
     const pathDataTruncatedChildren = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
+    const navData = await this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
 
-    const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
     return {
       selectedNode,
-      items: navItems,
+      items: navData.items,
+      totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
