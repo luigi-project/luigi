@@ -143,10 +143,13 @@ export class RoutingService {
 
     if (
       (currentNode &&
-        this.previousPathData &&
         (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))) ||
       (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw))
     ) {
+      // Re-render navigation so the selected state reflects the current URL
+      const connector = this.luigi.getEngine()._connector;
+      connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+      connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
       return;
     }
 
@@ -583,7 +586,7 @@ export class RoutingService {
   async handleViewUrlMisconfigured(
     node: Node,
     viewUrl: string,
-    previousPathData: PathData,
+    previousPathData: PathData | undefined,
     pathUrlRaw: string
   ): Promise<boolean> {
     const { children, intendToHaveEmptyViewUrl, compound } = node;
@@ -605,7 +608,6 @@ export class RoutingService {
         const rootPathData = await this.getNavigationService().getPathData('/');
         const rootPath = await RoutingHelpers.getDefaultChildNode(rootPathData);
         this.showPageNotFoundError(rootPath, pathUrlRaw, false);
-        this.getNavigationService().handleNavigationRequest({ path: rootPath });
       }
       return true;
     }
