@@ -1303,7 +1303,6 @@ The global search is an input field available in the top navigation bar. The sea
    - **onSearchBtnClick**
      - **type**: Function
      - **description**: will be executed when the user clicks the in-pill magnifier button while the input has a value. Only invoked when `style` is set to `'vega'`. If not defined, the framework falls back to invoking `onEnter`. When the input is empty, the magnifier collapses the search field instead.
-     - **since**: NEXTRELEASE
 
 ### style
 - **type**: string
