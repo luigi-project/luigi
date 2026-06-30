@@ -165,7 +165,7 @@ export interface Node {
   };
   navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
-  openNodeInModal?: boolean;
+  openNodeInModal?: boolean | ModalSettings;
   pageErrorHandler?: PageErrorHandler;
   parent?: Node;
   pathSegment?: string;
