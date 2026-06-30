@@ -1,20 +1,15 @@
 import { storageManager } from '../src/storageManager';
+import { helpers } from '../src/helpers';
 
 describe('StorageManager', () => {
-  const pendingOperation = new Map();
+  let sendPostMessageSpy;
+  let getRandomIdSpy;
 
   beforeEach(() => {
-    storageManager.storageEventProcessor = {
-      processEvent: jest.fn(),
-      waitForSyncResult: jest.fn(),
-      execute: jest.fn(),
-      createPendingOperation: jest.fn(),
-      sendMessage: jest.fn()
-    };
+    getRandomIdSpy = jest.spyOn(helpers, 'getRandomId').mockImplementation(() => 'test');
   });
 
   afterEach(() => {
-    pendingOperation.clear();
     jest.restoreAllMocks();
   });
 
@@ -25,166 +20,378 @@ describe('StorageManager', () => {
   });
 
   describe('setItem', () => {
-    it('should store an item for a specific key', async () => {
-      const storageKey = 'test';
+    it('should store an item for a specific key if promise is resolved', async () => {
+      const resultMock = {
+        key: 'keyExample',
+        value: 'valueExample'
+      };
 
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          if (!pendingOperation.has(storageKey)) {
-            pendingOperation.set(storageKey, params);
-            resolve(params);
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'OK',
+              result: resultMock
+            }
           }
         });
+      });
 
-      const storedParams = await storageManager.setItem('keyExample', 'valueExample');
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.setItem(resultMock.key, resultMock.value);
 
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'setItem',
-        {
-          key: 'keyExample',
-          value: 'valueExample'
-        }
+        resultMock
       );
-      expect(storedParams).toEqual({
+      expect(promiseResult).toEqual(resultMock);
+    });
+
+    it('should store an item for a specific key if promise is rejected', async () => {
+      const resultMock = {
         key: 'keyExample',
         value: 'valueExample'
+      };
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'ERROR',
+              result: resultMock
+            }
+          }
+        });
       });
-      expect(pendingOperation.size).toEqual(1);
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.setItem(resultMock.key, resultMock.value);
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'setItem',
+          resultMock
+        );
+        expect(error).toEqual(resultMock);
+      }
     });
   });
 
   describe('getItem', () => {
-    it('should get stored item for a specific key', async () => {
-      const storageKey = 'test';
+    it('should get stored item for a specific key if promise is resolved', async () => {
+      const keyMock = 'test';
+      const resultMock = {
+        key: 'keyExample',
+        value: 'valueExample'
+      };
 
-      pendingOperation.set(storageKey, { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          if (pendingOperation.has(storageKey)) {
-            resolve(pendingOperation.get(storageKey));
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'OK',
+              result: resultMock
+            }
           }
         });
+      });
 
-      const storedItem = await storageManager.getItem(storageKey);
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.getItem(keyMock);
 
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'getItem',
-        { key: storageKey }
+        { key: keyMock }
       );
-      expect(storedItem).toEqual({ key: 'keyExample' });
-      expect(pendingOperation.size).toEqual(1);
+      expect(promiseResult).toEqual(resultMock);
+    });
+
+    it('should get stored item for a specific key if promise is rejected', async () => {
+      const keyMock = 'test';
+      const resultMock = {
+        key: 'keyExample',
+        value: 'valueExample'
+      };
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'ERROR',
+              result: resultMock
+            }
+          }
+        });
+      });
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.getItem(keyMock);
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'getItem',
+          { key: keyMock }
+        );
+        expect(error).toEqual(resultMock);
+      }
     });
   });
 
   describe('removeItem', () => {
-    it('should remove item for a specific key', async () => {
-      const storageKey = 'test';
+    it('should remove item for a specific key if promise is resolved', async () => {
+      const keyMock = 'test';
+      const resultMock = {
+        key: 'keyExample',
+        value: 'valueExample'
+      };
 
-      pendingOperation.set(storageKey, { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          if (pendingOperation.has(storageKey)) {
-            resolve(pendingOperation.get(storageKey));
-            pendingOperation.delete(storageKey);
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'OK',
+              result: resultMock
+            }
           }
         });
+      });
 
-      expect(pendingOperation.size).toEqual(1);
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.removeItem(keyMock);
 
-      const removedItem = await storageManager.removeItem(storageKey);
-
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'removeItem',
-        { key: storageKey }
+        { key: keyMock }
       );
-      expect(removedItem).toEqual({ key: 'keyExample' });
-      expect(pendingOperation.size).toEqual(0);
+      expect(promiseResult).toEqual(resultMock);
+    });
+
+    it('should remove item for a specific key if promise is rejected', async () => {
+      const keyMock = 'test';
+      const resultMock = {
+        key: 'keyExample',
+        value: 'valueExample'
+      };
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'ERROR',
+              result: resultMock
+            }
+          }
+        });
+      });
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.removeItem(keyMock);
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'removeItem',
+          { key: keyMock }
+        );
+        expect(error).toEqual(resultMock);
+      }
     });
   });
 
   describe('clear', () => {
-    it('should remove all stored items', async () => {
-      pendingOperation.set('foo', { key: 'keyFoo' });
-      pendingOperation.set('bar', { key: 'keyBar' });
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          if (pendingOperation.size) {
-            resolve();
-            pendingOperation.clear();
+    it('should remove all stored items if promise is resolved', async () => {
+      const resultMock = {};
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'OK',
+              result: resultMock
+            }
           }
         });
+      });
 
-      expect(pendingOperation.size).toEqual(2);
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.clear();
 
-      const result = await storageManager.clear();
-
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'clear',
-        {}
+        resultMock
       );
-      expect(result).toEqual(undefined);
-      expect(pendingOperation.size).toEqual(0);
+      expect(promiseResult).toEqual(resultMock);
+    });
+
+    it('should remove all stored items if promise is rejected', async () => {
+      const resultMock = {};
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'ERROR',
+              result: resultMock
+            }
+          }
+        });
+      });
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.clear();
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'clear',
+          resultMock
+        );
+        expect(error).toEqual(resultMock);
+      }
     });
   });
 
   describe('has', () => {
-    it.each([
-      { input: 'aaa', output: true },
-      { input: 'bbb', output: false }
-    ])('should check if item exists for a specific key', async (data) => {
-      pendingOperation.set('aaa', { key: 'keyExample' });
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          resolve(pendingOperation.has(data.input));
+    it('should check if item exists for a specific key if promise is resolved', async () => {
+      const keyMock = 'test';
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'OK',
+              result: true
+            }
+          }
         });
+      });
 
-      const result = await storageManager.has(data.input);
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.has(keyMock);
 
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'has',
-        { key: data.input }
+        { key: keyMock }
       );
-      expect(result).toEqual(data.output);
+      expect(promiseResult).toEqual(true);
+    });
+
+    it('should check if item exists for a specific key if promise is rejected', async () => {
+      const keyMock = 'test';
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: keyMock,
+              status: 'ERROR',
+              result: false
+            }
+          }
+        });
+      });
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.has(keyMock);
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'has',
+          { key: keyMock }
+        );
+        expect(error).toEqual(false);
+      }
     });
   });
 
   describe('getAllKeys', () => {
-    it('should get all the keys used in the storage', async () => {
-      pendingOperation.set('foo', { key: 'keyFoo' });
-      pendingOperation.set('bar', { key: 'keyBar' });
-      storageManager.storageEventProcessor.execute = jest
-        .fn()
-        .mockImplementation((resolve, reject, operation, params) => {
-          if (pendingOperation.size) {
-            resolve(Array.from(pendingOperation.keys()));
+    it('should get all the keys used in the storage if promise is resolved', async () => {
+      const resultMock = ['foo', 'bar'];
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'OK',
+              result: resultMock
+            }
           }
         });
+      });
 
-      const result = await storageManager.getAllKeys();
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+      const promiseResult = await storageManager.getAllKeys();
 
-      expect(storageManager.storageEventProcessor.execute).toHaveBeenCalledWith(
+      expect(executeSpy).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
         'getAllKeys',
         {}
       );
-      expect(result).toEqual(['foo', 'bar']);
-      expect(pendingOperation.size).toEqual(2);
+      expect(promiseResult).toEqual(resultMock);
+    });
+
+    it('should get all the keys used in the storage if promise is rejected', async () => {
+      const resultMock = ['foo', 'bar'];
+
+      sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
+        return storageManager.storageEventProcessor.processEvent({
+          data: {
+            data: {
+              id: 'test',
+              status: 'ERROR',
+              result: resultMock
+            }
+          }
+        });
+      });
+
+      const executeSpy = jest.spyOn(storageManager.storageEventProcessor, 'execute');
+
+      try {
+        await storageManager.getAllKeys();
+      } catch (error) {
+        expect(executeSpy).toHaveBeenCalledWith(
+          expect.any(Function),
+          expect.any(Function),
+          'getAllKeys',
+          {}
+        );
+        expect(error).toEqual(resultMock);
+      }
     });
   });
 });
