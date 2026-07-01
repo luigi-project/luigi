@@ -45,7 +45,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(resultMock);
     });
 
-    it('should store an item for a specific key if promise is rejected', async () => {
+    it('should reject when `setItem` operation fails', async () => {
+      expect.assertions(2);
+
       const resultMock = {
         key: 'keyExample',
         value: 'valueExample'
@@ -101,7 +103,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(resultMock);
     });
 
-    it('should get stored item for a specific key if promise is rejected', async () => {
+    it('should reject when `getItem` operation fails', async () => {
+      expect.assertions(2);
+
       const keyMock = 'test';
       const resultMock = {
         key: 'keyExample',
@@ -162,7 +166,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(resultMock);
     });
 
-    it('should remove item for a specific key if promise is rejected', async () => {
+    it('should reject when `removeItem` operation fails', async () => {
+      expect.assertions(2);
+
       const keyMock = 'test';
       const resultMock = {
         key: 'keyExample',
@@ -217,7 +223,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(resultMock);
     });
 
-    it('should remove all stored items if promise is rejected', async () => {
+    it('should reject when `clear` operation fails', async () => {
+      expect.assertions(2);
+
       const resultMock = {};
 
       sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
@@ -266,7 +274,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(true);
     });
 
-    it('should check if item exists for a specific key if promise is rejected', async () => {
+    it('should reject when `has` operation fails', async () => {
+      expect.assertions(2);
+
       const keyMock = 'test';
 
       sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
@@ -315,7 +325,9 @@ describe('StorageManager', () => {
       expect(promiseResult).toEqual(resultMock);
     });
 
-    it('should get all the keys used in the storage if promise is rejected', async () => {
+    it('should reject when `getAllKeys` operation fails', async () => {
+      expect.assertions(2);
+
       const resultMock = ['foo', 'bar'];
 
       sendPostMessageSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {
