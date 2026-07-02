@@ -72,10 +72,11 @@ module.exports = {
   devServer: {
     proxy: [
       {
-        context: ['/luigi-cdn'],
-        target: 'https://www.unpkg.com',
-        changeOrigin: true,
-        pathRewrite: { '^/luigi-cdn': '/@luigi-project' }
+        '/luigi-cdn': {
+          target: 'https://www.unpkg.com',
+          changeOrigin: true,
+          pathRewrite: { '^/luigi-cdn': '/@luigi-project' }
+        }
       }
     ]
   }

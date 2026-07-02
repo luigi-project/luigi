@@ -486,6 +486,10 @@
     text-align: left;
     padding: 5px;
     padding-right: 10px;
+
+    a {
+      white-space: nowrap;
+    }
   }
 
   .fiddle_spinner {
