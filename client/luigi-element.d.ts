@@ -544,6 +544,13 @@ export interface LuigiClient {
    */
   getCoreSearchParams: () => Object;
   /**
+   * Sends search query parameters to Luigi Core. If it is allowed on node level it will be added to the URL.
+   * @param {Object} searchParams
+   * @param {boolean} keepBrowserHistory
+   * @memberof LuigiClient
+   */
+  addCoreSearchParams: (searchParams: Object, keepBrowserHistory: boolean) => void;
+  /**
    * Returns the dynamic path parameters of the active URL.
    * Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.
    * All path parameters in the current navigation path (as defined by the active URL) are returned.
