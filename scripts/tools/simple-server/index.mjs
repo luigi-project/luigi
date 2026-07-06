@@ -1,6 +1,7 @@
 /**
- * Small static-file dev server used by the `simpledev` scripts in core and
- * core-modular. Replaces the (unmaintained) `live-server` dependency.
+ * Small static-file dev server used by the various `dev-server` / `simpledev`
+ * scripts across the monorepo. Replaces the (unmaintained) `live-server`,
+ * `alive-server`, `http-server`, and `sirv-cli` dependencies.
  *
  * Features:
  *   - serves a root folder as `/`
@@ -9,6 +10,8 @@
  *   - watches given paths and reloads open browsers via Server-Sent Events
  *   - injects the reload snippet into any served .html file at request time
  *     (nothing is written to disk)
+ *   - optional SPA fallback (`single: true`): unmatched URLs serve
+ *     `<root>/index.html`
  *
  * See: scripts/tools/simple-server/README section in the repo docs.
  */
@@ -29,8 +32,19 @@ const RELOAD_SNIPPET =
  * @param {Array<[string, string]>} [opts.mounts=[]] - [urlPath, fsPath] pairs
  * @param {string[]} [opts.watch=[]] - additional chokidar paths (root is included automatically)
  * @param {number} [opts.waitMs=200] - debounce window for reload broadcasts
+ * @param {boolean} [opts.single=false] - SPA fallback; serve <root>/index.html for unmatched URLs
+ * @param {boolean} [opts.quiet=false] - suppress the startup log line
  */
-export function startSimpleServer({ port, host = '0.0.0.0', root, mounts = [], watch = [], waitMs = 200 }) {
+export function startSimpleServer({
+  port,
+  host = '0.0.0.0',
+  root,
+  mounts = [],
+  watch = [],
+  waitMs = 200,
+  single = false,
+  quiet = false
+}) {
   const app = express();
 
   // CORS — matches live-server's `cors: true`.
@@ -60,13 +74,7 @@ export function startSimpleServer({ port, host = '0.0.0.0', root, mounts = [], w
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     const htmlPath = resolveHtmlFile(req.path, root, mounts);
     if (!htmlPath) return next();
-    fs.readFile(htmlPath, 'utf8', (err, body) => {
-      if (err) return next(err);
-      const injected = injectReloadSnippet(body);
-      res.set('Content-Type', 'text/html; charset=utf-8');
-      if (req.method === 'HEAD') return res.end();
-      res.send(injected);
-    });
+    serveHtmlWithReload(req, res, next, htmlPath);
   });
 
   // Mounts and root static serving.
@@ -74,6 +82,16 @@ export function startSimpleServer({ port, host = '0.0.0.0', root, mounts = [], w
     app.use(urlPath, express.static(fsPath));
   }
   app.use(express.static(root, { index: 'index.html' }));
+
+  // SPA fallback: any unmatched GET returns <root>/index.html (with reload
+  // snippet injected). Post routes / non-GET methods fall through to 404.
+  if (single) {
+    const spaFallback = path.resolve(root, 'index.html');
+    app.use((req, res, next) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+      serveHtmlWithReload(req, res, next, spaFallback);
+    });
+  }
 
   // File watching.
   const watchPaths = [root, ...watch];
@@ -88,7 +106,9 @@ export function startSimpleServer({ port, host = '0.0.0.0', root, mounts = [], w
   });
 
   const server = app.listen(port, host, () => {
-    console.log('\x1b[32mStarting simple-server at \x1b[36m' + `http://localhost:${port}` + '\x1b[0m');
+    if (!quiet) {
+      console.log('\x1b[32mStarting simple-server at \x1b[36m' + `http://localhost:${port}` + '\x1b[0m');
+    }
   });
   server.on('error', err => {
     if (err.code === 'EADDRINUSE') {
@@ -99,6 +119,19 @@ export function startSimpleServer({ port, host = '0.0.0.0', root, mounts = [], w
   });
 
   return { app, server, watcher };
+}
+
+/**
+ * Read an HTML file from disk, inject the reload snippet, and send it.
+ */
+function serveHtmlWithReload(req, res, next, absPath) {
+  fs.readFile(absPath, 'utf8', (err, body) => {
+    if (err) return next(err);
+    const injected = injectReloadSnippet(body);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    if (req.method === 'HEAD') return res.end();
+    res.send(injected);
+  });
 }
 
 /**
