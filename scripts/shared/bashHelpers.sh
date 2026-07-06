@@ -32,7 +32,7 @@ runWebserver() {
   echo ""
   echo "Starting webserver on port $PORT"
 
-  node "$LUIGI_BASE_DIR/scripts/tools/simple-server/cli.mjs" $FOLDER --single --cors --port $PORT --quiet &
+  node "$LUIGI_BASE_DIR/scripts/tools/simple-server/cli.mjs" $FOLDER --single --cors --port $PORT --quiet --no-reload &
   PID=$!
 
   echo "Webserver running with PID $PID"

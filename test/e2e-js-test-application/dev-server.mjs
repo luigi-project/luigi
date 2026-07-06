@@ -4,5 +4,5 @@ startSimpleServer({
   port: 4500,
   root: './public',
   mounts: [['/node_modules', './node_modules']],
-  watch: ['./public']
+  reload: false
 });

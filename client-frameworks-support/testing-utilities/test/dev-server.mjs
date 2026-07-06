@@ -4,5 +4,5 @@ startSimpleServer({
   port: 8181,
   root: '.',
   mounts: [['/node_modules', './node_modules']],
-  watch: ['.']
+  reload: false
 });

@@ -34,6 +34,9 @@ const RELOAD_SNIPPET =
  * @param {number} [opts.waitMs=200] - debounce window for reload broadcasts
  * @param {boolean} [opts.single=false] - SPA fallback; serve <root>/index.html for unmatched URLs
  * @param {boolean} [opts.quiet=false] - suppress the startup log line
+ * @param {boolean} [opts.reload=true] - inject the SSE reload snippet into served .html and run the file watcher.
+ *   Set to false for CI/E2E servers (Cypress etc.) where reload adds nothing and each iframe opening an SSE
+ *   connection can saturate the browser's per-origin HTTP/1.1 connection cap during nested-iframe tests.
  */
 export function startSimpleServer({
   port,
@@ -43,7 +46,8 @@ export function startSimpleServer({
   watch = [],
   waitMs = 200,
   single = false,
-  quiet = false
+  quiet = false,
+  reload = true
 }) {
   const app = express();
 
@@ -53,29 +57,33 @@ export function startSimpleServer({
     next();
   });
 
-  // SSE endpoint for browser reload signalling.
+  // SSE endpoint + HTML-injection middleware for browser reload.
+  // Skipped when reload is disabled (CI/E2E: reload is useless and each iframe's
+  // EventSource connection eats a slot in the browser's per-origin cap).
   /** @type {Set<import('express').Response>} */
   const clients = new Set();
-  app.get(RELOAD_ENDPOINT, (req, res) => {
-    res.set({
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive'
+  if (reload) {
+    app.get(RELOAD_ENDPOINT, (req, res) => {
+      res.set({
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive'
+      });
+      res.flushHeaders();
+      clients.add(res);
+      req.on('close', () => clients.delete(res));
     });
-    res.flushHeaders();
-    clients.add(res);
-    req.on('close', () => clients.delete(res));
-  });
 
-  // HTML-injection middleware: for GETs that resolve to an .html file under
-  // the root or any mount, read from disk, append the reload snippet, send
-  // as text/html. Everything else passes through to express.static.
-  app.use((req, res, next) => {
-    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-    const htmlPath = resolveHtmlFile(req.path, root, mounts);
-    if (!htmlPath) return next();
-    serveHtmlWithReload(req, res, next, htmlPath);
-  });
+    // HTML-injection middleware: for GETs that resolve to an .html file under
+    // the root or any mount, read from disk, append the reload snippet, send
+    // as text/html. Everything else passes through to express.static.
+    app.use((req, res, next) => {
+      if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+      const htmlPath = resolveHtmlFile(req.path, root, mounts);
+      if (!htmlPath) return next();
+      serveHtmlWithReload(req, res, next, htmlPath);
+    });
+  }
 
   // Mounts and root static serving.
   for (const [urlPath, fsPath] of mounts) {
@@ -83,27 +91,35 @@ export function startSimpleServer({
   }
   app.use(express.static(root, { index: 'index.html' }));
 
-  // SPA fallback: any unmatched GET returns <root>/index.html (with reload
-  // snippet injected). Post routes / non-GET methods fall through to 404.
+  // SPA fallback: any unmatched GET returns <root>/index.html. Reload injection
+  // depends on the `reload` flag; when off, we sendFile directly.
   if (single) {
     const spaFallback = path.resolve(root, 'index.html');
     app.use((req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-      serveHtmlWithReload(req, res, next, spaFallback);
+      if (reload) return serveHtmlWithReload(req, res, next, spaFallback);
+      if (req.method === 'HEAD') {
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        return res.end();
+      }
+      res.sendFile(spaFallback);
     });
   }
 
-  // File watching.
-  const watchPaths = [root, ...watch];
-  const watcher = chokidar.watch(watchPaths, { ignoreInitial: true });
-  let debounce;
-  const broadcast = () => {
-    for (const client of clients) client.write('data: reload\n\n');
-  };
-  watcher.on('all', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(broadcast, waitMs);
-  });
+  // File watching — only if reload is on. No clients = no reason to watch.
+  let watcher;
+  if (reload) {
+    const watchPaths = [root, ...watch];
+    watcher = chokidar.watch(watchPaths, { ignoreInitial: true });
+    let debounce;
+    const broadcast = () => {
+      for (const client of clients) client.write('data: reload\n\n');
+    };
+    watcher.on('all', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(broadcast, waitMs);
+    });
+  }
 
   const server = app.listen(port, host, () => {
     if (!quiet) {

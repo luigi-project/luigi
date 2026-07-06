@@ -6,12 +6,15 @@
  *
  * Usage:
  *   node cli.mjs [<folder>] [--port <n>] [--host <s>] [--single]
- *                [--cors] [--quiet]
+ *                [--cors] [--quiet] [--no-reload]
  *                [--mount <urlPath>=<fsPath>]... [--watch <path>]...
  *
  * Notes:
  *   - `--cors` is accepted for compatibility with sirv but is a no-op:
  *     the helper always sends `Access-Control-Allow-Origin: *`.
+ *   - `--no-reload` disables browser live-reload (both the SSE endpoint and
+ *     HTML injection). Use for CI/E2E servers where reload adds nothing and
+ *     nested-iframe tests can saturate the browser's per-origin connection cap.
  *   - Positional folder defaults to `.` (current working directory).
  *   - Unknown flags cause a hard error naming the flag.
  */
@@ -29,6 +32,7 @@ try {
       single: { type: 'boolean', default: false },
       cors: { type: 'boolean', default: false },
       quiet: { type: 'boolean', default: false },
+      'no-reload': { type: 'boolean', default: false },
       mount: { type: 'string', multiple: true, default: [] },
       watch: { type: 'string', multiple: true, default: [] }
     }
@@ -69,5 +73,6 @@ startSimpleServer({
   mounts,
   watch: values.watch,
   single: values.single,
-  quiet: values.quiet
+  quiet: values.quiet,
+  reload: !values['no-reload']
 });
