@@ -17,6 +17,7 @@
  */
 import express from 'express';
 import chokidar from 'chokidar';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -30,6 +31,9 @@ const RELOAD_SNIPPET =
  * @param {string} [opts.host='0.0.0.0']
  * @param {string} opts.root - path to the folder served at `/`
  * @param {Array<[string, string]>} [opts.mounts=[]] - [urlPath, fsPath] pairs
+ * @param {Array<[string, string]>} [opts.proxy=[]] - [urlPrefix, targetUrl] pairs.
+ *   Matches Netlify `_redirects` splat semantics: a request to `<urlPrefix>/<rest>`
+ *   is proxied to `<targetUrl>/<rest>` (targetUrl may include a path component).
  * @param {string[]} [opts.watch=[]] - additional chokidar paths (root is included automatically)
  * @param {number} [opts.waitMs=200] - debounce window for reload broadcasts
  * @param {boolean} [opts.single=false] - SPA fallback; serve <root>/index.html for unmatched URLs
@@ -43,6 +47,7 @@ export function startSimpleServer({
   host = '0.0.0.0',
   root,
   mounts = [],
+  proxy = [],
   watch = [],
   waitMs = 200,
   single = false,
@@ -56,6 +61,25 @@ export function startSimpleServer({
     res.set('Access-Control-Allow-Origin', '*');
     next();
   });
+
+  // Reverse proxies. Registered before mounts / static so their prefix wins.
+  // Semantics mirror Netlify's `_redirects` splat: `/prefix/*` → `<targetOrigin>/<targetPath>/*`.
+  for (const [urlPrefix, targetUrl] of proxy) {
+    const t = new URL(targetUrl);
+    const targetOrigin = t.origin;
+    const targetPath = t.pathname.replace(/\/$/, ''); // strip trailing slash; we'll prepend '/' after match
+    app.use(
+      urlPrefix,
+      createProxyMiddleware({
+        target: targetOrigin,
+        changeOrigin: true,
+        // Express strips the mount prefix before this middleware sees req.url,
+        // so req.url arrives as e.g. `/core@2.30.0/luigi.js`. We prepend the
+        // target's path component (e.g. `/@luigi-project`) to hit the right host path.
+        pathRewrite: (reqPath) => targetPath + reqPath
+      })
+    );
+  }
 
   // SSE endpoint + HTML-injection middleware for browser reload.
   // Skipped when reload is disabled (CI/E2E: reload is useless and each iframe's
