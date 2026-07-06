@@ -12,8 +12,6 @@
  *     (nothing is written to disk)
  *   - optional SPA fallback (`single: true`): unmatched URLs serve
  *     `<root>/index.html`
- *
- * See: scripts/tools/simple-server/README section in the repo docs.
  */
 import express from 'express';
 import chokidar from 'chokidar';
@@ -35,7 +33,7 @@ const RELOAD_SNIPPET =
  *   Matches Netlify `_redirects` splat semantics: a request to `<urlPrefix>/<rest>`
  *   is proxied to `<targetUrl>/<rest>` (targetUrl may include a path component).
  * @param {string[]} [opts.watch=[]] - additional chokidar paths (root is included automatically)
- * @param {number} [opts.waitMs=200] - debounce window for reload broadcasts
+ * @param {number} [opts.waitMs=1000] - debounce window for reload broadcasts
  * @param {boolean} [opts.single=false] - SPA fallback; serve <root>/index.html for unmatched URLs
  * @param {boolean} [opts.quiet=false] - suppress the startup log line
  * @param {boolean} [opts.reload=true] - inject the SSE reload snippet into served .html and run the file watcher.
@@ -49,7 +47,7 @@ export function startSimpleServer({
   mounts = [],
   proxy = [],
   watch = [],
-  waitMs = 200,
+  waitMs = 1000,
   single = false,
   quiet = false,
   reload = true
@@ -95,7 +93,15 @@ export function startSimpleServer({
       });
       res.flushHeaders();
       clients.add(res);
-      req.on('close', () => clients.delete(res));
+      // Heartbeat: SSE comment every 15s keeps the connection alive through
+      // proxies and browser idle timers so idle tabs still receive reloads.
+      const heartbeat = setInterval(() => {
+        try { res.write(':\n\n'); } catch { /* client gone */ }
+      }, 15000);
+      req.on('close', () => {
+        clearInterval(heartbeat);
+        clients.delete(res);
+      });
     });
 
     // HTML-injection middleware: for GETs that resolve to an .html file under
