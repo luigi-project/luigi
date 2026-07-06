@@ -168,6 +168,22 @@ export function startSimpleServer({
     process.exit(1);
   });
 
+  // Graceful shutdown on SIGTERM/SIGINT. Without this, `kill <pid>` from CI
+  // scripts (e.g. container/run-container-e2e.sh) can hang because open
+  // keep-alive sockets — SSE clients, or Cypress' HTTP agent — keep the event
+  // loop alive. GitHub Actions eventually severs the runner ("hosted runner
+  // lost communication with the server") when the script stops making progress.
+  // server.close() stops accepting new connections and waits for in-flight
+  // requests to finish; the .unref()'d timeout is the hard-kill backstop so
+  // stuck sockets can't extend shutdown indefinitely.
+  const shutdown = () => {
+    if (watcher) watcher.close();
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 1000).unref();
+  };
+  process.once('SIGTERM', shutdown);
+  process.once('SIGINT', shutdown);
+
   return { app, server, watcher };
 }
 
