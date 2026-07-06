@@ -547,9 +547,10 @@ export interface LuigiClient {
    * Sends search query parameters to Luigi Core. If it is allowed on node level it will be added to the URL.
    * @param {Object} searchParams
    * @param {boolean} keepBrowserHistory
+   * @param {boolean} preventLuigiConfigUpdate If true, the configChanged function will be triggered (since 2.29.0). By default it is set to `false`.
    * @memberof LuigiClient
    */
-  addCoreSearchParams: (searchParams: Object, keepBrowserHistory: boolean) => void;
+  addCoreSearchParams: (searchParams: Object, keepBrowserHistory: boolean, preventLuigiConfigUpdate?: boolean) => void;
   /**
    * Returns the dynamic path parameters of the active URL.
    * Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.
