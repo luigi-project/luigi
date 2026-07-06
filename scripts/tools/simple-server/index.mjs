@@ -156,6 +156,10 @@ export function startSimpleServer({
     } else {
       console.error(err);
     }
+    // Exit non-zero so `concurrently -k` (and CI runners) tear down sibling
+    // tasks instead of leaving a half-alive process with rollup rebuilding
+    // into a server that isn't bound.
+    process.exit(1);
   });
 
   return { app, server, watcher };
