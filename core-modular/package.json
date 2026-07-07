@@ -18,7 +18,6 @@
     "eslint": "9.39.3",
     "fs-extra": "11.3.4",
     "jest": "30.3.0",
-    "live-server": "1.2.2",
     "lodash": "4.18.1",
     "mock-local-storage": "1.1.24",
     "node-fetch": "2.6.7",
