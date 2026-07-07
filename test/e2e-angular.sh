@@ -8,7 +8,6 @@ source $BASE_DIR/../scripts/shared/bashHelpers.sh
 
 # We assume, Angular example is ran with `npm run build`
 # and root dependencies are installed
-# npm i -g cypress@^3.4.1 cypress-plugin-retries sirv-cli
 NG_EXAMPLE="$BASE_DIR/../test/e2e-test-application"
 NG_MODULES="$NG_EXAMPLE/node_modules"
 if [[ ! -L $NG_MODULES ]] && [[ ! -d $NG_MODULES ]]; then
