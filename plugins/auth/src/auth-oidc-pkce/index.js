@@ -45,8 +45,11 @@ export default class openIdConnect {
     // for onAuthExpired / onAuthError / login-callback failures). It is distinct
     // from `post_logout_redirect_uri`, which is the OIDC-spec callback the IdP
     // redirects back to after ending its session. When callers do not set
-    // `logoutUrl` explicitly, we fall back to `post_logout_redirect_uri` so
-    // single-knob configs keep working; callers who set both get the split.
+    // `logoutUrl` explicitly, we fall back to `post_logout_redirect_uri` so that
+    // callers who only ever set one URL still get their error redirects routed
+    // there. Note this differs from the legacy `auth-oidc` plugin, which used a
+    // literal `${origin}/logout.html` default and did not inherit from
+    // `post_logout_redirect_uri` — set both explicitly for full parity.
     if (patchedSettings.logoutUrl === undefined) {
       defaultSettings.logoutUrl = patchedSettings.post_logout_redirect_uri || defaultSettings.post_logout_redirect_uri;
     }

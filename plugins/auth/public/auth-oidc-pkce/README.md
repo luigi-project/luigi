@@ -69,7 +69,7 @@ The plugin distinguishes two logout-related URLs:
 - **`post_logout_redirect_uri`** is the OIDC-spec callback passed to the identity provider. The IdP redirects the browser here after ending its session.
 - **`logoutUrl`** (optional) is Luigi's internal error-redirect target. Luigi navigates the browser here on `onAuthExpired`, `onAuthError`, silent-renew failures, or a failed login callback, with an `?error=...` query string appended.
 
-When `logoutUrl` is unset, it falls back to `post_logout_redirect_uri`, so single-knob configs keep working. Set both only if the IdP end-session endpoint must differ from the page users land on after an auth error in the app.
+When `logoutUrl` is unset, it falls back to `post_logout_redirect_uri`, so auth errors are always routed somewhere. If your `post_logout_redirect_uri` points at the IdP end-session endpoint, set `logoutUrl` explicitly to the page you want users to land on after an auth error in the app — otherwise both cases redirect to the IdP.
 
 Next, you must install `oidc-client-ts` in your project as a dev dependency:
 
