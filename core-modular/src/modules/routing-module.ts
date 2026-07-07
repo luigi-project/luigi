@@ -55,11 +55,13 @@ export const RoutingModule = {
    *
    * @param searchParams - An object containing key-value pairs of search parameters to be added to the URL.
    * @param keepBrowserHistory - If `true`, the browser history will be preserved when updating the URL.
+   * @param preventLuigiConfigUpdate - If `true`, prevents updating the Luigi configuration when adding search parameters.
    * @param luigi - The Luigi core instance used to interact with the routing API.
    */
   async addSearchParamsFromClient(
     searchParams: Record<string, any>,
     keepBrowserHistory: boolean,
+    preventLuigiConfigUpdate: boolean,
     luigi: Luigi
   ): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
@@ -80,7 +82,7 @@ export const RoutingModule = {
         console.warn(`No permission to add the search param "${key}" to the url`);
       }
       if (Object.keys(filteredObj).length > 0) {
-        luigi.routing().addSearchParams(filteredObj, keepBrowserHistory);
+        luigi.routing().addSearchParams(filteredObj, keepBrowserHistory, preventLuigiConfigUpdate);
       }
     }
   }
