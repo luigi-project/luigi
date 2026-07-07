@@ -924,11 +924,15 @@ const connector = {
         });
         // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
         // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
-        sidenav.addEventListener('click', (event) => {
-          if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
-            event.preventDefault();
-          }
-        }, true);
+        sidenav.addEventListener(
+          'click',
+          (event) => {
+            if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
+              event.preventDefault();
+            }
+          },
+          true
+        );
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
