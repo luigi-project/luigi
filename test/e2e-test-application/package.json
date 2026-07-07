@@ -13,7 +13,7 @@
     "e2e:run:js": "cypress run  --config-file cypress/config/e2e-js-app.config.js --browser chrome -c video=false",
     "e2e:run:external": "cypress run --config-file cypress/config/externalmf.config.js --browser chrome -c video=false",
     "buildConfig": "webpack --config webpack-generateConfig.config",
-    "startExternalMf": "http-server --port 8090 ./externalMf",
+    "startExternalMf": "node ./dev-external-mf.mjs",
     "start": "concurrently \"npm run buildConfig -- --watch\" \"ng serve --host 0.0.0.0 --port 4200\" \"npm run startExternalMf\""
   },
   "dependencies": {
@@ -63,7 +63,6 @@
     "eslint": "9.39.4",
     "express": "4.22.1",
     "http-proxy-middleware": "3.0.7",
-    "http-server": "14.1.1",
     "lodash": "4.18.1",
     "sass": "1.99.0",
     "serialize-javascript": "7.0.5",

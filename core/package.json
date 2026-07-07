@@ -16,7 +16,6 @@
     "fs-extra": "11.3.0",
     "fundamental-styles": "0.41.4",
     "jest": "30.3.0",
-    "live-server": "1.2.2",
     "lodash": "4.18.1",
     "mock-local-storage": "1.1.24",
     "node-fetch": "2.6.7",
