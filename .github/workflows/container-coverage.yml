@@ -28,6 +28,9 @@ jobs:
       - name: Run unit tests
         run: cd ./container && npm ci && npm run test
 
+      - name: Install shared dev-server dependencies
+        run: cd ./scripts && npm ci
+
       - name: Run e2e tests
         run: bash ./container/run-container-e2e.sh coverage || exit 1
 
