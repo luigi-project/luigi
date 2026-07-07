@@ -28,12 +28,11 @@ runWebserver() {
   local PORT=$1
   local FOLDER=$2
   local TESTPATH=$3
-  PATH="$PATH:$LUIGI_BASE_DIR/node_modules/.bin"
 
   echo ""
   echo "Starting webserver on port $PORT"
 
-  sirv $FOLDER --single --cors --port $PORT --quiet &
+  node "$LUIGI_BASE_DIR/scripts/tools/simple-server/cli.mjs" $FOLDER --single --cors --port $PORT --quiet --no-reload &
   PID=$!
 
   echo "Webserver running with PID $PID"
