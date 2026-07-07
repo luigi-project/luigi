@@ -103,6 +103,9 @@ export const CommunicationModule = {
       const payload = event.payload as { data: Record<string, string>; keepBrowserHistory: boolean };
       luigi.routing().addNodeParams(payload.data, payload.keepBrowserHistory);
     });
+    containerElement.addEventListener(Events.COLLAPSE_LEFT_NAV_REQUEST, (event: LuigiEvent) => {
+      luigi.ux().collapseLeftSideNav(true);
+    });
     containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, () => {
       luigi.ux().openUserSettings();
     });

@@ -1198,6 +1198,18 @@ const connector = {
     dialog.open = true;
   },
 
+  collapseLeftSideNav: (state) => {
+    const sidenav = document.querySelector('ui5-side-navigation');
+
+    if (sidenav) {
+      if (state === true) {
+        sidenav.setAttribute('collapsed', 'true');
+      } else {
+        sidenav.removeAttribute('collapsed');
+      }
+    }
+  },
+
   openUserSettings: async (settings, userSettingData, previousUserSettings, lc) => {
     const storedUserSettings = previousUserSettings ? { ...previousUserSettings } : {};
 
