@@ -56,6 +56,23 @@ describe('Routing', () => {
       expect(location.hash).toContain('foo=bar');
       expect(configChangedSpy).toHaveBeenCalled();
     });
+
+    it('does not call configChanged when preventLuigiConfigUpdate is true', () => {
+      routing.addSearchParams({ foo: 'bar' }, false, true);
+      expect(location.search).toContain('foo=bar');
+      expect(configChangedSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls configChanged when preventLuigiConfigUpdate is false', () => {
+      routing.addSearchParams({ foo: 'bar' }, false, false);
+      expect(location.search).toContain('foo=bar');
+      expect(configChangedSpy).toHaveBeenCalled();
+    });
+
+    it('calls configChanged when preventLuigiConfigUpdate is not provided (defaults to false)', () => {
+      routing.addSearchParams({ foo: 'bar' });
+      expect(configChangedSpy).toHaveBeenCalled();
+    });
   });
 
   describe('getSearchParams', () => {
