@@ -76,7 +76,8 @@ describe('Web Container Test', () => {
 
       const expectedPayload = {
         data: { luigi: 'rocks' },
-        keepBrowserHistory: true
+        keepBrowserHistory: true,
+        preventLuigiConfigUpdate: false
       };
       cy.get(containerSelector)
         .shadow()

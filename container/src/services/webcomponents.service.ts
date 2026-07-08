@@ -334,8 +334,8 @@ export class WebComponentService {
           openUserSettings: () => {
             this.dispatchLuigiEvent(Events.OPEN_USER_SETTINGS_REQUEST, this.thisComponent.userSettings);
           },
-          collapseLeftSideNav: () => {
-            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+          collapseLeftSideNav: (state: boolean) => {
+            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, { state });
           },
           getDirtyStatus: () => {
             return this.thisComponent.dirtyStatus || false;
@@ -436,8 +436,8 @@ export class WebComponentService {
       getClientPermissions: (): object => {
         return this.thisComponent.clientPermissions || {};
       },
-      addCoreSearchParams: (searchParams = {}, keepBrowserHistory = true) => {
-        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, { data: searchParams, keepBrowserHistory });
+      addCoreSearchParams: (searchParams = {}, keepBrowserHistory = true, preventLuigiConfigUpdate = false) => {
+        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, { data: searchParams, keepBrowserHistory, preventLuigiConfigUpdate });
       },
       getUserSettings: (): object => {
         return this.thisComponent.userSettings || {};
