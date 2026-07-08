@@ -1158,7 +1158,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: params,
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 
@@ -1175,7 +1176,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: {},
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 
