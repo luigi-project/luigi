@@ -718,10 +718,10 @@ describe('createClientAPI', () => {
 
       // act
       const clientAPI = service.createClientAPI(undefined, 'nodeId', 'wc_id', 'component');
-      clientAPI.uxManager().collapseLeftSideNav();
+      clientAPI.uxManager().collapseLeftSideNav(true);
 
       // assert
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, { state: true });
     });
 
     it('test uxManager setDocumentTitle', () => {

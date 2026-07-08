@@ -334,8 +334,8 @@ export class WebComponentService {
           openUserSettings: () => {
             this.dispatchLuigiEvent(Events.OPEN_USER_SETTINGS_REQUEST, this.thisComponent.userSettings);
           },
-          collapseLeftSideNav: () => {
-            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+          collapseLeftSideNav: (state: boolean) => {
+            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, { state });
           },
           getDirtyStatus: () => {
             return this.thisComponent.dirtyStatus || false;
