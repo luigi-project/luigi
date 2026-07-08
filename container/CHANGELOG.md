@@ -4,6 +4,14 @@
 
 
 
+## [v1.7.8] (2026-07-08)
+
+#### :bug: Fixed
+
+* [5288](https://github.com/luigi-project/luigi/pull/5288) Fix: added missing argument for collapseLeftNavNav ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
 ## [v1.7.7] (2026-05-18)
 
 #### :rocket: Added
@@ -172,3 +180,4 @@
 [v1.7.5]: https://github.com/luigi-project/luigi/compare/container/v1.7.4...container/v1.7.5
 [v1.7.6]: https://github.com/luigi-project/luigi/compare/container/v1.7.5...container/v1.7.6
 [v1.7.7]: https://github.com/luigi-project/luigi/compare/container/v1.7.6...container/v1.7.7
+[v1.7.8]: https://github.com/luigi-project/luigi/compare/container/v1.7.7...container/v1.7.8
