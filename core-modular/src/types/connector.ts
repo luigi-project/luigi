@@ -51,7 +51,7 @@ export interface LuigiConnector {
    *   config. Any region present should be (re)rendered; absent fields mean
    *   "hide / remove that region".
    */
-  renderTopNav(data: TopNavData): void;
+  renderTopNav(data: TopNavData | null): void;
 
   /**
    * Render the left (side) navigation from the supplied data.

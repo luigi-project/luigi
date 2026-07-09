@@ -482,6 +482,18 @@ const connector = {
 
   renderTopNav: (topNavData) => {
     const shellbar = document.querySelector('ui5-navigation-layout > ui5-shellbar');
+
+    if (!topNavData) {
+      if (shellbar) {
+        shellbar.style.display = 'none';
+      }
+      return;
+    }
+
+    if (shellbar) {
+      shellbar.style.display = '';
+    }
+
     let lastSelectedItem;
 
     if (topNavData.productSwitcher) {
@@ -901,99 +913,104 @@ const connector = {
     const sidenav = document.querySelector('ui5-side-navigation');
     const burger = document.getElementById('toggle');
 
-    if (sidenav && burger) {
+    if (!sidenav) {
+      return;
+    }
+
+    if (burger) {
       if (!burger._clickListener) {
         burger._clickListener = () => {
           sidenav.toggleAttribute('collapsed');
         };
         burger.addEventListener('click', burger._clickListener);
       }
-      sidenav._leftNavData = leftNavData;
-      if (!sidenav._selectionChangeListener) {
-        sidenav._selectionChangeListener = true;
-        sidenav.addEventListener('selection-change', async (event) => {
+    }
+
+    sidenav._leftNavData = leftNavData;
+    if (!sidenav._selectionChangeListener) {
+      sidenav._selectionChangeListener = true;
+      sidenav.addEventListener('selection-change', async (event) => {
+        event.preventDefault();
+        const selectedItem = event.detail.item;
+        const luigiItem = selectedItem._luigiItem;
+        if (!luigiItem) return;
+        try {
+          await sidenav._leftNavData.navClick(luigiItem);
+        } catch {
+          // navigation was cancelled (e.g. unsaved changes dismissed)
+        }
+      });
+      // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
+      // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
+      sidenav.addEventListener('click', (event) => {
+        if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
           event.preventDefault();
-          const selectedItem = event.detail.item;
-          const luigiItem = selectedItem._luigiItem;
-          if (!luigiItem) return;
-          try {
-            await sidenav._leftNavData.navClick(luigiItem);
-          } catch {
-            // navigation was cancelled (e.g. unsaved changes dismissed)
+        }
+      }, true);
+    }
+    sidenav.innerHTML = '';
+    if (leftNavData?.selectedNode?.hideSideNav) {
+      sidenav.setAttribute('style', 'display: none');
+      if (burger) burger.setAttribute('style', 'display: none');
+    } else {
+      sidenav.removeAttribute('style');
+      if (burger) burger.removeAttribute('style');
+    }
+    const containerFrag = document.createDocumentFragment();
+    if (leftNavData.items) {
+      leftNavData.items.forEach((item) => {
+        if (item.node || (item.category && !item.category.isGroup)) {
+          containerFrag.appendChild(renderNodeOrCategory(item, leftNavData));
+        } else if (item.category && item.category.isGroup) {
+          const group = document.createElement('ui5-side-navigation-group');
+          group.setAttribute('text', item.category.label);
+          group.setAttribute('tooltip', item.category.tooltip);
+          group.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
+          if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
+            group.setAttribute('expanded', '');
           }
-        });
-        // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
-        // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
-        sidenav.addEventListener('click', (event) => {
-          if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
-            event.preventDefault();
-          }
-        }, true);
-      }
-      sidenav.innerHTML = '';
-      if (leftNavData?.selectedNode?.hideSideNav) {
-        sidenav.setAttribute('style', 'display: none');
-        burger.setAttribute('style', 'display: none');
-      } else {
-        sidenav.removeAttribute('style');
-        burger.removeAttribute('style');
-      }
-      const containerFrag = document.createDocumentFragment();
-      if (leftNavData.items) {
-        leftNavData.items.forEach((item) => {
-          if (item.node || (item.category && !item.category.isGroup)) {
-            containerFrag.appendChild(renderNodeOrCategory(item, leftNavData));
-          } else if (item.category && item.category.isGroup) {
-            const group = document.createElement('ui5-side-navigation-group');
-            group.setAttribute('text', item.category.label);
-            group.setAttribute('tooltip', item.category.tooltip);
-            group.setAttribute('category-uid', leftNavData.basePath + ':' + item.category.id);
-            if (readExpandedState(leftNavData.basePath + ':' + item.category.id)) {
-              group.setAttribute('expanded', '');
-            }
 
-            item.category.nodes.forEach((subitem) => {
-              group.appendChild(renderNodeOrCategory(subitem, leftNavData));
-            });
-
-            containerFrag.appendChild(group);
-          }
-        });
-      }
-
-      document.body.classList.toggle('left-nav-hidden', !(leftNavData.items?.length > 0));
-      sidenav.appendChild(containerFrag);
-
-      if (!sidenav._observer) {
-        sidenav._observer = new MutationObserver((mutations) => {
-          mutations.forEach(function (mutation) {
-            if (mutation.type === 'attributes') {
-              const uid = mutation.target.getAttribute('category-uid');
-              storeExpandedState(uid, mutation.target.hasAttribute('expanded'));
-            }
+          item.category.nodes.forEach((subitem) => {
+            group.appendChild(renderNodeOrCategory(subitem, leftNavData));
           });
-        });
 
-        sidenav._observer.observe(sidenav, {
-          attributes: true,
-          subtree: true,
-          attributeFilter: ['expanded']
+          containerFrag.appendChild(group);
+        }
+      });
+    }
+
+    document.body.classList.toggle('left-nav-hidden', !(leftNavData.items?.length > 0));
+    sidenav.appendChild(containerFrag);
+
+    if (!sidenav._observer) {
+      sidenav._observer = new MutationObserver((mutations) => {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === 'attributes') {
+            const uid = mutation.target.getAttribute('category-uid');
+            storeExpandedState(uid, mutation.target.hasAttribute('expanded'));
+          }
         });
-      }
-      const categories = sidenav.querySelectorAll('[category-uid]');
-      if (categories) {
-        categories.forEach((item) => {
-          item.addEventListener('click', (event) => {
-            if (event instanceof CustomEvent) {
-              event.target.toggleAttribute('expanded');
-            }
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            event.preventDefault();
-            return true;
-          });
+      });
+
+      sidenav._observer.observe(sidenav, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['expanded']
+      });
+    }
+    const categories = sidenav.querySelectorAll('[category-uid]');
+    if (categories) {
+      categories.forEach((item) => {
+        item.addEventListener('click', (event) => {
+          if (event instanceof CustomEvent) {
+            event.target.toggleAttribute('expanded');
+          }
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          event.preventDefault();
+          return true;
         });
-      }
+      });
     }
   },
   getContainerWrapper: () => {

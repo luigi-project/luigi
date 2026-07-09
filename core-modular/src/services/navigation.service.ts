@@ -533,8 +533,11 @@ export class NavigationService {
     return this.luigi.navigation().navigate(fullPath);
   }
 
-  async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
+  async getTopNavData(path: string, pData?: PathData): Promise<TopNavData | null> {
     const cfg = this.luigi.getConfig();
+    if (cfg.settings?.header?.disabled) {
+      return null;
+    }
     const pathData: PathData = pData ?? (await this.getPathData(path));
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
