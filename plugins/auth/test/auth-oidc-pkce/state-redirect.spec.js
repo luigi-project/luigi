@@ -14,13 +14,13 @@ jest.mock('oidc-client-ts', () => ({
       addUserLoaded: jest.fn(),
       addAccessTokenExpired: jest.fn(),
       addAccessTokenExpiring: jest.fn(),
-      addSilentRenewError: jest.fn(),
+      addSilentRenewError: jest.fn()
     },
     signinRedirectCallback: jest.fn(() => Promise.resolve(mockSigninResult)),
-    signinSilent: jest.fn().mockResolvedValue({}),
+    signinSilent: jest.fn().mockResolvedValue({})
   })),
   WebStorageStateStore: jest.fn(),
-  InMemoryWebStorage: jest.fn(),
+  InMemoryWebStorage: jest.fn()
 }));
 
 describe('auth-oidc-pkce state handling in _processLoginResponse', () => {
@@ -30,16 +30,14 @@ describe('auth-oidc-pkce state handling in _processLoginResponse', () => {
   beforeEach(() => {
     global.Luigi.auth = jest.fn(() => ({
       store: { setAuthData: jest.fn(), removeAuthData: jest.fn() },
-      handleAuthEvent: jest.fn(),
+      handleAuthEvent: jest.fn()
     }));
     // The plugin gates on `window.location[fromWhere].indexOf(toCheck)`; for
     // `response_type: 'code'` with no `response_mode`, that's
     // `window.location.search.indexOf('code')`. Provide a URL that matches.
     delete window.location;
     window.location = new URL('https://app.example.com/dashboard?code=abc');
-    pushStateSpy = jest
-      .spyOn(history, 'pushState')
-      .mockImplementation(() => {});
+    pushStateSpy = jest.spyOn(history, 'pushState').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -58,29 +56,17 @@ describe('auth-oidc-pkce state handling in _processLoginResponse', () => {
   };
 
   it('accepts a same-origin absolute URL and reduces it to path+search+hash', async () => {
-    await buildPluginAndFlush(
-      encodeURIComponent('https://app.example.com/settings?tab=profile#top'),
-    );
-    expect(pushStateSpy).toHaveBeenCalledWith(
-      '',
-      document.title,
-      '/settings?tab=profile#top',
-    );
+    await buildPluginAndFlush(encodeURIComponent('https://app.example.com/settings?tab=profile#top'));
+    expect(pushStateSpy).toHaveBeenCalledWith('', document.title, '/settings?tab=profile#top');
   });
 
   it('accepts a relative path unchanged', async () => {
     await buildPluginAndFlush(encodeURIComponent('/inner/page?x=1'));
-    expect(pushStateSpy).toHaveBeenCalledWith(
-      '',
-      document.title,
-      '/inner/page?x=1',
-    );
+    expect(pushStateSpy).toHaveBeenCalledWith('', document.title, '/inner/page?x=1');
   });
 
   it('rejects a cross-origin absolute URL and falls back to current pathname', async () => {
-    await buildPluginAndFlush(
-      encodeURIComponent('https://attacker.example/steal'),
-    );
+    await buildPluginAndFlush(encodeURIComponent('https://attacker.example/steal'));
     expect(pushStateSpy).toHaveBeenCalledWith('', document.title, '/dashboard');
   });
 
