@@ -19,13 +19,15 @@ jest.mock('oidc-client-ts', () => ({
       }),
       addSilentRenewError: jest.fn((cb) => {
         eventCallbacks.silentRenewError = cb;
-      })
+      }),
     },
-    signinRedirectCallback: jest.fn().mockRejectedValue(new Error('no response')),
-    signinSilent: jest.fn().mockResolvedValue({})
+    signinRedirectCallback: jest
+      .fn()
+      .mockRejectedValue(new Error('no response')),
+    signinSilent: jest.fn().mockResolvedValue({}),
   })),
   WebStorageStateStore: jest.fn(),
-  InMemoryWebStorage: jest.fn()
+  InMemoryWebStorage: jest.fn(),
 }));
 
 const { UserManager } = require('oidc-client-ts');
@@ -39,13 +41,15 @@ describe('auth-oidc-pkce logoutUrl', () => {
     handleAuthEventSpy = jest.fn();
     global.Luigi.auth = jest.fn(() => ({
       store: { setAuthData: jest.fn(), removeAuthData: jest.fn() },
-      handleAuthEvent: handleAuthEventSpy
+      handleAuthEvent: handleAuthEventSpy,
     }));
   });
 
   describe('default value', () => {
     it('falls back to post_logout_redirect_uri when logoutUrl is not set', async () => {
-      await new openIdConnect({ post_logout_redirect_uri: 'https://app.example.com/bye' });
+      await new openIdConnect({
+        post_logout_redirect_uri: 'https://app.example.com/bye',
+      });
 
       const passed = UserManager.mock.calls[0][0];
       expect(passed.logoutUrl).toBe('https://app.example.com/bye');
@@ -61,11 +65,13 @@ describe('auth-oidc-pkce logoutUrl', () => {
     it('keeps logoutUrl independent from post_logout_redirect_uri when both are set', async () => {
       await new openIdConnect({
         post_logout_redirect_uri: 'https://idp.example.com/endsession',
-        logoutUrl: 'https://app.example.com/logout'
+        logoutUrl: 'https://app.example.com/logout',
       });
 
       const passed = UserManager.mock.calls[0][0];
-      expect(passed.post_logout_redirect_uri).toBe('https://idp.example.com/endsession');
+      expect(passed.post_logout_redirect_uri).toBe(
+        'https://idp.example.com/endsession',
+      );
       expect(passed.logoutUrl).toBe('https://app.example.com/logout');
     });
 
@@ -73,7 +79,9 @@ describe('auth-oidc-pkce logoutUrl', () => {
       await new openIdConnect({ logoutUrl: '/internal/logout' });
 
       const passed = UserManager.mock.calls[0][0];
-      expect(passed.logoutUrl).toBe(window.location.origin + '/internal/logout');
+      expect(passed.logoutUrl).toBe(
+        window.location.origin + '/internal/logout',
+      );
     });
   });
 
@@ -81,7 +89,7 @@ describe('auth-oidc-pkce logoutUrl', () => {
     it('setTokenExpirationAction: addAccessTokenExpired uses logoutUrl (not post_logout_redirect_uri)', async () => {
       const plugin = await new openIdConnect({
         post_logout_redirect_uri: 'https://idp.example.com/endsession',
-        logoutUrl: 'https://app.example.com/logout'
+        logoutUrl: 'https://app.example.com/logout',
       });
       plugin.setTokenExpirationAction();
 
@@ -91,14 +99,14 @@ describe('auth-oidc-pkce logoutUrl', () => {
         'onAuthExpired',
         expect.any(Object),
         undefined,
-        'https://app.example.com/logout?error=tokenExpired'
+        'https://app.example.com/logout?error=tokenExpired',
       );
     });
 
     it('setTokenExpirationAction: silent-renew known error uses logoutUrl', async () => {
       const plugin = await new openIdConnect({
         post_logout_redirect_uri: 'https://idp.example.com/endsession',
-        logoutUrl: 'https://app.example.com/logout'
+        logoutUrl: 'https://app.example.com/logout',
       });
       plugin.setTokenExpirationAction();
 
@@ -108,7 +116,7 @@ describe('auth-oidc-pkce logoutUrl', () => {
         'onAuthError',
         expect.any(Object),
         expect.any(Object),
-        'https://app.example.com/logout?error=tokenExpired&errorDescription=login_required'
+        'https://app.example.com/logout?error=tokenExpired&errorDescription=login_required',
       );
     });
 
@@ -116,7 +124,7 @@ describe('auth-oidc-pkce logoutUrl', () => {
       const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       const plugin = await new openIdConnect({
         post_logout_redirect_uri: 'https://idp.example.com/endsession',
-        logoutUrl: 'https://app.example.com/logout'
+        logoutUrl: 'https://app.example.com/logout',
       });
       plugin.setTokenExpirationAction();
 
@@ -126,7 +134,28 @@ describe('auth-oidc-pkce logoutUrl', () => {
         'onAuthError',
         expect.any(Object),
         expect.any(Object),
-        'https://app.example.com/logout?error=tokenExpired&errorDescription=network_down'
+        'https://app.example.com/logout?error=tokenExpired&errorDescription=network_down',
+      );
+      errSpy.mockRestore();
+    });
+
+    it('setTokenExpirationAction: silent-renew error message with reserved chars is URL-encoded', async () => {
+      const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const plugin = await new openIdConnect({
+        logoutUrl: 'https://app.example.com/logout',
+      });
+      plugin.setTokenExpirationAction();
+
+      // A message that contains `&` and `=` would corrupt the query string
+      // (append an extra param, or terminate errorDescription early) if
+      // interpolated raw. Encoding turns them into %26 / %3D.
+      eventCallbacks.silentRenewError({ message: 'boom & injected=evil' });
+
+      expect(handleAuthEventSpy).toHaveBeenCalledWith(
+        'onAuthError',
+        expect.any(Object),
+        expect.any(Object),
+        'https://app.example.com/logout?error=tokenExpired&errorDescription=boom%20%26%20injected%3Devil',
       );
       errSpy.mockRestore();
     });
@@ -134,7 +163,7 @@ describe('auth-oidc-pkce logoutUrl', () => {
     it('setTokenExpirationAction: skips addAccessTokenExpired handler when automaticSilentRenew is true', async () => {
       const plugin = await new openIdConnect({
         automaticSilentRenew: true,
-        logoutUrl: 'https://app.example.com/logout'
+        logoutUrl: 'https://app.example.com/logout',
       });
       plugin.setTokenExpirationAction();
 
@@ -144,7 +173,9 @@ describe('auth-oidc-pkce logoutUrl', () => {
     });
 
     it('collapse fallback: without logoutUrl, error redirect still uses post_logout_redirect_uri', async () => {
-      const plugin = await new openIdConnect({ post_logout_redirect_uri: 'https://app.example.com/bye' });
+      const plugin = await new openIdConnect({
+        post_logout_redirect_uri: 'https://app.example.com/bye',
+      });
       plugin.setTokenExpirationAction();
 
       eventCallbacks.accessTokenExpired();
@@ -153,7 +184,7 @@ describe('auth-oidc-pkce logoutUrl', () => {
         'onAuthExpired',
         expect.any(Object),
         undefined,
-        'https://app.example.com/bye?error=tokenExpired'
+        'https://app.example.com/bye?error=tokenExpired',
       );
     });
   });
