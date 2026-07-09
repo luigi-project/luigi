@@ -39,10 +39,25 @@ export default class openIdConnect {
       silent_redirect_uri: window.location.origin + '/assets/auth-oidc-pkce/silent-callback.html'
     };
 
-    const mergedSettings = Helpers.deepMerge(defaultSettings, applyDeprecationShim(settings));
+    const patchedSettings = applyDeprecationShim(settings);
 
-    // Prepend current url to redirect_uri, if it is a relative path
-    ['redirect_uri', 'post_logout_redirect_uri'].forEach((key) => {
+    // `logoutUrl` is Luigi's internal error-redirect target (used by handleAuthEvent
+    // for onAuthExpired / onAuthError / login-callback failures). It is distinct
+    // from `post_logout_redirect_uri`, which is the OIDC-spec callback the IdP
+    // redirects back to after ending its session. When callers do not set
+    // `logoutUrl` explicitly, we fall back to `post_logout_redirect_uri` so that
+    // callers who only ever set one URL still get their error redirects routed
+    // there. Note this differs from the legacy `auth-oidc` plugin, which used a
+    // literal `${origin}/logout.html` default and did not inherit from
+    // `post_logout_redirect_uri` — set both explicitly for full parity.
+    if (patchedSettings.logoutUrl === undefined) {
+      defaultSettings.logoutUrl = patchedSettings.post_logout_redirect_uri || defaultSettings.post_logout_redirect_uri;
+    }
+
+    const mergedSettings = Helpers.deepMerge(defaultSettings, patchedSettings);
+
+    // Prepend current url to relative path settings
+    ['redirect_uri', 'post_logout_redirect_uri', 'logoutUrl'].forEach((key) => {
       mergedSettings[key] = Helpers.prependOrigin(mergedSettings[key]);
     });
 
@@ -130,7 +145,7 @@ export default class openIdConnect {
           'onAuthExpired',
           this.settings,
           undefined,
-          this.settings.post_logout_redirect_uri + '?error=tokenExpired'
+          this.settings.logoutUrl + '?error=tokenExpired'
         );
       });
     }
@@ -142,11 +157,11 @@ export default class openIdConnect {
         case 'login_required':
         case 'account_selection_required':
         case 'consent_required':
-          redirectUrl = this.settings.post_logout_redirect_uri + '?error=tokenExpired&errorDescription=' + e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + e.message;
           break;
         default:
           console.error('[OIDC] addSilentRenewError Error', e);
-          redirectUrl = this.settings.post_logout_redirect_uri + '?error=tokenExpired&errorDescription=' + e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + e.message;
       }
       Luigi.auth().handleAuthEvent('onAuthError', this.settings, e, redirectUrl);
     });
@@ -239,7 +254,7 @@ export default class openIdConnect {
             'onAuthExpired',
             this.settings,
             err,
-            this.settings.post_logout_redirect_uri + '?error=loginError'
+            this.settings.logoutUrl + '?error=loginError'
           );
         });
     });

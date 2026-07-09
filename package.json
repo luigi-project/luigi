@@ -33,7 +33,6 @@
       "neostandard": "0.11.7",
       "prettier": "3.8.1",
       "prettier-plugin-svelte": "3.5.0",
-      "sirv-cli": "2.0.2",
       "trim": "1.0.1"
    },
    "prettier": {

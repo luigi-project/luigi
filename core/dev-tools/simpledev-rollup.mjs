@@ -1,5 +1,5 @@
 import { watch } from 'rollup';
-import liveServer from 'live-server';
+import { startSimpleServer } from '../../scripts/tools/simple-server/index.mjs';
 import fs from 'fs-extra';
 import config from '../rollup.config.mjs';
 
@@ -82,17 +82,11 @@ var params = {
   port: 4100,
   host: '0.0.0.0',
   root: rootPath,
-  open: false,
   watch: ['./dev-tools', '../client/public'],
-  file: 'index.html',
-  wait: 1000,
-  mount: [
+  mounts: [
     ['/public', './public'],
     ['/public_client', '../client/public']
-  ],
-  logLevel: 0,
-  cors: true
+  ]
 };
 
-liveServer.start(params);
-console.log('\x1b[32mStarting live-server at', '\x1b[36m', 'http://localhost:' + params.port, '\x1b[0m');
+startSimpleServer(params);

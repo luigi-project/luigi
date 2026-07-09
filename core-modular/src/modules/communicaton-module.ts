@@ -114,8 +114,8 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
     });
     containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: LuigiEvent) => {
-      const detail = event.detail as { data: Record<string, string>; keepBrowserHistory: boolean };
-      RoutingModule.addSearchParamsFromClient(detail.data, detail.keepBrowserHistory, luigi);
+      const detail = event.detail as { data: Record<string, string>; keepBrowserHistory: boolean, preventLuigiConfigUpdate: boolean };
+      RoutingModule.addSearchParamsFromClient(detail.data, detail.keepBrowserHistory, detail.preventLuigiConfigUpdate, luigi);
     });
     containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { updatedModalSettings: object; addHistoryEntry: boolean };
