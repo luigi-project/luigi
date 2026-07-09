@@ -181,7 +181,10 @@ export default class openIdConnect {
 
   _processLogoutResponse() {
     return new Promise((resolve, reject) => {
-      // TODO: dex logout does not yet support proper logout
+      // We detect return-from-end-session by looking for `?logout` on the
+      // current URL. This is a Luigi convention (set via post_logout_redirect_uri
+      // pointing at a page carrying `?logout`), not an OIDC spec requirement,
+      // so we cannot rely on `state` alone here.
       if (window.location.href.indexOf('?logout') >= 0) {
         this.client
           .signoutRedirectCallback()
