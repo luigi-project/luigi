@@ -437,7 +437,11 @@ export class WebComponentService {
         return this.thisComponent.clientPermissions || {};
       },
       addCoreSearchParams: (searchParams = {}, keepBrowserHistory = true, preventLuigiConfigUpdate = false) => {
-        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, { data: searchParams, keepBrowserHistory, preventLuigiConfigUpdate });
+        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, {
+          data: searchParams,
+          keepBrowserHistory,
+          preventLuigiConfigUpdate
+        });
       },
       getUserSettings: (): object => {
         return this.thisComponent.userSettings || {};
