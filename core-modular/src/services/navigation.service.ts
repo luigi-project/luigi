@@ -533,11 +533,8 @@ export class NavigationService {
     return this.luigi.navigation().navigate(fullPath);
   }
 
-  async getTopNavData(path: string, pData?: PathData): Promise<TopNavData | null> {
+  async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
     const cfg = this.luigi.getConfig();
-    if (cfg.settings?.header?.disabled) {
-      return null;
-    }
     const pathData: PathData = pData ?? (await this.getPathData(path));
     const profileItems = cfg.navigation?.profile?.items?.length
       ? JSON.parse(JSON.stringify(cfg.navigation.profile.items))
@@ -649,6 +646,7 @@ export class NavigationService {
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       globalSearch,
+      isHeaderDisabled: !!cfg.settings?.header?.disabled,
       logo: cfg.settings?.header?.logo,
       topNodes: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
