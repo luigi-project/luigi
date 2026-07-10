@@ -20,7 +20,11 @@ export class Routing {
    * @param keepBrowserHistory - If `true`, a new entry is added to the browser's history; otherwise, the current entry is replaced. Defaults to `false`.
    * @param preventLuigiConfigUpdate - If `true`, prevents updating the Luigi configuration when adding search parameters. Defaults to `false`.
    */
-  addSearchParams(params: object, keepBrowserHistory: boolean = false, preventLuigiConfigUpdate: boolean = false): void {
+  addSearchParams(
+    params: object,
+    keepBrowserHistory: boolean = false,
+    preventLuigiConfigUpdate: boolean = false
+  ): void {
     if (!GenericHelpers.isObject(params)) {
       console.log('Params argument must be an object');
       return;

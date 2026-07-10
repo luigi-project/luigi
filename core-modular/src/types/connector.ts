@@ -242,6 +242,11 @@ export interface LuigiConnector {
   removeBackdrop(): void;
 
   /**
+   * Set the collapsed state of the left side navigation.
+   */
+  collapseLeftSideNav(state: boolean): void;
+
+  /**
    * Open the user-settings dialog.
    *
    * Core invokes `dialogSettings.renderMicroFrontendContainer(viewUrl, groupKey)`
