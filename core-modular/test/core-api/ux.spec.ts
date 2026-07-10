@@ -15,6 +15,7 @@ describe('UX', () => {
       renderConfirmationModal: jest.fn(),
       setDocumentTitle: jest.fn(),
       closeUserSettings: jest.fn(),
+      collapseLeftSideNav: jest.fn(),
       showLoadingIndicator: jest.fn(),
       hideLoadingIndicator: jest.fn(),
       addBackdrop: jest.fn(),
@@ -145,6 +146,13 @@ describe('UX', () => {
       expect(forwarded).toBeUndefined();
       handler.confirm();
       await expect(promise).resolves.toBe(true);
+    });
+  });
+
+  describe('collapseLeftSideNav', () => {
+    it.each([true, false])('should set the collapsed state of the left side navigation', (state) => {
+      ux.collapseLeftSideNav(state);
+      expect(connectorMock.collapseLeftSideNav).toHaveBeenCalledWith(state);
     });
   });
 

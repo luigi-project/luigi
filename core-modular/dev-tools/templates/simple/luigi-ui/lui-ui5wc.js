@@ -924,11 +924,15 @@ const connector = {
         });
         // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
         // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
-        sidenav.addEventListener('click', (event) => {
-          if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
-            event.preventDefault();
-          }
-        }, true);
+        sidenav.addEventListener(
+          'click',
+          (event) => {
+            if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
+              event.preventDefault();
+            }
+          },
+          true
+        );
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
@@ -1196,6 +1200,18 @@ const connector = {
     dialog.appendChild(ui5Toolbar);
     document.body.appendChild(dialog);
     dialog.open = true;
+  },
+
+  collapseLeftSideNav: (state) => {
+    const sidenav = document.querySelector('ui5-side-navigation');
+
+    if (sidenav) {
+      if (state === true) {
+        sidenav.setAttribute('collapsed', 'true');
+      } else {
+        sidenav.removeAttribute('collapsed');
+      }
+    }
   },
 
   openUserSettings: async (settings, userSettingData, previousUserSettings, lc) => {
