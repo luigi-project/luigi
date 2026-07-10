@@ -289,15 +289,17 @@ export default class openIdConnect {
   async tryToSignIn() {
     try {
       // If the user was just redirected here from the sign in page, sign them in.
+      const user = await this.client.signinRedirectCallback();
       console.debug('[OIDC] User was redirected via the sign-in page. Now signed in.');
-      return await this.client.signinRedirectCallback();
+      return user;
     } catch (error) {
       console.debug("[OIDC] Error. Sign-in redirect callback doesn't work. Let's try a silent sign-in.", error);
       // Barring that, if the user chose to have the Identity Server remember their
       // credentials and permission decisions, we may be able to silently sign them
       // back in via a background iframe.
+      const user = await this.client.signinSilent();
       console.debug('[OIDC] Silent sign-in completed.');
-      return await this.client.signinSilent();
+      return user;
     }
   }
 }
