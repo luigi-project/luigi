@@ -30,6 +30,7 @@
     "@luigi-project/core": "^2.31.0",
     "@luigi-project/plugin-auth-oauth2": "^2.31.0",
     "@luigi-project/plugin-auth-oidc": "^2.31.0",
+    "@luigi-project/plugin-auth-oidc-pkce": "^0.42.0",
     "@luigi-project/testing-utilities": "^2.31.0",
     "@sap-theming/theming-base-content": "11.35.0",
     "core-js": "2.6.12",
@@ -72,7 +73,8 @@
     "typescript-eslint": "8.61.1",
     "vite": "7.3.5",
     "webpack": "5.106.1",
-    "webpack-cli": "5.1.4"
+    "webpack-cli": "5.1.4",
+    "oidc-client-ts": "3.5.0"
   },
   "overrides": {
     "ip-address": "10.1.1",
