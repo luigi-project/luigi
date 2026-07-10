@@ -4,7 +4,7 @@
   "scripts": {
     "start": "npm run dev",
     "build": "node patch.js && node build_patch_ui5.js && cross-env NODE_ENV=production webpack",
-    "dev": "node patch.js && node build_patch_ui5.js && webpack serve  --static public"
+    "dev": "node patch.js && node build_patch_ui5.js && concurrently -k \"webpack --watch\" \"node ../../scripts/tools/simple-server/cli.mjs public --port 3000 --proxy /luigi-cdn=https://www.unpkg.com/@luigi-project\""
   },
   "dependencies": {
     "@luigi-project/client": "^2.31.0",
@@ -20,25 +20,19 @@
     "fundamental-styles": "0.23.0"
   },
   "devDependencies": {
-    "braces": "3.0.3",
+    "concurrently": "10.0.3",
     "copy-webpack-plugin": "14.0.0",
     "cross-env": "7.0.3",
     "css-loader": "6.11.0",
-    "express": "5.2.1",
     "mini-css-extract-plugin": "2.10.1",
     "replace-in-file": "7.2.0",
-    "send": "0.19.2",
     "style-loader": "3.3.4",
     "svelte": "5.55.7",
     "svelte-loader": "3.2.4",
     "webpack": "5.105.4",
-    "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.5"
+    "webpack-cli": "5.1.4"
   },
   "engines": {
     "node": ">=20.19.0"
-  },
-  "overrides": {
-    "http-proxy-middleware": "3.0.7"
   }
 }

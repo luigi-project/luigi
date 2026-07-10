@@ -6,7 +6,7 @@
   "scripts": {
     "test": "cypress open --env configFile=e2emockengine",
     "e2e:run": "cypress run --env configFile=e2emockengine --browser chrome -c video=false",
-    "start": "live-server --port=8181 --entry-file=index.html  --mount=./node_modules:/node_modules"
+    "start": "node ./dev-server.mjs"
   },
   "dependencies": {
     "@luigi-project/client": "^2.27.0",
@@ -15,8 +15,7 @@
   },
   "devDependencies": {
     "cross-spawn": "7.0.6",
-    "cypress": "15.17.0",
-    "live-server": "1.2.2"
+    "cypress": "15.17.0"
   },
   "overrides": {
     "qs": "^6.15.2"

@@ -68,16 +68,5 @@ module.exports = {
   devtool: prod ? false : 'source-map',
   stats: {
     errorDetails: true
-  },
-  devServer: {
-    proxy: [
-      {
-        '/luigi-cdn': {
-          target: 'https://www.unpkg.com',
-          changeOrigin: true,
-          pathRewrite: { '^/luigi-cdn': '/@luigi-project' }
-        }
-      }
-    ]
   }
 };

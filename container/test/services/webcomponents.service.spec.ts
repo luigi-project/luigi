@@ -718,10 +718,10 @@ describe('createClientAPI', () => {
 
       // act
       const clientAPI = service.createClientAPI(undefined, 'nodeId', 'wc_id', 'component');
-      clientAPI.uxManager().collapseLeftSideNav();
+      clientAPI.uxManager().collapseLeftSideNav(true);
 
       // assert
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, { state: true });
     });
 
     it('test uxManager setDocumentTitle', () => {
@@ -1158,7 +1158,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: params,
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 
@@ -1175,7 +1176,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: {},
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 

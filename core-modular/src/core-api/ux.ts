@@ -126,6 +126,13 @@ export class UX {
   };
 
   /**
+   * Set the collapsed state of the left side navigation
+   */
+  collapseLeftSideNav = (state: boolean) => {
+    this.luigi.getEngine()._connector?.collapseLeftSideNav(state);
+  };
+
+  /**
    * Open user settings dialog
    */
   openUserSettings = async () => {

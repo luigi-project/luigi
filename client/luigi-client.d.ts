@@ -799,13 +799,22 @@ export type getCoreSearchParams = () => CoreSearchParams;
  * Sends search query parameters to Luigi core. If it is allowed on node level it will be added to url.
  * @param {Object} searchParams
  * @param {boolean} keepBrowserHistory
+ * @param {boolean} preventLuigiConfigUpdate
  * @memberof Lifecycle
  * @example
  * LuigiClient.addCoreSearchParams({luigi:'rocks'});
  * LuigiClient.addCoreSearchParams({luigi:'rocks', false});
  */
-export function addCoreSearchParams(searchParams: CoreSearchParams, keepBrowserHistory: Boolean): void;
-export type addCoreSearchParams = (searchParams: CoreSearchParams, keepBrowserHistory: Boolean) => void;
+export function addCoreSearchParams(
+  searchParams: CoreSearchParams,
+  keepBrowserHistory: Boolean,
+  preventLuigiConfigUpdate: Boolean
+): void;
+export type addCoreSearchParams = (
+  searchParams: CoreSearchParams,
+  keepBrowserHistory: Boolean,
+  preventLuigiConfigUpdate: Boolean
+) => void;
 
 /**
  * Returns the current client permissions as specified in the navigation node or an empty object. For details, see [Node parameters](navigation-parameters-reference.md).
