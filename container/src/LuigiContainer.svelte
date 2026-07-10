@@ -161,7 +161,8 @@
               drawer: thisComponent.drawer || false,
               modal: thisComponent.modal || false,
               viewStackSize: thisComponent.viewStackSize || 0,
-              isNavigateBack: thisComponent.isNavigateBack || false
+              isNavigateBack: thisComponent.isNavigateBack || false,
+              clientPermissions: thisComponent.clientPermissions || {}
             }
           };
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
