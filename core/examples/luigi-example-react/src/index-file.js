@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { addInitListener } from '@luigi-project/client';
 
 import Home from './views/home.js';
@@ -17,11 +17,13 @@ class App extends Component {
   }
   render() {
     return (
-      <BrowserRouter basename={`sampleapp.html#`}>
-        <Route path="/home" component={Home} />
-        <Route path="/sample1" component={Sample1} />
-        <Route path="/sample2" component={Sample2} />
-      </BrowserRouter>
+      <HashRouter>
+        <Routes>
+          <Route path="/home" element={<Home />} />
+          <Route path="/sample1" element={<Sample1 />} />
+          <Route path="/sample2" element={<Sample2 />} />
+        </Routes>
+      </HashRouter>
     );
   }
 }
