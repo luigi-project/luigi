@@ -1300,3 +1300,11 @@ The global search is an input field available in the top navigation bar. The sea
       - **visible**
         - **type**: boolean
         - **description**: specifies if the input text is visible or not.
+   - **onSearchBtnClick**
+     - **type**: Function
+     - **description**: will be executed when the user clicks the in-pill magnifier button while the input has a value. Only invoked when `style` is set to `'vega'`. If not defined, the framework falls back to invoking `onEnter`. When the input is empty, the magnifier collapses the search field instead.
+
+### style
+- **type**: string
+- **description**: selects the visual layout of the global search field. When set to `'vega'`, the magnifier icon is rendered inside the search input pill (along with a clear-input button), matching the Fundamental Styles shellbar reference. The outside toggle button is hidden while the field is expanded so the pill visually wraps around it. Any other value (or omitting the property) keeps the original two-button layout where the magnifier sits outside the input as a separate toggle. When `'vega'` is active, you can implement `searchProvider.onSearchBtnClick` to handle clicks on the in-pill magnifier; if not provided, it falls back to `searchProvider.onEnter`.
+- **since**: NEXTRELEASE
