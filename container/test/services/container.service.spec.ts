@@ -117,6 +117,7 @@ describe('getContainerManager messageListener', () => {
         currentLocale: undefined,
         activeFeatureToggleList: [],
         userSettings: null,
+        clientPermissions: {},
         cssVariables: {},
         anchor: '',
         drawer: false,
