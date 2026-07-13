@@ -188,4 +188,36 @@ export class GlobalSearchHelperClass {
       this.search.searchProvider.toggleSearch(inputElem, fieldVisible);
     }
   }
+
+  // Clear the input and notify the search provider so the result list updates.
+  clearSearchField(inputElement) {
+    if (inputElement) {
+      inputElement.value = '';
+      inputElement.focus();
+    }
+    if (this.search && this.search.searchProvider) {
+      if (GenericHelpers.isFunction(this.search.searchProvider.onInput)) {
+        this.search.searchProvider.onInput();
+      }
+    }
+    this.closeSearchResult();
+  }
+
+  // In-pill magnifier:
+  //   - empty input → collapse the field (toggle off)
+  //   - non-empty input → submit (call onSearchBtnClick if provided, else onEnter)
+  onSearchBtnClick(inputElement, displaySearchResult) {
+    const value = inputElement && inputElement.value ? inputElement.value : '';
+    if (!value) {
+      this.toggleSearch(true, displaySearchResult, inputElement, undefined);
+      return;
+    }
+    if (this.search && this.search.searchProvider) {
+      if (GenericHelpers.isFunction(this.search.searchProvider.onSearchBtnClick)) {
+        this.search.searchProvider.onSearchBtnClick();
+      } else if (GenericHelpers.isFunction(this.search.searchProvider.onEnter)) {
+        this.search.searchProvider.onEnter();
+      }
+    }
+  }
 }
