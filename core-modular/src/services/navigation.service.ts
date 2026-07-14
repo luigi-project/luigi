@@ -646,6 +646,7 @@ export class NavigationService {
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
       globalSearch,
+      isHeaderDisabled: !!cfg.settings?.header?.disabled,
       logo: cfg.settings?.header?.logo,
       topNodes: navData.items,
       totalBadgeNode: navData.totalBadgeNode,

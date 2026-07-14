@@ -151,7 +151,8 @@ export class ContainerService {
                       drawer: targetCnt.drawer || false,
                       modal: targetCnt.modal || false,
                       viewStackSize: targetCnt.viewStackSize || 0,
-                      isNavigateBack: targetCnt.isNavigateBack || false
+                      isNavigateBack: targetCnt.isNavigateBack || false,
+                      clientPermissions: targetCnt.clientPermissions || {}
                     },
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
