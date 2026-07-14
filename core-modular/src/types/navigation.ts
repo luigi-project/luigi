@@ -4,6 +4,7 @@ export interface TopNavData {
   appSwitcher?: AppSwitcher;
   appTitle: string;
   contextSwitcher?: ContextSwitcher;
+  isHeaderDisabled: boolean;
   globalSearch?: GlobalSearch;
   logo: string;
   navClick?: (item: NavItem) => Promise<void>;
