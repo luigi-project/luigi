@@ -369,7 +369,33 @@ export const UIModule = {
           }
         };
 
+        // TODO: goBackContext forwarding is basic — preserveView is not yet fully implemented in core-modular
+        const onGoBackRequestHandler = async (event: any) => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
+          const goBackContext = event?.detail || event?.payload;
+          resolveFn && resolveFn();
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
+          if (goBackContext && Object.keys(goBackContext).length) {
+            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+            if (containerWrapper) {
+              const activeContainer = [...containerWrapper.childNodes].find(
+                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
+              ) as any;
+              if (activeContainer?.updateContext) {
+                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+              }
+            }
+          }
+        };
+
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+        lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
       });
     };
 
