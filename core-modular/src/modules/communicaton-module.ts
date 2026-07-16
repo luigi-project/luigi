@@ -141,7 +141,7 @@ export const CommunicationModule = {
       }
     });
     containerElement.addEventListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
-      const detail = event.detail as {
+      const options = event.payload as {
         fromClosestContext?: boolean;
         fromContext?: string | null;
         fromParent?: boolean;
@@ -149,7 +149,7 @@ export const CommunicationModule = {
       };
       serviceRegistry
         .get(NavigationService)
-        .getCurrentRoutePath(detail)
+        .getCurrentRoutePath(options)
         .then((route) => event.callback(route));
     });
   }
