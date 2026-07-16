@@ -1350,6 +1350,18 @@ export class NavigationService {
     return path;
   }
 
+  /**
+   * Computes the current route path relative to a context node, based on the provided navigation options.
+   * Unlike {@link buildPath}, which concatenates an incoming path onto a context node for navigation,
+   * this method subtracts the context node's path from the current node's path to return the relative remainder.
+   *
+   * @param options - Navigation options determining the reference point for the relative path.
+   * @param options.fromVirtualTreeRoot - If true, returns the path relative to the nearest ancestor with `virtualTree: true`.
+   * @param options.fromParent - If true, returns the path relative to the current node's parent.
+   * @param options.fromClosestContext - If true, returns the path relative to the nearest ancestor with a `navigationContext`.
+   * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
+   * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
+   */
   async getCurrentRoutePath(options: NavigationOptions): Promise<string> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
