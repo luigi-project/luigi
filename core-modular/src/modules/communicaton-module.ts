@@ -140,5 +140,17 @@ export const CommunicationModule = {
         luigi.i18n().setCurrentLocale(locale);
       }
     });
+    containerElement.addEventListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
+      const detail = event.detail as {
+        fromClosestContext?: boolean;
+        fromContext?: string | null;
+        fromParent?: boolean;
+        fromVirtualTreeRoot?: boolean;
+      };
+      serviceRegistry
+        .get(NavigationService)
+        .getCurrentRoutePath(detail)
+        .then((route) => event.callback(route));
+    });
   }
 };

@@ -1350,6 +1350,40 @@ export class NavigationService {
     return path;
   }
 
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string> {
+    const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const fullPath = currentPath + (query ? '?' + query : '');
+    const pathData = await this.getPathData(fullPath);
+    const nodes = pathData.nodesInPath;
+    if (!nodes || !pathData.selectedNode) {
+      return '';
+    }
+    const currentNodeSubPath = RoutingHelpers.getSubPath(pathData.selectedNode, pathData.pathParams);
+
+    if (fromVirtualTreeRoot) {
+      const virtualTreeNode = [...nodes].reverse().find((n) => n.virtualTree);
+      if (!virtualTreeNode) {
+        return '';
+      }
+      const virtualTreeNodeSubPath = RoutingHelpers.getSubPath(virtualTreeNode, pathData.pathParams);
+      return currentNodeSubPath.split(virtualTreeNodeSubPath).join('');
+    } else if (fromParent) {
+      const parentSubPath = RoutingHelpers.getSubPath(pathData.selectedNode.parent, pathData.pathParams);
+      return currentNodeSubPath.split(parentSubPath).join('');
+    } else if (fromClosestContext) {
+      const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
+      const contextSubPath = RoutingHelpers.getSubPath(node, pathData.pathParams);
+      return currentNodeSubPath.split(contextSubPath).join('');
+    } else if (fromContext) {
+      const node = [...nodes].reverse().find((n) => fromContext === n.navigationContext);
+      const contextSubPath = RoutingHelpers.getSubPath(node, pathData.pathParams);
+      return currentNodeSubPath.split(contextSubPath).join('');
+    }
+    return currentNodeSubPath;
+  }
+
   private async buildContextSwitcher(): Promise<ContextSwitcher | undefined> {
     const config = this.luigi.getConfigValue('navigation.contextSwitcher');
 
