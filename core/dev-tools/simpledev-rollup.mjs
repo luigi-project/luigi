@@ -85,7 +85,10 @@ var params = {
   watch: ['./dev-tools', '../client/public'],
   mounts: [
     ['/public', './public'],
-    ['/public_client', '../client/public']
+    ['/public_client', '../client/public'],
+    ['/auth-oidc', '../plugins/auth/public/auth-oidc'],
+    ['/auth-oidc-pkce', '../plugins/auth/public/auth-oidc-pkce'],
+    ['/auth-oauth2', '../plugins/auth/public/auth-oauth2']
   ]
 };
 
