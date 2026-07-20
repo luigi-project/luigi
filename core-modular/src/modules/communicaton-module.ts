@@ -151,7 +151,6 @@ export const CommunicationModule = {
       }
     });
     containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
-      console.log('SET_VIEW_GROUP_DATA_REQUEST', event.payload);
       const vg = containerElement.viewGroup;
       if (vg) {
         applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
