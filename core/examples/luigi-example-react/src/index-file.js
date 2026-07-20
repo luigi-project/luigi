@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router';
 import { addInitListener } from '@luigi-project/client';
 
 import Home from './views/home.js';
