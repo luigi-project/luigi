@@ -6,9 +6,19 @@ import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
 import { UXModule, type AlertSettings, type ConfirmationModalSettings } from './ux-module';
-import type { NavigationRequestParams, NavigationRequestDetail } from '../types/navigation';
+import type { NavigationRequestParams, NavigationRequestDetail, ViewGroupSettings } from '../types/navigation';
 import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
+
+function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
+  const allVgSettings: Record<string, ViewGroupSettings> =
+    luigi.getConfigValue('navigation.viewGroupSettings') || {};
+  if (!allVgSettings[vg]) {
+    allVgSettings[vg] = {};
+  }
+  allVgSettings[vg]._liveCustomData = data;
+  luigi.configChanged('navigation.viewgroupdata');
+}
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
@@ -138,6 +148,13 @@ export const CommunicationModule = {
       const locale = detail?.data?.data?.currentLocale;
       if (locale) {
         luigi.i18n().setCurrentLocale(locale);
+      }
+    });
+    containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
+      console.log('SET_VIEW_GROUP_DATA_REQUEST', event.payload);
+      const vg = containerElement.viewGroup;
+      if (vg) {
+        applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
       }
     });
   }

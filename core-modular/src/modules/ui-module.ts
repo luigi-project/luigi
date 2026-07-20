@@ -178,8 +178,7 @@ export const UIModule = {
     if (
       noScopes ||
       scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata')
+      scopes.includes('navigation.nodes')
     ) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
     }
@@ -192,7 +191,8 @@ export const UIModule = {
       scopes.includes('navigation.badges') ||
       scopes.includes('navigation.profile') ||
       scopes.includes('navigation.contextSwitcher') ||
-      scopes.includes('navigation.productSwitcher')
+      scopes.includes('navigation.productSwitcher') ||
+      scopes.includes('navigation.viewgroupdata')
     ) {
       UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
@@ -205,6 +205,15 @@ export const UIModule = {
       scopes.includes('settings.footer')
     ) {
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
+    }
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings') ||
+      scopes.includes('settings.footer')
+    ) {
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
       const uiConnector = UIModule.luigi.getEngine()._connector;
       uiConnector?.renderBreadcrumbs(
@@ -216,8 +225,7 @@ export const UIModule = {
     if (
       noScopes ||
       scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata')
+      scopes.includes('navigation.nodes')
     ) {
       if (croute.path) {
         const pathData = await UIModule.navService.getPathData(croute.path);
