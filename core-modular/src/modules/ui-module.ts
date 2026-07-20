@@ -183,6 +183,27 @@ export const UIModule = {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
     }
 
+    const isViewGroupDataOnly =
+      scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+
+    if (isViewGroupDataOnly) {
+      const pathData = await UIModule.navService.getPathData(croute.path);
+      const connector = UIModule.luigi.getEngine()._connector;
+      const [topNavData, leftNavData, tabNavData, breadcrumbData] = await Promise.all([
+        UIModule.navService.getTopNavData(croute.path, pathData),
+        UIModule.navService.getLeftNavData(croute.path, pathData),
+        UIModule.navService.getTabNavData(croute.path, pathData),
+        UIModule.navService.getBreadcrumbData(croute.path, pathData, (resolved) => {
+          connector?.renderBreadcrumbs(resolved);
+        })
+      ]);
+      connector?.renderTopNav(topNavData);
+      connector?.renderLeftNav(leftNavData);
+      connector?.renderTabNav(tabNavData);
+      connector?.renderBreadcrumbs(breadcrumbData);
+      return;
+    }
+
     if (
       noScopes ||
       scopes.includes('settings.header') ||
