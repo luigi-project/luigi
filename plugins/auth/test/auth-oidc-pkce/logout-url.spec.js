@@ -45,7 +45,9 @@ describe('auth-oidc-pkce logoutUrl', () => {
 
   describe('default value', () => {
     it('falls back to post_logout_redirect_uri when logoutUrl is not set', async () => {
-      await new openIdConnect({ post_logout_redirect_uri: 'https://app.example.com/bye' });
+      await new openIdConnect({
+        post_logout_redirect_uri: 'https://app.example.com/bye'
+      });
 
       const passed = UserManager.mock.calls[0][0];
       expect(passed.logoutUrl).toBe('https://app.example.com/bye');
@@ -131,6 +133,27 @@ describe('auth-oidc-pkce logoutUrl', () => {
       errSpy.mockRestore();
     });
 
+    it('setTokenExpirationAction: silent-renew error message with reserved chars is URL-encoded', async () => {
+      const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const plugin = await new openIdConnect({
+        logoutUrl: 'https://app.example.com/logout'
+      });
+      plugin.setTokenExpirationAction();
+
+      // A message that contains `&` and `=` would corrupt the query string
+      // (append an extra param, or terminate errorDescription early) if
+      // interpolated raw. Encoding turns them into %26 / %3D.
+      eventCallbacks.silentRenewError({ message: 'boom & injected=evil' });
+
+      expect(handleAuthEventSpy).toHaveBeenCalledWith(
+        'onAuthError',
+        expect.any(Object),
+        expect.any(Object),
+        'https://app.example.com/logout?error=tokenExpired&errorDescription=boom%20%26%20injected%3Devil'
+      );
+      errSpy.mockRestore();
+    });
+
     it('setTokenExpirationAction: skips addAccessTokenExpired handler when automaticSilentRenew is true', async () => {
       const plugin = await new openIdConnect({
         automaticSilentRenew: true,
@@ -144,7 +167,9 @@ describe('auth-oidc-pkce logoutUrl', () => {
     });
 
     it('collapse fallback: without logoutUrl, error redirect still uses post_logout_redirect_uri', async () => {
-      const plugin = await new openIdConnect({ post_logout_redirect_uri: 'https://app.example.com/bye' });
+      const plugin = await new openIdConnect({
+        post_logout_redirect_uri: 'https://app.example.com/bye'
+      });
       plugin.setTokenExpirationAction();
 
       eventCallbacks.accessTokenExpired();

@@ -71,23 +71,24 @@ The plugin distinguishes two logout-related URLs:
 
 When `logoutUrl` is unset, it falls back to `post_logout_redirect_uri`, so auth errors are always routed somewhere. If your `post_logout_redirect_uri` points at the IdP end-session endpoint, set `logoutUrl` explicitly to the page you want users to land on after an auth error in the app — otherwise both cases redirect to the IdP.
 
-Next, you must install `oidc-client-ts` in your project as a dev dependency:
+Next, you must install `oidc-client-ts` in your project. It is declared as a peer dependency of this plugin and is loaded at runtime, so it belongs in `dependencies`:
 
-```javascript
-npm i -save-dev oidc-client-ts
+```bash
+npm install --save oidc-client-ts
 ```
 
 Then, you need to copy certain auxiliary plugin files and the callback file, as they are needed for the initial setup.
 
-Respectively from `oidc-client-ts` library you need:
-- `oidc-client-ts.min.js` which normally resides in `node_modules/oidc-client-ts/dist/browser`
+From the `oidc-client-ts` library you need:
+- `oidc-client-ts.min.js`, which normally resides in `node_modules/oidc-client-ts/dist/browser/`
 
-and from our library `@luigi-project/plugin-auth-oidc-pkce` you need:
+From this library (`@luigi-project/plugin-auth-oidc-pkce`) you need:
 - `plugin.js`
 - `silent-callback.html`
-which all reside under `node_modules/@luigi-project/plugin-auth-oidc-pkce/plugin.js`.
 
-The above mentioned files should be copied to `assets/auth-oidc-pkce` as the default location.
+Both reside under `node_modules/@luigi-project/plugin-auth-oidc-pkce/`.
+
+The three files above should be copied to `assets/auth-oidc-pkce` as the default location.
 
 Below we give some alternatives on how to easily copy these files in your project. However, you may choose your own way of copying these files depending on your environment.
 
@@ -100,20 +101,22 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 {
   plugins: [
-    new CopyWebpackPlugin([
-     {
-         from: 'node_modules/@luigi-project/plugin-auth-oidc-pkce/plugin.js',
-         to: 'assets/auth-oidc-pkce'
-     },
-     {
-         from: 'node_modules/@luigi-project/plugin-auth-oidc-pkce/silent-callback.html',
-         to: 'assets/auth-oidc-pkce'
-     },
-     {
-         from: 'node_modules/oidc-client-ts/dist/browser/oidc-client-ts.min.js',
-         to: 'assets/auth-oidc-pkce'
-     }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'node_modules/@luigi-project/plugin-auth-oidc-pkce/plugin.js',
+          to: 'assets/auth-oidc-pkce'
+        },
+        {
+          from: 'node_modules/@luigi-project/plugin-auth-oidc-pkce/silent-callback.html',
+          to: 'assets/auth-oidc-pkce'
+        },
+        {
+          from: 'node_modules/oidc-client-ts/dist/browser/oidc-client-ts.min.js',
+          to: 'assets/auth-oidc-pkce'
+        }
+      ]
+    })
   ]
 }
 ```

@@ -152,16 +152,22 @@ export default class openIdConnect {
 
     this.client.events.addSilentRenewError((e) => {
       let redirectUrl;
+      // Encode e.message when interpolating into the redirect URL: the message
+      // originates from oidc-client-ts (or an underlying network/IdP error) and
+      // is not guaranteed to be a bare token — it may contain `&`, `#`, or
+      // other characters that would corrupt the query string or inject extra
+      // parameters. See CLAUDE.md "URL construction with user-controlled values".
+      const errorDescription = encodeURIComponent(e.message);
       switch (e.message) {
         case 'interaction_required':
         case 'login_required':
         case 'account_selection_required':
         case 'consent_required':
-          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + errorDescription;
           break;
         default:
           console.error('[OIDC] addSilentRenewError Error', e);
-          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + errorDescription;
       }
       Luigi.auth().handleAuthEvent('onAuthError', this.settings, e, redirectUrl);
     });
@@ -175,7 +181,10 @@ export default class openIdConnect {
 
   _processLogoutResponse() {
     return new Promise((resolve, reject) => {
-      // TODO: dex logout does not yet support proper logout
+      // We detect return-from-end-session by looking for `?logout` on the
+      // current URL. This is a Luigi convention (set via post_logout_redirect_uri
+      // pointing at a page carrying `?logout`), not an OIDC spec requirement,
+      // so we cannot rely on `state` alone here.
       if (window.location.href.indexOf('?logout') >= 0) {
         this.client
           .signoutRedirectCallback()
@@ -234,7 +243,24 @@ export default class openIdConnect {
           // else persistence might fail.
           setTimeout(() => {
             if (authenticatedUser.state) {
-              history.pushState('', document.title, decodeURIComponent(authenticatedUser.state));
+              // `state` is the value we set to `window.location.href` at login time
+              // and that the IdP round-trips back. Even though `pushState` itself
+              // rejects cross-origin URLs, resolve the value against the current
+              // origin and confirm it stayed same-origin before applying — this
+              // rejects a crafted `state` (e.g. `javascript:`, `//attacker.tld/...`)
+              // early with an explicit fallback. See CLAUDE.md "URL construction
+              // with user-controlled values".
+              const decoded = decodeURIComponent(authenticatedUser.state);
+              let target;
+              try {
+                const resolved = new URL(decoded, window.location.origin);
+                if (resolved.origin === window.location.origin) {
+                  target = resolved.pathname + resolved.search + resolved.hash;
+                }
+              } catch (e) {
+                // fall through to default target below
+              }
+              history.pushState('', document.title, target || window.location.pathname);
             } else {
               let url;
               if (fromWhere === 'search') {
@@ -263,15 +289,17 @@ export default class openIdConnect {
   async tryToSignIn() {
     try {
       // If the user was just redirected here from the sign in page, sign them in.
+      const user = await this.client.signinRedirectCallback();
       console.debug('[OIDC] User was redirected via the sign-in page. Now signed in.');
-      return await this.client.signinRedirectCallback();
+      return user;
     } catch (error) {
       console.debug("[OIDC] Error. Sign-in redirect callback doesn't work. Let's try a silent sign-in.", error);
       // Barring that, if the user chose to have the Identity Server remember their
       // credentials and permission decisions, we may be able to silently sign them
       // back in via a background iframe.
+      const user = await this.client.signinSilent();
       console.debug('[OIDC] Silent sign-in completed.');
-      return await this.client.signinSilent();
+      return user;
     }
   }
 }
