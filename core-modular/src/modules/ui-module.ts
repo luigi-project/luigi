@@ -337,7 +337,7 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: (goBackValue?: any) => void) => {
     const lc = await createContainer(node, luigi);
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
@@ -369,7 +369,6 @@ export const UIModule = {
           }
         };
 
-        // TODO: goBackContext forwarding is basic — preserveView is not yet fully implemented in core-modular
         const onGoBackRequestHandler = async (event: any) => {
           try {
             await dirtyStatusService.getUnsavedChangesModalPromise(lc);
@@ -377,6 +376,7 @@ export const UIModule = {
             return;
           }
           const goBackContext = event?.detail || event?.payload;
+          onCloseCallback?.(goBackContext);
           resolveFn && resolveFn();
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
