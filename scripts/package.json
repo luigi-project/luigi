@@ -61,6 +61,9 @@
     "semver": "7.7.3",
     "typescript": "5.9.3"
   },
+  "overrides": {
+    "shell-quote": "1.9.0"
+  },
   "browserslist": "> 0.25%, not dead",
   "engines": {
     "node": ">=20.19.0"
