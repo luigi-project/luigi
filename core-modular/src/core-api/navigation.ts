@@ -98,7 +98,7 @@ export class Navigation {
     this.navigate(newPath);
   };
 
-  openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: (goBackValue?: any) => void) => {
     if (path === '/') {
       console.warn('Navigation with an absolute path prevented.');
       return Promise.reject(new Error('Navigation with an absolute path prevented.'));

@@ -984,20 +984,6 @@ const connector = {
           attributeFilter: ['expanded']
         });
       }
-      const categories = sidenav.querySelectorAll('[category-uid]');
-      if (categories) {
-        categories.forEach((item) => {
-          item.addEventListener('click', (event) => {
-            if (event instanceof CustomEvent) {
-              event.target.toggleAttribute('expanded');
-            }
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            event.preventDefault();
-            return true;
-          });
-        });
-      }
     }
   },
   getContainerWrapper: () => {
