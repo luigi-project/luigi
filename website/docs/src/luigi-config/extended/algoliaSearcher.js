@@ -1,6 +1,6 @@
 import algoliasearch from "algoliasearch";
-const appId = "048N3AY92Y";
-const apiKey = "8726f8c70f1618caac31f26ec44b3933";
+const appId = import.meta.env.VITE_ALGOLIA_APP_ID;
+const apiKey = import.meta.env.VITE_ALGOLIA_API_KEY;
 
 class AlgoliaSearcher {
   constructor() {
