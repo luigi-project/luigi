@@ -337,8 +337,14 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: (goBackValue?: any) => void) => {
-    const lc = await createContainer(node, luigi);
+  openModal: async (
+    luigi: Luigi,
+    node: Node,
+    modalSettings: ModalSettings,
+    onCloseCallback?: (goBackValue?: any) => void,
+    luigiParams?: LuigiParams
+  ) => {
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -455,7 +461,13 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (
+    luigi: Luigi,
+    node: Node,
+    drawerSettings: DrawerSettings,
+    onCloseCallback?: () => void,
+    luigiParams?: LuigiParams
+  ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     if (UIModule.drawerContainer) {
@@ -468,7 +480,7 @@ export const UIModule = {
       }
     }
 
-    const lc = await createContainer(node, luigi);
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.drawerContainer = lc;
 
     const closePromise = new Promise<void>((resolve) => {

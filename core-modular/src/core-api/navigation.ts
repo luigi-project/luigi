@@ -10,6 +10,7 @@ import type {
   Node,
   RunTimeErrorHandler
 } from '../types/navigation';
+import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -117,11 +118,23 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node?.label;
     }
+    const nodeParams = settings.nodeParams || this.options.nodeParams || {};
+    let modalPathForUrl = normalizedPath;
+    if (nodeParams && Object.keys(nodeParams).length > 0) {
+      const prefix = RoutingHelpers.getContentViewParamPrefix(this.luigi);
+      const paramStr = Object.entries(nodeParams)
+        .map(([key, value]) => prefix + encodeURIComponent(key) + '=' + encodeURIComponent(value))
+        .join('&');
+      modalPathForUrl += (modalPathForUrl.includes('?') ? '&' : '?') + paramStr;
+    }
+    const { nodeParams: _np, ...urlSettings } = settings;
     // Append modal data to URL only if configured and if no other modals are open
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
-      this.routingService.appendModalDataToUrl(normalizedPath, settings);
+      this.routingService.appendModalDataToUrl(modalPathForUrl, urlSettings as ModalSettings);
     }
-    this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
+    this.luigi
+      .getEngine()
+      ._ui.openModal(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
   };
 
   openAsDrawer = async (path: string, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
@@ -147,7 +160,10 @@ export class Navigation {
     if (settings.overlap === undefined) {
       settings.overlap = true;
     }
-    this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
+    const nodeParams = settings.nodeParams || this.options.nodeParams || {};
+    this.luigi
+      .getEngine()
+      ._ui.openDrawer(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
