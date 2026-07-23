@@ -1414,6 +1414,162 @@ describe('NavigationService', () => {
     });
   });
 
+  describe('getCurrentRoutePath', () => {
+    beforeEach(() => {
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/home2/wc', query: undefined } as any);
+      jest.spyOn(GenericHelpers, 'replaceVars').mockImplementation((path) => path);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should return empty string if nodesInPath is undefined', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: undefined,
+        selectedNode: undefined,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({});
+
+      expect(result).toBe('');
+    });
+
+    it('should return empty string if selectedNode is undefined', async () => {
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [{ pathSegment: 'home2' }],
+        selectedNode: undefined,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({});
+
+      expect(result).toBe('');
+    });
+
+    it('should return full subpath when no options provided', async () => {
+      const parentNode = { pathSegment: 'home2' };
+      const selectedNode = { pathSegment: 'wc', parent: parentNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [{ pathSegment: '' }, parentNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({});
+
+      expect(result).toBe('/home2/wc');
+    });
+
+    it('should return path relative to parent with fromParent', async () => {
+      const parentNode = { pathSegment: 'home2' };
+      const selectedNode = { pathSegment: 'wc', parent: parentNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [{ pathSegment: '' }, parentNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromParent: true });
+
+      expect(result).toBe('/wc');
+    });
+
+    it('should return path relative to closest navigation context with fromClosestContext', async () => {
+      const rootNode = { pathSegment: '' };
+      const contextNode = { pathSegment: 'home2', navigationContext: 'home', parent: rootNode };
+      const selectedNode = { pathSegment: 'wc', parent: contextNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [rootNode, contextNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromClosestContext: true });
+
+      expect(result).toBe('/wc');
+    });
+
+    it('should return path relative to named navigation context with fromContext', async () => {
+      const rootNode = { pathSegment: '' };
+      const contextNode = { pathSegment: 'home2', navigationContext: 'home', parent: rootNode };
+      const middleNode = { pathSegment: 'section', parent: contextNode };
+      const selectedNode = { pathSegment: 'detail', parent: middleNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [rootNode, contextNode, middleNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+      jest
+        .spyOn(RoutingHelpers, 'getCurrentPath')
+        .mockReturnValue({ path: '/home2/section/detail', query: undefined } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromContext: 'home' });
+
+      expect(result).toBe('/section/detail');
+    });
+
+    it('should return path relative to virtual tree root with fromVirtualTreeRoot', async () => {
+      const rootNode = { pathSegment: '' };
+      const virtualNode = { pathSegment: 'virtual', virtualTree: true, parent: rootNode };
+      const selectedNode = { pathSegment: 'deep', parent: virtualNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [rootNode, virtualNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/virtual/deep', query: undefined } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromVirtualTreeRoot: true });
+
+      expect(result).toBe('/deep');
+    });
+
+    it('should return empty string if fromVirtualTreeRoot but no virtual tree node exists', async () => {
+      const rootNode = { pathSegment: '' };
+      const parentNode = { pathSegment: 'home2', parent: rootNode };
+      const selectedNode = { pathSegment: 'wc', parent: parentNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [rootNode, parentNode, selectedNode],
+        selectedNode,
+        pathParams: {}
+      } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromVirtualTreeRoot: true });
+
+      expect(result).toBe('');
+    });
+
+    it('should handle dynamic path params correctly', async () => {
+      const rootNode = { pathSegment: '' };
+      const parentNode = { pathSegment: 'projects', parent: rootNode };
+      const selectedNode = { pathSegment: ':projectId', parent: parentNode };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({
+        nodesInPath: [rootNode, parentNode, selectedNode],
+        selectedNode,
+        pathParams: { projectId: 'abc123' }
+      } as any);
+      jest.spyOn(GenericHelpers, 'replaceVars').mockImplementation((path, params) => {
+        return path.replace(':projectId', params.projectId);
+      });
+      jest
+        .spyOn(RoutingHelpers, 'getCurrentPath')
+        .mockReturnValue({ path: '/projects/abc123', query: undefined } as any);
+
+      const result = await navigationService.getCurrentRoutePath({ fromParent: true });
+
+      expect(result).toBe('/abc123');
+    });
+  });
+
   describe('buildVirtualViewUrl', () => {
     it('should return original string if _virtualPathIndex is 0', () => {
       const result = navigationService.buildVirtualViewUrl('/base', { virtualSegment_1: 'abc' }, 0);

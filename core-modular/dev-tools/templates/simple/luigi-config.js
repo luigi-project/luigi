@@ -189,6 +189,7 @@ window.onload = () => {
           pathSegment: 'home2',
           icon: 'home',
           showBreadcrumbs: false,
+          navigationContext: 'home',
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
@@ -225,6 +226,12 @@ window.onload = () => {
               viewUrl: '/microfrontend.html#child2',
               userSettingsGroup: 'theme',
               viewGroup: 'vg1'
+            },
+            {
+              pathSegment: 'wc',
+              label: 'wc',
+              viewUrl: '/helloWorldWC.js',
+              webcomponent: true
             },
             {
               pathSegment: 'c3',
