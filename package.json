@@ -5,6 +5,7 @@
       "bootstrap": "node bootstrap.js && node symbolic-link.js",
       "bundle": "node bundle.js",
       "symbolink": "node symbolic-link.js",
+      "audit-fix": "node scripts/easy-audit-fixes.js",
       "bundlesize": "node bundle-size.js",
       "test:compatibility": "./scripts/testCompatibility.sh",
       "code-quality": "node code_quality.js -- mode=pre_commit",
