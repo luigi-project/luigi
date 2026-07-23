@@ -262,6 +262,7 @@ export interface DrawerSettings {
   header?: DrawerHeader;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
+  nodeParams?: Record<string, any>;
 }
 
 export interface ModalSettings {
@@ -271,6 +272,7 @@ export interface ModalSettings {
   title?: string;
   closebtn_data_testid?: string;
   keepPrevious?: boolean;
+  nodeParams?: Record<string, any>;
 }
 
 export interface ProductSwitcher {

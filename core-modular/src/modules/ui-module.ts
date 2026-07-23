@@ -366,8 +366,14 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    const lc = await createContainer(node, luigi);
+  openModal: async (
+    luigi: Luigi,
+    node: Node,
+    modalSettings: ModalSettings,
+    onCloseCallback?: (goBackValue?: any) => void,
+    luigiParams?: LuigiParams
+  ) => {
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -398,7 +404,33 @@ export const UIModule = {
           }
         };
 
+        const onGoBackRequestHandler = async (event: any) => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
+          const goBackContext = event?.detail || event?.payload;
+          onCloseCallback?.(goBackContext);
+          resolveFn && resolveFn();
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
+          if (goBackContext && Object.keys(goBackContext).length) {
+            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+            if (containerWrapper) {
+              const activeContainer = [...containerWrapper.childNodes].find(
+                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
+              ) as any;
+              if (activeContainer?.updateContext) {
+                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+              }
+            }
+          }
+        };
+
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+        lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
       });
     };
 
@@ -458,7 +490,13 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (
+    luigi: Luigi,
+    node: Node,
+    drawerSettings: DrawerSettings,
+    onCloseCallback?: () => void,
+    luigiParams?: LuigiParams
+  ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     if (UIModule.drawerContainer) {
@@ -471,7 +509,7 @@ export const UIModule = {
       }
     }
 
-    const lc = await createContainer(node, luigi);
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.drawerContainer = lc;
 
     const closePromise = new Promise<void>((resolve) => {
