@@ -3,6 +3,7 @@ import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
 import { DirtyStatusService } from '../services/dirty-status.service';
 import type { AlertSettings, ConfirmationModalSettings, Link } from '../types/ux';
+import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { writable } from '../utilities/store';
 
 // Re-exported for backwards-compatibility with consumers that imported these from this module.
@@ -79,13 +80,15 @@ export const UXModule = {
     }
 
     if (confirmationModalSettings) {
+      const modalBody = confirmationModalSettings.body ? confirmationModalSettings.body : UXModule.luigi.i18n().getTranslation('luigi.confirmationModal.body');
+
       confirmationModalSettings = {
         ...confirmationModalSettings,
         ...{
           header: UXModule.luigi
             .i18n()
             .getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
-          body: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.body || 'luigi.confirmationModal.body'),
+          body: EscapingHelpers.sanatizeHtmlExceptTextFormatting(modalBody),
           buttonDismiss: UXModule.luigi
             .i18n()
             .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
