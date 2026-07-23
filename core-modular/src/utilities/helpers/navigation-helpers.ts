@@ -297,6 +297,32 @@ export const NavigationHelpers = {
     };
   },
 
+  getUrlOrigin(url: string): string | undefined {
+    const element = document.createElement('a');
+    element.href = url;
+    return element.origin || undefined;
+  },
+
+  findViewGroup(node: Node, originalNode?: Node): string | undefined {
+    if (node.viewGroup) {
+      if (originalNode && originalNode !== node) {
+        if (
+          node.viewUrl &&
+          originalNode.viewUrl &&
+          NavigationHelpers.getUrlOrigin(node.viewUrl) === NavigationHelpers.getUrlOrigin(originalNode.viewUrl)
+        ) {
+          return node.viewGroup;
+        }
+        return undefined;
+      }
+      return node.viewGroup;
+    }
+    if (node.parent) {
+      return NavigationHelpers.findViewGroup(node.parent, originalNode || node);
+    }
+    return undefined;
+  },
+
   openExternalLink(externalLink: ExternalLink, pathParams?: Record<string, any>): void {
     let url = externalLink.url!;
     if (pathParams) {
