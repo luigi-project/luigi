@@ -135,7 +135,9 @@ function main() {
     process.exit(0);
   }
 
-  console.log(`Scanned ${dirs.length} package(s). Found ${violations.length} unpinned dependenc${violations.length === 1 ? 'y' : 'ies'}:\n`);
+  console.log(
+    `Scanned ${dirs.length} package(s). Found ${violations.length} unpinned dependenc${violations.length === 1 ? 'y' : 'ies'}:\n`
+  );
   console.log('| Directory | Dependency | Version |');
   console.log('|-----------|------------|---------|');
   for (const v of violations) {
