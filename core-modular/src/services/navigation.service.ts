@@ -1030,7 +1030,9 @@ export class NavigationService {
     }: NavigationRequestParams = params;
     const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
     const isSpecial = !!(drawerSettings || modalSettings);
-    let computedPath = await this.buildPath(path, options || {});
+    const nodeParams = options?.nodeParams;
+    const buildOptions = isSpecial ? { ...options, nodeParams: {} } : options;
+    let computedPath = await this.buildPath(path, buildOptions || {});
 
     if (!isSpecial) {
       const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
@@ -1068,13 +1070,21 @@ export class NavigationService {
 
     if (drawerSettings || modalSettings) {
       if (drawerSettings) {
+        // Pass nodeParams via settings so openAsDrawer can forward them to createContainer.
+        // Drawers don't persist data to the URL (no appendModalDataToUrl), but nodeParams
+        // still need to reach the MFE.
+        if (nodeParams && Object.keys(nodeParams).length > 0) {
+          drawerSettings.nodeParams = nodeParams;
+        }
         this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
       } else {
         if (!modalSettings.keepPrevious) {
           const closed = await this.getModalService().closeModalsWithDirtyCheck();
           if (!closed) return;
         }
-
+        if (nodeParams && Object.keys(nodeParams).length > 0) {
+          modalSettings.nodeParams = nodeParams;
+        }
         this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
       }
     } else {
