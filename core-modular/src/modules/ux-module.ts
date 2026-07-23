@@ -80,7 +80,9 @@ export const UXModule = {
     }
 
     if (confirmationModalSettings) {
-      const modalBody = confirmationModalSettings.body ? confirmationModalSettings.body : UXModule.luigi.i18n().getTranslation('luigi.confirmationModal.body');
+      const modalBody = confirmationModalSettings.body
+        ? confirmationModalSettings.body
+        : UXModule.luigi.i18n().getTranslation('luigi.confirmationModal.body');
 
       confirmationModalSettings = {
         ...confirmationModalSettings,

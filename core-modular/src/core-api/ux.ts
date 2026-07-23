@@ -103,7 +103,9 @@ export class UX {
    */
   showConfirmationModal = (settings: ConfirmationModalSettings) => {
     if (settings) {
-      const modalBody = settings.body ? settings.body : this.luigi.i18n().getTranslation('luigi.confirmationModal.body');
+      const modalBody = settings.body
+        ? settings.body
+        : this.luigi.i18n().getTranslation('luigi.confirmationModal.body');
 
       settings = {
         ...settings,
