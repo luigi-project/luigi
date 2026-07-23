@@ -111,7 +111,9 @@ function runAuditFix(dir) {
   const output = (res.stdout || '') + (res.stderr || '');
   try {
     fs.writeFileSync(logPath, output);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const summary = [];
   for (const line of output.split(/\r?\n/)) {
@@ -285,10 +287,13 @@ async function main() {
   } else {
     for (const d of stillOpen) {
       const a = after[d];
-      const pkgs = a.packages.slice(0, 8).join(', ') + (a.packages.length > 8 ? `, +${a.packages.length - 8} more` : '');
+      const pkgs =
+        a.packages.slice(0, 8).join(', ') + (a.packages.length > 8 ? `, +${a.packages.length - 8} more` : '');
       console.log(`- \`./${d}\` — ${a.critical} critical, ${a.high} high — packages: ${pkgs || '(unknown)'}`);
     }
-    console.log('\nThese require a manual major bump or a `--force` review and were intentionally NOT fixed by this script.');
+    console.log(
+      '\nThese require a manual major bump or a `--force` review and were intentionally NOT fixed by this script.'
+    );
   }
 
   console.log('\nDone. (No git commit was performed.)');
