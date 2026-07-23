@@ -506,7 +506,7 @@ export class NavigationService {
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
     if (node.externalLink?.url) {
-      const nodeData = {...node, viewUrl: node.externalLink.url};
+      const nodeData = { ...node, viewUrl: node.externalLink.url };
       node.externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
       NavigationHelpers.openExternalLink(node.externalLink, pathParams);
       return;
