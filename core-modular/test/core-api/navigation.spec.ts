@@ -90,7 +90,8 @@ describe('Navigation', () => {
         luigiMock,
         { pathSegment: 'home', label: 'Test Modal', children: [] },
         modalSettings,
-        undefined
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
     it('should not open modal with pathRouting enabled', async () => {
@@ -125,7 +126,8 @@ describe('Navigation', () => {
         luigiMock,
         { label: 'Test Modal', children: [] },
         modalSettings,
-        undefined
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
   });
@@ -142,7 +144,8 @@ describe('Navigation', () => {
         luigiMock,
         { label: 'Node Label', children: [] },
         { title: 'Node Label' },
-        undefined
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
     it('should append modal data to URL if configured', async () => {
@@ -159,6 +162,21 @@ describe('Navigation', () => {
 
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
     });
+    it('should append nodeParams to modal path in URL', async () => {
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.showModalPathInUrl') return true;
+        if (key === 'routing.nodeParamPrefix') return undefined;
+        return null;
+      });
+      const appendModalDataToUrlSpy = jest.spyOn(routingServiceMock, 'appendModalDataToUrl');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      navigation.routingService = routingServiceMock;
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', nodeParams: { test: 'true', foo: 'bar' } });
+
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', { title: 'Modal Title' });
+    });
   });
 
   describe('openAsDrawer', () => {
@@ -173,7 +191,8 @@ describe('Navigation', () => {
         luigiMock,
         { label: 'Node Label', children: [] },
         { header: { title: 'Node Label' }, overlap: true },
-        undefined
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
 
@@ -189,7 +208,8 @@ describe('Navigation', () => {
         luigiMock,
         { label: 'Node Label', children: [] },
         drawerSettings,
-        undefined
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
 
