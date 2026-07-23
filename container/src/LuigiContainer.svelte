@@ -64,7 +64,7 @@
 />
 
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, afterUpdate } from 'svelte';
   import { ContainerAPI } from './api/container-api';
   import { Events } from './constants/communication';
   import type { IframeHandle, ContainerElement } from './constants/container.model';
@@ -102,6 +102,7 @@
   const iframeHandle: IframeHandle = {};
   let mainComponent: ContainerElement;
   let containerInitialized = false;
+  let iframeIntercepted = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thisComponent: any;
 
@@ -268,6 +269,25 @@
     }
   }
   onDestroy(async () => {});
+
+  afterUpdate(() => {
+    if (iframeHandle.iframe && !iframeIntercepted && !webcomponent) {
+      iframeIntercepted = true;
+      const interceptor = thisComponent?.iframeCreationInterceptor;
+      if (typeof interceptor === 'function') {
+        try {
+          interceptor(
+            iframeHandle.iframe,
+            thisComponent?.viewGroup,
+            thisComponent?._luigiCurrentNode,
+            thisComponent?._luigiMicroFrontendType
+          );
+        } catch (err) {
+          console.error('Error applying iframe creation interceptor: ', err);
+        }
+      }
+    }
+  });
 </script>
 
 <main bind:this={mainComponent} class={webcomponent ? undefined : 'lui-isolated'}>
