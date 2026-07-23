@@ -80,6 +80,7 @@
     "ip-address": "10.1.1",
     "qs": "^6.15.2",
     "@babel/core": "$@babel/core",
+    "@hono/node-server": "^2.0.5",
     "@angular/build": {
       "esbuild": "$esbuild",
       "piscina": "^5.2.0",
