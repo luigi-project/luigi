@@ -384,6 +384,8 @@ export interface TitleResolver {
 export interface ViewGroupSettings {
   preloadUrl?: string;
   loadOnStartup?: boolean;
+  customData?: Record<string, any>;
+  _liveCustomData?: Record<string, any>;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';
