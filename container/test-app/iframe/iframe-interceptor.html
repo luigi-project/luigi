@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>iframeCreationInterceptor test</title>
+    <script type="module">
+      import '../bundle.js';
+    </script>
+  </head>
+  <body>
+    <h3>iframeCreationInterceptor e2e test page</h3>
+
+    <!-- Container with interceptor set programmatically -->
+    <div style="border: solid 1px red; height: 100px">
+      <luigi-container
+        id="interceptor-test"
+        viewURL="./microfrontend-interceptor.html"
+        defer-init="true"
+      ></luigi-container>
+    </div>
+
+    <button id="init-with-interceptor">Init with interceptor</button>
+    <button id="init-with-error-interceptor">Init with error interceptor</button>
+
+    <script type="module">
+      const container = document.getElementById('interceptor-test');
+
+      document.getElementById('init-with-interceptor').addEventListener('click', () => {
+        container.iframeCreationInterceptor = (iframe, viewGroup, currentNode, microFrontendType) => {
+          iframe.setAttribute('data-intercepted', 'true');
+          iframe.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+          iframe.name = 'intercepted-iframe';
+        };
+        container._luigiCurrentNode = { label: 'Test Node' };
+        container._luigiMicroFrontendType = 'main';
+        container.viewGroup = 'testGroup';
+        container.init();
+      });
+
+      document.getElementById('init-with-error-interceptor').addEventListener('click', () => {
+        container.iframeCreationInterceptor = () => {
+          throw new Error('Interceptor error for testing');
+        };
+        container._luigiMicroFrontendType = 'main';
+        container.init();
+      });
+    </script>
+  </body>
+</html>
