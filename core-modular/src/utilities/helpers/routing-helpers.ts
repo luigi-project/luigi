@@ -973,7 +973,7 @@ export const RoutingHelpers = {
   substituteViewUrl(
     node: Node,
     pathParams: Record<string, string>,
-    nodeParams: Record<string, any>,
+    nodeParams: Record<string, any> | undefined,
     luigi: Luigi
   ): string {
     if (!node.viewUrl) {
