@@ -9,13 +9,14 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings } from '../types/navigation';
+import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings, MFType } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
-const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams, microFrontendType?: string): Promise<HTMLElement> => {
+
+const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams, microFrontendType?: MFType): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
