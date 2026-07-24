@@ -1362,7 +1362,7 @@ export class NavigationService {
    * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
    * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
    */
-  async getCurrentRoutePath(options: NavigationOptions): Promise<string> {
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string|undefined> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
@@ -1377,7 +1377,10 @@ export class NavigationService {
     if (fromVirtualTreeRoot) {
       const virtualTreeNode = [...nodes].reverse().find((n) => n.virtualTree);
       if (!virtualTreeNode) {
-        return '';
+        console.error(
+          'LuigiClient Error: fromVirtualTreeRoot() is not possible because you are not inside a Luigi virtualTree navigation node.'
+        );
+        return;
       }
       const virtualTreeNodeSubPath = RoutingHelpers.getSubPath(virtualTreeNode, pathData.pathParams);
       return currentNodeSubPath.split(virtualTreeNodeSubPath).join('');

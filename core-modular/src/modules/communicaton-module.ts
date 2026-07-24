@@ -150,7 +150,8 @@ export const CommunicationModule = {
       serviceRegistry
         .get(NavigationService)
         .getCurrentRoutePath(options)
-        .then((route) => event.callback(route));
+        .then((route) => {event.callback(route)})
+        .catch(() => event.callback(''));
     });
   }
 };
