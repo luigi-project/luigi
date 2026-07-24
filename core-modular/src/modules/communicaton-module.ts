@@ -11,8 +11,7 @@ import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
 function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
-  const allVgSettings: Record<string, ViewGroupSettings> =
-    luigi.getConfigValue('navigation.viewGroupSettings') || {};
+  const allVgSettings: Record<string, ViewGroupSettings> = luigi.getConfigValue('navigation.viewGroupSettings') || {};
   if (!allVgSettings[vg]) {
     allVgSettings[vg] = {};
   }
@@ -104,6 +103,9 @@ export const CommunicationModule = {
     });
     containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
+    });
+    containerElement.addEventListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
+      luigi.routing().setAnchor((event?.payload as string) || '');
     });
     containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { dirty?: boolean };

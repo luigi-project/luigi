@@ -127,4 +127,30 @@ export class Routing {
       this.luigi.configChanged();
     }
   }
+
+  getAnchor(): string {
+    const { hash } = new URL(window.location.href);
+    const useHashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+
+    if (useHashRouting && hash.split('#').length === 2) {
+      return '';
+    }
+
+    return hash.split('#').pop() || '';
+  }
+
+  setAnchor(value: string): void {
+    if (!value || value === '') return;
+
+    if (this.luigi.getConfigValue('routing.useHashRouting')) {
+      const { hash } = new URL(window.location.href);
+      const hashArray = hash.split('#');
+      const hasExistingHash = hashArray.length > 2;
+      const newHashArray = hasExistingHash ? hashArray.slice(0, -1) : hashArray;
+
+      window.location.hash = [...newHashArray, value].join('#');
+    } else {
+      window.location.hash = value;
+    }
+  }
 }
