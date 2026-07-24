@@ -2,6 +2,7 @@ import { type AlertSettings, type ConfirmationModalSettings } from '../types/ux'
 import { DirtyStatusService } from '../services/dirty-status.service';
 import { serviceRegistry } from '../services/service-registry';
 import type { UserSettingsDialogSettings } from '../types/navigation';
+import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { UserSettingsHelper } from '../utilities/helpers/usersetting-dialog-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
@@ -102,11 +103,15 @@ export class UX {
    */
   showConfirmationModal = (settings: ConfirmationModalSettings) => {
     if (settings) {
+      const modalBody = settings.body
+        ? settings.body
+        : this.luigi.i18n().getTranslation('luigi.confirmationModal.body');
+
       settings = {
         ...settings,
         ...{
           header: this.luigi.i18n().getTranslation(settings.header || 'luigi.confirmationModal.header'),
-          body: this.luigi.i18n().getTranslation(settings.body || 'luigi.confirmationModal.body'),
+          body: EscapingHelpers.sanatizeHtmlExceptTextFormatting(modalBody),
           buttonDismiss: this.luigi.i18n().getTranslation(settings.buttonDismiss || 'luigi.button.dismiss'),
           buttonConfirm: this.luigi.i18n().getTranslation(settings.buttonConfirm || 'luigi.button.confirm')
         }

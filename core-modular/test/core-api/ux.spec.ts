@@ -109,13 +109,13 @@ describe('UX', () => {
       luigiMock.i18n.mockReturnValue(i18n);
       const promise = ux.showConfirmationModal({
         header: 'h',
-        body: 'b',
+        body: 'Are you sure <b>you want</b> to do this?',
         buttonConfirm: 'ok',
         buttonDismiss: 'cancel'
       });
       const [translated, handler] = connectorMock.renderConfirmationModal.mock.calls[0];
       expect(translated.header).toBe('t(h)');
-      expect(translated.body).toBe('t(b)');
+      expect(translated.body).toBe('Are you sure <b>you want</b> to do this?');
       expect(translated.buttonConfirm).toBe('t(ok)');
       expect(translated.buttonDismiss).toBe('t(cancel)');
       handler.confirm();
