@@ -501,11 +501,14 @@ export class NavigationService {
       return;
     }
 
+    const pathParams = pathData?.pathParams ? pathData.pathParams : {};
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
     if (node.externalLink?.url) {
-      NavigationHelpers.openExternalLink(node.externalLink, pathData?.pathParams);
+      const nodeData = { ...node, viewUrl: node.externalLink.url };
+      node.externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+      NavigationHelpers.openExternalLink(node.externalLink, pathParams);
       return;
     }
 
@@ -520,9 +523,8 @@ export class NavigationService {
     }
 
     let fullPath = RoutingHelpers.getNodePath(node);
-    let pathParams = pathData?.pathParams;
 
-    fullPath = GenericHelpers.replaceVars(fullPath, pathParams ? pathParams : {}, ':', false);
+    fullPath = GenericHelpers.replaceVars(fullPath, pathParams, ':', false);
     if (!fullPath && fullPath !== '') {
       console.error(
         'Navigation error: could not build path for the node. Check if pathSegment is defined for all nodes in the path and if there are no duplicate pathSegments on the same level.'

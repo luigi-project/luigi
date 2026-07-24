@@ -306,7 +306,7 @@ export const GenericHelpers = {
    */
   replaceVars(
     inputString: string,
-    params: Record<string, any>,
+    params: Record<string, any> | undefined,
     prefix: string,
     parenthesis = true,
     slashStop = false
