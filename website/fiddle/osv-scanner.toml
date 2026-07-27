@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-mh99-v99m-4gvg"
+reason = "brace-expansion is a dev-only transitive dep in this internal fiddle playground (never published) used to expand glob patterns supplied by our own configs, not untrusted input. The 1.x and 2.x branches have no backport yet as of this writing. Revisit when 1.1.17 / 2.1.3 are published."
