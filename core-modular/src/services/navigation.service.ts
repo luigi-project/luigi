@@ -275,7 +275,7 @@ export class NavigationService {
           externalLink: node.externalLink,
           href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
           selected: node === selectedNode,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
@@ -287,7 +287,7 @@ export class NavigationService {
           externalLink: node.externalLink,
           href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
           icon: node.icon,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
+          label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
           selected: node === selectedNode,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined

@@ -1,7 +1,7 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { AlertSettings } from '../../types/ux';
-import type { Node, PathData } from '../../types/navigation';
+import type { Node, PathData, ViewGroupSettings } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
 import { GenericHelpers } from './generic-helpers';
@@ -114,9 +114,27 @@ export const RoutingHelpers = {
     return resultingRoute;
   },
 
+  resolveNodeLabel(node: Node, luigi: Luigi): string {
+    let label = luigi.i18n().getTranslation(node.label!) || node.label!;
+    if (!label.includes('{viewGroupData.')) {
+      return label;
+    }
+    const vg = node.viewGroup || NavigationHelpers.findViewGroup(node);
+    if (vg) {
+      const allVgSettings: Record<string, ViewGroupSettings> =
+        luigi.getConfigValue('navigation.viewGroupSettings') || {};
+      const vgSettings = allVgSettings[vg] || {};
+      const cdata = { ...(vgSettings.customData || {}), ...(vgSettings._liveCustomData || {}) };
+      label = GenericHelpers.replaceVars(label, cdata, 'viewGroupData.');
+    } else {
+      label = GenericHelpers.replaceVars(label, {}, 'viewGroupData.');
+    }
+    return label;
+  },
+
   async getNodeLabel(node: Node, luigi: Luigi): Promise<string> {
     if (node.label && !node._virtualTree) {
-      return luigi.i18n().getTranslation(node.label) || node.label;
+      return RoutingHelpers.resolveNodeLabel(node, luigi);
     }
 
     if (node.pathSegment && node.pathSegment.indexOf(':') === 0) {
