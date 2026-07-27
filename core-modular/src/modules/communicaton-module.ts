@@ -11,8 +11,7 @@ import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
 function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
-  const allVgSettings: Record<string, ViewGroupSettings> =
-    luigi.getConfigValue('navigation.viewGroupSettings') || {};
+  const allVgSettings: Record<string, ViewGroupSettings> = luigi.getConfigValue('navigation.viewGroupSettings') || {};
   if (!allVgSettings[vg]) {
     allVgSettings[vg] = {};
   }
