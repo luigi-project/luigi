@@ -10,10 +10,38 @@
   <body>
     <h3>iframeCreationInterceptor e2e test page</h3>
 
-    <!-- Container with interceptor set programmatically -->
+    <!-- Container without defer-init: interceptor set immediately after -->
     <div style="border: solid 1px red; height: 100px">
       <luigi-container
         id="interceptor-test"
+        viewURL="./microfrontend-interceptor.html"
+      ></luigi-container>
+    </div>
+    <script type="module">
+      const container = document.getElementById('interceptor-test');
+      container.iframeCreationInterceptor = (iframe, viewGroup, currentNode, microFrontendType) => {
+        iframe.setAttribute('data-intercepted', 'true');
+        iframe.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+        iframe.name = 'intercepted-iframe';
+      };
+      container._luigiCurrentNode = { label: 'Test Node' };
+      container._luigiMicroFrontendType = 'main';
+      container.viewGroup = 'testGroup';
+    </script>
+
+    <!-- Container with defer-init: interceptor set via button click -->
+    <div style="border: solid 1px blue; height: 100px">
+      <luigi-container
+        id="interceptor-test-deferred"
+        viewURL="./microfrontend-interceptor.html"
+        defer-init="true"
+      ></luigi-container>
+    </div>
+
+    <!-- Container with defer-init: error interceptor -->
+    <div style="border: solid 1px green; height: 100px">
+      <luigi-container
+        id="interceptor-test-error"
         viewURL="./microfrontend-interceptor.html"
         defer-init="true"
       ></luigi-container>
@@ -23,26 +51,27 @@
     <button id="init-with-error-interceptor">Init with error interceptor</button>
 
     <script type="module">
-      const container = document.getElementById('interceptor-test');
+      const deferredContainer = document.getElementById('interceptor-test-deferred');
+      const errorContainer = document.getElementById('interceptor-test-error');
 
       document.getElementById('init-with-interceptor').addEventListener('click', () => {
-        container.iframeCreationInterceptor = (iframe, viewGroup, currentNode, microFrontendType) => {
+        deferredContainer.iframeCreationInterceptor = (iframe, viewGroup, currentNode, microFrontendType) => {
           iframe.setAttribute('data-intercepted', 'true');
           iframe.setAttribute('data-mfe-type', microFrontendType || 'unknown');
           iframe.name = 'intercepted-iframe';
         };
-        container._luigiCurrentNode = { label: 'Test Node' };
-        container._luigiMicroFrontendType = 'main';
-        container.viewGroup = 'testGroup';
-        container.init();
+        deferredContainer._luigiCurrentNode = { label: 'Test Node' };
+        deferredContainer._luigiMicroFrontendType = 'main';
+        deferredContainer.viewGroup = 'testGroup';
+        deferredContainer.init();
       });
 
       document.getElementById('init-with-error-interceptor').addEventListener('click', () => {
-        container.iframeCreationInterceptor = () => {
+        errorContainer.iframeCreationInterceptor = () => {
           throw new Error('Interceptor error for testing');
         };
-        container._luigiMicroFrontendType = 'main';
-        container.init();
+        errorContainer._luigiMicroFrontendType = 'main';
+        errorContainer.init();
       });
     </script>
   </body>

@@ -64,7 +64,7 @@
 />
 
 <script lang="ts">
-  import { onMount, onDestroy, afterUpdate } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { ContainerAPI } from './api/container-api';
   import { Events } from './constants/communication';
   import type { IframeHandle, ContainerElement } from './constants/container.model';
@@ -102,7 +102,6 @@
   const iframeHandle: IframeHandle = {};
   let mainComponent: ContainerElement;
   let containerInitialized = false;
-  let iframeIntercepted = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let thisComponent: any;
 
@@ -270,14 +269,23 @@
   }
   onDestroy(async () => {});
 
-  afterUpdate(() => {
-    if (iframeHandle.iframe && !iframeIntercepted && !webcomponent) {
-      iframeIntercepted = true;
+  function createIframe(anchorNode: HTMLElement) {
+    setTimeout(() => {
+      const iframe = document.createElement('iframe');
+      iframe.title = label || '';
+      const allow = getAllowRules(allowRules);
+      if (allow) {
+        iframe.allow = allow;
+      }
+      if (sandboxRules) {
+        iframe.sandbox.value = sandboxRules.join(' ');
+      }
+
       const interceptor = thisComponent?.iframeCreationInterceptor;
       if (typeof interceptor === 'function') {
         try {
           interceptor(
-            iframeHandle.iframe,
+            iframe,
             thisComponent?.viewGroup,
             thisComponent?._luigiCurrentNode,
             thisComponent?._luigiMicroFrontendType
@@ -286,8 +294,12 @@
           console.error('Error applying iframe creation interceptor: ', err);
         }
       }
-    }
-  });
+
+      iframe.src = viewurl;
+      iframeHandle.iframe = iframe;
+      anchorNode.replaceWith(iframe);
+    });
+  }
 </script>
 
 <main bind:this={mainComponent} class={webcomponent ? undefined : 'lui-isolated'}>
@@ -305,13 +317,7 @@
           line-height: 0;
         }
       </style>
-      <iframe
-        bind:this={iframeHandle.iframe}
-        src={viewurl}
-        title={label}
-        allow={getAllowRules(allowRules)}
-        sandbox={sandboxRules ? sandboxRules.join(' ') : undefined}
-      ></iframe>
+      <span hidden {@attach createIframe}></span>
     {/if}
   {/if}
 </main>

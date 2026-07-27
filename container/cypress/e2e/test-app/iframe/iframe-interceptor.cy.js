@@ -3,10 +3,20 @@ describe('iframeCreationInterceptor', () => {
     cy.visit('http://localhost:8080/iframe/iframe-interceptor.html');
   });
 
-  it('should call interceptor and set custom attributes on iframe', () => {
+  it('should call interceptor and set custom attributes on iframe (no defer-init)', () => {
+    cy.get('#interceptor-test')
+      .shadow()
+      .find('iframe')
+      .should('exist')
+      .and('have.attr', 'data-intercepted', 'true')
+      .and('have.attr', 'data-mfe-type', 'main')
+      .and('have.attr', 'name', 'intercepted-iframe');
+  });
+
+  it('should call interceptor and set custom attributes on iframe (defer-init)', () => {
     cy.get('#init-with-interceptor').click();
 
-    cy.get('#interceptor-test')
+    cy.get('#interceptor-test-deferred')
       .shadow()
       .find('iframe')
       .should('exist')
@@ -18,7 +28,7 @@ describe('iframeCreationInterceptor', () => {
   it('should not break container when interceptor throws an error', () => {
     cy.get('#init-with-error-interceptor').click();
 
-    cy.get('#interceptor-test')
+    cy.get('#interceptor-test-error')
       .shadow()
       .find('iframe')
       .should('exist')
