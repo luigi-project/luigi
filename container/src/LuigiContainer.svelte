@@ -272,6 +272,7 @@
   function createIframe(anchorNode: HTMLElement) {
     setTimeout(() => {
       const iframe = document.createElement('iframe');
+      iframe.src = viewurl;
       iframe.title = label || '';
       const allow = getAllowRules(allowRules);
       if (allow) {
@@ -295,7 +296,6 @@
         }
       }
 
-      iframe.src = viewurl;
       iframeHandle.iframe = iframe;
       anchorNode.replaceWith(iframe);
     });
