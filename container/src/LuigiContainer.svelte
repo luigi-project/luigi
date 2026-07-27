@@ -272,6 +272,7 @@
   function createIframe(anchorNode: HTMLElement) {
     setTimeout(() => {
       const iframe = document.createElement('iframe');
+      iframe.title = label || '';
       const allow = getAllowRules(allowRules);
       if (allow) {
         iframe.allow = allow;
