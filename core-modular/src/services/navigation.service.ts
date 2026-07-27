@@ -510,7 +510,7 @@ export class NavigationService {
       const currentNode: Node = { ...node };
 
       if (pathData?.selectedNode?.context) {
-        currentNode.context = { ...currentNode.context, ...pathData.selectedNode.context }
+        currentNode.context = { ...currentNode.context, ...pathData.selectedNode.context };
       }
 
       const externalLink: ExternalLink = { ...currentNode.externalLink };
