@@ -9,6 +9,7 @@ import type {
   BreadcrumbItem,
   ContextSwitcher,
   ContextSwitcherItem,
+  ExternalLink,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -506,9 +507,17 @@ export class NavigationService {
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
     if (node.externalLink?.url) {
-      const nodeData = { ...node, viewUrl: node.externalLink.url };
-      node.externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
-      NavigationHelpers.openExternalLink(node.externalLink, pathParams);
+      const currentNode: Node = { ...node };
+
+      if (pathData?.selectedNode?.context) {
+        currentNode.context = { ...currentNode.context, ...pathData.selectedNode.context }
+      }
+
+      const externalLink: ExternalLink = { ...currentNode.externalLink };
+      const nodeData = { ...currentNode, viewUrl: externalLink.url };
+
+      externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+      NavigationHelpers.openExternalLink(externalLink, pathParams);
       return;
     }
 
