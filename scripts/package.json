@@ -51,7 +51,7 @@
     "@babel/preset-typescript": "7.28.5",
     "chokidar": "5.0.0",
     "cli-color": "2.0.4",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "diff": "4.0.4",
     "express": "5.2.1",
     "http-proxy-middleware": "4.2.0",
