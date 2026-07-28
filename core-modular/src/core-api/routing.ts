@@ -148,9 +148,9 @@ export class Routing {
       const hasExistingHash = hashArray.length > 2;
       const newHashArray = hasExistingHash ? hashArray.slice(0, -1) : hashArray;
 
-      window.location.hash = [...newHashArray, value].join('#');
-    } else {
-      window.location.hash = value;
+      value = [...newHashArray, value].join('#');
     }
+
+    window.history.pushState(null, '', value);
   }
 }
