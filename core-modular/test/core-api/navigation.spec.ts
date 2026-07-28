@@ -26,6 +26,7 @@ describe('Navigation', () => {
       getCurrentNode: jest.fn(),
       openViewInNewTab: jest.fn(),
       handleNavigationRequest: jest.fn(),
+      shouldPreventNavigationForPath: jest.fn().mockReturnValue(false),
       getPathData: jest.fn()
     };
 
@@ -148,6 +149,16 @@ describe('Navigation', () => {
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
     });
+    it('should not open modal when navigation for path is prevented', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      mockNavService.shouldPreventNavigationForPath.mockReturnValue(true);
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      await navigation.openAsModal('/modal/path', {});
+
+      expect(openModalSpy).not.toHaveBeenCalled();
+    });
     it('should append modal data to URL if configured', async () => {
       // async
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
@@ -194,6 +205,17 @@ describe('Navigation', () => {
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
+    });
+
+    it('should not open drawer when navigation for path is prevented', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      mockNavService.shouldPreventNavigationForPath.mockReturnValue(true);
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      await navigation.openAsDrawer('/drawer/path', {});
+
+      expect(openDrawerSpy).not.toHaveBeenCalled();
     });
 
     it('should open drawer with provided settings', async () => {
