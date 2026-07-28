@@ -105,7 +105,10 @@ export const CommunicationModule = {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
     containerElement.addEventListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
-      luigi.routing().setAnchor((event?.payload as string) || '');
+      const anchor = (event?.payload as string) || '';
+      containerElement.anchor = anchor;
+      containerElement.updateContext(containerElement.context || {});
+      luigi.routing().setAnchor(anchor);
     });
     containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { dirty?: boolean };
