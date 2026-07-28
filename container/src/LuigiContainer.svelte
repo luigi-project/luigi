@@ -248,6 +248,13 @@
       }
       containerInitialized = true;
       thisComponent.containerInitialized = true;
+      if (!webcomponent || webcomponent === 'false') {
+        if (!deferInit && thisComponent?.hasAttribute?.('defer-iframe-creation')) {
+          setTimeout(() => createIframe());
+        } else {
+          createIframe();
+        }
+      }
     }
   };
 
@@ -267,38 +274,48 @@
       initialize(thisComponent);
     }
   }
+
+  $: {
+    if (iframeHandle.iframe && sandboxRules) {
+      iframeHandle.iframe.sandbox.value = sandboxRules.join(' ');
+    }
+  }
+
+  $: {
+    if (iframeHandle.iframe && allowRules) {
+      iframeHandle.iframe.allow = getAllowRules(allowRules);
+    }
+  }
   onDestroy(async () => {});
 
-  function createIframe(anchorNode: HTMLElement) {
-    setTimeout(() => {
-      const iframe = document.createElement('iframe');
-      iframe.src = viewurl;
-      iframe.title = label || '';
-      const allow = getAllowRules(allowRules);
-      if (allow) {
-        iframe.allow = allow;
-      }
-      if (sandboxRules) {
-        iframe.sandbox.value = sandboxRules.join(' ');
-      }
+  function createIframe(): void {
+    const iframe = document.createElement('iframe');
+    iframe.title = label || '';
+    const allow = getAllowRules(allowRules);
+    if (allow) {
+      iframe.allow = allow;
+    }
+    if (sandboxRules) {
+      iframe.sandbox.value = sandboxRules.join(' ');
+    }
 
-      const interceptor = thisComponent?.iframeCreationInterceptor;
-      if (typeof interceptor === 'function') {
-        try {
-          interceptor(
-            iframe,
-            thisComponent?.viewGroup,
-            thisComponent?._luigiCurrentNode,
-            thisComponent?._luigiMicroFrontendType
-          );
-        } catch (err) {
-          console.error('Error applying iframe creation interceptor: ', err);
-        }
+    const interceptor = thisComponent?.iframeCreationInterceptor;
+    if (typeof interceptor === 'function') {
+      try {
+        interceptor(
+          iframe,
+          thisComponent?.viewGroup,
+          thisComponent?._luigiCurrentNode,
+          thisComponent?._luigiMicroFrontendType
+        );
+      } catch (err) {
+        console.error('Error applying iframe creation interceptor: ', err);
       }
+    }
 
-      iframeHandle.iframe = iframe;
-      anchorNode.replaceWith(iframe);
-    });
+    iframe.src = viewurl;
+    iframeHandle.iframe = iframe;
+    mainComponent.appendChild(iframe);
   }
 </script>
 
@@ -317,7 +334,6 @@
           line-height: 0;
         }
       </style>
-      <span hidden {@attach createIframe}></span>
     {/if}
   {/if}
 </main>
