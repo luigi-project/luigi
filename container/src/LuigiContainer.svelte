@@ -2,29 +2,69 @@
   customElement={{
     shadow: 'none',
     props: {
-      activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
+      activeFeatureToggleList: {
+        type: 'Array',
+        reflect: false,
+        attribute: 'active-feature-toggle-list'
+      },
       allowRules: { type: 'Array', reflect: false, attribute: 'allow-rules' },
       anchor: { type: 'String', reflect: false, attribute: 'anchor' },
       authData: { type: 'Object', reflect: false, attribute: 'auth-data' },
-      clientPermissions: { type: 'Object', reflect: false, attribute: 'client-permissions' },
+      clientPermissions: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'client-permissions'
+      },
       context: { type: 'String', reflect: false, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
-      dirtyStatus: { type: 'Boolean', reflect: false, attribute: 'dirty-status' },
-      documentTitle: { type: 'String', reflect: false, attribute: 'document-title' },
+      dirtyStatus: {
+        type: 'Boolean',
+        reflect: false,
+        attribute: 'dirty-status'
+      },
+      documentTitle: {
+        type: 'String',
+        reflect: false,
+        attribute: 'document-title'
+      },
       hasBack: { type: 'Boolean', reflect: false, attribute: 'has-back' },
       label: { type: 'String', reflect: false, attribute: 'label' },
       locale: { type: 'String', reflect: false, attribute: 'locale' },
       noShadow: { type: 'Boolean', attribute: 'no-shadow' },
       nodeParams: { type: 'Object', reflect: false, attribute: 'node-params' },
       pathParams: { type: 'Object', reflect: false, attribute: 'path-params' },
-      sandboxRules: { type: 'Array', reflect: false, attribute: 'sandbox-rules' },
-      searchParams: { type: 'Object', reflect: false, attribute: 'search-params' },
-      skipCookieCheck: { type: 'String', reflect: false, attribute: 'skip-cookie-check' },
-      skipInitCheck: { type: 'Boolean', reflect: false, attribute: 'skip-init-check' },
+      sandboxRules: {
+        type: 'Array',
+        reflect: false,
+        attribute: 'sandbox-rules'
+      },
+      searchParams: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'search-params'
+      },
+      skipCookieCheck: {
+        type: 'String',
+        reflect: false,
+        attribute: 'skip-cookie-check'
+      },
+      skipInitCheck: {
+        type: 'Boolean',
+        reflect: false,
+        attribute: 'skip-init-check'
+      },
       theme: { type: 'String', reflect: false, attribute: 'theme' },
-      userSettings: { type: 'Object', reflect: false, attribute: 'user-settings' },
+      userSettings: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'user-settings'
+      },
       viewurl: { type: 'String', reflect: false, attribute: 'viewurl' },
-      webcomponent: { type: 'String', reflect: false, attribute: 'webcomponent' }
+      webcomponent: {
+        type: 'String',
+        reflect: false,
+        attribute: 'webcomponent'
+      }
     },
     extend: (customElementConstructor) => {
       let notInitFn = (name) => {
@@ -246,14 +286,13 @@
           }
         });
       }
-      containerInitialized = true;
-      thisComponent.containerInitialized = true;
+
       if (!webcomponent || webcomponent === 'false') {
-        if (!deferInit && thisComponent?.hasAttribute?.('defer-iframe-creation')) {
-          setTimeout(() => createIframe());
-        } else {
+        setTimeout(() => {
           createIframe();
-        }
+        });
+        thisComponent.containerInitialized = true;
+        containerInitialized = true;
       }
     }
   };
@@ -275,22 +314,12 @@
     }
   }
 
-  $: {
-    if (iframeHandle.iframe && sandboxRules) {
-      iframeHandle.iframe.sandbox.value = sandboxRules.join(' ');
-    }
-  }
-
-  $: {
-    if (iframeHandle.iframe && allowRules) {
-      iframeHandle.iframe.allow = getAllowRules(allowRules);
-    }
-  }
   onDestroy(async () => {});
 
   function createIframe(): void {
     const iframe = document.createElement('iframe');
     iframe.title = label || '';
+    iframe.src = viewurl;
     const allow = getAllowRules(allowRules);
     if (allow) {
       iframe.allow = allow;
@@ -313,7 +342,6 @@
       }
     }
 
-    iframe.src = viewurl;
     iframeHandle.iframe = iframe;
     mainComponent.appendChild(iframe);
   }
