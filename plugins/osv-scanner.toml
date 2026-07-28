@@ -5,3 +5,7 @@ reason = "False positive: copy-webpack-plugin and oidc-client use serialize-java
 [[IgnoredVulns]]
 id = "GHSA-qj8w-gfj5-8c6v"
 reason = "False positive: copy-webpack-plugin and oidc-client use serialize-javascript for build cache metadata only. Build-time only, never in production."
+
+[[IgnoredVulns]]
+id = "GHSA-mh99-v99m-4gvg"
+reason = "brace-expansion is a dev-only transitive dep (via jest) used to expand glob patterns supplied by our own configs, not untrusted input. The 1.x and 2.x branches have no backport yet as of this writing; the @luigi-project/plugin-auth-* packages ship from plugins/auth/public/ with zero runtime dependencies so end users never receive brace-expansion. Revisit when 1.1.17 / 2.1.3 are published."
