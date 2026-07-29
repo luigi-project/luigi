@@ -139,7 +139,9 @@
   export let webcomponent: any;
   /* eslint-enable */
 
-  const iframeHandle: IframeHandle = {};
+  const iframeHandle: IframeHandle = {
+      iframe: undefined
+  };
   let mainComponent: ContainerElement;
   let containerInitialized = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -291,9 +293,9 @@
         setTimeout(() => {
           createIframe();
         });
-        thisComponent.containerInitialized = true;
-        containerInitialized = true;
       }
+      thisComponent.containerInitialized = true;
+      containerInitialized = true;
     }
   };
 
