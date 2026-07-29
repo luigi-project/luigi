@@ -294,7 +294,7 @@ describe('Navigation', () => {
         .should('be.visible')
         .then((ctn) => {
           cy.wrap(ctn).children().first().shadow().find('p').should('contain.text', 'WC says hello world!');
-        })
+        });
     });
 
     it('Test custom usersettings webcomponent', () => {
@@ -337,7 +337,7 @@ describe('Navigation', () => {
               cy.wrap(shadow).find('#green').should('not.have.class', 'active');
               cy.wrap(shadow).find('#red').should('have.class', 'active');
             });
-          });
+        });
 
       //Save Settings
       saveSettings();
@@ -357,12 +357,12 @@ describe('Navigation', () => {
               cy.wrap(shadow).find('#red').should('have.class', 'active');
               cy.wrap(shadow).find('#green').should('not.have.class', 'active');
             });
-          });
+        });
     });
 
     it('Test userSettingGroupKey', () => {
       cy.getAllLocalStorage().then((localStorage) => {
-        var userSettingsString = localStorage["http://localhost:4200"]["luigi.preferences.userSettings"];
+        var userSettingsString = localStorage['http://localhost:4200']['luigi.preferences.userSettings'];
         expect(userSettingsString).to.be.undefined;
 
         // custom 3
@@ -377,10 +377,10 @@ describe('Navigation', () => {
             saveSettings();
 
             cy.getAllLocalStorage().then((localStorage) => {
-              var userSettingsString = localStorage["http://localhost:4200"]["luigi.preferences.userSettings"];
+              var userSettingsString = localStorage['http://localhost:4200']['luigi.preferences.userSettings'];
               expect(userSettingsString).to.include('"custom3":{"themeWC":"red"}');
             });
-          })
+          });
       });
     });
   });
