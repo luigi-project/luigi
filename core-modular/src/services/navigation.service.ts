@@ -1032,6 +1032,10 @@ export class NavigationService {
     const buildOptions = isSpecial ? { ...options, nodeParams: {} } : options;
     let computedPath = await this.buildPath(path, buildOptions || {});
 
+    if (await this.shouldPreventNavigationForPath(path)) {
+      return;
+    }
+
     if (!isSpecial) {
       const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
