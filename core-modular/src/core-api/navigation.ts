@@ -104,6 +104,10 @@ export class Navigation {
       return Promise.reject(new Error('Navigation with an absolute path prevented.'));
     }
 
+    if (await this.navService.shouldPreventNavigationForPath(path)) {
+      return;
+    }
+
     if (!modalSettings?.keepPrevious) {
       const closed = await this.modalService.closeModalsWithDirtyCheck();
       if (!closed) return;
@@ -141,6 +145,10 @@ export class Navigation {
     if (path === '/') {
       console.warn('Navigation with an absolute path prevented.');
       return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
+    if (await this.navService.shouldPreventNavigationForPath(path)) {
+      return;
     }
 
     const normalizedPath = path.replace(/\/\/+/g, '/');
