@@ -2,29 +2,69 @@
   customElement={{
     shadow: 'none',
     props: {
-      activeFeatureToggleList: { type: 'Array', reflect: false, attribute: 'active-feature-toggle-list' },
+      activeFeatureToggleList: {
+        type: 'Array',
+        reflect: false,
+        attribute: 'active-feature-toggle-list'
+      },
       allowRules: { type: 'Array', reflect: false, attribute: 'allow-rules' },
       anchor: { type: 'String', reflect: false, attribute: 'anchor' },
       authData: { type: 'Object', reflect: false, attribute: 'auth-data' },
-      clientPermissions: { type: 'Object', reflect: false, attribute: 'client-permissions' },
+      clientPermissions: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'client-permissions'
+      },
       context: { type: 'String', reflect: false, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
-      dirtyStatus: { type: 'Boolean', reflect: false, attribute: 'dirty-status' },
-      documentTitle: { type: 'String', reflect: false, attribute: 'document-title' },
+      dirtyStatus: {
+        type: 'Boolean',
+        reflect: false,
+        attribute: 'dirty-status'
+      },
+      documentTitle: {
+        type: 'String',
+        reflect: false,
+        attribute: 'document-title'
+      },
       hasBack: { type: 'Boolean', reflect: false, attribute: 'has-back' },
       label: { type: 'String', reflect: false, attribute: 'label' },
       locale: { type: 'String', reflect: false, attribute: 'locale' },
       noShadow: { type: 'Boolean', attribute: 'no-shadow' },
       nodeParams: { type: 'Object', reflect: false, attribute: 'node-params' },
       pathParams: { type: 'Object', reflect: false, attribute: 'path-params' },
-      sandboxRules: { type: 'Array', reflect: false, attribute: 'sandbox-rules' },
-      searchParams: { type: 'Object', reflect: false, attribute: 'search-params' },
-      skipCookieCheck: { type: 'String', reflect: false, attribute: 'skip-cookie-check' },
-      skipInitCheck: { type: 'Boolean', reflect: false, attribute: 'skip-init-check' },
+      sandboxRules: {
+        type: 'Array',
+        reflect: false,
+        attribute: 'sandbox-rules'
+      },
+      searchParams: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'search-params'
+      },
+      skipCookieCheck: {
+        type: 'String',
+        reflect: false,
+        attribute: 'skip-cookie-check'
+      },
+      skipInitCheck: {
+        type: 'Boolean',
+        reflect: false,
+        attribute: 'skip-init-check'
+      },
       theme: { type: 'String', reflect: false, attribute: 'theme' },
-      userSettings: { type: 'Object', reflect: false, attribute: 'user-settings' },
+      userSettings: {
+        type: 'Object',
+        reflect: false,
+        attribute: 'user-settings'
+      },
       viewurl: { type: 'String', reflect: false, attribute: 'viewurl' },
-      webcomponent: { type: 'String', reflect: false, attribute: 'webcomponent' }
+      webcomponent: {
+        type: 'String',
+        reflect: false,
+        attribute: 'webcomponent'
+      }
     },
     extend: (customElementConstructor) => {
       let notInitFn = (name) => {
@@ -99,7 +139,9 @@
   export let webcomponent: any;
   /* eslint-enable */
 
-  const iframeHandle: IframeHandle = {};
+  const iframeHandle: IframeHandle = {
+      iframe: undefined
+  };
   let mainComponent: ContainerElement;
   let containerInitialized = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -246,8 +288,14 @@
           }
         });
       }
-      containerInitialized = true;
+
+      if (!webcomponent || webcomponent === 'false') {
+        setTimeout(() => {
+          createIframe();
+        });
+      }
       thisComponent.containerInitialized = true;
+      containerInitialized = true;
     }
   };
 
@@ -267,7 +315,38 @@
       initialize(thisComponent);
     }
   }
+
   onDestroy(async () => {});
+
+  function createIframe(): void {
+    const iframe = document.createElement('iframe');
+    iframe.title = label || '';
+    iframe.src = viewurl;
+    const allow = getAllowRules(allowRules);
+    if (allow) {
+      iframe.allow = allow;
+    }
+    if (sandboxRules) {
+      iframe.sandbox.value = sandboxRules.join(' ');
+    }
+
+    const interceptor = thisComponent?.iframeCreationInterceptor;
+    if (typeof interceptor === 'function') {
+      try {
+        interceptor(
+          iframe,
+          thisComponent?.viewGroup,
+          thisComponent?._luigiCurrentNode,
+          thisComponent?._luigiMicroFrontendType
+        );
+      } catch (err) {
+        console.error('Error applying iframe creation interceptor: ', err);
+      }
+    }
+
+    iframeHandle.iframe = iframe;
+    mainComponent.appendChild(iframe);
+  }
 </script>
 
 <main bind:this={mainComponent} class={webcomponent ? undefined : 'lui-isolated'}>
@@ -285,13 +364,6 @@
           line-height: 0;
         }
       </style>
-      <iframe
-        bind:this={iframeHandle.iframe}
-        src={viewurl}
-        title={label}
-        allow={getAllowRules(allowRules)}
-        sandbox={sandboxRules ? sandboxRules.join(' ') : undefined}
-      ></iframe>
     {/if}
   {/if}
 </main>

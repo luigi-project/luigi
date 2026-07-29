@@ -34,7 +34,7 @@ export interface ConfirmationModalSettings {
   type?: string;
   header?: string;
   body?: string;
-  buttonConfirm?: string;
+  buttonConfirm?: string | false;
   buttonDismiss?: string;
 }
 
