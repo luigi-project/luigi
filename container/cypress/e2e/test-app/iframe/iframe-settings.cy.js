@@ -25,8 +25,8 @@ describe('Iframe Settings Test', () => {
   });
 
   it('set sandbox rules by property', () => {
-    cy.get('#defer-init-button').click();
     cy.get('button[id="sandbox-rules"]').click();
+    cy.get('#defer-init-button').click();
 
     cy.get('#defer-init-test')
       .shadow()
@@ -47,8 +47,8 @@ describe('Iframe Settings Test', () => {
 
   describe('Allow Rules Test', () => {
     it('set allow rules by property', () => {
-      cy.get('#defer-init-button').click();
       cy.get('#set-allow-rules-button').click();
+      cy.get('#defer-init-button').click();
       cy.get('#defer-init-test')
         .find('iframe')
         .last()
