@@ -4,6 +4,7 @@
       import '../bundle.js';
     </script>
   </head>
+
   <body>
     <h3>
       This page is used to test Container Luigi CLient API functionalities for web
@@ -56,6 +57,11 @@
       const deferInitButton = document.getElementById('defer-init-button');
 
       deferInitButton.addEventListener('click', function () {
+        deferInitContainer.allowRules = [
+          'microphone',
+          "camera 'none'",
+          "geolocation 'self' https://a.example.com https://b.example.com",
+        ];
         deferInitContainer.init();
       });
 
@@ -63,17 +69,6 @@
 
       sandboxRulesButton.addEventListener('click', () => {
         deferInitContainer.sandboxRules = ['allow-modals', 'allow-popups'];
-      });
-
-      const allowRulesContainer = document.getElementById('allow-rules-test');
-      const setAllowRulesButton = document.getElementById('set-allow-rules-button');
-
-      deferInitButton.addEventListener('click', () => {
-        deferInitContainer.allowRules = [
-          'microphone',
-          "camera 'none'",
-          "geolocation 'self' https://a.example.com https://b.example.com",
-        ];
       });
     </script>
   </body>

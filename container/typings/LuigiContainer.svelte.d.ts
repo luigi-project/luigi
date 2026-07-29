@@ -247,6 +247,22 @@ export default class LuigiContainer extends HTMLElement {
   sandboxRules: string[];
 
   /**
+   * A function called after the iframe for the microfrontend is created.
+   * It allows modifying the iframe element before it is used, e.g. setting attributes.
+   * The iframe is already rendered in the DOM when the interceptor fires.
+   * @param {HTMLIFrameElement} iframe - the iframe element
+   * @param {string} viewGroup - the view group name
+   * @param {Object} currentNode - the current navigation node
+   * @param {string} microFrontendType - type of micro frontend ('main', 'modal', 'drawer', 'usersettings')
+   * @since NEXT_RELEASE
+   * @type {Function}
+   * @kind member
+   * @memberof LuigiContainer
+   * @example containerElement.iframeCreationInterceptor = (iframe, viewGroup, navigationNode, microFrontendType) => { iframe.name = 'my-mfe'; }
+   */
+  iframeCreationInterceptor: Function;
+
+  /**
    * The document title value to be passed to the web-component-based micro frontend. <br><br>
    * Type: [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @since 1.2.0
