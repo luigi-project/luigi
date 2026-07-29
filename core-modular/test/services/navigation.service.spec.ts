@@ -734,6 +734,30 @@ describe('NavigationService', () => {
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
     });
 
+    it('should not navigate when navigation for path is prevented', async () => {
+      const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
+      const pushStateSpy = jest.spyOn(window.history, 'pushState');
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent');
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/not-navigated',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/not-navigated');
+      navigationService.shouldPreventNavigationForPath = jest.fn().mockReturnValue(true);
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(openViewInNewTabSpy).not.toHaveBeenCalled();
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(dispatchEventSpy).not.toHaveBeenCalled();
+    });
+
     it('should call openAsModal if modalSettings are provided', async () => {
       const openAsModalMock = jest.fn();
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/modal/path');
