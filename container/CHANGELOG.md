@@ -4,6 +4,20 @@
 
 
 
+## [v1.7.9] (2026-07-29)
+
+#### :rocket: Added
+
+* [#5354](https://github.com/luigi-project/luigi/pull/5354) Feature/iframe creation interceptor container ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+
+* [#5356](https://github.com/luigi-project/luigi/pull/5356) fix: resolve getCurrentRoute promise for empty route paths in web components ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.8] (2026-07-08)
 
 #### :bug: Fixed
@@ -181,3 +195,4 @@
 [v1.7.6]: https://github.com/luigi-project/luigi/compare/container/v1.7.5...container/v1.7.6
 [v1.7.7]: https://github.com/luigi-project/luigi/compare/container/v1.7.6...container/v1.7.7
 [v1.7.8]: https://github.com/luigi-project/luigi/compare/container/v1.7.7...container/v1.7.8
+[v1.7.9]: https://github.com/luigi-project/luigi/compare/container/v1.7.8...container/v1.7.9
