@@ -178,17 +178,13 @@ export class WebComponentService {
               fromParent,
               nodeParams
             };
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
               this.containerService.dispatch(
                 Events.GET_CURRENT_ROUTE_REQUEST,
                 this.thisComponent,
                 { ...options },
                 (route) => {
-                  if (route) {
-                    resolve(route);
-                  } else {
-                    reject('No current route received.');
-                  }
+                  resolve(route);
                 }
               );
             });
