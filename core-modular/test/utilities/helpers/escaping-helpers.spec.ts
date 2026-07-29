@@ -77,7 +77,9 @@ describe('EscapingHelpers - property-based tests', () => {
     it('should sanitize given string with not allowed html tags', () => {
       const text = '<a> <img> <div> <span> <button> <table> <script>';
       const result = EscapingHelpers.sanatizeHtmlExceptTextFormatting(text);
-      expect(result).toEqual('&lt;a&gt; &lt;img&gt; &lt;div&gt; &lt;span&gt; &lt;button&gt; &lt;table&gt; &lt;script&gt;');
+      expect(result).toEqual(
+        '&lt;a&gt; &lt;img&gt; &lt;div&gt; &lt;span&gt; &lt;button&gt; &lt;table&gt; &lt;script&gt;'
+      );
     });
 
     it.each([
