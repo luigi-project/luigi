@@ -26,11 +26,11 @@
         currentNode,
         ctx,
         nodeId,
-        microFrontendType,
+        isSpecialMf,
       ) => {
         wc.setAttribute('data-intercepted', 'true');
         wc.setAttribute('data-node-id', nodeId || '');
-        wc.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+        wc.setAttribute('data-is-special-mf', String(isSpecialMf));
       };
       noDefer.currentNode = { label: 'Test Node' };
       noDefer._luigiMicroFrontendType = 'main';
@@ -73,11 +73,11 @@
           currentNode,
           ctx,
           nodeId,
-          microFrontendType,
+          isSpecialMf,
         ) => {
           wc.setAttribute('data-intercepted', 'true');
           wc.setAttribute('data-node-id', nodeId || '');
-          wc.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+          wc.setAttribute('data-is-special-mf', String(isSpecialMf));
         };
         deferredContainer.currentNode = { label: 'Deferred Node' };
         deferredContainer._luigiMicroFrontendType = 'main';

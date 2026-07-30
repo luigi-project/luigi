@@ -9,7 +9,7 @@ describe('webcomponentCreationInterceptor', () => {
       .find('[lui_web_component]')
       .should('exist')
       .and('have.attr', 'data-intercepted', 'true')
-      .and('have.attr', 'data-mfe-type', 'main');
+      .and('have.attr', 'data-is-special-mf', 'false');
   });
 
   it('should call interceptor and set custom attributes on web component (defer-init)', () => {
@@ -20,7 +20,7 @@ describe('webcomponentCreationInterceptor', () => {
       .find('[lui_web_component]')
       .should('exist')
       .and('have.attr', 'data-intercepted', 'true')
-      .and('have.attr', 'data-mfe-type', 'main');
+      .and('have.attr', 'data-is-special-mf', 'false');
   });
 
   it('should not break container when interceptor throws an error', () => {
