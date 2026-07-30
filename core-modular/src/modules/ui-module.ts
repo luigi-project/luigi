@@ -89,6 +89,7 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
     setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
+    setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
     return lc;
@@ -149,6 +150,20 @@ const setIframeCreationInterceptor = (
     (container as any).iframeCreationInterceptor = interceptor;
     (container as any)._luigiCurrentNode = currentNode;
     (container as any)._luigiMicroFrontendType = microFrontendType;
+  }
+};
+
+const setWebcomponentCreationInterceptor = (
+  container: LuigiContainer,
+  luigi: Luigi,
+  currentNode: Node,
+  microFrontendType: string
+): void => {
+  const interceptor = luigi.getConfigValue('settings.webcomponentCreationInterceptor');
+  if (GenericHelpers.isFunction(interceptor)) {
+    (container as any).webcomponentCreationInterceptor = interceptor;
+    (container as any).currentNode = currentNode;
+    (container as any)._luigiMicroFrontendType = microFrontendType !== 'main';
   }
 };
 
