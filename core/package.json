@@ -3,7 +3,6 @@
   "private": true,
   "description": "luigi-core development version, only the public folder is being published to npm as a package",
   "devDependencies": {
-    "@babel/node": "7.28.0",
     "@babel/preset-env": "7.28.0",
     "@fast-check/jest": "2.2.0",
     "@happy-dom/jest-environment": "20.8.9",
