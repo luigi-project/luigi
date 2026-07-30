@@ -257,6 +257,19 @@
           // removing mainComponent
           thisComponent.innerHTML = '';
         }
+
+        if (!skipInitCheck) {
+          (thisComponent.getNoShadow() ? thisComponent : mainComponent).addEventListener('wc_ready', () => {
+            if (
+              !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent
+                ?.deferLuigiClientWCInit
+            ) {
+              thisComponent.initialized = true;
+              webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
+            }
+          });
+        }
+        
         const webComponentValue = GenericHelperFunctions.checkWebcomponentValue(webcomponent);
         webcomponentService.renderWebComponent(
           viewurl,
@@ -276,16 +289,6 @@
         thisComponent.initialized = true;
         setTimeout(() => {
           webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
-        });
-      } else if (webcomponent) {
-        (thisComponent.getNoShadow() ? thisComponent : mainComponent).addEventListener('wc_ready', () => {
-          if (
-            !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent
-              ?.deferLuigiClientWCInit
-          ) {
-            thisComponent.initialized = true;
-            webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
-          }
         });
       }
 
