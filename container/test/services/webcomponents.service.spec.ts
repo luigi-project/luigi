@@ -33,6 +33,7 @@ describe('attachWC', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {
@@ -1271,6 +1272,7 @@ describe('initWC', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -1319,6 +1321,54 @@ describe('initWC', () => {
     expect(urlSpy).toHaveBeenNthCalledWith(2, documentOrigin, baseURIMocked);
     expect(urlSpy).toHaveBeenNthCalledWith(3, documentOrigin, baseURIMocked);
     expect(urlSpy).toHaveBeenNthCalledWith(4, './', urlSpyMockData);
+  });
+
+  it('should call webcomponentCreationInterceptor if defined on thisComponent', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const interceptorFn = jest.fn();
+    const currentNode = { label: 'Test Node' };
+    const mfeType = 'main';
+    service.thisComponent = {
+      webcomponentCreationInterceptor: interceptorFn,
+      currentNode,
+      _luigiMicroFrontendType: mfeType
+    };
+    const evtBusEl = {};
+
+    // Act
+    service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+
+    // Assert
+    expect(interceptorFn).toHaveBeenCalledWith(wc, currentNode, ctx, nodeId, mfeType);
+  });
+
+  it('should not throw if webcomponentCreationInterceptor is not defined', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const evtBusEl = {};
+    service.thisComponent = {};
+
+    // Act & Assert
+    expect(() => {
+      service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+    }).not.toThrow();
+  });
+
+  it('should not call webcomponentCreationInterceptor if it is not a function', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const evtBusEl = {};
+    service.thisComponent = {
+      webcomponentCreationInterceptor: 'not-a-function',
+      currentNode: { label: 'Node' },
+      _luigiMicroFrontendType: 'main'
+    };
+
+    // Act & Assert
+    expect(() => {
+      service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+    }).not.toThrow();
   });
 });
 
@@ -1483,6 +1533,7 @@ describe('createCompoundContainerAsync', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {
@@ -1571,6 +1622,7 @@ describe('registerWCFromUrl', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {

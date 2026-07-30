@@ -482,6 +482,21 @@ export class WebComponentService {
       wc.context = ctx;
       wc.LuigiClient = clientAPI;
     }
+    const wcCreationInterceptor = this.thisComponent.webcomponentCreationInterceptor;
+
+    if (wcCreationInterceptor && typeof wcCreationInterceptor === 'function') {
+      try {
+        wcCreationInterceptor(
+          wc,
+          this.thisComponent.currentNode,
+          ctx,
+          nodeId,
+          this.thisComponent._luigiMicroFrontendType
+        );
+      } catch (err) {
+        console.error('Error applying web component creation interceptor: ', err);
+      }
+    }
   }
 
   /**

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>webcomponentCreationInterceptor test</title>
+    <script type="module">
+      import '../bundle.js';
+    </script>
+  </head>
+  <body>
+    <h3>webcomponentCreationInterceptor e2e test page</h3>
+
+    <!-- Container WITHOUT defer-init: interceptor set before auto-init -->
+    <div style="border: solid 1px red; min-height: 50px; overflow: auto; margin-bottom: 10px">
+      <luigi-container
+        id="interceptor-test-no-defer"
+        viewURL="./wc/helloWorldWC.js"
+        webcomponent="true"
+        context='{"title": "No Defer Interceptor Test"}'
+      ></luigi-container>
+    </div>
+    <script type="module">
+      const noDefer = document.getElementById('interceptor-test-no-defer');
+      noDefer.webcomponentCreationInterceptor = (
+        wc,
+        currentNode,
+        ctx,
+        nodeId,
+        microFrontendType,
+      ) => {
+        wc.setAttribute('data-intercepted', 'true');
+        wc.setAttribute('data-node-id', nodeId || '');
+        wc.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+      };
+      noDefer.currentNode = { label: 'Test Node' };
+      noDefer._luigiMicroFrontendType = 'main';
+      noDefer.removeAttribute('defer-init');
+      noDefer.init();
+    </script>
+
+    <!-- Container with defer-init: interceptor set via button click -->
+    <div style="border: solid 1px blue; min-height: 50px; overflow: auto; margin-bottom: 10px">
+      <luigi-container
+        id="interceptor-test-deferred"
+        viewURL="./wc/helloWorldWC.js"
+        webcomponent="true"
+        context='{"title": "Deferred Interceptor Test"}'
+        defer-init="true"
+      ></luigi-container>
+    </div>
+
+    <!-- Container with defer-init: error interceptor -->
+    <div style="border: solid 1px green; min-height: 50px; overflow: auto; margin-bottom: 10px">
+      <luigi-container
+        id="interceptor-test-error"
+        viewURL="./wc/helloWorldWC.js"
+        webcomponent="true"
+        context='{"title": "Error Interceptor Test"}'
+        defer-init="true"
+      ></luigi-container>
+    </div>
+
+    <button id="init-with-interceptor">Init with interceptor</button>
+    <button id="init-with-error-interceptor">Init with error interceptor</button>
+
+    <script type="module">
+      const deferredContainer = document.getElementById('interceptor-test-deferred');
+      const errorContainer = document.getElementById('interceptor-test-error');
+
+      document.getElementById('init-with-interceptor').addEventListener('click', () => {
+        deferredContainer.webcomponentCreationInterceptor = (
+          wc,
+          currentNode,
+          ctx,
+          nodeId,
+          microFrontendType,
+        ) => {
+          wc.setAttribute('data-intercepted', 'true');
+          wc.setAttribute('data-node-id', nodeId || '');
+          wc.setAttribute('data-mfe-type', microFrontendType || 'unknown');
+        };
+        deferredContainer.currentNode = { label: 'Deferred Node' };
+        deferredContainer._luigiMicroFrontendType = 'main';
+        deferredContainer.init();
+      });
+
+      document
+        .getElementById('init-with-error-interceptor')
+        .addEventListener('click', () => {
+          errorContainer.webcomponentCreationInterceptor = () => {
+            throw new Error('Interceptor error for testing');
+          };
+          errorContainer._luigiMicroFrontendType = 'main';
+          errorContainer.init();
+        });
+    </script>
+  </body>
+</html>
