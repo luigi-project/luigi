@@ -1340,7 +1340,7 @@ describe('initWC', () => {
     service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
 
     // Assert
-    expect(interceptorFn).toHaveBeenCalledWith(wc, currentNode, ctx, nodeId, mfeType);
+    expect(interceptorFn).toHaveBeenCalledWith(wc, currentNode, ctx, nodeId, false);
   });
 
   it('should not throw if webcomponentCreationInterceptor is not defined', () => {
