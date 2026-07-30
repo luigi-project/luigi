@@ -231,10 +231,26 @@ export class NavigationService {
       }
 
       const hasBadge = !!node.badgeCounter;
+      const externalLink = node.externalLink ? { ...node.externalLink } : undefined;
+      let nodeHref = RoutingHelpers.getNodeHref(node, pathData?.pathParams, this.luigi);
       let badgeCount = 0;
 
       if (node.badgeCounter) {
         badgeCount = await (node.badgeCounter.count as any)();
+      }
+
+      if (externalLink?.url) {
+        const currentNode: Node = { ...node };
+
+        if (selectedNode?.context) {
+          currentNode.context = { ...currentNode.context, ...selectedNode.context };
+        }
+
+        const nodeData = { ...currentNode, viewUrl: externalLink.url };
+        const pathParams = pathData?.pathParams ? pathData.pathParams : {};
+
+        externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+        nodeHref = externalLink.url;
       }
 
       if (node.category) {
@@ -273,8 +289,8 @@ export class NavigationService {
 
         catNode.category?.nodes?.push({
           altText: node.altText,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          externalLink,
+          href: nodeHref,
           icon: node.icon,
           label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
@@ -285,8 +301,8 @@ export class NavigationService {
         items.push({
           altText: node.altText,
           badgeCounter: node.badgeCounter,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          externalLink,
+          href: nodeHref,
           icon: node.icon,
           label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
