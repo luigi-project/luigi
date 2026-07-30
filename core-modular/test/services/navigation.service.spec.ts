@@ -1555,7 +1555,7 @@ describe('NavigationService', () => {
       expect(result).toBe('/deep');
     });
 
-    it('should return empty string if fromVirtualTreeRoot but no virtual tree node exists', async () => {
+    it('should return undefined if fromVirtualTreeRoot but no virtual tree node exists', async () => {
       const rootNode = { pathSegment: '' };
       const parentNode = { pathSegment: 'home2', parent: rootNode };
       const selectedNode = { pathSegment: 'wc', parent: parentNode };
@@ -1568,7 +1568,7 @@ describe('NavigationService', () => {
 
       const result = await navigationService.getCurrentRoutePath({ fromVirtualTreeRoot: true });
 
-      expect(result).toBe('');
+      expect(result).toBeUndefined();
     });
 
     it('should handle dynamic path params correctly', async () => {
