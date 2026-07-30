@@ -40,7 +40,6 @@
     "generate-cem": "node --disable-proto=delete generateCEM.js"
   },
   "devDependencies": {
-    "@babel/node": "7.29.0",
     "@babel/preset-env": "7.29.0",
     "@babel/preset-typescript": "7.28.5",
     "@cypress/code-coverage": "4.0.1",

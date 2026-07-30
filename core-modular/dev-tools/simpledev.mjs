@@ -74,6 +74,7 @@ var params = {
   port: 4400,
   host: '0.0.0.0',
   root: rootPath,
+  single: true,
   watch: ['./dev-tools', '../client/public'],
   mounts: [
     ['/public', './public'],

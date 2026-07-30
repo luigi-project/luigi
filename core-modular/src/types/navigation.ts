@@ -262,6 +262,7 @@ export interface DrawerSettings {
   header?: DrawerHeader;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
+  nodeParams?: Record<string, any>;
 }
 
 export interface ModalSettings {
@@ -271,6 +272,7 @@ export interface ModalSettings {
   title?: string;
   closebtn_data_testid?: string;
   keepPrevious?: boolean;
+  nodeParams?: Record<string, any>;
 }
 
 export interface ProductSwitcher {
@@ -382,6 +384,8 @@ export interface TitleResolver {
 export interface ViewGroupSettings {
   preloadUrl?: string;
   loadOnStartup?: boolean;
+  customData?: Record<string, any>;
+  _liveCustomData?: Record<string, any>;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';

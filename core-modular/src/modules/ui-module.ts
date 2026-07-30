@@ -178,10 +178,30 @@ export const UIModule = {
     if (
       noScopes ||
       scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata')
+      scopes.includes('navigation.nodes')
     ) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
+    }
+
+    const isViewGroupDataOnly =
+      scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+
+    if (isViewGroupDataOnly) {
+      const pathData = await UIModule.navService.getPathData(croute.path);
+      const connector = UIModule.luigi.getEngine()._connector;
+      const [topNavData, leftNavData, tabNavData, breadcrumbData] = await Promise.all([
+        UIModule.navService.getTopNavData(croute.path, pathData),
+        UIModule.navService.getLeftNavData(croute.path, pathData),
+        UIModule.navService.getTabNavData(croute.path, pathData),
+        UIModule.navService.getBreadcrumbData(croute.path, pathData, (resolved) => {
+          connector?.renderBreadcrumbs(resolved);
+        })
+      ]);
+      connector?.renderTopNav(topNavData);
+      connector?.renderLeftNav(leftNavData);
+      connector?.renderTabNav(tabNavData);
+      connector?.renderBreadcrumbs(breadcrumbData);
+      return;
     }
 
     if (
@@ -192,7 +212,8 @@ export const UIModule = {
       scopes.includes('navigation.badges') ||
       scopes.includes('navigation.profile') ||
       scopes.includes('navigation.contextSwitcher') ||
-      scopes.includes('navigation.productSwitcher')
+      scopes.includes('navigation.productSwitcher') ||
+      scopes.includes('navigation.viewgroupdata')
     ) {
       UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
@@ -205,6 +226,15 @@ export const UIModule = {
       scopes.includes('settings.footer')
     ) {
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
+    }
+    if (
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata') ||
+      scopes.includes('settings') ||
+      scopes.includes('settings.footer')
+    ) {
       UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
       const uiConnector = UIModule.luigi.getEngine()._connector;
       uiConnector?.renderBreadcrumbs(
@@ -216,8 +246,7 @@ export const UIModule = {
     if (
       noScopes ||
       scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes') ||
-      scopes.includes('navigation.viewgroupdata')
+      scopes.includes('navigation.nodes')
     ) {
       if (croute.path) {
         const pathData = await UIModule.navService.getPathData(croute.path);
@@ -337,8 +366,14 @@ export const UIModule = {
       }
     }
   },
-  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    const lc = await createContainer(node, luigi);
+  openModal: async (
+    luigi: Luigi,
+    node: Node,
+    modalSettings: ModalSettings,
+    onCloseCallback?: (goBackValue?: any) => void,
+    luigiParams?: LuigiParams
+  ) => {
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -369,7 +404,33 @@ export const UIModule = {
           }
         };
 
+        const onGoBackRequestHandler = async (event: any) => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
+          const goBackContext = event?.detail || event?.payload;
+          onCloseCallback?.(goBackContext);
+          resolveFn && resolveFn();
+          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
+          if (goBackContext && Object.keys(goBackContext).length) {
+            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
+            if (containerWrapper) {
+              const activeContainer = [...containerWrapper.childNodes].find(
+                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
+              ) as any;
+              if (activeContainer?.updateContext) {
+                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+              }
+            }
+          }
+        };
+
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+        lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
       });
     };
 
@@ -429,7 +490,13 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+  openDrawer: async (
+    luigi: Luigi,
+    node: Node,
+    drawerSettings: DrawerSettings,
+    onCloseCallback?: () => void,
+    luigiParams?: LuigiParams
+  ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     if (UIModule.drawerContainer) {
@@ -442,7 +509,7 @@ export const UIModule = {
       }
     }
 
-    const lc = await createContainer(node, luigi);
+    const lc = await createContainer(node, luigi, luigiParams);
     UIModule.drawerContainer = lc;
 
     const closePromise = new Promise<void>((resolve) => {

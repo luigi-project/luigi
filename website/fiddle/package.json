@@ -32,6 +32,9 @@
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4"
   },
+  "overrides": {
+    "shell-quote": "1.9.0"
+  },
   "engines": {
     "node": ">=20.19.0"
   }

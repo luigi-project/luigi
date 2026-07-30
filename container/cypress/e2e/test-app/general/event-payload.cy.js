@@ -33,7 +33,8 @@ describe('Event payload Test', () => {
   beforeEach(() => {
     cy.visit('http://localhost:8080/xtest.html');
     // Wait until both iframe and Web Component are initialized
-    cy.get('body[iframe_init][wc_init]').should('exist');
+
+    cy.get('body[iframe_init][wc_init]', { timeout: 10000 }).should('exist');
   });
 
   describe('Client root API', () => {

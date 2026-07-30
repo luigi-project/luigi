@@ -984,20 +984,6 @@ const connector = {
           attributeFilter: ['expanded']
         });
       }
-      const categories = sidenav.querySelectorAll('[category-uid]');
-      if (categories) {
-        categories.forEach((item) => {
-          item.addEventListener('click', (event) => {
-            if (event instanceof CustomEvent) {
-              event.target.toggleAttribute('expanded');
-            }
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            event.preventDefault();
-            return true;
-          });
-        });
-      }
     }
   },
   getContainerWrapper: () => {
@@ -1183,19 +1169,25 @@ const connector = {
 
     const ui5Toolbar = document.createElement('ui5-toolbar');
     ui5Toolbar.setAttribute('slot', 'footer');
-    const ui5ToolBarBtnConfirm = document.createElement('ui5-toolbar-button');
-    settings.buttonConfirm && ui5ToolBarBtnConfirm.setAttribute('text', settings.buttonConfirm);
-    ui5ToolBarBtnConfirm.addEventListener('click', () => {
-      handler.confirm();
-      document.body.removeChild(dialog);
-    });
+    if (settings.buttonConfirm !== false) {
+      const ui5ToolBarBtnConfirm = document.createElement('ui5-toolbar-button');
+      settings.buttonConfirm && ui5ToolBarBtnConfirm.setAttribute('text', settings.buttonConfirm);
+      ui5ToolBarBtnConfirm.setAttribute('design', 'Emphasized');
+      ui5ToolBarBtnConfirm.addEventListener('click', () => {
+        handler.confirm();
+        document.body.removeChild(dialog);
+      });
+      ui5Toolbar.appendChild(ui5ToolBarBtnConfirm);
+    }
     const ui5ToolBarBtnDismiss = document.createElement('ui5-toolbar-button');
     settings.buttonDismiss && ui5ToolBarBtnDismiss.setAttribute('text', settings.buttonDismiss);
+    if (settings.buttonConfirm === false) {
+      ui5ToolBarBtnDismiss.setAttribute('design', 'Emphasized');
+    }
     ui5ToolBarBtnDismiss.addEventListener('click', () => {
       handler.dismiss();
       document.body.removeChild(dialog);
     });
-    ui5Toolbar.appendChild(ui5ToolBarBtnConfirm);
     ui5Toolbar.appendChild(ui5ToolBarBtnDismiss);
     dialog.appendChild(ui5Toolbar);
     document.body.appendChild(dialog);

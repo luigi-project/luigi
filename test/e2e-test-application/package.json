@@ -67,7 +67,7 @@
     "lodash": "4.18.1",
     "sass": "1.99.0",
     "serialize-javascript": "7.0.5",
-    "tar": "7.5.16",
+    "tar": "7.5.22",
     "ts-node": "3.2.2",
     "typescript": "6.0.3",
     "typescript-eslint": "8.61.1",
@@ -80,6 +80,7 @@
     "ip-address": "10.1.1",
     "qs": "^6.15.2",
     "@babel/core": "$@babel/core",
+    "@hono/node-server": "^2.0.5",
     "@angular/build": {
       "esbuild": "$esbuild",
       "piscina": "^5.2.0",

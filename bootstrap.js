@@ -2,7 +2,7 @@
  * This file is used to run (npm install) in all of the folders which have it as a prerequisite in the pipeline and during local development
  */
 
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 
 // Array of folder names
 const folders = [
@@ -29,9 +29,7 @@ let isVerbose = verboseFlagIndex !== -1;
 // Function to install npm packages in given folder
 function installPackages(folder, index, totalFolders) {
   return new Promise((resolve, reject) => {
-    const command = `cd ${folder} && npm install`;
-
-    exec(command, (error, stdout, stderr) => {
+    execFile('npm', ['install'], { cwd: folder }, (error, stdout, stderr) => {
       if (error) {
         console.error(`\x1b[31mError installing npm packages in ${folder} \x1b[0m`);
         reject(error);

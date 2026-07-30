@@ -42,16 +42,12 @@
     "publish:nightly": "babel-node tools/publish-nightly.js"
   },
   "devDependencies": {
-    "@babel/cli": "7.28.3",
     "@babel/core": "7.29.6",
     "@babel/node": "7.28.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.20.7",
-    "@babel/plugin-transform-class-properties": "7.27.1",
     "@babel/preset-env": "7.28.5",
-    "@babel/preset-typescript": "7.28.5",
     "chokidar": "5.0.0",
     "cli-color": "2.0.4",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "diff": "4.0.4",
     "express": "5.2.1",
     "http-proxy-middleware": "4.2.0",
@@ -60,6 +56,9 @@
     "prompts": "2.4.2",
     "semver": "7.7.3",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "shell-quote": "1.9.0"
   },
   "browserslist": "> 0.25%, not dead",
   "engines": {
