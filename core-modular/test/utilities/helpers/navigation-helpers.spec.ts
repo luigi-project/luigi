@@ -5,10 +5,15 @@ import type { Node, PathData } from '../../../src/types/navigation';
 import { AuthHelpers } from '../../../src/utilities/helpers/auth-helpers';
 
 describe('Navigation-helpers', () => {
-  it('should normalize path', () => {
-    const rawPath = '#/some/path';
-    const normalizedPath = NavigationHelpers.normalizePath(rawPath);
-    expect(normalizedPath).toEqual('some/path');
+  it.each([
+    { input: null, output: null },
+    { input: '/some/path', output: 'some/path' },
+    { input: '#/some/path', output: 'some/path' },
+    { input: '/some/path#LuigiRocks', output: 'some/path' },
+    { input: '#/some/path#LuigiRocks', output: 'some/path' }
+  ])('should normalize path', (data) => {
+    const normalizedPath = NavigationHelpers.normalizePath(data.input);
+    expect(normalizedPath).toEqual(data.output);
   });
 
   it('should match segments correctly', () => {
