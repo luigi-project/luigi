@@ -196,6 +196,7 @@ describe('Routing', () => {
       });
       routing.setAnchor('LuigiRocks');
       expect(location.href).toContain('LuigiRocks');
+      expect(routing.getAnchor()).toEqual('');
     });
 
     it('should set anchor when `useHashRouting` is not set', () => {
@@ -204,7 +205,8 @@ describe('Routing', () => {
         return undefined;
       });
       routing.setAnchor('LuigiRocks');
-      expect(location.href).toContain('LuigiRocks');
+      expect(location.hash).toEqual('#LuigiRocks');
+      expect(routing.getAnchor()).toEqual('LuigiRocks');
     });
   });
 });
