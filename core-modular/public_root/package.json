@@ -5,7 +5,7 @@
   "main": "luigi.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/SAP/luigi.git"
+    "url": "git+ssh://git@github.com/luigi-project/luigi.git"
   },
   "publishConfig": {
     "tag": "luigi"
