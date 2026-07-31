@@ -213,6 +213,22 @@ export default class LuigiCompoundContainer extends HTMLElement {
   webcomponent: boolean | WebComponentSettings | string;
 
   /**
+   * A function called after the web component for the microfrontend is created.
+   * It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.
+   * @param {HTMLElement} wc - the web component element
+   * @param {Object} currentNode - the current navigation node
+   * @param {Object} context - the context object passed to the web component
+   * @param {string} nodeId - the node identifier
+   * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
+   * @since NEXT_RELEASE
+   * @type {Function}
+   * @kind member
+   * @memberof LuigiCompoundContainer
+   * @example containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+   */
+  webcomponentCreationInterceptor: Function;
+
+  /**
    * If set to true, skips handshake and ready event is fired immediately. <br><br>
    * Type: [Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
    * @since 1.4.0
