@@ -585,19 +585,19 @@ describe('Routing-helpers', () => {
   });
 
   describe('RoutingHelpers.concatenatePath', () => {
-    it('should concatenate base path and relative path', () => {
+    it('should concatenate base path and relative path with leading slash', () => {
       const result = RoutingHelpers.concatenatePath('/base/path', 'relative/path');
-      expect(result).toBe('base/path/relative/path');
+      expect(result).toBe('/base/path/relative/path');
     });
 
     it('should concatenate base path with leading hash and relative path', () => {
       const result = RoutingHelpers.concatenatePath('#/base/path', 'relative/path');
-      expect(result).toBe('base/path/relative/path');
+      expect(result).toBe('/base/path/relative/path');
     });
 
     it('should concatenate base path with leading slash and hash and relative path', () => {
       const result = RoutingHelpers.concatenatePath('/#/base/path', 'relative/path');
-      expect(result).toBe('base/path/relative/path');
+      expect(result).toBe('/base/path/relative/path');
     });
 
     it('should return relative path if base path is empty', () => {
@@ -605,14 +605,14 @@ describe('Routing-helpers', () => {
       expect(result).toBe('relative/path');
     });
 
-    it('should return base path if relative path is empty', () => {
+    it('should return base path with leading slash if relative path is empty', () => {
       const result = RoutingHelpers.concatenatePath('/base/path', '');
-      expect(result).toBe('base/path');
+      expect(result).toBe('/base/path');
     });
 
     it('should handle slashes correctly', () => {
       const result = RoutingHelpers.concatenatePath('/base/path/', '/relative/path/');
-      expect(result).toBe('base/path/relative/path/');
+      expect(result).toBe('/base/path/relative/path/');
     });
   });
 
