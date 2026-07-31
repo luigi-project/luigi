@@ -4,6 +4,16 @@
 
 
 
+## [v1.7.10] (2026-07-31)
+
+#### :rocket: Added
+
+* [#5377](https://github.com/luigi-project/luigi/pull/5377) Container webcomponent creation interceptor ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.9] (2026-07-29)
 
 #### :rocket: Added
@@ -196,3 +206,4 @@
 [v1.7.7]: https://github.com/luigi-project/luigi/compare/container/v1.7.6...container/v1.7.7
 [v1.7.8]: https://github.com/luigi-project/luigi/compare/container/v1.7.7...container/v1.7.8
 [v1.7.9]: https://github.com/luigi-project/luigi/compare/container/v1.7.8...container/v1.7.9
+[v1.7.10]: https://github.com/luigi-project/luigi/compare/container/v1.7.9...container/v1.7.10
