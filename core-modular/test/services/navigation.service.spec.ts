@@ -533,7 +533,7 @@ describe('NavigationService', () => {
       expect(navigateSpy).not.toHaveBeenCalled();
     });
 
-    it('should handle external link with context templating', async () => {
+    it('should handle external link with standard context templating', async () => {
       const openExternalLinkSpy = jest.spyOn(NavigationHelpers, 'openExternalLink').mockImplementation(() => {});
       const i18nMock = { getCurrentLocale: () => 'en' };
       const navigateSpy = jest.fn();
@@ -556,6 +556,66 @@ describe('NavigationService', () => {
       expect(openExternalLinkSpy).toHaveBeenCalledWith(
         {
           url: 'https://sap.com/en?foo=bar'
+        },
+        {}
+      );
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle external link with context templating plus path params', async () => {
+      const openExternalLinkSpy = jest.spyOn(NavigationHelpers, 'openExternalLink').mockImplementation(() => {});
+      const i18nMock = { getCurrentLocale: () => 'en' };
+      const navigateSpy = jest.fn();
+
+      luigiMock.i18n = jest.fn().mockReturnValue(i18nMock);
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        label: 'Context Value Replacement',
+        pathSegment: ':tenantId',
+        externalLink: {
+          url: 'https://example.com/:tenantId/docs'
+        }
+      };
+
+      await navigationService.navItemClick(node as any, { pathParams: { tenantId: 'myTenant' } } as any);
+
+      expect(openExternalLinkSpy).toHaveBeenCalledWith(
+        {
+          url: 'https://example.com/myTenant/docs'
+        },
+        {
+          tenantId: 'myTenant'
+        }
+      );
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle external link with context templating plus selected node context', async () => {
+      const openExternalLinkSpy = jest.spyOn(NavigationHelpers, 'openExternalLink').mockImplementation(() => {});
+      const i18nMock = { getCurrentLocale: () => 'en' };
+      const navigateSpy = jest.fn();
+
+      luigiMock.i18n = jest.fn().mockReturnValue(i18nMock);
+      luigiMock.navigation = jest.fn().mockReturnValue({
+        navigate: navigateSpy
+      });
+
+      const node = {
+        label: 'Context Value Replacement',
+        context: { tenantId: 'tenantA' },
+        externalLink: {
+          url: 'https://example.com/{context.tenantId}/docs'
+        }
+      };
+
+      await navigationService.navItemClick(node as any, { selectedNode: { context: { tenantId: 'tenantB' } } } as any);
+
+      expect(openExternalLinkSpy).toHaveBeenCalledWith(
+        {
+          url: 'https://example.com/tenantB/docs'
         },
         {}
       );
