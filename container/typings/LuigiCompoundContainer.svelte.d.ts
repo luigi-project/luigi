@@ -213,6 +213,22 @@ export default class LuigiCompoundContainer extends HTMLElement {
   webcomponent: boolean | WebComponentSettings | string;
 
   /**
+   * A function called after the web component for the microfrontend is created.
+   * It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.
+   * @param {HTMLElement} wc - the web component element
+   * @param {Object} currentNode - the current navigation node
+   * @param {Object} context - the context object passed to the web component
+   * @param {string} nodeId - the node identifier
+   * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
+   * @since NEXT_RELEASE
+   * @type {Function}
+   * @kind member
+   * @memberof LuigiCompoundContainer
+   * @example containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+   */
+  webcomponentCreationInterceptor: Function;
+
+  /**
    * If set to true, skips handshake and ready event is fired immediately. <br><br>
    * Type: [Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
    * @since 1.4.0
@@ -256,7 +272,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.updateContext({newContextData: 'some data'})
    * @returns {void} no explicit return type
    */
-  updateContext(contextObj: Object): void {};
+  updateContext(contextObj: Object): void {}
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -267,7 +283,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
    * @returns {void} no explicit return type
    */
-  notifyAlertClosed(id: string, dismissKey?: string): void {};
+  notifyAlertClosed(id: string, dismissKey?: string): void {}
 
   /**
    * A function that notifies the microfrontend if the confirmation modal was confirmed or declined.
@@ -277,7 +293,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed(true)
    * @returns {void} no explicit return type
    */
-  notifyConfirmationModalClosed(confirmed: boolean): void {};
+  notifyConfirmationModalClosed(confirmed: boolean): void {}
 
   /**
    * Manually triggers the micro frontend rendering process when using the defer-init attribute.
@@ -286,5 +302,5 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.init()
    * @returns {void} no explicit return type
    */
-  init(): void {};
+  init(): void {}
 }
