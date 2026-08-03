@@ -281,6 +281,7 @@ export const UIModule = {
     const searchParams = luigiParams?.searchParams || {};
 
     if (currentNode && containerWrapper) {
+      let currentContainer: any;
       let viewGroupContainer: any;
       let currentVirtualTreeRootNode: any;
 
@@ -301,13 +302,17 @@ export const UIModule = {
         if (element.tagName?.indexOf('LUIGI-') !== 0) return;
 
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
-          element.style.display = 'none';
-          const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
-          if (vgSettings?.preloadUrl) {
-            element.viewurl = vgSettings.preloadUrl;
-            element.context = {};
-            element.nodeParams = {};
-            element.pathParams = {};
+          if (!withoutSync) {
+            element.style.display = 'none';
+            const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+            if (vgSettings?.preloadUrl) {
+              element.viewurl = vgSettings.preloadUrl;
+              element.context = {};
+              element.nodeParams = {};
+              element.pathParams = {};
+            }
+          } else {
+            currentContainer = element;
           }
         } else {
           if (
@@ -357,8 +362,14 @@ export const UIModule = {
           viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
         }
       } else {
-        const container = await createContainer(currentNode, luigi, luigiParams);
-        containerWrapper?.appendChild(container);
+        if (!withoutSync) {
+          const container = await createContainer(currentNode, luigi, luigiParams);
+          containerWrapper?.appendChild(container);
+        } else {
+          if (!preventContextUpdate && currentContainer) {
+            currentContainer.updateContext(currentNode.context || {}, { withoutSync });
+          }
+        }
         const connector = luigi.getEngine()._connector;
         if (currentNode.loadingIndicator?.enabled !== false) {
           connector?.showLoadingIndicator(containerWrapper);
