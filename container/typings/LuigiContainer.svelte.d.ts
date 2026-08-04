@@ -247,6 +247,22 @@ export default class LuigiContainer extends HTMLElement {
   sandboxRules: string[];
 
   /**
+   * A function called after the web component for the microfrontend is created.
+   * It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.
+   * @param {HTMLElement} wc - the web component element
+   * @param {Object} currentNode - the current navigation node
+   * @param {Object} context - the context object passed to the web component
+   * @param {string} nodeId - the node identifier
+   * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
+   * @since NEXT_RELEASE
+   * @type {Function}
+   * @kind member
+   * @memberof LuigiContainer
+   * @example containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+   */
+  webcomponentCreationInterceptor: Function;
+
+  /**
    * A function called after the iframe for the microfrontend is created.
    * It allows modifying the iframe element before it is used, e.g. setting attributes.
    * The iframe is already rendered in the DOM when the interceptor fires.
@@ -319,7 +335,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example containerElement.updateContext({newContextData: 'some data'})
    * @returns {void} no explicit return type
    */
-  updateContext(contextObj: object, internal?: object): void {};
+  updateContext(contextObj: object, internal?: object): void {}
 
   /**
    * Send a custom message to the microfronted.
@@ -330,7 +346,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example containerElement.sendCustomMessage('my-message-id', {dataToSend: 'some data'})
    * @returns {void} no explicit return type
    */
-  sendCustomMessage(id: string, data?: object): void {};
+  sendCustomMessage(id: string, data?: object): void {}
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -343,7 +359,7 @@ export default class LuigiContainer extends HTMLElement {
    * @returns {void} no explicit return type
    * @deprecated this is deprecated
    */
-  closeAlert(id: string, dismissKey?: string): void {};
+  closeAlert(id: string, dismissKey?: string): void {}
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -354,7 +370,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
    * @returns {void} no explicit return type
    */
-  notifyAlertClosed(id: string, dismissKey?: string): void {};
+  notifyAlertClosed(id: string, dismissKey?: string): void {}
 
   /**
    * A function that notifies the microfrontend that the opened confirmation modal has been closed.
@@ -364,7 +380,7 @@ export default class LuigiContainer extends HTMLElement {
    * @example containerElement.notifyConfirmationModalClosed(true)
    * @returns {void} no explicit return type
    */
-  notifyConfirmationModalClosed(result: boolean): void {};
+  notifyConfirmationModalClosed(result: boolean): void {}
 
   /**
    * Updates route of the microfrontend by sending a message to the iframe that sets new view URL.
@@ -374,7 +390,7 @@ export default class LuigiContainer extends HTMLElement {
    * @memberof LuigiContainer
    * @returns {void} no explicit return type
    */
-  updateViewUrl(viewurl: string, internal?: object): void {};
+  updateViewUrl(viewurl: string, internal?: object): void {}
 
   /**
    * Manually triggers the micro frontend rendering process when using defer-init attribute.
@@ -383,5 +399,5 @@ export default class LuigiContainer extends HTMLElement {
    * @example containerElement.init()
    * @returns {void} no explicit return type
    */
-  init(): void {};
+  init(): void {}
 }

@@ -47,7 +47,8 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
   
 **Example**  
 ```js
-renderer = { use: 'grid', config: { columns: '1fr 1fr 1fr 2fr', layouts: [{maxWidth: 600, columns: '1fr', gap: 0, ...}]}};children = [{ viewUrl: '/main.js', context: { label: 'WC', ...}, layoutConfig: {column: '1 / -1', ...}, eventListeners: [{ source: 'input1', ...}}]}];
+renderer = { use: 'grid', config: { columns: '1fr 1fr 1fr 2fr', layouts: [{maxWidth: 600, columns: '1fr', gap: 0, ...}]}};
+children = [{ viewUrl: '/main.js', context: { label: 'WC', ...}, layoutConfig: {column: '1 / -1', ...}, eventListeners: [{ source: 'input1', ...}}]}];
 ```
 **Example**  
 ```js
@@ -289,6 +290,26 @@ myContainer.webcomponent = { type: 'module', selfRegistered: true, tagName: 'my-
   
 **Meta**:  
 * **since:** 1.0.0
+### webcomponentCreationInterceptor&nbsp;  
+<p>A function called after the web component for the microfrontend is created.
+It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.</p>
+
+**Params**
+
+- wc <code>HTMLElement</code> - <p>the web component element</p>
+- currentNode <code>Object</code> - <p>the current navigation node</p>
+- context <code>Object</code> - <p>the context object passed to the web component</p>
+- nodeId <code>string</code> - <p>the node identifier</p>
+- isSpecialMf <code>boolean</code> - <p>indicates whether the web component is rendered in a modal, splitView or drawer (false for main)</p>
+
+  
+**Example**  
+```js
+containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+```
+  
+**Meta**:  
+* **since:** NEXT_RELEASE
 ### skipInitCheck&nbsp;  
 <p>If set to true, skips handshake and ready event is fired immediately. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>
@@ -348,51 +369,6 @@ myContainer.theme = 'sap_horizon'
 **Example**  
 ```js
 containerElement.updateContext({newContextData: 'some data'})
-```
-**Returns**: <code>void</code> - <p>no explicit return type</p>  
-  
-**Meta**:  
-* **since:** 1.0.0
-### notifyAlertClosed&nbsp;  
-<p>A function that notifies the microfrontend that the opened alert has been closed.</p>
-
-**Params**
-
-- id <code>String</code> - <p>the id of the opened alert</p>
-- dismissKey <code>String</code> - <p>the key specifying which dismiss link was clicked on the alert message (optional)</p>
-
-  
-**Example**  
-```js
-containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
-```
-**Returns**: <code>void</code> - <p>no explicit return type</p>  
-  
-**Meta**:  
-* **since:** 1.7.0
-### notifyConfirmationModalClosed&nbsp;  
-<p>A function that notifies the microfrontend if the confirmation modal was confirmed or declined.</p>
-
-**Params**
-
-- value <code>Boolean</code> - <p>if the confirmation modal was confirmed or declined.</p>
-
-  
-**Example**  
-```js
-containerElement.notifyAlertClosed(true)
-```
-**Returns**: <code>void</code> - <p>no explicit return type</p>  
-  
-**Meta**:  
-* **since:** 1.7.0
-### init&nbsp;  
-<p>Manually triggers the micro frontend rendering process when using the defer-init attribute.</p>
-
-  
-**Example**  
-```js
-containerElement.init()
 ```
 **Returns**: <code>void</code> - <p>no explicit return type</p>  
   
