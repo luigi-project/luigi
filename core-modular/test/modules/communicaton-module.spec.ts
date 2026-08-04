@@ -33,7 +33,12 @@ jest.mock('../../src/modules/ui-module', () => ({
   UIModule: { luigi: { getEngine: () => ({ _connector: {} }) } }
 }));
 jest.mock('../../src/modules/ux-module', () => ({
-  UXModule: { luigi: null, processAlert: jest.fn(), handleConfirmationModalRequest: jest.fn(), handleDirtyStatusRequest: jest.fn() }
+  UXModule: {
+    luigi: null,
+    processAlert: jest.fn(),
+    handleConfirmationModalRequest: jest.fn(),
+    handleDirtyStatusRequest: jest.fn()
+  }
 }));
 jest.mock('../../src/modules/routing-module', () => ({
   RoutingModule: { addSearchParamsFromClient: jest.fn() }
@@ -54,7 +59,16 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
       routing: jest.fn().mockReturnValue({ addNodeParams: jest.fn() }),
       ux: jest.fn().mockReturnValue({ collapseLeftSideNav: jest.fn(), openUserSettings: jest.fn() }),
       navigation: jest.fn().mockReturnValue({ runTimeErrorHandler: jest.fn() }),
-      getEngine: jest.fn().mockReturnValue({ _connector: { closeUserSettings: jest.fn(), setDocumentTitle: jest.fn(), showLoadingIndicator: jest.fn(), hideLoadingIndicator: jest.fn(), addBackdrop: jest.fn(), removeBackdrop: jest.fn() } })
+      getEngine: jest.fn().mockReturnValue({
+        _connector: {
+          closeUserSettings: jest.fn(),
+          setDocumentTitle: jest.fn(),
+          showLoadingIndicator: jest.fn(),
+          hideLoadingIndicator: jest.fn(),
+          addBackdrop: jest.fn(),
+          removeBackdrop: jest.fn()
+        }
+      })
     };
     containerElement = document.createElement('div') as any;
     containerElement.viewGroup = 'testGroup';
