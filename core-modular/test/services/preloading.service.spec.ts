@@ -222,4 +222,56 @@ describe('PreloadingService', () => {
       expect(container._luigiPreloading).toBe(false);
     });
   });
+
+  describe('iframeCreationInterceptor', () => {
+    it('should set iframeCreationInterceptor on preloaded containers when configured', () => {
+      const interceptor = jest.fn();
+      mockLuigi.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'navigation.preloadViewGroups') return true;
+        if (key === 'navigation.viewGroupSettings') {
+          return { vg1: { preloadUrl: 'http://localhost/preload1' } };
+        }
+        if (key === 'settings.iframeCreationInterceptor') return interceptor;
+        return undefined;
+      });
+
+      preloadingService.preloadViewGroups(3);
+
+      const children = [...containerWrapper.children] as any[];
+      expect(children[0].iframeCreationInterceptor).toBe(interceptor);
+      expect(children[0]._luigiMicroFrontendType).toBe('main');
+    });
+
+    it('should not set iframeCreationInterceptor when not configured', () => {
+      mockLuigi.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'navigation.preloadViewGroups') return true;
+        if (key === 'navigation.viewGroupSettings') {
+          return { vg1: { preloadUrl: 'http://localhost/preload1' } };
+        }
+        if (key === 'settings.iframeCreationInterceptor') return undefined;
+        return undefined;
+      });
+
+      preloadingService.preloadViewGroups(3);
+
+      const children = [...containerWrapper.children] as any[];
+      expect(children[0].iframeCreationInterceptor).toBeUndefined();
+    });
+
+    it('should not set iframeCreationInterceptor when config value is not a function', () => {
+      mockLuigi.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'navigation.preloadViewGroups') return true;
+        if (key === 'navigation.viewGroupSettings') {
+          return { vg1: { preloadUrl: 'http://localhost/preload1' } };
+        }
+        if (key === 'settings.iframeCreationInterceptor') return 'not-a-function';
+        return undefined;
+      });
+
+      preloadingService.preloadViewGroups(3);
+
+      const children = [...containerWrapper.children] as any[];
+      expect(children[0].iframeCreationInterceptor).toBeUndefined();
+    });
+  });
 });
