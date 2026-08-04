@@ -11,13 +11,25 @@ export const NavigationHelpers = {
     if (!raw || raw.length <= 0) {
       return raw;
     }
+
     let value = raw;
+
     if (value.startsWith('#')) {
       value = value.substring(1);
     }
+
     if (value.startsWith('/')) {
       value = value.substring(1);
     }
+
+    const hashIndex = value.indexOf('#');
+
+    if (hashIndex !== -1 && hashIndex !== value.length - 1) {
+      const pathSegments = value.split('#');
+
+      value = pathSegments[0];
+    }
+
     return value;
   },
 
