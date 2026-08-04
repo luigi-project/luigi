@@ -167,4 +167,46 @@ describe('Routing', () => {
     expect(GenericHelpers.isObject({})).toBe(true);
     expect(GenericHelpers.isObject([] as any)).toBe(false);
   });
+
+  describe('getAnchor', () => {
+    it('should get anchor when `useHashRouting` is set', () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return true;
+        return undefined;
+      });
+      location.hash = 'LuigiRocks';
+      expect(routing.getAnchor()).toEqual('');
+    });
+
+    it('should get anchor when `useHashRouting` is not set', () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return false;
+        return undefined;
+      });
+      location.hash = 'LuigiRocks';
+      expect(routing.getAnchor()).toEqual('LuigiRocks');
+    });
+  });
+
+  describe('setAnchor', () => {
+    it('should set anchor when `useHashRouting` is set', () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return true;
+        return undefined;
+      });
+      routing.setAnchor('LuigiRocks');
+      expect(location.href).toContain('LuigiRocks');
+      expect(routing.getAnchor()).toEqual('');
+    });
+
+    it('should set anchor when `useHashRouting` is not set', () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return false;
+        return undefined;
+      });
+      routing.setAnchor('LuigiRocks');
+      expect(location.hash).toEqual('#LuigiRocks');
+      expect(routing.getAnchor()).toEqual('LuigiRocks');
+    });
+  });
 });

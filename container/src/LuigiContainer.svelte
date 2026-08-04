@@ -140,7 +140,7 @@
   /* eslint-enable */
 
   const iframeHandle: IframeHandle = {
-      iframe: undefined
+    iframe: undefined
   };
   let mainComponent: ContainerElement;
   let containerInitialized = false;

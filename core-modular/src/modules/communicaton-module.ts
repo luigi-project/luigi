@@ -11,8 +11,7 @@ import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
 function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
-  const allVgSettings: Record<string, ViewGroupSettings> =
-    luigi.getConfigValue('navigation.viewGroupSettings') || {};
+  const allVgSettings: Record<string, ViewGroupSettings> = luigi.getConfigValue('navigation.viewGroupSettings') || {};
   if (!allVgSettings[vg]) {
     allVgSettings[vg] = {};
   }
@@ -105,6 +104,12 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
+    containerElement.addEventListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
+      const anchor = (event?.payload as string) || '';
+      containerElement.anchor = anchor;
+      containerElement.updateContext(containerElement.context || {});
+      luigi.routing().setAnchor(anchor);
+    });
     containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { dirty?: boolean };
       UXModule.handleDirtyStatusRequest(payload?.dirty ?? false, containerElement);
@@ -149,6 +154,19 @@ export const CommunicationModule = {
       if (locale) {
         luigi.i18n().setCurrentLocale(locale);
       }
+    });
+    containerElement.addEventListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
+      const options = event.payload as {
+        fromClosestContext?: boolean;
+        fromContext?: string | null;
+        fromParent?: boolean;
+        fromVirtualTreeRoot?: boolean;
+      };
+      serviceRegistry
+        .get(NavigationService)
+        .getCurrentRoutePath(options)
+        .then((route) => {event.callback(route)})
+        .catch(() => event.callback(''));
     });
     containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
       const vg = containerElement.viewGroup;
