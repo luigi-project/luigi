@@ -113,9 +113,10 @@ export class UX {
           header: this.luigi.i18n().getTranslation(settings.header || 'luigi.confirmationModal.header'),
           body: EscapingHelpers.sanatizeHtmlExceptTextFormatting(modalBody),
           buttonDismiss: this.luigi.i18n().getTranslation(settings.buttonDismiss || 'luigi.button.dismiss'),
-          buttonConfirm: settings.buttonConfirm === false
-            ? false
-            : this.luigi.i18n().getTranslation(settings.buttonConfirm || 'luigi.button.confirm')
+          buttonConfirm:
+            settings.buttonConfirm === false
+              ? false
+              : this.luigi.i18n().getTranslation(settings.buttonConfirm || 'luigi.button.confirm')
         }
       };
     }
