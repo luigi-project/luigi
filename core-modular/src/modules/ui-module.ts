@@ -9,13 +9,14 @@ import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings } from '../types/navigation';
+import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings, MFType } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
-const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
+
+const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams, microFrontendType?: MFType): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
@@ -87,6 +88,8 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     (lc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
+    setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
+    setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
     return lc;
@@ -134,6 +137,34 @@ const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
   });
 
   container.allowRules = allowRules;
+};
+
+const setIframeCreationInterceptor = (
+  container: LuigiContainer,
+  luigi: Luigi,
+  currentNode: Node,
+  microFrontendType: string
+): void => {
+  const interceptor = luigi.getConfigValue('settings.iframeCreationInterceptor');
+  if (GenericHelpers.isFunction(interceptor)) {
+    (container as any).iframeCreationInterceptor = interceptor;
+    (container as any)._luigiCurrentNode = currentNode;
+    (container as any)._luigiMicroFrontendType = microFrontendType;
+  }
+};
+
+const setWebcomponentCreationInterceptor = (
+  container: LuigiContainer,
+  luigi: Luigi,
+  currentNode: Node,
+  microFrontendType: string
+): void => {
+  const interceptor = luigi.getConfigValue('settings.webcomponentCreationInterceptor');
+  if (GenericHelpers.isFunction(interceptor)) {
+    (container as any).webcomponentCreationInterceptor = interceptor;
+    (container as any).currentNode = currentNode;
+    (container as any)._luigiMicroFrontendType = microFrontendType !== 'main';
+  }
 };
 
 export const UIModule = {
@@ -314,6 +345,7 @@ export const UIModule = {
           } else if (
             !currentNode.viewGroup &&
             !currentNode.isolateView &&
+            !currentNode.webcomponent &&
             element.viewurl &&
             resolvedViewUrl &&
             GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)
@@ -354,7 +386,7 @@ export const UIModule = {
         }
       } else {
         if (!withoutSync) {
-          const container = await createContainer(currentNode, luigi, luigiParams);
+          const container = await createContainer(currentNode, luigi, luigiParams, 'main');
           containerWrapper?.appendChild(container);
         } else {
           if (!preventContextUpdate && currentContainer) {
@@ -375,7 +407,7 @@ export const UIModule = {
     onCloseCallback?: (goBackValue?: any) => void,
     luigiParams?: LuigiParams
   ) => {
-    const lc = await createContainer(node, luigi, luigiParams);
+    const lc = await createContainer(node, luigi, luigiParams, 'modal');
     UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
@@ -511,7 +543,7 @@ export const UIModule = {
       }
     }
 
-    const lc = await createContainer(node, luigi, luigiParams);
+    const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
 
     const closePromise = new Promise<void>((resolve) => {
@@ -566,7 +598,9 @@ export const UIModule = {
       const context = { ...groupConfig.context, userSettingsData: userSettingsData };
       const lc = await createContainer(
         { viewUrl, userSettingsGroup: groupKey, webcomponent: isWebComponent, context } as Node,
-        luigi
+        luigi,
+        undefined,
+        'usersettings'
       );
 
       lc.addEventListener(Events.CUSTOM_MESSAGE, (event: any) => {

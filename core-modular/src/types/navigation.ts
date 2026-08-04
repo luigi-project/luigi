@@ -389,3 +389,5 @@ export interface ViewGroupSettings {
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';
+
+export type MFType = 'main' | 'modal' | 'drawer' | 'usersettings';
