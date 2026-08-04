@@ -175,16 +175,11 @@ export const UIModule = {
         settings.header
     */
 
-    if (
-      noScopes ||
-      scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes')
-    ) {
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes')) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
     }
 
-    const isViewGroupDataOnly =
-      scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+    const isViewGroupDataOnly = scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
 
     if (isViewGroupDataOnly) {
       const pathData = await UIModule.navService.getPathData(croute.path);
@@ -243,11 +238,7 @@ export const UIModule = {
         })
       );
     }
-    if (
-      noScopes ||
-      scopes.includes('navigation') ||
-      scopes.includes('navigation.nodes')
-    ) {
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes')) {
       if (croute.path) {
         const pathData = await UIModule.navService.getPathData(croute.path);
         const currentNode = pathData?.selectedNode ?? croute.node;
