@@ -9,6 +9,7 @@ import type {
   BreadcrumbItem,
   ContextSwitcher,
   ContextSwitcherItem,
+  ExternalLink,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -230,10 +231,26 @@ export class NavigationService {
       }
 
       const hasBadge = !!node.badgeCounter;
+      const externalLink = node.externalLink ? { ...node.externalLink } : undefined;
+      let nodeHref = RoutingHelpers.getNodeHref(node, pathData?.pathParams, this.luigi);
       let badgeCount = 0;
 
       if (node.badgeCounter) {
         badgeCount = await (node.badgeCounter.count as any)();
+      }
+
+      if (externalLink?.url) {
+        const currentNode: Node = { ...node };
+
+        if (selectedNode?.context) {
+          currentNode.context = { ...currentNode.context, ...selectedNode.context };
+        }
+
+        const nodeData = { ...currentNode, viewUrl: externalLink.url };
+        const pathParams = pathData?.pathParams ? pathData.pathParams : {};
+
+        externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+        nodeHref = externalLink.url;
       }
 
       if (node.category) {
@@ -272,8 +289,8 @@ export class NavigationService {
 
         catNode.category?.nodes?.push({
           altText: node.altText,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          externalLink,
+          href: nodeHref,
           icon: node.icon,
           label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
@@ -284,8 +301,8 @@ export class NavigationService {
         items.push({
           altText: node.altText,
           badgeCounter: node.badgeCounter,
-          externalLink: node.externalLink,
-          href: node.externalLink?.url || RoutingHelpers.getNodeHref(node, pathData.pathParams, this.luigi),
+          externalLink,
+          href: nodeHref,
           icon: node.icon,
           label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
@@ -501,11 +518,22 @@ export class NavigationService {
       return;
     }
 
+    const pathParams = pathData?.pathParams ? pathData.pathParams : {};
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     await dirtyStatusService.getUnsavedChangesModalPromise();
 
     if (node.externalLink?.url) {
-      NavigationHelpers.openExternalLink(node.externalLink, pathData?.pathParams);
+      const currentNode: Node = { ...node };
+
+      if (pathData?.selectedNode?.context) {
+        currentNode.context = { ...currentNode.context, ...pathData.selectedNode.context };
+      }
+
+      const externalLink: ExternalLink = { ...currentNode.externalLink };
+      const nodeData = { ...currentNode, viewUrl: externalLink.url };
+
+      externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+      NavigationHelpers.openExternalLink(externalLink, pathParams);
       return;
     }
 
@@ -520,9 +548,8 @@ export class NavigationService {
     }
 
     let fullPath = RoutingHelpers.getNodePath(node);
-    let pathParams = pathData?.pathParams;
 
-    fullPath = GenericHelpers.replaceVars(fullPath, pathParams ? pathParams : {}, ':', false);
+    fullPath = GenericHelpers.replaceVars(fullPath, pathParams, ':', false);
     if (!fullPath && fullPath !== '') {
       console.error(
         'Navigation error: could not build path for the node. Check if pathSegment is defined for all nodes in the path and if there are no duplicate pathSegments on the same level.'
