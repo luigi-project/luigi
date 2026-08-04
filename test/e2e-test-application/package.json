@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@angular/animations": "22.0.3",
-    "@angular/common": "22.0.3",
+    "@angular/common": "22.1.0",
     "@angular/compiler": "22.0.3",
-    "@angular/core": "22.0.3",
+    "@angular/core": "22.1.0",
     "@angular/forms": "22.0.3",
     "@angular/platform-browser": "22.0.3",
     "@angular/platform-browser-dynamic": "22.0.3",
