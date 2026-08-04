@@ -84,6 +84,11 @@ export class PreloadingService {
     lc._luigiPreloadCreatedAt = Date.now();
     lc.luigiMfId = GenericHelpers.getRandomId();
     this.luigi.getEngine()._comm.addListeners(lc, this.luigi);
+    const interceptor = this.luigi.getConfigValue('settings.iframeCreationInterceptor');
+    if (GenericHelpers.isFunction(interceptor)) {
+      (lc as any).iframeCreationInterceptor = interceptor;
+      (lc as any)._luigiMicroFrontendType = 'main';
+    }
     containerWrapper.appendChild(lc);
   }
 
