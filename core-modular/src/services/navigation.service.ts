@@ -1058,6 +1058,7 @@ export class NavigationService {
     const nodeParams = options?.nodeParams;
     const buildOptions = isSpecial ? { ...options, nodeParams: {} } : options;
     let computedPath = await this.buildPath(path, buildOptions || {});
+    computedPath = GenericHelpers.addLeadingSlash(computedPath);
 
     if (await this.shouldPreventNavigationForPath(path)) {
       return;
@@ -1388,7 +1389,7 @@ export class NavigationService {
           (index < Object.keys(nodeParams).length - 1 ? '&' : '');
       });
     }
-    return path.startsWith('/') ? path : '/' + path;
+    return path;
   }
 
   /**

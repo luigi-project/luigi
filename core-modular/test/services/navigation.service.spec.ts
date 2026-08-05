@@ -1535,7 +1535,7 @@ describe('NavigationService', () => {
       it('relative path from existing path', async () => {
         const result = await navigationService.buildPath('relative/path', { relative: true });
 
-        expect(result).toBe('/home/base/relative/path');
+        expect(result).toBe('home/base/relative/path');
       });
 
       it('relative path with nodeParams', async () => {
@@ -1545,7 +1545,7 @@ describe('NavigationService', () => {
           nodeParams: { id: '123' }
         });
 
-        expect(result).toBe('/home/base/relative/path?~id=123');
+        expect(result).toBe('home/base/relative/path?~id=123');
       });
 
       //TODO waiting for error handling implementation
