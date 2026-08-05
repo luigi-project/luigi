@@ -1159,12 +1159,13 @@ export class NavigationService {
         : chosenHistoryMethod;
 
       if (hashRouting) {
+        const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
         if (!withoutSync && method !== 'replaceState') {
-          location.hash = normalizedPath;
+          location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 
-          window.history[method]({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.history[method]({ path: '/#' + hashPath }, '', '/#' + hashPath);
           window.dispatchEvent(event);
         }
       } else {
