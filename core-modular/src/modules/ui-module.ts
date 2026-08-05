@@ -396,14 +396,14 @@ export const UIModule = {
         if (!withoutSync) {
           const container = await createContainer(currentNode, luigi, luigiParams, 'main');
           containerWrapper?.appendChild(container);
+          const connector = luigi.getEngine()._connector;
+          if (currentNode.loadingIndicator?.enabled !== false) {
+            connector?.showLoadingIndicator(containerWrapper);
+          }
         } else {
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(currentNode.context || {}, { withoutSync });
           }
-        }
-        const connector = luigi.getEngine()._connector;
-        if (currentNode.loadingIndicator?.enabled !== false) {
-          connector?.showLoadingIndicator(containerWrapper);
         }
       }
     }
