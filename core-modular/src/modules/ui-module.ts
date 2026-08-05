@@ -379,7 +379,10 @@ export const UIModule = {
 
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          if (previousViewUrl !== resolvedViewUrl) {
+          const hashChanged =
+            GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+
+          if (hashChanged && !viewGroupContainer.virtualTree) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
