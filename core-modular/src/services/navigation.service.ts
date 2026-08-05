@@ -1058,7 +1058,6 @@ export class NavigationService {
     const nodeParams = options?.nodeParams;
     const buildOptions = isSpecial ? { ...options, nodeParams: {} } : options;
     let computedPath = await this.buildPath(path, buildOptions || {});
-    computedPath = GenericHelpers.addLeadingSlash(computedPath);
 
     if (await this.shouldPreventNavigationForPath(path)) {
       return;
@@ -1160,12 +1159,13 @@ export class NavigationService {
         : chosenHistoryMethod;
 
       if (hashRouting) {
+        const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
         if (!withoutSync && method !== 'replaceState') {
-          location.hash = normalizedPath;
+          location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 
-          window.history[method]({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.history[method]({ path: '/#' + hashPath }, '', '/#' + hashPath);
           window.dispatchEvent(event);
         }
       } else {
