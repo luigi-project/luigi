@@ -1388,7 +1388,7 @@ export class NavigationService {
           (index < Object.keys(nodeParams).length - 1 ? '&' : '');
       });
     }
-    return path;
+    return path.startsWith('/') ? path : '/' + path;
   }
 
   /**
