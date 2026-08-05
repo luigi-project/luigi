@@ -253,7 +253,10 @@ export class NavigationService {
         nodeHref = externalLink.url;
       }
 
-      if (node.category) {
+      const hasMeaningfulCategory =
+        node.category && (typeof node.category === 'string' || node.category.id || node.category.label);
+
+      if (hasMeaningfulCategory) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
