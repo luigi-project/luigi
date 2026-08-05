@@ -358,6 +358,8 @@ export const UIModule = {
       }
 
       if (viewGroupContainer) {
+        const previousViewUrl = viewGroupContainer.viewurl;
+
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = resolvedViewUrl;
@@ -377,7 +379,12 @@ export const UIModule = {
 
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+          if (previousViewUrl !== resolvedViewUrl) {
+            viewGroupContainer.context = currentNode.context || {};
+            viewGroupContainer.updateViewUrl(resolvedViewUrl);
+          } else {
+            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+          }
         }
       } else {
         const container = await createContainer(currentNode, luigi, luigiParams, 'main');

@@ -253,10 +253,10 @@ export class NavigationService {
         nodeHref = externalLink.url;
       }
 
-      const hasMeaningfulCategory =
+      const isCategoryValid =
         node.category && (typeof node.category === 'string' || node.category.id || node.category.label);
 
-      if (hasMeaningfulCategory) {
+      if (isCategoryValid) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
@@ -301,7 +301,7 @@ export class NavigationService {
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       } else {
-        items.push({
+        const navItem = {
           altText: node.altText,
           badgeCounter: node.badgeCounter,
           externalLink,
@@ -311,7 +311,13 @@ export class NavigationService {
           node,
           selected: node === selectedNode,
           tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
-        });
+        };
+
+        if (node.category && !isCategoryValid) {
+          items.unshift(navItem);
+        } else {
+          items.push(navItem);
+        }
       }
 
       if (badgeCount) {
