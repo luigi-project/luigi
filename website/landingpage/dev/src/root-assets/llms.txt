@@ -1,0 +1,38 @@
+# Luigi
+
+> Luigi is an open-source micro frontend framework, part of the NeoNephos
+> Foundation (originally created at SAP). The application shell (Luigi Core)
+> hosts embedded micro frontends — either as iframes (communicating via
+> postMessage) or as Web Components running in the shell's own document.
+> Luigi Client is the SDK used by iframe-based micro frontends to talk back
+> to the shell. Luigi Container wraps Core as a Web Component
+> (`<luigi-container>`, `<luigi-compound-container>`) for embedding without
+> a full shell.
+>
+> Apache-2.0. Node >= 20.19.0 to build.
+
+## Documentation
+
+The canonical, curated index of Luigi documentation is the MkDocs navigation
+in the repository. It groups every documentation page into Basics, Luigi Core,
+Navigation, Authorization, Luigi Client, Luigi Container, API Reference,
+Advanced, and Examples:
+
+- [docs/mkdocs.yml](https://raw.githubusercontent.com/SAP/luigi/main/docs/mkdocs.yml) — grouped index of every documentation page.
+
+All documentation pages live as Markdown under `docs/` in the repository.
+Fetch individual pages as raw Markdown:
+
+- URL pattern: `https://raw.githubusercontent.com/SAP/luigi/main/docs/<page>.md`
+- Browse on GitHub: <https://github.com/SAP/luigi/tree/main/docs>
+
+The rendered documentation site (HTML only) is at <https://docs.luigi-project.io>.
+Prefer the raw Markdown URLs above when fetching content programmatically.
+
+## Links
+
+- Project home: <https://luigi-project.io>
+- Playground: <https://fiddle.luigi-project.io>
+- Source: <https://github.com/SAP/luigi>
+- Changelog: <https://github.com/SAP/luigi/blob/main/CHANGELOG.md>
+- Contributing: <https://github.com/SAP/luigi/blob/main/CONTRIBUTING.md>
