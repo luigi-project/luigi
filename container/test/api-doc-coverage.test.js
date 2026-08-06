@@ -77,7 +77,7 @@ describe('API doc coverage', () => {
       const methods = extractMethodNames(typingsSource);
       const documented = extractDocumentedHeadings(mdSource);
 
-      const missing = [...methods].filter(name => !documented.has(name));
+      const missing = [...methods].filter((name) => !documented.has(name));
 
       // Guard against a regex that matches nothing — if extractMethodNames
       // ever silently returns an empty set, the assertion below would pass
@@ -90,7 +90,7 @@ describe('API doc coverage', () => {
         // cause saves the next debugger a lot of time.
         const hint =
           `\n\nMethods declared in ${typings} are missing from ${md}:\n` +
-          missing.map(n => `  - ${n}`).join('\n') +
+          missing.map((n) => `  - ${n}`).join('\n') +
           '\n\nThis usually indicates that jsdoc-to-markdown silently dropped ' +
           'doclets during doc generation. Common causes:\n' +
           '  - Empty method bodies changed from `void {};` to `void {}`\n' +
