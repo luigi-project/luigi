@@ -165,7 +165,9 @@ export const CommunicationModule = {
       serviceRegistry
         .get(NavigationService)
         .getCurrentRoutePath(options)
-        .then((route) => {event.callback(route)})
+        .then((route) => {
+          event.callback(route);
+        })
         .catch(() => event.callback(''));
     });
     containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
