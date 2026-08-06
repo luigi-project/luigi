@@ -329,7 +329,7 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
-  if (item.node) {
+  if (item.node && item.label) {
     const el = document.createElement('ui5-side-navigation-item');
     el.setAttribute('text', item.label);
     el.setAttribute('tooltip', item.tooltip);
@@ -356,20 +356,22 @@ function renderNodeOrCategory(item, leftNavData) {
       }
 
       item.category.nodes.forEach((nodeWrapper) => {
-        const sub = document.createElement('ui5-side-navigation-sub-item');
-        sub.setAttribute('text', nodeWrapper.label);
-        sub.setAttribute('tooltip', nodeWrapper.tooltip);
-        if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
-        sub._luigiItem = nodeWrapper;
-        if (nodeWrapper.externalLink?.url) {
-          sub.setAttribute('href', nodeWrapper.externalLink.url);
-          sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
-        } else {
-          sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
-          if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+        if (nodeWrapper.label) {
+          const sub = document.createElement('ui5-side-navigation-sub-item');
+          sub.setAttribute('text', nodeWrapper.label);
+          sub.setAttribute('tooltip', nodeWrapper.tooltip);
+          if (nodeWrapper.icon) sub.setAttribute('icon', nodeWrapper.icon);
+          sub._luigiItem = nodeWrapper;
+          if (nodeWrapper.externalLink?.url) {
+            sub.setAttribute('href', nodeWrapper.externalLink.url);
+            sub.setAttribute('target', nodeWrapper.externalLink.sameWindow ? '_self' : '_blank');
+          } else {
+            sub.setAttribute('luigi-route', leftNavData.basePath + '/' + nodeWrapper.node.pathSegment);
+            if (nodeWrapper.href) sub.setAttribute('href', nodeWrapper.href);
+          }
+          if (nodeWrapper.selected) sub.setAttribute('selected', '');
+          el.appendChild(sub);
         }
-        if (nodeWrapper.selected) sub.setAttribute('selected', '');
-        el.appendChild(sub);
       });
 
       frag.appendChild(el);
