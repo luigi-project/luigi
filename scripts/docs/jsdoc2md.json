@@ -21,6 +21,7 @@
       "@babel/preset-typescript"
     ],
     "plugins": [
+      "./docs/babel-plugin-add-method-bodies.js",
       "@babel/plugin-transform-class-properties",
       "@babel/plugin-transform-object-rest-spread"
     ]
