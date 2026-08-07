@@ -76,7 +76,7 @@ module.exports = function addBodiesToDeclaredMethods({ types: t }) {
         if (!node || typeof node !== 'object') return;
         if (node.type === 'ClassBody') {
           let dirty = false;
-          node.body = node.body.map(member => {
+          node.body = node.body.map((member) => {
             if (member.type === 'TSDeclareMethod') {
               dirty = true;
               return convert(member);
@@ -101,4 +101,3 @@ module.exports = function addBodiesToDeclaredMethods({ types: t }) {
     visitor: {}
   };
 };
-
