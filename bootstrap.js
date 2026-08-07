@@ -29,7 +29,7 @@ let isVerbose = verboseFlagIndex !== -1;
 // Function to install npm packages in given folder
 function installPackages(folder, index, totalFolders) {
   return new Promise((resolve, reject) => {
-    execFile('npm', ['install'], { cwd: folder }, (error, stdout, stderr) => {
+    execFile('npm install', { cwd: folder, shell: true }, (error, stdout, stderr) => {
       if (error) {
         console.error(`\x1b[31mError installing npm packages in ${folder} \x1b[0m`);
         reject(error);

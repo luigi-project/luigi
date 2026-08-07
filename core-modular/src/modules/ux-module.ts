@@ -94,11 +94,10 @@ export const UXModule = {
           buttonDismiss: UXModule.luigi
             .i18n()
             .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
-          buttonConfirm: confirmationModalSettings.buttonConfirm === false
-            ? false
-            : UXModule.luigi
-                .i18n()
-                .getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
+          buttonConfirm:
+            confirmationModalSettings.buttonConfirm === false
+              ? false
+              : UXModule.luigi.i18n().getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
         }
       };
     }

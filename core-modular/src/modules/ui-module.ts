@@ -15,8 +15,12 @@ import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
-
-const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams, microFrontendType?: MFType): Promise<HTMLElement> => {
+const createContainer = async (
+  node: Node,
+  luigi: Luigi,
+  luigiParams?: LuigiParams,
+  microFrontendType?: MFType
+): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
@@ -303,6 +307,7 @@ export const UIModule = {
     const searchParams = luigiParams?.searchParams || {};
 
     if (currentNode && containerWrapper) {
+      let currentContainer: any;
       let viewGroupContainer: any;
       let currentVirtualTreeRootNode: any;
 
@@ -322,14 +327,20 @@ export const UIModule = {
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') !== 0) return;
 
+        if (withoutSync) {
+          currentContainer = element;
+        }
+
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
-          element.style.display = 'none';
-          const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
-          if (vgSettings?.preloadUrl) {
-            element.viewurl = vgSettings.preloadUrl;
-            element.context = {};
-            element.nodeParams = {};
-            element.pathParams = {};
+          if (!withoutSync) {
+            element.style.display = 'none';
+            const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+            if (vgSettings?.preloadUrl) {
+              element.viewurl = vgSettings.preloadUrl;
+              element.context = {};
+              element.nodeParams = {};
+              element.pathParams = {};
+            }
           }
         } else {
           if (
@@ -347,7 +358,9 @@ export const UIModule = {
           ) {
             viewGroupContainer = element;
           } else {
-            element.remove();
+            if (!withoutSync) {
+              element.remove();
+            }
           }
         }
       });
@@ -390,11 +403,17 @@ export const UIModule = {
           }
         }
       } else {
-        const container = await createContainer(currentNode, luigi, luigiParams, 'main');
-        containerWrapper?.appendChild(container);
-        const connector = luigi.getEngine()._connector;
-        if (currentNode.loadingIndicator?.enabled !== false) {
-          connector?.showLoadingIndicator(containerWrapper);
+        if (!withoutSync) {
+          const container = await createContainer(currentNode, luigi, luigiParams, 'main');
+          containerWrapper?.appendChild(container);
+          const connector = luigi.getEngine()._connector;
+          if (currentNode.loadingIndicator?.enabled !== false) {
+            connector?.showLoadingIndicator(containerWrapper);
+          }
+        } else {
+          if (!preventContextUpdate && currentContainer) {
+            currentContainer.updateContext(currentNode.context || {}, { withoutSync });
+          }
         }
       }
     }
