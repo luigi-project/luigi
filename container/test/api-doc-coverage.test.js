@@ -25,13 +25,18 @@ const REPO_ROOT = path.resolve(__dirname, '../..');
 /**
  * Extract top-level method names from a .d.ts class body.
  *
- * Matches `  methodName(...): ReturnType {...}` — the trailing `{` is what
- * distinguishes methods (with a stub body) from attribute-style property
- * declarations like `viewurl: string;`. Two-space indent matches the class
- * body indent used consistently in the container typings.
+ * Matches `  methodName(args): ReturnType;` — a signature-only method
+ * declaration terminated by `;`. The alternative would be a method with
+ * a body (`{ ... }`), but the container typings are authored as valid
+ * TypeScript declaration files: signatures only, with a Babel plugin
+ * (scripts/docs/babel-plugin-add-method-bodies.js) synthesizing empty
+ * bodies during doc generation. Two-space indent matches the class body
+ * indent used consistently in the container typings; the trailing `;`
+ * distinguishes methods from attribute-style property declarations like
+ * `viewurl: string;` because the parenthesized parameter list is required.
  */
 function extractMethodNames(typingsSource) {
-  const methodRegex = /^ {2}(\w+)\s*\([^)]*\)\s*:\s*[^{;]+\{/gm;
+  const methodRegex = /^ {2}(\w+)\s*\([^)]*\)\s*:\s*[^;]+;/gm;
   const names = new Set();
   let match;
   while ((match = methodRegex.exec(typingsSource)) !== null) {
