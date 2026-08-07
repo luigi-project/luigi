@@ -1252,14 +1252,15 @@ describe('NavigationService', () => {
       const nodeB: Node = { pathSegment: 'b', label: 'B', category: invalidCategory, children: [] };
       const nodeC: Node = { pathSegment: 'c', label: 'C', category: invalidCategory, children: [] };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [nodeA, nodeB, nodeC],
         nodesInPath: [],
         rootNodes: [nodeA, nodeB, nodeC],
-        pathParams: {}
+        pathParams: {},
+        matchedPath: ''
       };
-      const data = await navigationService.buildNavItems([nodeA, nodeB, nodeC], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([nodeA, nodeB, nodeC], undefined, pathData);
       expect(data.items.map((i: any) => i.label)).toEqual(['A', 'B', 'C']);
     });
 
@@ -1268,14 +1269,15 @@ describe('NavigationService', () => {
       const orphanNode: Node = { pathSegment: 'orphan', label: 'Orphan', category: invalidCategory, children: [] };
       const regularNode: Node = { pathSegment: 'regular', label: 'Regular', children: [] };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [regularNode, orphanNode],
         nodesInPath: [],
         rootNodes: [regularNode, orphanNode],
-        pathParams: {}
+        pathParams: {},
+        matchedPath: ''
       };
-      const data = await navigationService.buildNavItems([regularNode, orphanNode], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([regularNode, orphanNode], undefined, pathData);
       expect(data.items[0].label).toBe('Orphan');
       expect(data.items[1].label).toBe('Regular');
     });
@@ -1289,14 +1291,15 @@ describe('NavigationService', () => {
       const regularNode: Node = { pathSegment: 'rn', label: 'Regular', children: [] };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
       const nodes = [orphanA, catNode, orphanB, regularNode];
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: nodes,
         nodesInPath: [],
         rootNodes: nodes,
-        pathParams: {}
+        pathParams: {},
+        matchedPath: ''
       };
-      const data = await navigationService.buildNavItems(nodes, undefined, pathData, true);
+      const data = await navigationService.buildNavItems(nodes, undefined, pathData);
       expect(data.items[0].label).toBe('OrphanA');
       expect(data.items[1].label).toBe('OrphanB');
       expect(data.items[2].category?.id).toBe('cat1');
