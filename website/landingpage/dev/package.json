@@ -28,7 +28,7 @@
     "esbuild": "0.28.1",
     "feed": "5.2.0",
     "gray-matter": "4.0.3",
-    "js-yaml": "4.3.0",
+    "js-yaml": "4.3.1",
     "marked": "18.0.5",
     "postcss": "8.5.23",
     "postcss-cli": "11.0.1",
