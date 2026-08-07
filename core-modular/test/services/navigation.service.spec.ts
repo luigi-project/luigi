@@ -1246,6 +1246,62 @@ describe('NavigationService', () => {
       expect(data.items[0].href).toBe('#/settings');
       jest.restoreAllMocks();
     });
+    it('should preserve insertion order for items with invalid category', async () => {
+      const invalidCategory = { id: '', label: '' };
+      const nodeA: Node = { pathSegment: 'a', label: 'A', category: invalidCategory, children: [] };
+      const nodeB: Node = { pathSegment: 'b', label: 'B', category: invalidCategory, children: [] };
+      const nodeC: Node = { pathSegment: 'c', label: 'C', category: invalidCategory, children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [nodeA, nodeB, nodeC],
+        nodesInPath: [],
+        rootNodes: [nodeA, nodeB, nodeC],
+        pathParams: {}
+      };
+      const data = await navigationService.buildNavItems([nodeA, nodeB, nodeC], undefined, pathData, true);
+      expect(data.items.map((i: any) => i.label)).toEqual(['A', 'B', 'C']);
+    });
+
+    it('should place invalid-category items before regular items', async () => {
+      const invalidCategory = { id: '', label: '' };
+      const orphanNode: Node = { pathSegment: 'orphan', label: 'Orphan', category: invalidCategory, children: [] };
+      const regularNode: Node = { pathSegment: 'regular', label: 'Regular', children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: [regularNode, orphanNode],
+        nodesInPath: [],
+        rootNodes: [regularNode, orphanNode],
+        pathParams: {}
+      };
+      const data = await navigationService.buildNavItems([regularNode, orphanNode], undefined, pathData, true);
+      expect(data.items[0].label).toBe('Orphan');
+      expect(data.items[1].label).toBe('Regular');
+    });
+
+    it('should place multiple invalid-category items before categorized and regular items in order', async () => {
+      const invalidCategory = { id: '', label: '' };
+      const validCategory = { id: 'cat1', label: 'Cat 1' };
+      const orphanA: Node = { pathSegment: 'oa', label: 'OrphanA', category: invalidCategory, children: [] };
+      const catNode: Node = { pathSegment: 'cn', label: 'CatNode', category: validCategory, children: [] };
+      const orphanB: Node = { pathSegment: 'ob', label: 'OrphanB', category: invalidCategory, children: [] };
+      const regularNode: Node = { pathSegment: 'rn', label: 'Regular', children: [] };
+      luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      const nodes = [orphanA, catNode, orphanB, regularNode];
+      const pathData = {
+        selectedNode: undefined,
+        selectedNodeChildren: nodes,
+        nodesInPath: [],
+        rootNodes: nodes,
+        pathParams: {}
+      };
+      const data = await navigationService.buildNavItems(nodes, undefined, pathData, true);
+      expect(data.items[0].label).toBe('OrphanA');
+      expect(data.items[1].label).toBe('OrphanB');
+      expect(data.items[2].category?.id).toBe('cat1');
+      expect(data.items[3].label).toBe('Regular');
+    });
   });
 
   describe('NavigationService.getChildren', () => {

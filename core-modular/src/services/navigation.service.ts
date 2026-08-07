@@ -216,6 +216,7 @@ export class NavigationService {
   }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
+    const orphanItems: NavItem[] = [];
     const badgeCountsToSumUp: number[] = [];
 
     for (const node of nodes) {
@@ -314,7 +315,7 @@ export class NavigationService {
         };
 
         if (node.category && !isCategoryValid) {
-          items.unshift(navItem);
+          orphanItems.push(navItem);
         } else {
           items.push(navItem);
         }
@@ -330,6 +331,8 @@ export class NavigationService {
       count: () => badgeCountSum,
       label: ''
     };
+
+    items.unshift(...orphanItems);
 
     return { items, totalBadgeNode };
   }
