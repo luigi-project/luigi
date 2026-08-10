@@ -371,6 +371,8 @@ export const UIModule = {
       }
 
       if (viewGroupContainer) {
+        const previousViewUrl = viewGroupContainer.viewurl;
+
         if (!withoutSync) {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = resolvedViewUrl;
@@ -390,7 +392,15 @@ export const UIModule = {
 
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+          const hashChanged =
+            GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+
+          if (hashChanged && !viewGroupContainer.virtualTree) {
+            viewGroupContainer.context = currentNode.context || {};
+            viewGroupContainer.updateViewUrl(resolvedViewUrl);
+          } else {
+            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+          }
         }
       } else {
         if (!withoutSync) {
