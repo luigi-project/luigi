@@ -234,6 +234,26 @@ window.onload = () => {
               webcomponent: true
             },
             {
+              pathSegment: 'wctabs',
+              label: 'WC Tabs',
+              viewUrl: '/helloWorldWC.js',
+              tabNav: { showAsTabHeader: true },
+              webcomponent: true,
+              children: [
+                {
+                  pathSegment: 'wctabschild1',
+                  label: 'WC Tab Child 1',
+                  viewUrl: '/helloWorldWC.js',
+                  webcomponent: true
+                },
+                {
+                  pathSegment: 'wctabschild2',
+                  label: 'WC Tab Child 2',
+                  viewUrl: '/microfrontend.html#wctabchild2'
+                }
+              ]
+            },
+            {
               pathSegment: 'c3',
               label: 'MFE3',
               icon: 'group',

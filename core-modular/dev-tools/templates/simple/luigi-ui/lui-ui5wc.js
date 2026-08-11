@@ -1058,9 +1058,41 @@ const connector = {
 
   renderTabNav: (tabNavData) => {
     const tabcontainer = document.querySelector('ui5-tabcontainer');
+    let tabHeaderContainer = document.querySelector('.lui-tab-header');
     tabcontainer?.setAttribute('no-auto-selection', '');
     if (tabcontainer) tabcontainer.innerHTML = '';
-    if (Object.keys(tabNavData).length === 0) {
+
+    // Handle tab header web component
+    if (tabNavData.headerNode) {
+      if (!tabHeaderContainer) {
+        tabHeaderContainer = document.createElement('div');
+        tabHeaderContainer.className = 'lui-tab-header';
+        tabcontainer?.parentElement?.insertBefore(tabHeaderContainer, tabcontainer);
+      }
+      tabHeaderContainer.classList.add('lui-tab-header--active');
+      const existingLc = tabHeaderContainer.querySelector('luigi-container');
+      if (existingLc && existingLc.getAttribute('viewurl') === tabNavData.headerNode.viewUrl) {
+        // Update context on existing container
+        existingLc.context = tabNavData.headerNode.context || {};
+      } else {
+        // Create new container
+        tabHeaderContainer.innerHTML = '';
+        const lc = document.createElement('luigi-container');
+        lc.setAttribute('viewurl', tabNavData.headerNode.viewUrl);
+        lc.setAttribute('webcomponent', 'true');
+        lc.setAttribute('skipInitCheck', 'true');
+        lc.setAttribute('noShadow', 'true');
+        if (tabNavData.headerNode.context) {
+          lc.context = tabNavData.headerNode.context;
+        }
+        tabHeaderContainer.appendChild(lc);
+      }
+    } else if (tabHeaderContainer) {
+      tabHeaderContainer.innerHTML = '';
+      tabHeaderContainer.classList.remove('lui-tab-header--active');
+    }
+
+    if (Object.keys(tabNavData).length === 0 || !tabNavData.items?.length) {
       document.querySelector('.content-wrapper > ui5-tabcontainer')?.classList.add('ui5-tabcontainer-hidden');
       return;
     }

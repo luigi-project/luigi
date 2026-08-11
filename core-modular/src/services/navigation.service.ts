@@ -23,6 +23,7 @@ import type {
   ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
+  TabNavConfig,
   TabNavData,
   TopNavData,
   UserInfo,
@@ -744,6 +745,10 @@ export class NavigationService {
       parentNode = this.getParentNode(selectedNode, pathData) as Node;
       if (parentNode && !parentNode.tabNav) return {};
     }
+
+    const tabNavNode = parentNode || selectedNode;
+    const tabNavConfig = this.getTabNavConfig(tabNavNode);
+
     let basePath = '';
     pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
@@ -751,18 +756,39 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = parentNode
+    const children = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
-    const navData = await this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
 
-    return {
+    if (tabNavConfig?.hideTabNavAutomatically && children.length <= 1) {
+      return {};
+    }
+
+    const navData = await this.buildNavItems(children, selectedNode, pathData);
+
+    const result: TabNavData = {
       selectedNode,
       items: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
+
+    if (tabNavConfig?.showAsTabHeader && tabNavNode.webcomponent && tabNavNode.viewUrl) {
+      result.headerNode = {
+        viewUrl: tabNavNode.viewUrl,
+        context: pathData.context || tabNavNode.context,
+        webcomponent: tabNavNode.webcomponent
+      };
+    }
+
+    return result;
+  }
+
+  private getTabNavConfig(node: Node): TabNavConfig | undefined {
+    if (!node.tabNav) return undefined;
+    if (typeof node.tabNav === 'object') return node.tabNav as TabNavConfig;
+    return undefined;
   }
 
   async getBreadcrumbData(
@@ -1416,7 +1442,7 @@ export class NavigationService {
    * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
    * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
    */
-  async getCurrentRoutePath(options: NavigationOptions): Promise<string|undefined> {
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string | undefined> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
