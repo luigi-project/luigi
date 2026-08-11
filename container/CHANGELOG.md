@@ -4,6 +4,15 @@
 
 
 
+## [v1.7.11] (2026-08-11)
+
+#### :bug: Fixed
+
+* [#5378](https://github.com/luigi-project/luigi/pull/5378) Race condition in container ([@walmazacn](https://github.com/walmazacn))
+
+
+
+
 ## [v1.7.10] (2026-07-31)
 
 #### :rocket: Added
@@ -207,3 +216,4 @@
 [v1.7.8]: https://github.com/luigi-project/luigi/compare/container/v1.7.7...container/v1.7.8
 [v1.7.9]: https://github.com/luigi-project/luigi/compare/container/v1.7.8...container/v1.7.9
 [v1.7.10]: https://github.com/luigi-project/luigi/compare/container/v1.7.9...container/v1.7.10
+[v1.7.11]: https://github.com/luigi-project/luigi/compare/container/v1.7.10...container/v1.7.11
