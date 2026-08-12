@@ -349,12 +349,13 @@ export const UIModule = {
           ) {
             viewGroupContainer = element;
           } else if (
-            !currentNode.viewGroup &&
-            !currentNode.isolateView &&
-            !currentNode.webcomponent &&
-            element.viewurl &&
-            resolvedViewUrl &&
-            GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)
+            preventContextUpdate ||
+            (!currentNode.viewGroup &&
+              !currentNode.isolateView &&
+              !currentNode.webcomponent &&
+              element.viewurl &&
+              resolvedViewUrl &&
+              GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl))
           ) {
             viewGroupContainer = element;
           } else {
@@ -373,7 +374,7 @@ export const UIModule = {
       if (viewGroupContainer) {
         const previousViewUrl = viewGroupContainer.viewurl;
 
-        if (!withoutSync) {
+        if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = resolvedViewUrl;
           viewGroupContainer.nodeParams = nodeParams;

@@ -1172,7 +1172,7 @@ export class NavigationService {
 
       if (hashRouting) {
         const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
-        if (!withoutSync && method !== 'replaceState') {
+        if (!withoutSync && !preventContextUpdate && method !== 'replaceState') {
           location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
@@ -1416,7 +1416,7 @@ export class NavigationService {
    * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
    * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
    */
-  async getCurrentRoutePath(options: NavigationOptions): Promise<string|undefined> {
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string | undefined> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);

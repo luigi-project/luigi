@@ -414,6 +414,24 @@ window.onload = () => {
           ]
         },
         {
+          pathSegment: 'withoptionstest',
+          label: 'WithOptions Test',
+          icon: 'lab',
+          viewUrl: '/microfrontend.html',
+          children: [
+            {
+              pathSegment: 'child1',
+              label: 'Child 1',
+              viewUrl: '/microfrontend.html'
+            },
+            {
+              pathSegment: 'child2',
+              label: 'Child 2',
+              viewUrl: '/withoptions-test.html'
+            }
+          ]
+        },
+        {
           pathSegment: 'parent',
           label: 'parent',
           viewUrl: '/microfrontend.html#parent',

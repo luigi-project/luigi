@@ -938,6 +938,40 @@ describe('NavigationService', () => {
       window.location.hash = originalHash;
     });
 
+    it('should dispatch CustomEvent with preventContextUpdate detail instead of setting location.hash directly', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/projects',
+        preserveView: undefined,
+        preventContextUpdate: true,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/#/projects' }, '', '/#/projects');
+      expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
+
+      const dispatchedEvent = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
+
+      expect(dispatchedEvent.type).toEqual('hashchange');
+      expect(dispatchedEvent.detail).toEqual({
+        preventContextUpdate: true,
+        preventHistoryEntry: false,
+        withoutSync: false
+      });
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
+
     it('should navigate to a path in new browser tab', async () => {
       const openViewInNewTabSpy = jest.spyOn(navigationService, 'openViewInNewTab');
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/test/path');
