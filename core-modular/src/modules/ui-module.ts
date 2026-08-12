@@ -344,6 +344,7 @@ export const UIModule = {
           }
         } else {
           if (
+            withoutSync ||
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
@@ -395,11 +396,11 @@ export const UIModule = {
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
 
-          if (hashChanged && !viewGroupContainer.virtualTree) {
+          if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
-            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
           }
         }
       } else {
