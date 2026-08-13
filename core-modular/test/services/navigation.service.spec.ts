@@ -2409,4 +2409,296 @@ describe('NavigationService', () => {
       expect(result).toEqual(undefined);
     });
   });
+
+  describe('NavigationService.getTabNavData', () => {
+    const childNode1: Node = { pathSegment: 'child1', label: 'Child 1', viewUrl: '/child1.html', children: [] };
+    const childNode2: Node = { pathSegment: 'child2', label: 'Child 2', viewUrl: '/child2.html', children: [] };
+
+    beforeEach(() => {
+      luigiMock.i18n = jest.fn().mockReturnValue({
+        getTranslation: jest.fn((key: string) => key)
+      });
+    });
+
+    it('should return empty object when path is empty and root has viewUrl', async () => {
+      const pathData: PathData = {
+        nodesInPath: [{ pathSegment: '', viewUrl: '/root.html', children: [] }],
+        selectedNode: { pathSegment: '', viewUrl: '/root.html', children: [] },
+        pathParams: {},
+        context: {}
+      };
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue(pathData);
+
+      const result = await navigationService.getTabNavData('', pathData);
+      expect(result).toEqual({});
+    });
+
+    it('should return empty object when selectedNode is undefined', async () => {
+      const pathData: PathData = {
+        nodesInPath: [],
+        selectedNode: undefined,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/nonexistent', pathData);
+      expect(result).toEqual({});
+    });
+
+    it('should return empty object when neither node nor parent has tabNav', async () => {
+      const parentNode: Node = { pathSegment: 'parent', label: 'Parent', children: [childNode1] };
+      childNode1.parent = parentNode;
+      const pathData: PathData = {
+        nodesInPath: [parentNode, childNode1],
+        selectedNode: childNode1,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/parent/child1', pathData);
+      expect(result).toEqual({});
+    });
+
+    it('should return tab nav data when selectedNode has tabNav: true', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: true,
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.selectedNode).toBe(tabNode);
+      expect(result.items).toBeDefined();
+      expect(result.basePath).toBeDefined();
+      expect(result.navClick).toBeInstanceOf(Function);
+    });
+
+    it('should return tab nav data when parent has tabNav: true', async () => {
+      const parentNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: true,
+        children: [childNode1, childNode2]
+      };
+      childNode1.parent = parentNode;
+      const pathData: PathData = {
+        nodesInPath: [parentNode, childNode1],
+        selectedNode: childNode1,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs/child1', pathData);
+
+      expect(result.selectedNode).toBe(childNode1);
+      expect(result.items).toBeDefined();
+      expect(result.navClick).toBeInstanceOf(Function);
+    });
+
+    it('should return empty object when hideTabNavAutomatically is true and only 1 child', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { hideTabNavAutomatically: true },
+        viewUrl: '/tabs.html',
+        children: [childNode1]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+      expect(result).toEqual({});
+    });
+
+    it('should return tab nav data when hideTabNavAutomatically is true but more than 1 child', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { hideTabNavAutomatically: true },
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.selectedNode).toBe(tabNode);
+      expect(result.items).toBeDefined();
+      expect(result.items!.length).toBeGreaterThan(0);
+    });
+
+    it('should include headerNode when showAsTabHeader is true and node is a webcomponent', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { showAsTabHeader: true },
+        viewUrl: 'http://localhost/header.js',
+        webcomponent: true,
+        context: { title: 'Header' },
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: { title: 'Current Context' }
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.headerNode).toBeDefined();
+      expect(result.headerNode!.viewUrl).toBe('http://localhost/header.js');
+      expect(result.headerNode!.webcomponent).toBe(true);
+      expect(result.headerNode!.context).toEqual({ title: 'Current Context' });
+    });
+
+    it('should not include headerNode when showAsTabHeader is true but node is not a webcomponent', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { showAsTabHeader: true },
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.headerNode).toBeUndefined();
+    });
+
+    it('should use pathData.context for headerNode context', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { showAsTabHeader: true },
+        viewUrl: 'http://localhost/header.js',
+        webcomponent: true,
+        context: { static: 'node-context' },
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: { dynamic: 'route-context' }
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.headerNode!.context).toEqual({ dynamic: 'route-context' });
+    });
+
+    it('should log console.warn when tabNav is an object without hideTabNavAutomatically or showAsTabHeader', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: {} as any,
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(warnSpy).toHaveBeenCalledWith('tabNav:{hideTabNavAutomatically:true|false} is not configured correctly.');
+      warnSpy.mockRestore();
+    });
+
+    it('should not log console.warn when tabNav has hideTabNavAutomatically', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { hideTabNavAutomatically: true },
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
+    it('should not log console.warn when tabNav has showAsTabHeader', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { showAsTabHeader: true },
+        viewUrl: 'http://localhost/header.js',
+        webcomponent: true,
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
+    it('should fall back to tabNavNode.context when pathData.context is falsy', async () => {
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: { showAsTabHeader: true },
+        viewUrl: 'http://localhost/header.js',
+        webcomponent: true,
+        context: { fallback: 'node-context' },
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: undefined as any
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.headerNode!.context).toEqual({ fallback: 'node-context' });
+    });
+  });
 });
