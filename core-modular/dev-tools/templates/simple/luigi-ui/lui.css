@@ -27,6 +27,14 @@ ui5-side-navigation {
     display: none;
 }
 
+.lui-tab-header {
+    display: none;
+}
+
+.lui-tab-header--active {
+    display: block;
+}
+
 .lui-dialog::part(header),
 .lui-dialog::part(footer) {
   padding-inline: 0;

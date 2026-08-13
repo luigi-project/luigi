@@ -234,6 +234,26 @@ window.onload = () => {
               webcomponent: true
             },
             {
+              pathSegment: 'wctabs',
+              label: 'WC Tabs',
+              viewUrl: '/helloWorldWC.js',
+              tabNav: { showAsTabHeader: true },
+              webcomponent: true,
+              children: [
+                {
+                  pathSegment: 'wctabschild1',
+                  label: 'WC Tab Child 1',
+                  viewUrl: '/helloWorldWC.js',
+                  webcomponent: true
+                },
+                {
+                  pathSegment: 'wctabschild2',
+                  label: 'WC Tab Child 2',
+                  viewUrl: '/microfrontend.html#wctabchild2'
+                }
+              ]
+            },
+            {
               pathSegment: 'c3',
               label: 'MFE3',
               icon: 'group',
@@ -410,6 +430,24 @@ window.onload = () => {
               label: 'Child 2',
               viewUrl: '/microfrontend.html#child2',
               icon: 'calendar'
+            }
+          ]
+        },
+        {
+          pathSegment: 'withoptionstest',
+          label: 'WithOptions Test',
+          icon: 'lab',
+          viewUrl: '/microfrontend.html',
+          children: [
+            {
+              pathSegment: 'child1',
+              label: 'Child 1',
+              viewUrl: '/microfrontend.html'
+            },
+            {
+              pathSegment: 'child2',
+              label: 'Child 2',
+              viewUrl: '/withoptions-test.html'
             }
           ]
         },
