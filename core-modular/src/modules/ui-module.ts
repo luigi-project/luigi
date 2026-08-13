@@ -349,9 +349,6 @@ export const UIModule = {
           ) {
             viewGroupContainer = element;
           } else if (
-            // preventContextUpdate bypasses only the URL match, not the type exclusions.
-            // The type guards must remain: in multi-container scenarios (viewGroups, preloading)
-            // skipping them would match every element and select the last in DOM order.
             !currentNode.viewGroup &&
               !currentNode.isolateView &&
               !currentNode.webcomponent &&
