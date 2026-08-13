@@ -79,11 +79,29 @@
   }
 
   function reloadConfig() {
-    let customConfig = sessionStorage.getItem('fiddle');
-    let customConfigPreviousSession = localStorage.getItem('fiddle');
+    // deep-link support: ?preset=<id> loads a bundled preset;
+    // unknown ids fall back to default
+    // example: http://localhost:3000/?preset=test-preset1
+    const presetId = new URLSearchParams(window.location.search).get('preset');
+    if (presetId) {
+      const preset = presets.find((p) => p.id === presetId);
+      const presetConfig = preset ? preset.config : defaultConfigString;
+      try {
+        exec(presetConfig);
+        configString = presetConfig;
+      } catch (e) {
+        console.error(e);
+        exec(defaultConfigString);
+        configString = defaultConfigString;
+      }
+      return;
+    }
 
     // init keyboard events
     initKeyboardEvents();
+
+    let customConfig = sessionStorage.getItem('fiddle');
+    let customConfigPreviousSession = localStorage.getItem('fiddle');
 
     // check if config saved from a previous session
     if (!customConfig && customConfigPreviousSession) {

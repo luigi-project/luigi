@@ -6,5 +6,5 @@ import test2 from './test-preset2.js';
 export default [
     { id: 'default-config', label: 'Default Config', config: defaultConfig },
     { id: 'test-preset1', label: 'Test Preset 1', config: test1 },
-    { id: 'test-preset1', label: 'Test Preset 2', config: test2 }
+    { id: 'test-preset2', label: 'Test Preset 2', config: test2 }
 ];
