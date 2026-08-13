@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from 'svelte';
 
   import luigiCorePkgInfo from '../node_modules/@luigi-project/core/package.json';
-  import defaultConfig from './defaultConfig.js';
+  import defaultConfig from './presets/defaultConfig.js';
+  import presets from './presets/index.js';
 
   let {
     luigiVersion = $bindable(luigiCorePkgInfo.version),
@@ -13,6 +14,7 @@
 
   let defaultConfigString = defaultConfig;
   let configString = defaultConfigString;
+  let showPresets = $state(false);
 
   function exec(jsString) {
     return eval(jsString);
@@ -20,6 +22,7 @@
 
   function closeDropdowns() {
     showVersions = false;
+    showPresets = false;
   }
 
   async function injectLuigiAssets() {
@@ -144,6 +147,19 @@
     window.editorTA.textContent = configString;
     window.editor.clearSelection();
     document.body.classList.add('editorVisible');
+  }
+
+  function togglePresets(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    showPresets = !showPresets;
+  }
+
+  function applyPreset(config) {
+    // identical to saveConfig(), just with the preset string
+    localStorage.setItem('fiddle', config);
+    sessionStorage.setItem('fiddle', config);
+    window.location.href = '/';
   }
 
   function hide() {
@@ -288,6 +304,20 @@
       </div>
 
       <div class="fd-action-bar__actions">
+        <button class="fd-button fd-button--standard btn-primary" onclick={togglePresets}>
+          <span class="lui-mobile-hide">Presets</span>
+          <span class="lui-mobile-show sap-icon--list"></span>
+          {#if showPresets}
+            <div class="lui-preset-chooser">
+              {#each presets as preset}
+                <a class="fd-link" href="#top" onclick={() => applyPreset(preset.config)}>
+                  {preset.label}
+                </a><br />
+              {/each}
+            </div>
+          {/if}
+        </button>
+        <span class="lui-sep"></span>
         <button class="fd-button fd-button--standard btn-primary" onclick={clearAll}>
           <span class="lui-mobile-hide">Clear All</span>
           <span class="lui-mobile-show sap-icon--delete"></span>
@@ -367,6 +397,10 @@
   .fiddle-toolbar .fd-link {
     color: #2deb8a;
     text-shadow: none;
+  }
+
+  .fiddle-toolbar .fd-link:hover {
+    color: #76ffb6;
   }
 
   .editor_container {
@@ -471,7 +505,8 @@
     }
   }
 
-  .lui-version-chooser {
+  .lui-version-chooser,
+  .lui-preset-chooser{
     position: absolute;
     bottom: 2rem;
     max-width: 300px;
