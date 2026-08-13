@@ -153,4 +153,37 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     expect(containerWrapper.contains(existingContainer)).toBe(true);
     expect(existingContainer.updateContext).toHaveBeenCalledWith({ updated: true }, { withoutSync: false });
   });
+
+  it('should not match container when node is webcomponent even with preventContextUpdate', async () => {
+    const existingContainer = createMockContainer('/withoptions.html');
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewUrl: '/multipurpose.html', webcomponent: true } as any;
+
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
+  });
+
+  it('should not match container when node has isolateView even with preventContextUpdate', async () => {
+    const existingContainer = createMockContainer('/withoptions.html');
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewUrl: '/multipurpose.html', isolateView: true } as any;
+
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
+  });
+
+  it('should not match container when node has viewGroup even with preventContextUpdate', async () => {
+    const existingContainer = createMockContainer('/withoptions.html');
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewUrl: '/multipurpose.html', viewGroup: 'myGroup' } as any;
+
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
+  });
 });
