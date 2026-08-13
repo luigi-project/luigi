@@ -106,6 +106,58 @@ describe('UIModule.updateMainContent - withoutSync', () => {
     expect(existingContainer.updateViewUrl).not.toHaveBeenCalled();
   });
 
+  it('should forward fresh params to the container when withoutSync is true', async () => {
+    existingContainer.nodeParams = { old: 'node' };
+    existingContainer.pathParams = { old: 'path' };
+    existingContainer.searchParams = { old: 'search' };
+
+    const currentNode = {
+      label: 'Target',
+      viewUrl: 'https://example.com/different-mfe.html',
+      context: { project: 'new-project' }
+    };
+    const luigiParams = {
+      nodeParams: { fresh: 'node' },
+      pathParams: { fresh: 'path' },
+      searchParams: { fresh: 'search' }
+    };
+
+    await UIModule.updateMainContent(currentNode as any, mockLuigi, luigiParams as any, true, false);
+
+    // fresh params are forwarded so the client does not receive stale params (parity with core)
+    expect(existingContainer.nodeParams).toEqual({ fresh: 'node' });
+    expect(existingContainer.pathParams).toEqual({ fresh: 'path' });
+    expect(existingContainer.searchParams).toEqual({ fresh: 'search' });
+    // viewurl untouched -> no iframe reload
+    expect(existingContainer.viewurl).toBe('https://example.com/current-mfe.html');
+    expect(existingContainer.updateContext).toHaveBeenCalledWith(
+      { project: 'new-project' },
+      { withoutSync: true }
+    );
+  });
+
+  it('should not update params when withoutSync and preventContextUpdate are both true', async () => {
+    existingContainer.nodeParams = { old: 'node' };
+    existingContainer.pathParams = { old: 'path' };
+    existingContainer.searchParams = { old: 'search' };
+
+    const currentNode = {
+      label: 'Target',
+      viewUrl: 'https://example.com/different-mfe.html'
+    };
+    const luigiParams = {
+      nodeParams: { fresh: 'node' },
+      pathParams: { fresh: 'path' },
+      searchParams: { fresh: 'search' }
+    };
+
+    await UIModule.updateMainContent(currentNode as any, mockLuigi, luigiParams as any, true, true);
+
+    expect(existingContainer.nodeParams).toEqual({ old: 'node' });
+    expect(existingContainer.pathParams).toEqual({ old: 'path' });
+    expect(existingContainer.searchParams).toEqual({ old: 'search' });
+  });
+
   it('should not call updateContext when both withoutSync and preventContextUpdate are true', async () => {
     const currentNode = {
       label: 'Target',

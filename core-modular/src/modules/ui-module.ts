@@ -391,6 +391,15 @@ export const UIModule = {
           setAllowRules(viewGroupContainer, luigi);
         }
 
+        if (withoutSync && !preventContextUpdate) {
+          // withoutSync: forward the fresh params to the client so navigations that change
+          // node/path/search params don't leave the client with stale params (parity with core).
+          // Deliberately does NOT touch viewurl/display, preserving the no-reload guarantee.
+          viewGroupContainer.nodeParams = nodeParams;
+          viewGroupContainer.pathParams = pathParams;
+          viewGroupContainer.searchParams = searchParams;
+        }
+
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
           const hashChanged =
