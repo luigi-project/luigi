@@ -749,6 +749,10 @@ export class NavigationService {
     const tabNavNode = parentNode || selectedNode;
     const tabNavConfig = this.getTabNavConfig(tabNavNode);
 
+    if (tabNavConfig && !('hideTabNavAutomatically' in tabNavConfig) && !tabNavConfig.showAsTabHeader) {
+      console.warn('tabNav:{hideTabNavAutomatically:true|false} is not configured correctly.');
+    }
+
     let basePath = '';
     pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
