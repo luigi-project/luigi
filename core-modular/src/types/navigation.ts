@@ -172,7 +172,7 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
-  tabNav?: boolean;
+  tabNav?: boolean | TabNavConfig;
   titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
@@ -237,8 +237,18 @@ export interface NavItem {
   tooltip?: string;
 }
 
+export interface TabNavConfig {
+  showAsTabHeader?: boolean;
+  hideTabNavAutomatically?: boolean;
+}
+
 export interface TabNavData {
   basePath?: string;
+  headerNode?: {
+    viewUrl: string;
+    context?: Record<string, any>;
+    webcomponent?: boolean | { type?: string; selfRegistered?: boolean; tagName?: string };
+  };
   items?: NavItem[];
   navClick?: (item: NavItem) => Promise<void>;
   selectedNode?: any;
