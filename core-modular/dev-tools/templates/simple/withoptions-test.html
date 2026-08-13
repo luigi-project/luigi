@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>WithOptions Test</title>
+    <meta charset="utf-8" />
+    <script src="./public_client/luigi-client.js"></script>
+    <style>
+      body {
+        font-family: var(--sapFontFamily);
+        text-align: center;
+        color: #515559;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>WithOptions Test Page</h1>
+      <p>This content should REMAIN visible after preventContextUpdate navigation.</p>
+      <p>If you see "Luigi Simple Development Template" instead, the bug is present.</p>
+      <ul>
+        <li>
+          <a
+            href="#"
+            onclick="LuigiClient.linkManager().withOptions({ preventContextUpdate: true }).navigate('/withoptionstest'); return false;"
+          >
+            Navigate to /withoptionstest with preventContextUpdate (iframe should stay)
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            onclick="LuigiClient.linkManager().navigate('/withoptionstest'); return false;"
+          >
+            Navigate to /withoptionstest WITHOUT preventContextUpdate (iframe should change)
+          </a>
+        </li>
+      </ul>
+    </div>
+    <script>
+      LuigiClient.addInitListener(() => {
+        console.log('WithOptions Test MFE initialized');
+      });
+      LuigiClient.addContextUpdateListener((ctx) => {
+        console.log('WithOptions Test MFE context updated', ctx);
+      });
+    </script>
+  </body>
+</html>
