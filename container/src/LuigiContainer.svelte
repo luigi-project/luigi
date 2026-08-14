@@ -322,10 +322,6 @@
   onDestroy(async () => {});
 
   function createIframe(): void {
-    // createIframe is deferred via setTimeout in initialize(). If the container
-    // was removed from the DOM in the meantime (e.g. a navigation re-sync in
-    // path routing mode), Svelte resets the `bind:this` reference to null.
-    // Bail out instead of throwing "Cannot read properties of null (reading 'appendChild')".
     if (!mainComponent) {
       return;
     }
