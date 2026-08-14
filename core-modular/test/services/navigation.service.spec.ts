@@ -904,6 +904,77 @@ describe('NavigationService', () => {
       expect(openAsModalMock).toHaveBeenCalledWith('/modal/path', { size: 'l' }, expect.any(Function));
     });
 
+    it('should call openAsModal even when the path equals the current location', async () => {
+      const openAsModalMock = jest.fn();
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: { size: 'l', keepPrevious: true },
+        newTab: false,
+        path: '/projects/pr2',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      luigiMock.navigation = jest.fn().mockReturnValue({ openAsModal: openAsModalMock });
+
+      await navigationService.handleNavigationRequest(navRequestParams, jest.fn());
+
+      expect(openAsModalMock).toHaveBeenCalledWith(
+        '/projects/pr2',
+        { size: 'l', keepPrevious: true },
+        expect.any(Function)
+      );
+    });
+
+    it('should call openAsDrawer even when the path equals the current location', async () => {
+      const openAsDrawerMock = jest.fn();
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+      const navRequestParams: NavigationRequestParams = {
+        drawerSettings: { size: 's' },
+        newTab: false,
+        path: '/projects/pr2',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      luigiMock.navigation = jest.fn().mockReturnValue({ openAsDrawer: openAsDrawerMock });
+
+      await navigationService.handleNavigationRequest(navRequestParams, jest.fn());
+
+      expect(openAsDrawerMock).toHaveBeenCalledWith('/projects/pr2', { size: 's' }, expect.any(Function));
+    });
+
+    it('should still drop a plain navigation to the current location', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+      const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
+      const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/projects/pr2',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(dispatchEventSpy).not.toHaveBeenCalled();
+
+      pushStateSpy.mockRestore();
+      dispatchEventSpy.mockRestore();
+    });
+
     it('should close modals and update history if no modalSettings and not using hash routing', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
 
