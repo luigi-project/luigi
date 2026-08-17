@@ -2551,6 +2551,30 @@ describe('NavigationService', () => {
       expect(result.items).toBeDefined();
       expect(result.basePath).toBeDefined();
       expect(result.navClick).toBeInstanceOf(Function);
+      expect(result.overflowLabel).toBe('luigi.navigation.tabNav.more');
+    });
+
+    it('should translate the overflow ("More") label via i18n', async () => {
+      luigiMock.i18n = jest.fn().mockReturnValue({
+        getTranslation: jest.fn((key: string) => (key === 'luigi.navigation.tabNav.more' ? 'Mehr' : key))
+      });
+      const tabNode: Node = {
+        pathSegment: 'tabs',
+        label: 'Tabs',
+        tabNav: true,
+        viewUrl: '/tabs.html',
+        children: [childNode1, childNode2]
+      };
+      const pathData: PathData = {
+        nodesInPath: [tabNode],
+        selectedNode: tabNode,
+        pathParams: {},
+        context: {}
+      };
+
+      const result = await navigationService.getTabNavData('/tabs', pathData);
+
+      expect(result.overflowLabel).toBe('Mehr');
     });
 
     it('should return tab nav data when parent has tabNav: true', async () => {
