@@ -775,6 +775,7 @@ export class NavigationService {
       items: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
+      overflowLabel: this.luigi.i18n().getTranslation('luigi.navigation.tabNav.more'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
 
