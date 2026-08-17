@@ -329,6 +329,11 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
+
+  if (item.node?.hideFromNav) {
+    return frag;
+  }
+
   if (item.node && item.label) {
     const el = document.createElement('ui5-side-navigation-item');
     el.setAttribute('text', item.label);
