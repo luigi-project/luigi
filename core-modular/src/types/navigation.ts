@@ -251,6 +251,7 @@ export interface TabNavData {
   };
   items?: NavItem[];
   navClick?: (item: NavItem) => Promise<void>;
+  overflowLabel?: string;
   selectedNode?: any;
   totalBadgeNode?: BadgeCounter;
 }
