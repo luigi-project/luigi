@@ -174,6 +174,26 @@ function categorizePullRequests(pullRequests, lastCoreModularRelease) {
   return categorizedPulls;
 }
 
+function safeAppendFile(path, data) {
+  try {
+    // Limit data size to prevent DoS
+    if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) { // 1 MB limit
+        throw new Error('Data too large.');
+    }
+
+    // Append data safely
+    fs.appendFileSync(path, data, { encoding: 'utf8', flag: 'a' }, (err) => {
+      console.log('Append lastline to Changelog', data);
+      if (err) {
+        logError('Cannot write compare link to the last line:', err);
+        return;
+      }
+    });
+  } catch (err) {
+    console.error(`Error appending file: ${err.message}`);
+  }
+}
+
 /**
  * Update package.json and add changes to changelog
  */
@@ -218,13 +238,7 @@ async function prepareRelease() {
 
       // Read file before append last line to file, otherwise it will not be written
       fs.readFileSync(changelogPath, 'utf8');
-      fs.appendFileSync(changelogPath, lastline, 'utf8', (err) => {
-        console.log('Append lastline to Changelog', lastline);
-        if (err) {
-          logError('Cannot write compare link to the last line:', err);
-          return;
-        }
-      });
+      safeAppendFile(changelogPath, lastline);
 
       // Add the new release entry to the changelog after the comment (in the changelog)
       const newChangelog = `\n\n## [v${version}] (${getCurrentDate()})\n\n${
