@@ -182,7 +182,8 @@ function safeAppendFile(path, data) {
     }
 
     // Limit data size to prevent DoS
-    if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) { // 1 MB limit
+    if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) {
+      // 1 MB limit
       throw new Error('Data is too large');
     }
 
@@ -209,9 +210,7 @@ async function prepareRelease() {
     output: process.stdout
   });
   const currentVersion = lastCoreModularRelease?.tag_name?.replace('core-modular/v', '');
-  const question = color.bold.cyan(
-    `Version you want to release (current version ${currentVersion})?`
-  );
+  const question = color.bold.cyan(`Version you want to release (current version ${currentVersion})?`);
 
   rl.question(question, async (version) => {
     if (compareVersions(packageJson.version, version) >= 0) {
