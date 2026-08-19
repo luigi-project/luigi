@@ -181,6 +181,23 @@ function safeAppendFile(path, data) {
       throw new Error('Data has to be valid string');
     }
 
+    // Check against malicious patterns
+    const maliciousPatterns = [
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // Script tags
+      /on\w+\s*=/gi,                                         // Inline event handlers (onclick, onload, etc.)
+      /javascript:/gi,                                       // JS protocol in links
+      /document\./gi,                                        // Access to document object
+      /window\./gi,                                          // Access to window object
+      /eval\s*\(/gi,                                         // eval() usage
+      /Function\s*\(/gi,                                     // Function constructor
+      /setTimeout\s*\(/gi,                                   // setTimeout with code string
+      /setInterval\s*\(/gi                                   // setInterval with code string
+    ];
+
+    if (maliciousPatterns.some(pattern => pattern.test(data))) {
+      throw new Error('Data is not safe');
+    }
+
     // Limit data size to prevent DoS
     if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) {
       // 1 MB limit
