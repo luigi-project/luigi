@@ -1,7 +1,8 @@
+const color = require('cli-color');
+const DOMPurify = require('dompurify');
 const fs = require('fs');
 const readline = require('readline');
 const packageJson = require('./public/package.json');
-const color = require('cli-color');
 
 function compareVersions(a, b) {
   const pa = a.split('.').map(Number);
@@ -181,32 +182,18 @@ function safeAppendFile(path, data) {
       throw new Error('Data has to be valid string');
     }
 
-    // Check against malicious patterns
-    const maliciousPatterns = [
-      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // Script tags
-      /on\w+\s*=/gi, // Inline event handlers (onclick, onload, etc.)
-      /javascript:/gi, // JS protocol in links
-      /document\./gi, // Access to document object
-      /window\./gi, // Access to window object
-      /eval\s*\(/gi, // eval() usage
-      /Function\s*\(/gi, // Function constructor
-      /setTimeout\s*\(/gi, // setTimeout with code string
-      /setInterval\s*\(/gi // setInterval with code string
-    ];
-
-    if (maliciousPatterns.some((pattern) => pattern.test(data))) {
-      throw new Error('Data is not safe');
-    }
-
     // Limit data size to prevent DoS
     if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) {
       // 1 MB limit
       throw new Error('Data is too large');
     }
 
+    // Check against malicious patterns
+    const cleanData = DOMPurify.sanitize(data);
+
     // Append data safely
-    fs.appendFileSync(path, data, { encoding: 'utf8', flag: 'a' }, (err) => {
-      console.log('Append lastline to Changelog', data);
+    fs.appendFileSync(path, cleanData, { encoding: 'utf8', flag: 'a' }, (err) => {
+      console.log('Append lastline to Changelog', cleanData);
       if (err) {
         logError('Cannot write compare link to the last line:', err);
         return;
@@ -227,11 +214,11 @@ async function prepareRelease() {
     output: process.stdout
   });
   const currentVersion = lastCoreModularRelease?.tag_name?.replace('core-modular/v', '');
-  const question = color.bold.cyan(`Version you want to release (current version ${currentVersion})?`);
+  const question = color.bold.cyan(`Version you want to release (current version - ${currentVersion})?`);
 
   rl.question(question, async (version) => {
     if (compareVersions(packageJson.version, version) >= 0) {
-      logWarning('Version already exists. Please check.');
+      logWarning('Version already exists - please check!');
       rl.close();
       return;
     } else if (version.startsWith('v')) {
