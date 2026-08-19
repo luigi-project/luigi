@@ -176,9 +176,14 @@ function categorizePullRequests(pullRequests, lastCoreModularRelease) {
 
 function safeAppendFile(path, data) {
   try {
+    // Check if data is valid string
+    if (typeof data !== 'string' || data === '') {
+      throw new Error('Data has to be valid string');
+    }
+
     // Limit data size to prevent DoS
     if (Buffer.byteLength(data, 'utf8') > 1024 * 1024) { // 1 MB limit
-        throw new Error('Data too large.');
+      throw new Error('Data is too large');
     }
 
     // Append data safely
@@ -203,10 +208,11 @@ async function prepareRelease() {
     input: process.stdin,
     output: process.stdout
   });
-
+  const currentVersion = lastCoreModularRelease?.tag_name?.replace('core-modular/v', '');
   const question = color.bold.cyan(
-    `Version you want to release (current version ${lastCoreModularRelease.tag_name.replace('core-modular/v', '')})? `
+    `Version you want to release (current version ${currentVersion})?`
   );
+
   rl.question(question, async (version) => {
     if (compareVersions(packageJson.version, version) >= 0) {
       logWarning('Version already exists. Please check.');
@@ -230,11 +236,18 @@ async function prepareRelease() {
       const coreModularEnhancementChanges = formatPullRequests(enhancementPulls);
       const coreModularBugChanges = formatPullRequests(bugPulls);
       const coreModularNoLabelChanges = formatPullRequests(noLabelPulls);
-
       const changelogPath = './CHANGELOG.md';
+      const currentVersionAsNumber = Number(currentVersion?.replaceAll('.', ''));
+      const nextVersionAsNumber = Number(version?.replaceAll('.', ''));
+      const isNumber = (value) => {
+        return typeof value === 'number' && Number.isFinite(value);
+      };
 
       // Add compare link to the end of the file
-      const lastline = `\n[v${version}]: https://github.com/luigi-project/luigi/compare/${lastCoreModularRelease.tag_name}...core-modular/v${version}`;
+      let lastline = '';
+      if (isNumber(currentVersionAsNumber) && isNumber(nextVersionAsNumber)) {
+        lastline = `\n[v${version}]: https://github.com/luigi-project/luigi/compare/${lastCoreModularRelease.tag_name}...core-modular/v${version}`;
+      }
 
       // Read file before append last line to file, otherwise it will not be written
       fs.readFileSync(changelogPath, 'utf8');
