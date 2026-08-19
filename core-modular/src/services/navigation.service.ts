@@ -45,6 +45,7 @@ import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 
 export class NavigationService {
+  _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
@@ -63,6 +64,28 @@ export class NavigationService {
       this.nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     }
     return this.nodeDataManagementService;
+  }
+
+  getPreservedViewsLength(): number {
+    return this._preservedViews.length;
+  }
+
+  removeLastPreservedViewFromStack(): void {
+    this._preservedViews.pop();
+  }
+
+  handleGoBackRequest(goBackContext: any): void {
+    if (this.getPreservedViewsLength() > 0) {
+      this.removeLastPreservedViewFromStack();
+      // TODO handle navigation for preserved view
+    } else {
+      if (goBackContext) {
+        console.warn(
+          `Warning: goBack() does not support goBackContext value. This is available only when using the Luigi preserveView feature.`
+        );
+      }
+      history.back();
+    }
   }
 
   async getPathData(path: string): Promise<PathData> {
@@ -1104,6 +1127,19 @@ export class NavigationService {
 
     if (await this.shouldPreventNavigationForPath(path)) {
       return;
+    }
+
+    if (preserveView) {
+      const nextPath = computedPath;
+      const pathData: PathData = await this.getPathData(path);
+      const currentNode = pathData.selectedNode as Node;
+      const nodePath = RoutingHelpers.getNodePath(currentNode);
+
+      this._preservedViews.push({
+        context: currentNode?.context,
+        nextPath: nextPath.startsWith('/') ? nextPath : '/' + nextPath,
+        path: nodePath
+      });
     }
 
     if (!isSpecial) {
