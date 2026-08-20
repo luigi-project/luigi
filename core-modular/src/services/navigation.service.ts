@@ -66,18 +66,39 @@ export class NavigationService {
     return this.nodeDataManagementService;
   }
 
+  clearPreservedViews(): void {
+    this._preservedViews.length = 0;
+  }
+
   getPreservedViewsLength(): number {
     return this._preservedViews.length;
   }
 
-  removeLastPreservedViewFromStack(): void {
-    this._preservedViews.pop();
-  }
+  isValidBackRoute(route: string): boolean {
+    if (this._preservedViews.length === 0) {
+      return false;
+    }
+
+    const routePath = route.startsWith('/') ? route : `/${route}`;
+    const lastPreservedView = [...this._preservedViews].pop();
+    const removeQueryParams = (path: string) => path.split('?')[0];
+    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+
+    return paths.includes(removeQueryParams(routePath));
+  };
 
   handleGoBackRequest(goBackContext: any): void {
     if (this.getPreservedViewsLength() > 0) {
-      this.removeLastPreservedViewFromStack();
-      // TODO handle navigation for preserved view
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      dirtyStatusService.getUnsavedChangesModalPromise().then(
+        () => {
+          const previousActiveIframeData = this._preservedViews.pop();
+
+          this.handleNavigationRequest({ path: previousActiveIframeData.path });
+        },
+        () => {}
+      );
     } else {
       if (goBackContext) {
         console.warn(
@@ -1136,7 +1157,7 @@ export class NavigationService {
       const nodePath = RoutingHelpers.getNodePath(currentNode);
 
       this._preservedViews.push({
-        context: currentNode?.context,
+        context: pathData.context,
         nextPath: nextPath.startsWith('/') ? nextPath : '/' + nextPath,
         path: nodePath
       });

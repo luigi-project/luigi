@@ -74,6 +74,8 @@ describe('Routing Service', () => {
       getTabNavData: jest.fn(),
       handleNavigationRequest: jest.fn(),
       extractDataFromPath: jest.fn(),
+      isValidBackRoute: jest.fn().mockResolvedValue(false),
+      clearPreservedViews: jest.fn(),
       getPathData: jest.fn(),
       findMatchingNode: jest.fn(),
       getPathParams: jest.fn(),
