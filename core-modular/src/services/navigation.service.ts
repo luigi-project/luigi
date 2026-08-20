@@ -85,7 +85,7 @@ export class NavigationService {
     const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
 
     return paths.includes(removeQueryParams(routePath));
-  };
+  }
 
   handleGoBackRequest(goBackContext: any): void {
     if (this.getPreservedViewsLength() > 0) {

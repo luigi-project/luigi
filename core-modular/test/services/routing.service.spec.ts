@@ -1076,7 +1076,13 @@ describe('Routing Service', () => {
 
   describe('handleRouteChange - nav re-rendering on blocked route', () => {
     it('should re-render left and tab nav when handleViewUrlMisconfigured blocks the route', async () => {
-      const emptyViewUrlNode = { pathSegment: 'emptyViewUrl', viewUrl: '', compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false };
+      const emptyViewUrlNode = {
+        pathSegment: 'emptyViewUrl',
+        viewUrl: '',
+        compound: undefined,
+        children: undefined,
+        intendToHaveEmptyViewUrl: false
+      };
       const mockPathData = {
         nodesInPath: [{ pathSegment: 'home' }, emptyViewUrlNode],
         pathParams: {},
