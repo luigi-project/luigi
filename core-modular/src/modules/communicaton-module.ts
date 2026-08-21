@@ -176,5 +176,8 @@ export const CommunicationModule = {
         applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
       }
     });
+    containerElement.addEventListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
+      serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+    });
   }
 };

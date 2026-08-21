@@ -45,6 +45,7 @@ import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 
 export class NavigationService {
+  _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
@@ -63,6 +64,49 @@ export class NavigationService {
       this.nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     }
     return this.nodeDataManagementService;
+  }
+
+  clearPreservedViews(): void {
+    this._preservedViews.length = 0;
+  }
+
+  getPreservedViewsLength(): number {
+    return this._preservedViews.length;
+  }
+
+  isValidBackRoute(route: string): boolean {
+    if (this._preservedViews.length === 0) {
+      return false;
+    }
+
+    const routePath = route.startsWith('/') ? route : `/${route}`;
+    const lastPreservedView = [...this._preservedViews].pop();
+    const removeQueryParams = (path: string) => path.split('?')[0];
+    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+
+    return paths.includes(removeQueryParams(routePath));
+  }
+
+  handleGoBackRequest(goBackContext: any): void {
+    if (this.getPreservedViewsLength() > 0) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      dirtyStatusService.getUnsavedChangesModalPromise().then(
+        () => {
+          const previousActiveIframeData = this._preservedViews.pop();
+
+          this.handleNavigationRequest({ path: previousActiveIframeData.path });
+        },
+        () => {}
+      );
+    } else {
+      if (goBackContext) {
+        console.warn(
+          `Warning: goBack() does not support goBackContext value. This is available only when using the Luigi preserveView feature.`
+        );
+      }
+      history.back();
+    }
   }
 
   async getPathData(path: string): Promise<PathData> {
@@ -1104,6 +1148,19 @@ export class NavigationService {
 
     if (await this.shouldPreventNavigationForPath(path)) {
       return;
+    }
+
+    if (preserveView) {
+      const nextPath = computedPath;
+      const pathData: PathData = await this.getPathData(path);
+      const currentNode = pathData.selectedNode as Node;
+      const nodePath = RoutingHelpers.getNodePath(currentNode);
+
+      this._preservedViews.push({
+        context: pathData.context,
+        nextPath: nextPath.startsWith('/') ? nextPath : '/' + nextPath,
+        path: nodePath
+      });
     }
 
     if (!isSpecial) {

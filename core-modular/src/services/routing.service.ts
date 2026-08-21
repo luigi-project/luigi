@@ -121,6 +121,10 @@ export class RoutingService {
       return;
     }
 
+    if (this.getNavigationService().isValidBackRoute(path)) {
+      this.getNavigationService().clearPreservedViews();
+    }
+
     this.setFeatureToggle(fullPath);
     await this.shouldShowModalPathInUrl(routeInfo);
 

@@ -74,6 +74,8 @@ describe('Routing Service', () => {
       getTabNavData: jest.fn(),
       handleNavigationRequest: jest.fn(),
       extractDataFromPath: jest.fn(),
+      isValidBackRoute: jest.fn().mockResolvedValue(false),
+      clearPreservedViews: jest.fn(),
       getPathData: jest.fn(),
       findMatchingNode: jest.fn(),
       getPathParams: jest.fn(),
@@ -1074,7 +1076,13 @@ describe('Routing Service', () => {
 
   describe('handleRouteChange - nav re-rendering on blocked route', () => {
     it('should re-render left and tab nav when handleViewUrlMisconfigured blocks the route', async () => {
-      const emptyViewUrlNode = { pathSegment: 'emptyViewUrl', viewUrl: '', compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false };
+      const emptyViewUrlNode = {
+        pathSegment: 'emptyViewUrl',
+        viewUrl: '',
+        compound: undefined,
+        children: undefined,
+        intendToHaveEmptyViewUrl: false
+      };
       const mockPathData = {
         nodesInPath: [{ pathSegment: 'home' }, emptyViewUrlNode],
         pathParams: {},
