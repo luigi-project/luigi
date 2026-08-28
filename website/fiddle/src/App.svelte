@@ -79,6 +79,9 @@
   }
 
   function reloadConfig() {
+    // init keyboard events
+    initKeyboardEvents();
+
     // deep-link support: ?preset=<id> loads a bundled preset;
     // unknown ids fall back to default
     // example: http://localhost:3000/?preset=test-preset1
@@ -96,9 +99,6 @@
       }
       return;
     }
-
-    // init keyboard events
-    initKeyboardEvents();
 
     let customConfig = sessionStorage.getItem('fiddle');
     let customConfigPreviousSession = localStorage.getItem('fiddle');
@@ -174,10 +174,11 @@
   }
 
   function applyPreset(config) {
-    // identical to saveConfig(), just with the preset string
-    localStorage.setItem('fiddle', config);
-    sessionStorage.setItem('fiddle', config);
-    window.location.href = '/';
+    // load the preset into the editor (same as resetConfig, but with the preset string)
+    // the real apply happens when the user clicks "Apply" (saveConfig)
+    window.editor.setValue(config);
+    window.editorTA.textContent = config;
+    window.editor.clearSelection();
   }
 
   function hide() {
@@ -246,6 +247,24 @@
       </div>
       <footer class="fd-dialog__footer fd-bar fd-bar--footer">
         <div class="fd-bar__right">
+
+          <div class="fd-bar__element">
+            <button
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle"
+              onclick={togglePresets}
+              >Presets
+              {#if showPresets}
+                <div class="lui-preset-chooser">
+                  {#each presets as preset}
+                    <a class="fd-link" href="#top" onclick={() => applyPreset(preset.config)}>
+                      {preset.label}
+                    </a><br />
+                  {/each}
+                </div>
+              {/if}
+            </button>
+          </div>
+
           <div class="fd-bar__element">
             <button
               class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
@@ -322,20 +341,6 @@
       </div>
 
       <div class="fd-action-bar__actions">
-        <button class="fd-button fd-button--standard btn-primary" onclick={togglePresets}>
-          <span class="lui-mobile-hide">Presets</span>
-          <span class="lui-mobile-show sap-icon--list"></span>
-          {#if showPresets}
-            <div class="lui-preset-chooser">
-              {#each presets as preset}
-                <a class="fd-link" href="#top" onclick={() => applyPreset(preset.config)}>
-                  {preset.label}
-                </a><br />
-              {/each}
-            </div>
-          {/if}
-        </button>
-        <span class="lui-sep"></span>
         <button class="fd-button fd-button--standard btn-primary" onclick={clearAll}>
           <span class="lui-mobile-hide">Clear All</span>
           <span class="lui-mobile-show sap-icon--delete"></span>
@@ -543,6 +548,32 @@
     a {
       white-space: nowrap;
     }
+  }
+
+  .editor_container .preset-toggle {
+    position: relative;
+    overflow: visible;
+  }
+
+  .editor_container .fd-dialog__footer,
+  .editor_container .fd-dialog__footer .fd-bar__right,
+  .editor_container .fd-dialog__footer .fd-bar__element {
+    overflow: visible;
+  }
+
+  /* needed so that the presets sit above the horizontal scrollbar */
+  .editor_container .fd-dialog__footer {
+    position: relative;
+    z-index: 10;
+  }
+
+  .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+  }
+
+  .lui-preset-chooser .fd-link:hover {
+    color: #76ffb6;
   }
 
   .fiddle_spinner {
