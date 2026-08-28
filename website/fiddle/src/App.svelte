@@ -252,7 +252,7 @@
             <button
               class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle"
               onclick={togglePresets}
-              >Presets
+              >Select Presets
               {#if showPresets}
                 <div class="lui-preset-chooser">
                   {#each presets as preset}
