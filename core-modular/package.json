@@ -34,6 +34,8 @@
     "build": "vite build",
     "bundle-develop": "vite build --watch",
     "bundle": "npm run build",
+    "copyBundle": "cp public/luigi.js public/luigi.js.map dev-tools/examples/",
+    "dev": "npm run copyBundle && node ../scripts/tools/simple-server/cli.mjs dev-tools/examples --port 2222 --cors --no-reload",
     "simpledev": "node ./dev-tools/simpledev.mjs",
     "release": "sh ../../tmp_release.sh",
     "lint": "eslint ./src/**/*"
