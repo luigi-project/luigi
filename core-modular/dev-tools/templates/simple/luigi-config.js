@@ -252,7 +252,7 @@ window.onload = () => {
                         source: 'one',
                         name: 'sendBtn',
                         action: 'update',
-                        dataConverter: data => data
+                        dataConverter: (data) => data
                       }
                     ]
                   }

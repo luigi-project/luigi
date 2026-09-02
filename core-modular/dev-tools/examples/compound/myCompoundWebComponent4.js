@@ -15,7 +15,7 @@ export default class extends HTMLElement {
     this.$paragraph = shadowRoot.getElementById('paragraph');
     this.$paragraph.innerHTML += Luigi?.featureToggles()?.getActiveFeatureToggleList()?.length || 0;
     this.$timer = shadowRoot.querySelector('span.timer');
-    this.addEventListener('update', ev => {
+    this.addEventListener('update', (ev) => {
       this.$timer.innerHTML = ev.detail;
     });
   }
