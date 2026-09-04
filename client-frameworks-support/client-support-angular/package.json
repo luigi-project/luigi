@@ -40,7 +40,7 @@
     "cli-color": "2.0.4",
     "esbuild": "0.28.1",
     "eslint": "9.39.2",
-    "express": "4.22.2",
+    "express": "5.2.1",
     "jest": "30.4.2",
     "ng-packagr": "22.0.0",
     "ts-jest": "29.4.11",
