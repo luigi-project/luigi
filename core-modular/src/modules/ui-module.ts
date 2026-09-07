@@ -171,7 +171,11 @@ const setWebcomponentCreationInterceptor = (
   }
 };
 
-const handleDialogContainers = async (context: Record<string, any>, withoutSync: boolean, luigi: Luigi): Promise<void> => {
+const handleDialogContainers = async (
+  context: Record<string, any>,
+  withoutSync: boolean,
+  luigi: Luigi
+): Promise<void> => {
   const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
 
   if (showModalPathInUrl) {
@@ -185,7 +189,9 @@ const handleDialogContainers = async (context: Record<string, any>, withoutSync:
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
 
     if (allContainers?.length > 1) {
-      const dialogContainers = allContainers.filter((container: any) => !container.parentNode.classList.contains('content'));
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
 
       dialogContainers.forEach((container: any) => {
         if (container?.updateContext) {
@@ -376,11 +382,10 @@ export const UIModule = {
             viewGroupContainer = element;
           } else if (
             !currentNode.viewGroup &&
-              !currentNode.isolateView &&
-              !currentNode.webcomponent &&
-              element.viewurl &&
-              (preventContextUpdate ||
-                (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+            !currentNode.isolateView &&
+            !currentNode.webcomponent &&
+            element.viewurl &&
+            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
             viewGroupContainer = element;
           } else {
