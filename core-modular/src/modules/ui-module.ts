@@ -171,6 +171,31 @@ const setWebcomponentCreationInterceptor = (
   }
 };
 
+const handleDialogContainers = async (context: Record<string, any>, withoutSync: boolean, luigi: Luigi): Promise<void> => {
+  const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
+
+  if (showModalPathInUrl) {
+    const modalService = serviceRegistry.get(ModalService);
+    const routingService = serviceRegistry.get(RoutingService);
+    const routeInfo = RoutingHelpers.getCurrentPath(luigi, true, true);
+
+    await modalService.closeModalsWithDirtyCheck();
+    await routingService.handleBookmarkableModalPath(routeInfo);
+  } else {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter((container: any) => !container.parentNode.classList.contains('content'));
+
+      dialogContainers.forEach((container: any) => {
+        if (container?.updateContext) {
+          container.updateContext(context || {}, { withoutSync });
+        }
+      });
+    }
+  }
+};
+
 export const UIModule = {
   navService: undefined as unknown as NavigationService,
   routingService: undefined as unknown as RoutingService,
@@ -410,6 +435,7 @@ export const UIModule = {
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
             viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
+            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       } else {
@@ -423,6 +449,7 @@ export const UIModule = {
         } else {
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(currentNode.context || {}, { withoutSync });
+            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       }

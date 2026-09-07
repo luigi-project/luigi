@@ -27,6 +27,7 @@ jest.mock('../../src/utilities/helpers/navigation-helpers', () => ({
 }));
 jest.mock('../../src/utilities/helpers/generic-helpers', () => ({
   GenericHelpers: {
+    getNodeList: jest.fn().mockReturnValue([]),
     getRandomId: jest.fn().mockReturnValue('random-id'),
     isFunction: jest.fn((fn: any) => typeof fn === 'function'),
     isSameUrl: jest.fn((a: string, b: string) => a === b)
