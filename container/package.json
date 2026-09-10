@@ -60,7 +60,7 @@
     "concurrently": "7.6.0",
     "cypress": "15.17.0",
     "eslint": "9.39.3",
-    "eslint-plugin-svelte": "2.46.1",
+    "eslint-plugin-svelte": "3.23.0",
     "jest": "30.3.0",
     "nyc": "17.1.0",
     "rollup": "2.80.0",
