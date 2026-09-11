@@ -177,7 +177,9 @@ export const CommunicationModule = {
       }
     });
     containerElement.addEventListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
-      serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+      if (containerElement.parentNode?.classList?.contains('content')) {
+        serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+      }
     });
   }
 };
