@@ -201,7 +201,10 @@ export class RoutingService {
    *
    * @returns {Promise<void>} A promise that resolves when the modal handling is complete.
    */
-  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }): Promise<void> {
+  async handleBookmarkableModalPath(
+    routeInfo: { path: string; query: string },
+    checkModals = true
+  ): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const modalService = serviceRegistry.get(ModalService);
     const urlSearchParams = new URLSearchParams(routeInfo?.query || '');
@@ -209,8 +212,10 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      const closed = await modalService.closeModalsWithDirtyCheck();
-      if (!closed) return;
+      if (checkModals) {
+        const closed = await modalService.closeModalsWithDirtyCheck();
+        if (!closed) return;
+      }
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);

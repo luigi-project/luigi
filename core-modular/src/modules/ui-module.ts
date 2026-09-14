@@ -182,9 +182,11 @@ const handleDialogContainers = async (
     const modalService = serviceRegistry.get(ModalService);
     const routingService = serviceRegistry.get(RoutingService);
     const routeInfo = RoutingHelpers.getCurrentPath(luigi, true, true);
+    const closed = await modalService.closeModalsWithDirtyCheck();
 
-    await modalService.closeModalsWithDirtyCheck();
-    await routingService.handleBookmarkableModalPath(routeInfo);
+    if (closed) {
+      await routingService.handleBookmarkableModalPath(routeInfo, false);
+    }
   } else {
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
 

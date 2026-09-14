@@ -67,7 +67,7 @@ export class NavigationService {
 
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
-    let pathSegments = path.split('/');
+    let pathSegments = path?.split('/');
 
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
