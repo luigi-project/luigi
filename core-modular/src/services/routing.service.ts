@@ -201,10 +201,7 @@ export class RoutingService {
    *
    * @returns {Promise<void>} A promise that resolves when the modal handling is complete.
    */
-  async handleBookmarkableModalPath(
-    routeInfo: { path: string; query: string },
-    checkModals = true
-  ): Promise<void> {
+  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }, checkModals = true): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const modalService = serviceRegistry.get(ModalService);
     const urlSearchParams = new URLSearchParams(routeInfo?.query || '');
