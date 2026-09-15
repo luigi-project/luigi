@@ -293,7 +293,8 @@ export const UIModule = {
     luigi: Luigi,
     luigiParams?: LuigiParams,
     withoutSync?: boolean,
-    preventContextUpdate?: boolean
+    preventContextUpdate?: boolean,
+    preserveView?: boolean
   ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
@@ -351,15 +352,14 @@ export const UIModule = {
             viewGroupContainer = element;
           } else if (
             !currentNode.viewGroup &&
-              !currentNode.isolateView &&
-              !currentNode.webcomponent &&
-              element.viewurl &&
-              (preventContextUpdate ||
-                (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+            !currentNode.isolateView &&
+            !currentNode.webcomponent &&
+            element.viewurl &&
+            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
             viewGroupContainer = element;
           } else {
-            if (!withoutSync) {
+            if (!withoutSync && !preserveView) {
               element.remove();
             }
           }
@@ -478,17 +478,7 @@ export const UIModule = {
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
-          if (goBackContext && Object.keys(goBackContext).length) {
-            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
-            if (containerWrapper) {
-              const activeContainer = [...containerWrapper.childNodes].find(
-                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
-              ) as any;
-              if (activeContainer?.updateContext) {
-                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
-              }
-            }
-          }
+          UIModule.navService.processGoBackContext(goBackContext);
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);

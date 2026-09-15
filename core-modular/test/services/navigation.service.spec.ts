@@ -1034,6 +1034,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('hashchange');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: true,
         preventHistoryEntry: false,
         withoutSync: false
@@ -1101,6 +1102,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: false,
         withoutSync: true
@@ -1144,6 +1146,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: true,
         withoutSync: false
