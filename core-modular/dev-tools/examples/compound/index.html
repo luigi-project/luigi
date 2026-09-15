@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Luigi Compound Container</title>
+  </head>
+  <body>
+    <luigi-compound-container
+      id="compound1"
+      webcomponent="true"
+      context='{"content":" -- some content --"}'
+    ></luigi-compound-container>
+  </body>
+  <script type="module">
+    // simple Luigi Container package bundle import
+    import '../luigi.js';
+    document.getElementById('compound1').compoundConfig = {
+      renderer: {
+        use: 'grid',
+        config: {
+          columns: '1fr 1fr',
+          gap: '20px',
+        },
+      },
+      children: [
+        {
+          viewUrl: './compound/myCompoundWebComponent1.js',
+        },
+        {
+          viewUrl: './compound/myCompoundWebComponent2.js',
+        },
+        {
+          viewUrl: './compound/myCompoundWebComponent3.js',
+        },
+        {
+          viewUrl: './compound/myCompoundWebComponent4.js',
+        },
+      ],
+    };
+  </script>
+</html>

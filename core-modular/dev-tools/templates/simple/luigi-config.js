@@ -193,6 +193,73 @@ window.onload = () => {
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
+              pathSegment: 'compound',
+              label: 'Compound',
+              icon: 'product',
+              context: {
+                content: 'Global Data'
+              },
+              nodeParams: {
+                foo: 'bar'
+              },
+              webcomponent: true,
+              compound: {
+                renderer: {
+                  use: 'grid',
+                  config: {
+                    columns: '1fr 1fr',
+                    layouts: [
+                      {
+                        minWidth: 0,
+                        maxWidth: 600,
+                        columns: '1fr',
+                        gap: 0
+                      },
+                      {
+                        minWidth: 600,
+                        maxWidth: 1024,
+                        columns: '1fr 1fr',
+                        gap: '30px'
+                      }
+                    ]
+                  }
+                },
+                children: [
+                  {
+                    id: 'one',
+                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent1.js'
+                  },
+                  {
+                    id: 'two',
+                    context: {
+                      content: 'Local Data'
+                    },
+                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent2.js'
+                  },
+                  {
+                    id: 'three',
+                    layoutConfig: {
+                      row: '1',
+                      column: '1 / -1'
+                    },
+                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent3.js'
+                  },
+                  {
+                    id: 'four',
+                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent4.js',
+                    eventListeners: [
+                      {
+                        source: 'one',
+                        name: 'sendBtn',
+                        action: 'update',
+                        dataConverter: (data) => data
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
               pathSegment: 'c1',
               label: 'MFE1',
               icon: 'group',
