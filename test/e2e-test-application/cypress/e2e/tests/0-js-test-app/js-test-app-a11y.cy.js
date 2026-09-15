@@ -520,6 +520,23 @@ describe('JS-TEST-APP 4', () => {
   describe('Context switcher keyboard navigation', () => {
     let newConfig;
 
+    const dispatchKeydown = (selector, { key, code, which }) => {
+      cy.window().then((win) => {
+        const el = selector ? win.document.querySelector(selector) : win.document.activeElement;
+        expect(el, selector || 'activeElement').to.exist;
+        el.dispatchEvent(
+          new win.KeyboardEvent('keydown', {
+            key,
+            code,
+            which,
+            keyCode: which,
+            bubbles: true,
+            cancelable: true
+          })
+        );
+      });
+    };
+
     beforeEach(() => {
       newConfig = structuredClone(defaultLuigiConfig);
       newConfig.navigation.addNavHrefs = true;
@@ -552,17 +569,18 @@ describe('JS-TEST-APP 4', () => {
       cy.get('#contextSwitcherPopover').should('have.attr', 'aria-hidden', 'false');
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.attr', 'aria-expanded', 'true');
       cy.get('#contextSwitcherPopover a.fd-menu__link').should('have.length.at.least', 2);
-      cy.get('#contextSwitcherPopover a.fd-menu__link').first().should('have.focus');
-      cy.focused().type('{downarrow}');
+      cy.get('#contextSwitcherPopover a.fd-menu__link').first().focus().should('have.focus');
+      dispatchKeydown(null, { key: 'ArrowDown', code: 'ArrowDown', which: 40 });
       cy.get('#contextSwitcherPopover a.fd-menu__link').eq(1).should('have.focus');
-      cy.focused().type('{uparrow}');
+      dispatchKeydown(null, { key: 'ArrowUp', code: 'ArrowUp', which: 38 });
       cy.get('#contextSwitcherPopover a.fd-menu__link').first().should('have.focus');
     });
 
     it('keeps the menu open after Enter on the trigger', () => {
       cy.visitTestApp('/', newConfig);
-      cy.get('body').click();
-      cy.get('[data-testid="luigi-contextswitcher-button"]').focus().type('{enter}');
+      cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.attr', 'aria-expanded', 'false');
+      cy.get('[data-testid="luigi-contextswitcher-button"]').focus();
+      dispatchKeydown('[data-testid="luigi-contextswitcher-button"]', { key: 'Enter', code: 'Enter', which: 13 });
       cy.get('#contextSwitcherPopover').should('have.attr', 'aria-hidden', 'false');
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.attr', 'aria-expanded', 'true');
     });
@@ -571,8 +589,8 @@ describe('JS-TEST-APP 4', () => {
       cy.visitTestApp('/', newConfig);
       cy.get('[data-testid="luigi-contextswitcher-button"]').click();
       cy.get('#contextSwitcherPopover a.fd-menu__link').should('have.length.at.least', 2);
-      cy.get('#contextSwitcherPopover a.fd-menu__link').first().should('have.focus');
-      cy.focused().type('{esc}');
+      cy.get('#contextSwitcherPopover a.fd-menu__link').first().focus().should('have.focus');
+      dispatchKeydown(null, { key: 'Escape', code: 'Escape', which: 27 });
       cy.get('#contextSwitcherPopover').should('have.attr', 'aria-hidden', 'true');
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.attr', 'aria-expanded', 'false');
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.focus');

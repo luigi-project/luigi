@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount, getContext, beforeUpdate, tick } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy, getContext, beforeUpdate, tick } from 'svelte';
   import { ContextSwitcherHelpers } from './services/context-switcher';
   import ContextSwitcherNav from './ContextSwitcherNav.svelte';
   import { LuigiConfig } from '../core-api';
@@ -110,6 +110,10 @@
     defaultLabel = config.defaultLabel;
   });
 
+  onDestroy(() => {
+    setContentInert(false);
+  });
+
   beforeUpdate(() => {
     if (prevContextSwitcherToggle !== contextSwitcherToggle) {
       prevContextSwitcherToggle = contextSwitcherToggle;
@@ -216,6 +220,23 @@
     }
   }
 
+  function setContentInert(isInert) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    document.querySelectorAll('.iframeContainer, iframe').forEach((node) => {
+      if (isInert) {
+        node.setAttribute('inert', '');
+      } else {
+        node.removeAttribute('inert');
+      }
+    });
+  }
+
+  $: if (!isMobile) {
+    setContentInert(Boolean(dropDownStates && dropDownStates.contextSwitcherPopover));
+  }
+
   function isDropdownOpen() {
     return Boolean(dropDownStates && dropDownStates.contextSwitcherPopover);
   }
@@ -281,12 +302,6 @@
     }, 0);
   }
 
-  function onTriggerMouseDown(event) {
-    if (renderAsDropdown) {
-      event.preventDefault();
-    }
-  }
-
   function onTriggerClick(event) {
     if (event) {
       event.preventDefault();
@@ -350,7 +365,6 @@
               aria-haspopup="true"
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
-              on:mousedown={onTriggerMouseDown}
               on:click={onTriggerClick}
               use:triggerKeyboardAction
               aria-disabled={!renderAsDropdown}
@@ -364,15 +378,15 @@
               {/if}
             </a>
           {:else}
-            <button
-              type="button"
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <div
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
+              role="button"
               aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
-              on:mousedown={onTriggerMouseDown}
               on:click={onTriggerClick}
               use:triggerKeyboardAction
               aria-disabled={!renderAsDropdown}
@@ -384,7 +398,7 @@
                 {#if !selectedLabel}{$getTranslation(config.defaultLabel)}{:else}{selectedLabel}{/if}
                 <i class="sap-icon--megamenu fd-shellbar__button--icon" />
               {/if}
-            </button>
+            </div>
           {/if}
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
