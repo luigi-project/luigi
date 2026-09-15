@@ -1,6 +1,6 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { NavigationHelpers } from '../utilities/helpers';
+  import { afterUpdate, createEventDispatcher, onDestroy, onMount } from 'svelte';
+  import { DropdownKeyboardHelpers, NavigationHelpers } from '../utilities/helpers';
 
   export let actions = [];
   export let config = {};
@@ -13,6 +13,10 @@
   export let getRouteLink;
   export let getTranslation;
   export let isContextSwitcherDropdownShown;
+  export let focusMenuOnOpen = 'first';
+
+  let menuEl;
+  let focusTimeout;
 
   const dispatch = createEventDispatcher();
   export function onActionClick(node) {
@@ -22,11 +26,89 @@
   export function goToOption(option, selectedOption) {
     dispatch('goToOption', { option, selectedOption });
   }
+
+  function clearFocusTimeout() {
+    if (focusTimeout) {
+      clearTimeout(focusTimeout);
+      focusTimeout = undefined;
+    }
+  }
+
+  function focusOpenItem() {
+    // Two ContextSwitcher instances share dropDownStates. The mobile copy
+    // must not steal focus from the desktop popover that the e2e asserts on.
+    if (!isContextSwitcherDropdownShown || !menuEl || isMobile) {
+      return false;
+    }
+    const popover = document.getElementById('contextSwitcherPopover');
+    if (!popover || popover.getAttribute('aria-hidden') === 'true') {
+      return false;
+    }
+    popover.removeAttribute('inert');
+    const menuItems = DropdownKeyboardHelpers.getMenuItems(menuEl);
+    if (!menuItems.length) {
+      return false;
+    }
+    if (menuItems.includes(document.activeElement)) {
+      return true;
+    }
+    const index = focusMenuOnOpen === 'last' ? menuItems.length - 1 : 0;
+    DropdownKeyboardHelpers.applyRovingTabindex(menuItems, index);
+    return menuItems.includes(document.activeElement);
+  }
+
+  function recaptureFocusFromTrigger() {
+    if (!isContextSwitcherDropdownShown || isMobile) {
+      return;
+    }
+    const popover = document.getElementById('contextSwitcherPopover');
+    if (!popover || popover.getAttribute('aria-hidden') === 'true') {
+      return;
+    }
+    popover.removeAttribute('inert');
+    const items = DropdownKeyboardHelpers.getMenuItems(menuEl);
+    if (!items.length) {
+      return;
+    }
+    if (!items.includes(document.activeElement)) {
+      focusOpenItem();
+    }
+  }
+
+  afterUpdate(() => {
+    if (!isContextSwitcherDropdownShown) {
+      clearFocusTimeout();
+      return;
+    }
+    clearFocusTimeout();
+    const started = Date.now();
+    const tick = () => {
+      if (!isContextSwitcherDropdownShown || Date.now() - started > 4000) {
+        return;
+      }
+      const menuItems = DropdownKeyboardHelpers.getMenuItems(menuEl);
+      if (!menuItems.length || !menuItems.includes(document.activeElement)) {
+        recaptureFocusFromTrigger();
+        focusOpenItem();
+        focusTimeout = setTimeout(tick, 50);
+      }
+    };
+    focusTimeout = setTimeout(tick, 0);
+  });
+
+  onMount(() => {
+    document.addEventListener('focusin', recaptureFocusFromTrigger);
+  });
+
+  onDestroy(() => {
+    document.removeEventListener('focusin', recaptureFocusFromTrigger);
+    clearFocusTimeout();
+  });
 </script>
 
-<nav class="fd-menu lui-ctx-switch-nav {isMobile ? 'fd-menu--mobile' : ''}">
+<div bind:this={menuEl} class="fd-menu lui-ctx-switch-nav {isMobile ? 'fd-menu--mobile' : ''}" role="menu">
   {#if actions && actions.length}
-    <ul class="fd-menu__list fd-menu__list--top">
+    <ul class="fd-menu__list fd-menu__list--top" role="none">
       {#each actions as node}
         {#if node.position === 'top' || !['top', 'bottom'].includes(node.position)}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -36,7 +118,13 @@
             on:click={() => onActionClick(node)}
             data-testid={NavigationHelpers.getTestId(node)}
           >
-            <a href={getRouteLink(node)} on:click|preventDefault={() => {}} class="fd-menu__link">
+            <a
+              href={getRouteLink(node)}
+              on:click|preventDefault={() => {}}
+              class="fd-menu__link"
+              role="menuitem"
+              tabindex="-1"
+            >
               <span class="fd-menu__title">{$getTranslation(node.label)}</span>
             </a>
           </li>
@@ -44,7 +132,7 @@
       {/each}
     </ul>
   {/if}
-  <ul class="fd-menu__list" id="context_menu_middle">
+  <ul class="fd-menu__list" id="context_menu_middle" role="none">
     {#if options && options.length === 0 && isContextSwitcherDropdownShown}
       <li class="lui-contextswitcher-indicator">
         <div
@@ -79,6 +167,9 @@
                 }}
                 class="fd-menu__link {label === selectedLabel ? 'is-selected' : ''}"
                 title={label}
+                role="menuitem"
+                tabindex="-1"
+                aria-current={label === selectedLabel ? 'true' : undefined}
               >
                 <span class="fd-menu__title">{label}</span>
               </a>
@@ -89,7 +180,7 @@
     {/if}
   </ul>
   {#if actions && actions.length}
-    <ul class="fd-menu__list fd-menu__list--bottom">
+    <ul class="fd-menu__list fd-menu__list--bottom" role="none">
       {#each actions as node}
         {#if node.position === 'bottom'}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -105,6 +196,8 @@
                 NavigationHelpers.handleNavAnchorClickedWithoutMetaKey(event);
               }}
               class="fd-menu__link"
+              role="menuitem"
+              tabindex="-1"
             >
               <span class="fd-menu__title">{$getTranslation(node.label)}</span>
             </a>
@@ -113,7 +206,7 @@
       {/each}
     </ul>
   {/if}
-</nav>
+</div>
 
 <style lang="scss">
   :global(.fd-popover__body) {
