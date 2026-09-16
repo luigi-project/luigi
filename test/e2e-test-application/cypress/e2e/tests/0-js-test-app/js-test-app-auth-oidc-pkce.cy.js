@@ -137,10 +137,13 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     });
 
     cy.wait('@oidcEndSession');
-    // The mock redirects to post_logout_redirect_uri carrying `?logout`, which the plugin's
-    // _processLogoutResponse detects on the next load and clears the stored auth.
-    cy.location('search').should('contain', 'logout');
-    cy.window().its('localStorage').invoke('getItem', AUTH_KEY).should('be.null');
+    // The mock redirects to post_logout_redirect_uri carrying `?logout`. On that load the
+    // plugin's _processLogoutResponse detects `?logout` and calls signoutRedirectCallback(),
+    // which asynchronously clears the stored auth. On slow CI that async clear can take a
+    // while after the URL already shows `?logout`, so poll storage with a generous timeout
+    // rather than assuming it is cleared the moment the location changes.
+    cy.location('search', { timeout: 15000 }).should('contain', 'logout');
+    cy.window({ timeout: 15000 }).its('localStorage').invoke('getItem', AUTH_KEY).should('be.null');
   });
 
   it('silent-renew iframe callback: automaticSilentRenew runs /authorize (prompt=none) in a hidden iframe and refreshes the token', () => {
