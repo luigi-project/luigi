@@ -24,9 +24,10 @@ import { OIDC_MOCK, installOidcPkceIntercepts, buildOidcPkceAuthConfig } from '.
 describe('JS-TEST-APP auth-oidc-pkce', () => {
   const AUTH_KEY = 'luigi.auth';
 
-  const baseConfig = (win, authOverrides = {}) => {
+  const baseConfig = (win, authOverrides = {}, authRootOverrides = {}) => {
     const auth = buildOidcPkceAuthConfig(win);
     Object.assign(auth.openIdConnect, authOverrides);
+    Object.assign(auth, authRootOverrides);
     return {
       navigation: {
         nodes: [{ pathSegment: 'home', label: 'Home', viewUrl: '/examples/microfrontends/multipurpose.html' }]
@@ -47,13 +48,13 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
   // they never leak into sibling tests (or other specs sharing the runner).
   let loadHandlers = [];
 
-  const applyConfigOnEveryLoad = (authOverrides = {}) => {
+  const applyConfigOnEveryLoad = (authOverrides = {}, authRootOverrides = {}) => {
     const handler = (win) => {
       const trySetConfig = () => {
         if (win.__pkceConfigApplied) return true;
         if (win.Luigi && typeof win.Luigi.setConfig === 'function') {
           win.__pkceConfigApplied = true;
-          win.Luigi.setConfig(baseConfig(win, authOverrides));
+          win.Luigi.setConfig(baseConfig(win, authOverrides, authRootOverrides));
           return true;
         }
         return false;
@@ -119,8 +120,14 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
   });
 
   it('logout: /endsession is hit and stored auth is cleared', () => {
-    // Arrive authenticated first.
-    applyConfigOnEveryLoad();
+    // Auto-login must be ON for the initial arrival, but OFF once we land back on the
+    // post-logout page: otherwise checkAuth on the `?logout` load sees the cleared auth and
+    // immediately starts a fresh /authorize login, re-authenticating the user (this is the
+    // CI flake — the "stored auth" reappears as a brand-new token). We flip the flag via a
+    // mutable holder the every-load handler reads, so the initial load logs in and the
+    // post-logout load does not.
+    const authRoot = { disableAutoLogin: false };
+    applyConfigOnEveryLoad({}, authRoot);
     cy.visit(`${OIDC_MOCK.redirectUri}`);
     cy.wait('@oidcToken');
     cy.window().its('localStorage').invoke('getItem', AUTH_KEY).should('not.be.null');
@@ -131,6 +138,11 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     // MFE iframe rendering is the observable signal that checkAuth + navigation completed.
     cy.get('.iframeContainer iframe', { timeout: 10000 }).should('exist');
 
+    // From here on, the post-logout landing page must NOT auto-login again.
+    cy.then(() => {
+      authRoot.disableAutoLogin = true;
+    });
+
     // Trigger logout — the plugin calls signoutRedirect() which navigates to /endsession.
     cy.window().then((win) => {
       win.Luigi.auth().logout();
@@ -139,9 +151,8 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     cy.wait('@oidcEndSession');
     // The mock redirects to post_logout_redirect_uri carrying `?logout`. On that load the
     // plugin's _processLogoutResponse detects `?logout` and calls signoutRedirectCallback(),
-    // which asynchronously clears the stored auth. On slow CI that async clear can take a
-    // while after the URL already shows `?logout`, so poll storage with a generous timeout
-    // rather than assuming it is cleared the moment the location changes.
+    // which asynchronously clears the stored auth. Poll with a generous timeout since the
+    // clear completes after the URL already shows `?logout`.
     cy.location('search', { timeout: 15000 }).should('contain', 'logout');
     cy.window({ timeout: 15000 }).its('localStorage').invoke('getItem', AUTH_KEY).should('be.null');
   });
