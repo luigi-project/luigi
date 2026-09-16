@@ -271,24 +271,6 @@
     });
   }
 
-  function triggerKeyboardAction(node) {
-    node.addEventListener('keydown', onTriggerKeydown);
-    return {
-      destroy() {
-        node.removeEventListener('keydown', onTriggerKeydown);
-      }
-    };
-  }
-
-  function popoverKeyboardAction(node) {
-    node.addEventListener('keydown', onPopoverKeydown);
-    return {
-      destroy() {
-        node.removeEventListener('keydown', onPopoverKeydown);
-      }
-    };
-  }
-
   async function closeAndFocusTrigger() {
     if (isDropdownOpen()) {
       toggleDropdownState();
@@ -366,7 +348,7 @@
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click={onTriggerClick}
-              use:triggerKeyboardAction
+              on:keydown={onTriggerKeydown}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
             >
@@ -388,7 +370,7 @@
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
               on:click={onTriggerClick}
-              use:triggerKeyboardAction
+              on:keydown={onTriggerKeydown}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
             >
@@ -409,7 +391,7 @@
           aria-hidden={!(dropDownStates.contextSwitcherPopover || false)}
           id="contextSwitcherPopover"
           data-testid="luigi-contextswitcher-popover"
-          use:popoverKeyboardAction
+          on:keydown={onPopoverKeydown}
         >
           <ContextSwitcherNav
             {actions}

@@ -21,7 +21,7 @@ jobs:
       actions: write
       contents: read
     with:
-      buildcache_key: buildcache-${{ github.ref }}
+      buildcache_key: buildcache-${{ github.ref }}-${{ github.sha }}
 
   unit:
     name: Unit Tests
@@ -36,7 +36,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix core || exit 1
 
@@ -53,7 +53,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix client || exit 1
 
@@ -70,7 +70,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix plugins || exit 1
 
@@ -88,7 +88,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: bash ./test/mockengine.sh || exit 1
 
@@ -106,7 +106,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix container || exit 1
 
@@ -124,7 +124,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm run test --prefix core-modular || exit 1
 
@@ -141,7 +141,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: npm test --prefix client-frameworks-support/client-support-angular || exit 1
 
@@ -161,7 +161,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - run: bash ./container/run-container-e2e.sh || exit 1
 
@@ -181,7 +181,7 @@ jobs:
           path: |
             ~/tmp_build
             ~/cypress-binary-cache
-          key: buildcache-${{ github.ref }}
+          key: buildcache-${{ github.ref }}-${{ github.sha }}
       - run: cp -r ~/tmp_build/* .
       - uses: ./.github/workflows/update-deps
         with:
