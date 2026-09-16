@@ -227,14 +227,14 @@ window.onload = () => {
                 children: [
                   {
                     id: 'one',
-                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent1.js'
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent1.js'
                   },
                   {
                     id: 'two',
                     context: {
                       content: 'Local Data'
                     },
-                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent2.js'
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent2.js'
                   },
                   {
                     id: 'three',
@@ -242,11 +242,11 @@ window.onload = () => {
                       row: '1',
                       column: '1 / -1'
                     },
-                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent3.js'
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent3.js'
                   },
                   {
                     id: 'four',
-                    viewUrl: 'http://localhost:2222/compound/myCompoundWebComponent4.js',
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent4.js',
                     eventListeners: [
                       {
                         source: 'one',

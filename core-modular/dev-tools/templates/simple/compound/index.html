@@ -13,7 +13,7 @@
   </body>
   <script type="module">
     // simple Luigi Container package bundle import
-    import '../luigi.js';
+    import '/public/luigi.js';
     document.getElementById('compound1').compoundConfig = {
       renderer: {
         use: 'grid',
@@ -24,16 +24,16 @@
       },
       children: [
         {
-          viewUrl: './compound/myCompoundWebComponent1.js',
+          viewUrl: './myCompoundWebComponent1.js',
         },
         {
-          viewUrl: './compound/myCompoundWebComponent2.js',
+          viewUrl: './myCompoundWebComponent2.js',
         },
         {
-          viewUrl: './compound/myCompoundWebComponent3.js',
+          viewUrl: './myCompoundWebComponent3.js',
         },
         {
-          viewUrl: './compound/myCompoundWebComponent4.js',
+          viewUrl: './myCompoundWebComponent4.js',
         },
       ],
     };
