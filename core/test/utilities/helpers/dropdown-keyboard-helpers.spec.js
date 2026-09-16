@@ -75,8 +75,19 @@ describe('Dropdown-keyboard-helpers', () => {
       DropdownKeyboardHelpers.applyRovingTabindex(items, -1);
 
       items.forEach((item) => {
-        assert.equal(item.getAttribute('tabindex'), '-1');
+        assert.equal(item.getAttribute('tabindex'), '0');
       });
+    });
+
+    it('keeps every item tabbable while focusing the given index', () => {
+      renderMenu();
+
+      DropdownKeyboardHelpers.applyRovingTabindex(items, 1);
+
+      items.forEach((item) => {
+        assert.equal(item.getAttribute('tabindex'), '0');
+      });
+      assert.equal(document.activeElement, items[1]);
     });
   });
 
@@ -115,6 +126,30 @@ describe('Dropdown-keyboard-helpers', () => {
         items
       });
       assert.equal(document.activeElement, items[0]);
+    });
+
+    it('moves focus with Tab and Shift+Tab without wrapping off the ends', () => {
+      renderMenu();
+      items[0].focus();
+
+      DropdownKeyboardHelpers.handleMenuKeydown(dispatchKey(items[0], 'Tab'), { items });
+      assert.equal(document.activeElement, items[1]);
+
+      const shiftTab = dispatchKey(items[1], 'Tab', { shiftKey: true });
+      DropdownKeyboardHelpers.handleMenuKeydown(shiftTab, { items });
+      assert.equal(document.activeElement, items[0]);
+      assert.isTrue(shiftTab.defaultPrevented);
+
+      const leaveStart = dispatchKey(items[0], 'Tab', { shiftKey: true });
+      DropdownKeyboardHelpers.handleMenuKeydown(leaveStart, { items });
+      assert.equal(document.activeElement, items[0]);
+      assert.isFalse(leaveStart.defaultPrevented);
+
+      items[2].focus();
+      const leaveEnd = dispatchKey(items[2], 'Tab');
+      DropdownKeyboardHelpers.handleMenuKeydown(leaveEnd, { items });
+      assert.equal(document.activeElement, items[2]);
+      assert.isFalse(leaveEnd.defaultPrevented);
     });
 
     it('calls onEscape on Escape', () => {

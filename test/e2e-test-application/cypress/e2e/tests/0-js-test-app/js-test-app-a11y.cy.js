@@ -520,7 +520,7 @@ describe('JS-TEST-APP 4', () => {
   describe('Context switcher keyboard navigation', () => {
     let newConfig;
 
-    const dispatchKeydown = (selector, { key, code, which }) => {
+    const dispatchKeydown = (selector, { key, code, which, shiftKey }) => {
       cy.window().then((win) => {
         const el = selector ? win.document.querySelector(selector) : win.document.activeElement;
         expect(el, selector || 'activeElement').to.exist;
@@ -530,6 +530,7 @@ describe('JS-TEST-APP 4', () => {
             code,
             which,
             keyCode: which,
+            shiftKey: Boolean(shiftKey),
             bubbles: true,
             cancelable: true
           })
@@ -573,6 +574,17 @@ describe('JS-TEST-APP 4', () => {
       dispatchKeydown(null, { key: 'ArrowDown', code: 'ArrowDown', which: 40 });
       cy.get('#contextSwitcherPopover a.fd-menu__link').eq(1).should('have.focus');
       dispatchKeydown(null, { key: 'ArrowUp', code: 'ArrowUp', which: 38 });
+      cy.get('#contextSwitcherPopover a.fd-menu__link').first().should('have.focus');
+    });
+
+    it('moves between options with Tab and Shift+Tab', () => {
+      cy.visitTestApp('/', newConfig);
+      cy.get('[data-testid="luigi-contextswitcher-button"]').click();
+      cy.get('#contextSwitcherPopover a.fd-menu__link').should('have.length.at.least', 2);
+      cy.get('#contextSwitcherPopover a.fd-menu__link').first().focus().should('have.focus');
+      dispatchKeydown(null, { key: 'Tab', code: 'Tab', which: 9 });
+      cy.get('#contextSwitcherPopover a.fd-menu__link').eq(1).should('have.focus');
+      dispatchKeydown(null, { key: 'Tab', code: 'Tab', which: 9, shiftKey: true });
       cy.get('#contextSwitcherPopover a.fd-menu__link').first().should('have.focus');
     });
 

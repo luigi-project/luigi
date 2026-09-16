@@ -33,6 +33,9 @@ class DropdownKeyboardHelpersClass {
     if (code === 'End' || which === 35) {
       return 'End';
     }
+    if (code === 'Tab' || which === 9) {
+      return 'Tab';
+    }
     if (code === 'Space' || code === 'Spacebar' || which === 32) {
       return ' ';
     }
@@ -58,8 +61,8 @@ class DropdownKeyboardHelpersClass {
   }
 
   applyRovingTabindex(items, focusedIndex) {
-    items.forEach((item, index) => {
-      item.setAttribute('tabindex', index === focusedIndex ? '0' : '-1');
+    items.forEach((item) => {
+      item.setAttribute('tabindex', '0');
     });
     if (items[focusedIndex]) {
       items[focusedIndex].focus({ preventScroll: true });
@@ -91,6 +94,21 @@ class DropdownKeyboardHelpersClass {
       event.preventDefault();
       event.stopPropagation();
       this.applyRovingTabindex(items, this.nextIndex(currentIndex, items.length, -1));
+      return;
+    }
+
+    if (key === 'Tab') {
+      if (!items.length || currentIndex < 0) {
+        return;
+      }
+      const direction = event.shiftKey ? -1 : 1;
+      const leavingMenu = (direction > 0 && currentIndex === items.length - 1) || (direction < 0 && currentIndex === 0);
+      if (leavingMenu) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyRovingTabindex(items, currentIndex + direction);
       return;
     }
 

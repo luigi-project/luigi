@@ -123,7 +123,7 @@
               on:click|preventDefault={() => {}}
               class="fd-menu__link"
               role="menuitem"
-              tabindex="-1"
+              tabindex="0"
             >
               <span class="fd-menu__title">{$getTranslation(node.label)}</span>
             </a>
@@ -168,7 +168,7 @@
                 class="fd-menu__link {label === selectedLabel ? 'is-selected' : ''}"
                 title={label}
                 role="menuitem"
-                tabindex="-1"
+                tabindex="0"
                 aria-current={label === selectedLabel ? 'true' : undefined}
               >
                 <span class="fd-menu__title">{label}</span>
@@ -197,7 +197,7 @@
               }}
               class="fd-menu__link"
               role="menuitem"
-              tabindex="-1"
+              tabindex="0"
             >
               <span class="fd-menu__title">{$getTranslation(node.label)}</span>
             </a>
