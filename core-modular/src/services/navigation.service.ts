@@ -66,6 +66,22 @@ export class NavigationService {
     return this.nodeDataManagementService;
   }
 
+  private handleDialogContainer(context: Record<string, any>): void {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+
+      dialogContainers.forEach((container: any) => {
+        if (container?.updateContext) {
+          container.updateContext(context || {}, { withoutSync: false });
+        }
+      });
+    }
+  }
+
   clearPreservedViews(): void {
     this._preservedViews.length = 0;
   }
@@ -93,13 +109,15 @@ export class NavigationService {
 
       if (containerWrapper) {
         const activeContainer = [...containerWrapper.childNodes].find(
-          (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
+          (element: any) => element.tagName?.indexOf('LUIGI-') === 0
         ) as any;
 
         if (activeContainer?.updateContext) {
           activeContainer.updateContext({ goBackContext }, { withoutSync: false });
         }
       }
+
+      this.handleDialogContainer(goBackContext);
     }
   }
 
@@ -121,7 +139,7 @@ export class NavigationService {
           this.processGoBackContext(goBackContext);
 
           if (previousActiveViewData?.path) {
-            this.handleNavigationRequest({ path: previousActiveViewData.path, withoutSync: false });
+            this.handleNavigationRequest({ path: previousActiveViewData.path, preventContextUpdate: true, withoutSync: false });
           }
         },
         () => {}
@@ -1295,7 +1313,7 @@ export class NavigationService {
 
       if (hashRouting) {
         const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
-        if (!withoutSync && !preventContextUpdate && method !== 'replaceState') {
+        if (!withoutSync && !preserveView && !preventContextUpdate && method !== 'replaceState') {
           location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);

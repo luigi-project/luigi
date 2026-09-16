@@ -349,7 +349,12 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            viewGroupContainer = element;
+            if (preserveView) {
+              element.style.display = 'none';
+            } else {
+              element.style.display = 'block';
+              viewGroupContainer = element;
+            }
           } else if (
             !currentNode.viewGroup &&
             !currentNode.isolateView &&
