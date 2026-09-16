@@ -139,7 +139,11 @@ export class NavigationService {
           this.processGoBackContext(goBackContext);
 
           if (previousActiveViewData?.path) {
-            this.handleNavigationRequest({ path: previousActiveViewData.path, preventContextUpdate: true, withoutSync: false });
+            this.handleNavigationRequest({
+              path: previousActiveViewData.path,
+              preventContextUpdate: true,
+              withoutSync: false
+            });
           }
         },
         () => {}
