@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <title>OIDC PKCE silent renew callback</title>
+  </head>
+  <body>
+    <script>
+      // Silent-renew callback for the auth-oidc-pkce e2e spec.
+      //
+      // oidc-client-ts runs silent renew inside a hidden iframe: it loads this
+      // page at `silent_redirect_uri` (with `?code=...&state=...` appended by the
+      // IdP) and waits for the iframe to post the callback URL back to the parent
+      // window. The parent's AbstractChildWindow listener resolves on a message
+      // shaped exactly `{ source: 'oidc-client', url, keepOpen }` posted to the
+      // parent's origin (see oidc-client-ts AbstractChildWindow._notifyParent).
+      //
+      // The plugin bundles oidc-client-ts internally and does not expose it as a
+      // browser global, so instead of constructing a UserManager here we post the
+      // message directly — this is exactly what `signinSilentCallback()` would do.
+      try {
+        window.parent.postMessage(
+          { source: 'oidc-client', url: window.location.href, keepOpen: false },
+          window.location.origin,
+        );
+      } catch (e) {
+        console.error('[oidc-pkce silent callback] failed to notify parent', e);
+      }
+    </script>
+  </body>
+</html>

@@ -35,6 +35,11 @@
     "scope": "@luigi-project/plugin-auth-oauth2"
   },
   {
+    "source": "plugins/auth/public/auth-oidc-pkce",
+    "destination": "test/e2e-js-test-application",
+    "scope": "@luigi-project/plugin-auth-oidc-pkce"
+  },
+  {
     "source": "client/public",
     "destination": "test/e2e-test-application",
     "scope": "@luigi-project/client"
