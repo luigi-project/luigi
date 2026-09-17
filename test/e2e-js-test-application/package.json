@@ -10,6 +10,7 @@
     "@luigi-project/core": "^2.22.1",
     "@luigi-project/client": "^2.22.1",
     "@luigi-project/plugin-auth-oauth2": "^2.22.1",
+    "@luigi-project/plugin-auth-oidc-pkce": "^0.42.0",
     "@sap-theming/theming-base-content": "11.1.41",
     "fundamental-styles": "0.23.0"
   },
