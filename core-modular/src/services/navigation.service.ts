@@ -45,6 +45,7 @@ import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 
 export class NavigationService {
+  _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
@@ -63,6 +64,98 @@ export class NavigationService {
       this.nodeDataManagementService = serviceRegistry.get(NodeDataManagementService);
     }
     return this.nodeDataManagementService;
+  }
+
+  private handleDialogContainer(context: Record<string, any>): void {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+
+      dialogContainers.forEach((container: any) => {
+        if (container?.updateContext) {
+          container.updateContext(context || {}, { withoutSync: false });
+        }
+      });
+    }
+  }
+
+  clearPreservedViews(): void {
+    this._preservedViews.length = 0;
+  }
+
+  getPreservedViewsLength(): number {
+    return this._preservedViews.length;
+  }
+
+  isValidBackRoute(route: string): boolean {
+    if (this._preservedViews.length === 0) {
+      return false;
+    }
+
+    const routePath = route.startsWith('/') ? route : `/${route}`;
+    const lastPreservedView = [...this._preservedViews].pop();
+    const removeQueryParams = (path: string) => path.split('?')[0];
+    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+
+    return paths.includes(removeQueryParams(routePath));
+  }
+
+  processGoBackContext(goBackContext: any): void {
+    if (goBackContext && Object.keys(goBackContext).length) {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+
+      if (containerWrapper) {
+        const activeContainer = [...containerWrapper.childNodes].find(
+          (element: any) => element.tagName?.indexOf('LUIGI-') === 0
+        ) as any;
+
+        if (activeContainer?.updateContext) {
+          activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+        }
+      }
+
+      this.handleDialogContainer(goBackContext);
+    }
+  }
+
+  handleGoBackRequest(goBackContext?: any): void {
+    if (this.getPreservedViewsLength() > 0) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      dirtyStatusService.getUnsavedChangesModalPromise().then(
+        () => {
+          const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+          const activeContainer = containerWrapper
+            ? [...containerWrapper.childNodes].find(
+                (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
+              )
+            : undefined;
+          const previousActiveViewData = this._preservedViews.pop();
+
+          activeContainer?.remove();
+          this.processGoBackContext(goBackContext);
+
+          if (previousActiveViewData?.path) {
+            this.handleNavigationRequest({
+              path: previousActiveViewData.path,
+              preventContextUpdate: true,
+              withoutSync: false
+            });
+          }
+        },
+        () => {}
+      );
+    } else {
+      if (goBackContext) {
+        console.warn(
+          `Warning: goBack() does not support goBackContext value. This is available only when using the Luigi preserveView feature.`
+        );
+      }
+      history.back();
+    }
   }
 
   async getPathData(path: string): Promise<PathData> {
@@ -1136,6 +1229,18 @@ export class NavigationService {
     const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
 
+    if (preserveView) {
+      const pathData: PathData = await this.getPathData(currentPath);
+
+      this._preservedViews.push({
+        context: pathData.context,
+        nextPath: computedPath.startsWith('/') ? computedPath : '/' + computedPath,
+        path: pathData?.pathParams
+          ? GenericHelpers.replaceVars(currentPath, pathData.pathParams, ':', false)
+          : currentPath
+      });
+    }
+
     // Navigating to the page you are already on is a no-op, but an overlay is not a navigation:
     // a modal or drawer is independent of the main route, so it must open even when its path
     // equals the current location.
@@ -1170,6 +1275,7 @@ export class NavigationService {
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
+          preserveView: !!preserveView,
           preventContextUpdate: !!preventContextUpdate,
           preventHistoryEntry: !!preventHistoryEntry,
           withoutSync: !!withoutSync
@@ -1211,7 +1317,7 @@ export class NavigationService {
 
       if (hashRouting) {
         const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
-        if (!withoutSync && !preventContextUpdate && method !== 'replaceState') {
+        if (!withoutSync && !preserveView && !preventContextUpdate && method !== 'replaceState') {
           location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
