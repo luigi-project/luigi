@@ -181,11 +181,16 @@ const handleDialogContainers = async (
   if (showModalPathInUrl) {
     const modalService = serviceRegistry.get(ModalService);
     const routingService = serviceRegistry.get(RoutingService);
-    const routeInfo = RoutingHelpers.getCurrentPath(luigi, true, true);
+    const hashRouting = !!luigi.getConfigValue('routing.useHashRouting');
+    const routeInfo = RoutingHelpers.getCurrentPath(luigi, hashRouting, true);
     const closed = await modalService.closeModalsWithDirtyCheck();
 
     if (closed) {
       await routingService.handleBookmarkableModalPath(routeInfo, false);
+
+      if (UIModule.drawerContainer && UIModule.drawerContainer?.updateContext) {
+        UIModule.drawerContainer.updateContext(context || {}, { withoutSync });
+      }
     }
   } else {
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
@@ -608,7 +613,15 @@ export const UIModule = {
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
 
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
+      resolveFn = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+      };
+
       const onCloseRequestHandler = async () => {
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
@@ -617,7 +630,7 @@ export const UIModule = {
         }
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
-        resolve();
+        resolveFn && resolveFn();
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -635,6 +648,7 @@ export const UIModule = {
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
       },
       () => closePromise
     );
