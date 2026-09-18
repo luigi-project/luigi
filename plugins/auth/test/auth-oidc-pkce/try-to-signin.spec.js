@@ -61,32 +61,36 @@ describe('auth-oidc-pkce tryToSignIn', () => {
       plugin = await new openIdConnect({});
     });
 
-    it('signinRedirectCallback method should be called after signing in and promise is resolved', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('signinRedirectCallback method should be called after signing in and promise is resolved', async () => {
       const signinRedirectCallbackSpy = jest.spyOn(plugin.client, 'signinRedirectCallback');
       const signinSilentSpy = jest.spyOn(plugin.client, 'signinSilent');
       const consoleDebugSpy = jest.spyOn(console, 'debug');
+      const result = await plugin.tryToSignIn();
 
-      plugin.tryToSignIn().then((result) => {
-        expect(signinRedirectCallbackSpy).toHaveBeenCalled();
-        expect(signinSilentSpy).not.toHaveBeenCalled();
-        expect(consoleDebugSpy).toHaveBeenCalledWith('[OIDC] User was redirected via the sign-in page. Now signed in.');
-        expect(result).toEqual(mockedUser);
-      });
+      expect.assertions(4);
+      expect(signinRedirectCallbackSpy).toHaveBeenCalled();
+      expect(signinSilentSpy).not.toHaveBeenCalled();
+      expect(consoleDebugSpy).toHaveBeenCalledWith('[OIDC] User was redirected via the sign-in page. Now signed in.');
+      expect(result).toEqual(mockedUser);
     });
 
-    it('signinRedirectCallback method should be called after signing in and promise is rejected', () => {
+    it('signinRedirectCallback method should be called after signing in and promise is rejected', async () => {
       plugin.client.signinRedirectCallback = jest.fn().mockRejectedValue(new Error('No response.'));
 
       const signinRedirectCallbackSpy = jest.spyOn(plugin.client, 'signinRedirectCallback');
       const signinSilentSpy = jest.spyOn(plugin.client, 'signinSilent');
       const consoleDebugSpy = jest.spyOn(console, 'debug');
+      const result = await plugin.tryToSignIn();
 
-      plugin.tryToSignIn().then((result) => {
-        expect(signinRedirectCallbackSpy).toHaveBeenCalled();
-        expect(signinSilentSpy).toHaveBeenCalled();
-        expect(consoleDebugSpy.mock.calls).toContainEqual(['[OIDC] Silent sign-in completed.']);
-        expect(result).toEqual(mockedUser);
-      });
+      expect.assertions(4);
+      expect(signinRedirectCallbackSpy).toHaveBeenCalled();
+      expect(signinSilentSpy).toHaveBeenCalled();
+      expect(consoleDebugSpy.mock.calls).toContainEqual(['[OIDC] Silent sign-in completed.']);
+      expect(result).toEqual(mockedUser);
     });
   });
 });

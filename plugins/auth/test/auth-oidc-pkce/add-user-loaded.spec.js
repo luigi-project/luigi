@@ -56,6 +56,10 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       plugin = await new openIdConnect({});
     });
 
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should accept the payload and execute interceptor function when "profileStorageInterceptorFn" is configured', async () => {
       global.Luigi.getConfigValue.mockReturnValue(jest.fn());
 
@@ -75,34 +79,34 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
       const postMessageSpy = jest.spyOn(window, 'postMessage');
 
+      expect.assertions(4);
       expect(addUserLoadedSpy).toHaveBeenCalled();
-      eventCallbacks.userLoaded(mockedPayload).then(() => {
-        expect(executeConfigFnSpy).toHaveBeenCalledWith(
-          'auth.openIdConnect.profileStorageInterceptorFn',
-          true,
-          {
-            auth_time: mockedPayload.profile['auth_time'],
-            nonce: mockedPayload.profile['nonce']
-          }
-        );
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(postMessageSpy).toHaveBeenCalledWith(
-          {
-            authData: {
-              accessToken: mockedPayload['access_token'],
-              accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
-              idToken: mockedPayload['id_token'],
-              profile: {
-                auth_time: mockedPayload.profile['auth_time'],
-                nonce: mockedPayload.profile['nonce']
-              },
-              scope: mockedPayload['scope'],
+      await eventCallbacks.userLoaded(mockedPayload);
+      expect(executeConfigFnSpy).toHaveBeenCalledWith(
+        'auth.openIdConnect.profileStorageInterceptorFn',
+        true,
+        {
+          auth_time: mockedPayload.profile['auth_time'],
+          nonce: mockedPayload.profile['nonce']
+        }
+      );
+      expect(luigiAuthSpy).toHaveBeenCalled();
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          authData: {
+            accessToken: mockedPayload['access_token'],
+            accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
+            idToken: mockedPayload['id_token'],
+            profile: {
+              auth_time: mockedPayload.profile['auth_time'],
+              nonce: mockedPayload.profile['nonce']
             },
-            msg: 'luigi.auth.tokenIssued'
+            scope: mockedPayload['scope'],
           },
-          'http://localhost'
-        );
-      });
+          msg: 'luigi.auth.tokenIssued'
+        },
+        'http://localhost'
+      );
     });
 
     it('should accept the payload and not execute interceptor function when "profileStorageInterceptorFn" is not configured', async () => {
@@ -124,27 +128,27 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
       const postMessageSpy = jest.spyOn(window, 'postMessage');
 
+      expect.assertions(4);
       expect(addUserLoadedSpy).toHaveBeenCalled();
-      eventCallbacks.userLoaded(mockedPayload).then(() => {
-        expect(executeConfigFnSpy).not.toHaveBeenCalled();
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(postMessageSpy).toHaveBeenCalledWith(
-          {
-            authData: {
-              accessToken: mockedPayload['access_token'],
-              accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
-              idToken: mockedPayload['id_token'],
-              profile: {
-                auth_time: mockedPayload.profile['auth_time'],
-                nonce: mockedPayload.profile['nonce']
-              },
-              scope: mockedPayload['scope'],
+      await eventCallbacks.userLoaded(mockedPayload);
+      expect(executeConfigFnSpy).not.toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalled();
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          authData: {
+            accessToken: mockedPayload['access_token'],
+            accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
+            idToken: mockedPayload['id_token'],
+            profile: {
+              auth_time: mockedPayload.profile['auth_time'],
+              nonce: mockedPayload.profile['nonce']
             },
-            msg: 'luigi.auth.tokenIssued'
+            scope: mockedPayload['scope'],
           },
-          'http://localhost'
-        );
-      });
+          msg: 'luigi.auth.tokenIssued'
+        },
+        'http://localhost'
+      );
     });
 
     it('should accept the payload and not execute interceptor function when profile data is missing', async () => {
@@ -162,24 +166,24 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
       const postMessageSpy = jest.spyOn(window, 'postMessage');
 
+      expect.assertions(4);
       expect(addUserLoadedSpy).toHaveBeenCalled();
-      eventCallbacks.userLoaded(mockedPayload).then(() => {
-        expect(executeConfigFnSpy).not.toHaveBeenCalled();
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(postMessageSpy).toHaveBeenCalledWith(
-          {
-            authData: {
-              accessToken: mockedPayload['access_token'],
-              accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
-              idToken: mockedPayload['id_token'],
-              profile: undefined,
-              scope: mockedPayload['scope'],
-            },
-            msg: 'luigi.auth.tokenIssued'
+      await eventCallbacks.userLoaded(mockedPayload);
+      expect(executeConfigFnSpy).not.toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalled();
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          authData: {
+            accessToken: mockedPayload['access_token'],
+            accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
+            idToken: mockedPayload['id_token'],
+            profile: undefined,
+            scope: mockedPayload['scope'],
           },
-          'http://localhost'
-        );
-      });
+          msg: 'luigi.auth.tokenIssued'
+        },
+        'http://localhost'
+      );
     });
 
     it('should accept the payload and handle case for "idTokenExpirationDate" property if ID token is correct', async () => {
@@ -202,29 +206,29 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
       const postMessageSpy = jest.spyOn(window, 'postMessage');
 
+      expect.assertions(5);
       expect(addUserLoadedSpy).toHaveBeenCalled();
-      eventCallbacks.userLoaded(mockedPayload).then(() => {
-        expect(executeConfigFnSpy).not.toHaveBeenCalled();
-        expect(consoleErrorSpy).not.toHaveBeenCalled();
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(postMessageSpy).toHaveBeenCalledWith(
-          {
-            authData: {
-              accessToken: mockedPayload['access_token'],
-              accessTokenExpirationDate: JSON.parse(atob(mockedPayload['id_token'].split('.')[1])).exp * 1000,
-              idToken: mockedPayload['id_token'],
-              idTokenExpirationDate: JSON.parse(atob(mockedPayload['id_token'].split('.')[1])).exp * 1000,
-              profile: {
-                auth_time: mockedPayload.profile['auth_time'],
-                nonce: mockedPayload.profile['nonce']
-              },
-              scope: mockedPayload['scope'],
+      await eventCallbacks.userLoaded(mockedPayload);
+      expect(executeConfigFnSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalled();
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          authData: {
+            accessToken: mockedPayload['access_token'],
+            accessTokenExpirationDate: JSON.parse(atob(mockedPayload['id_token'].split('.')[1])).exp * 1000,
+            idToken: mockedPayload['id_token'],
+            idTokenExpirationDate: JSON.parse(atob(mockedPayload['id_token'].split('.')[1])).exp * 1000,
+            profile: {
+              auth_time: mockedPayload.profile['auth_time'],
+              nonce: mockedPayload.profile['nonce']
             },
-            msg: 'luigi.auth.tokenIssued'
+            scope: mockedPayload['scope'],
           },
-          'http://localhost'
-        );
-      });
+          msg: 'luigi.auth.tokenIssued'
+        },
+        'http://localhost'
+      );
     });
 
     it('should accept the payload and handle case for "idTokenExpirationDate" property if ID token is incorrect', async () => {
@@ -247,28 +251,28 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
       const postMessageSpy = jest.spyOn(window, 'postMessage');
 
+      expect.assertions(5);
       expect(addUserLoadedSpy).toHaveBeenCalled();
-      eventCallbacks.userLoaded(mockedPayload).then(() => {
-        expect(executeConfigFnSpy).not.toHaveBeenCalled();
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(postMessageSpy).toHaveBeenCalledWith(
-          {
-            authData: {
-              accessToken: mockedPayload['access_token'],
-              accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
-              idToken: mockedPayload['id_token'],
-              profile: {
-                auth_time: mockedPayload.profile['auth_time'],
-                nonce: mockedPayload.profile['nonce']
-              },
-              scope: mockedPayload['scope'],
+      await eventCallbacks.userLoaded(mockedPayload);
+      expect(executeConfigFnSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalled();
+      expect(postMessageSpy).toHaveBeenCalledWith(
+        {
+          authData: {
+            accessToken: mockedPayload['access_token'],
+            accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
+            idToken: mockedPayload['id_token'],
+            profile: {
+              auth_time: mockedPayload.profile['auth_time'],
+              nonce: mockedPayload.profile['nonce']
             },
-            msg: 'luigi.auth.tokenIssued'
+            scope: mockedPayload['scope'],
           },
-          'http://localhost'
-        );
-      });
+          msg: 'luigi.auth.tokenIssued'
+        },
+        'http://localhost'
+      );
     });
   });
 });

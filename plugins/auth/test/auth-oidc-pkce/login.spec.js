@@ -50,26 +50,30 @@ describe('auth-oidc-pkce login', () => {
       plugin = await new openIdConnect({});
     });
 
-    it('signinRedirect method should be called after login and promise is resolved', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('signinRedirect method should be called after login and promise is resolved', async () => {
       plugin.client.signinRedirect = jest.fn().mockResolvedValue('ok');
 
       const signinRedirectSpy = jest.spyOn(plugin.client, 'signinRedirect');
 
-      plugin.login().then(() => {
-        expect(signinRedirectSpy).toHaveBeenCalledWith({ state: window.location.href });
-      });
+      await plugin.login();
+      expect.assertions(1);
+      expect(signinRedirectSpy).toHaveBeenCalledWith({ state: window.location.href });
     });
 
-    it('signinRedirect method should be called after login and promise is rejected', () => {
+    it('signinRedirect method should be called after login and promise is rejected', async () => {
       plugin.client.signinRedirect = jest.fn().mockRejectedValue('message');
 
       const signinRedirectSpy = jest.spyOn(plugin.client, 'signinRedirect');
       const consoleErrorSpy = jest.spyOn(console, 'error');
 
-      plugin.login().then(() => {
-        expect(signinRedirectSpy).toHaveBeenCalledWith({ state: window.location.href });
-        expect(consoleErrorSpy).toHaveBeenCalledWith('[OIDC] login() Error', 'message');
-      });
+      await plugin.login();
+      expect.assertions(2);
+      expect(signinRedirectSpy).toHaveBeenCalledWith({ state: window.location.href });
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[OIDC] login() Error', 'message');
     });
   });
 });

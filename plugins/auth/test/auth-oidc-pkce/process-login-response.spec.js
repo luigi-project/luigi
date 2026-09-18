@@ -50,17 +50,22 @@ describe('auth-oidc-pkce processLoginResponse', () => {
       plugin = await new openIdConnect({});
     });
 
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     it('tryToSignIn method should not be called after login and promise is resolved', async () => {
       plugin.tryToSignIn = jest.fn().mockResolvedValue({});
       window.location.search = '?query=test';
 
       const tryToSignInSpy = jest.spyOn(plugin, 'tryToSignIn');
 
+      expect.assertions(2);
       await expect(plugin._processLoginResponse()).resolves.toEqual(true);
       expect(tryToSignInSpy).not.toHaveBeenCalled();
     });
 
-    it('tryToSignIn method should be called after login and promise is resolved with error', () => {
+    it('tryToSignIn method should be called after login and promise is resolved with error', async () => {
       plugin.tryToSignIn = jest.fn().mockResolvedValue({ error: true });
       window.location.search = '?query=code';
 
@@ -68,29 +73,27 @@ describe('auth-oidc-pkce processLoginResponse', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error');
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
 
-      plugin._processLoginResponse().then((result) => {
-        expect(tryToSignInSpy).toHaveBeenCalled();
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(luigiAuthSpy).not.toHaveBeenCalled();
-        expect(result).toEqual(true);
-      });
+      expect.assertions(4);
+      await expect(plugin._processLoginResponse()).resolves.toEqual(false);
+      expect(tryToSignInSpy).toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(luigiAuthSpy).not.toHaveBeenCalled();
     });
 
-    it('tryToSignIn method should be called after login and promise is resolved without error', () => {
+    it('tryToSignIn method should be called after login and promise is resolved without error', async () => {
       plugin.tryToSignIn = jest.fn().mockResolvedValue({});
       window.location.search = '?query=code';
 
       const tryToSignInSpy = jest.spyOn(plugin, 'tryToSignIn');
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
 
-      plugin._processLoginResponse().then((result) => {
-        expect(tryToSignInSpy).toHaveBeenCalled();
-        expect(luigiAuthSpy).not.toHaveBeenCalled();
-        expect(result).toEqual(true);
-      });
+      expect.assertions(3);
+      await expect(plugin._processLoginResponse()).resolves.toEqual(true);
+      expect(tryToSignInSpy).toHaveBeenCalled();
+      expect(luigiAuthSpy).not.toHaveBeenCalled();
     });
 
-    it('tryToSignIn method should be called after login and promise is rejected', () => {
+    it('tryToSignIn method should be called after login and promise is rejected', async () => {
       plugin.tryToSignIn = jest.fn().mockRejectedValue(new Error('failure'));
       window.location.search = '?query=code';
 
@@ -98,12 +101,11 @@ describe('auth-oidc-pkce processLoginResponse', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error');
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
 
-      plugin._processLoginResponse().then((result) => {
-        expect(tryToSignInSpy).toHaveBeenCalled();
-        expect(consoleErrorSpy).toHaveBeenCalledWith('[OIDC] tryToSignIn Error Error: failure');
-        expect(luigiAuthSpy).toHaveBeenCalledTimes(2);
-        expect(result).toEqual(true);
-      });
+      expect.assertions(4);
+      await expect(plugin._processLoginResponse()).rejects.toThrow('failure');
+      expect(tryToSignInSpy).toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalledTimes(2);
     });
   });
 });

@@ -50,18 +50,21 @@ describe('auth-oidc-pkce processLogoutResponse', () => {
       plugin = await new openIdConnect({});
     });
 
-    it('signoutRedirectCallback method should be called after logout and promise is resolved', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('signoutRedirectCallback method should be called after logout and promise is resolved', async () => {
       plugin.client.signoutRedirectCallback = jest.fn().mockResolvedValue({ state: 'success' });
       window.location.href = 'http://localhost/?logout';
 
       const signoutRedirectCallbackSpy = jest.spyOn(plugin.client, 'signoutRedirectCallback');
       const luigiAuthSpy = jest.spyOn(global.Luigi, 'auth');
 
-      plugin._processLogoutResponse().then((result) => {
-        expect(signoutRedirectCallbackSpy).toHaveBeenCalled();
-        expect(luigiAuthSpy).toHaveBeenCalled();
-        expect(result).toEqual({ state: 'success' });
-      });
+      expect.assertions(3);
+      await expect(plugin._processLogoutResponse()).resolves.toEqual({ state: 'success' });
+      expect(signoutRedirectCallbackSpy).toHaveBeenCalled();
+      expect(luigiAuthSpy).toHaveBeenCalled();
     });
 
     it('signoutRedirectCallback method should be called after logout and promise is rejected', async () => {
@@ -71,6 +74,7 @@ describe('auth-oidc-pkce processLogoutResponse', () => {
       const signoutRedirectCallbackSpy = jest.spyOn(plugin.client, 'signoutRedirectCallback');
       const consoleErrorSpy = jest.spyOn(console, 'error');
 
+      expect.assertions(3);
       await expect(plugin._processLogoutResponse()).rejects.toThrow('fail');
       expect(signoutRedirectCallbackSpy).toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalled();
@@ -82,6 +86,7 @@ describe('auth-oidc-pkce processLogoutResponse', () => {
 
       const signoutRedirectCallbackSpy = jest.spyOn(plugin.client, 'signoutRedirectCallback');
 
+      expect.assertions(2);
       await expect(plugin._processLogoutResponse()).resolves.toEqual(true);
       expect(signoutRedirectCallbackSpy).not.toHaveBeenCalled();
     });

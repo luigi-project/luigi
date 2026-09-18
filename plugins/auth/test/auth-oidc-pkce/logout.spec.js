@@ -50,7 +50,11 @@ describe('auth-oidc-pkce logout', () => {
       plugin = await new openIdConnect({});
     });
 
-    it('signoutRedirect method should be called after logout and promise is resolved', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('signoutRedirect method should be called after logout and promise is resolved', async () => {
       plugin.client.signoutRedirect = jest.fn().mockResolvedValue('ok');
 
       const mockedSignoutData = {
@@ -60,13 +64,13 @@ describe('auth-oidc-pkce logout', () => {
       const mockedAuthOnLogoutFn = jest.fn();
       const signoutRedirectSpy = jest.spyOn(plugin.client, 'signoutRedirect');
 
-      plugin.logout({ idToken: '123456' }, mockedAuthOnLogoutFn).then(() => {
-        expect(mockedAuthOnLogoutFn).toHaveBeenCalled();
-        expect(signoutRedirectSpy).toHaveBeenCalledWith(mockedSignoutData);
-      });
+      await plugin.logout({ idToken: '123456' }, mockedAuthOnLogoutFn);
+      expect.assertions(2);
+      expect(mockedAuthOnLogoutFn).toHaveBeenCalled();
+      expect(signoutRedirectSpy).toHaveBeenCalledWith(mockedSignoutData);
     });
 
-    it('signoutRedirect method should be called after logout and promise is rejected', () => {
+    it('signoutRedirect method should be called after logout and promise is rejected', async () => {
       plugin.client.signoutRedirect = jest.fn().mockRejectedValue('message');
 
       const mockedSignoutData = {
@@ -77,11 +81,11 @@ describe('auth-oidc-pkce logout', () => {
       const signoutRedirectSpy = jest.spyOn(plugin.client, 'signoutRedirect');
       const consoleErrorSpy = jest.spyOn(console, 'error');
 
-      plugin.logout({ idToken: '123456' }, mockedAuthOnLogoutFn).then(() => {
-        expect(mockedAuthOnLogoutFn).toHaveBeenCalled();
-        expect(signoutRedirectSpy).toHaveBeenCalledWith(mockedSignoutData);
-        expect(consoleErrorSpy).toHaveBeenCalledWith('[OIDC] logout() Error', 'message');
-      });
+      await plugin.logout({ idToken: '123456' }, mockedAuthOnLogoutFn);
+      expect.assertions(3);
+      expect(mockedAuthOnLogoutFn).toHaveBeenCalled();
+      expect(signoutRedirectSpy).toHaveBeenCalledWith(mockedSignoutData);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('[OIDC] logout() Error', 'message');
     });
   });
 });
