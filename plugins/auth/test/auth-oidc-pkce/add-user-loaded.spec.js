@@ -41,7 +41,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       return {
         auth_time: params['auth_time'],
         nonce: params['nonce']
-      }
+      };
     });
     global.Luigi.auth = jest.fn(() => ({
       store: { setAuthData: jest.fn(), removeAuthData: jest.fn() },
@@ -82,14 +82,10 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       expect.assertions(4);
       expect(addUserLoadedSpy).toHaveBeenCalled();
       await eventCallbacks.userLoaded(mockedPayload);
-      expect(executeConfigFnSpy).toHaveBeenCalledWith(
-        'auth.openIdConnect.profileStorageInterceptorFn',
-        true,
-        {
-          auth_time: mockedPayload.profile['auth_time'],
-          nonce: mockedPayload.profile['nonce']
-        }
-      );
+      expect(executeConfigFnSpy).toHaveBeenCalledWith('auth.openIdConnect.profileStorageInterceptorFn', true, {
+        auth_time: mockedPayload.profile['auth_time'],
+        nonce: mockedPayload.profile['nonce']
+      });
       expect(luigiAuthSpy).toHaveBeenCalled();
       expect(postMessageSpy).toHaveBeenCalledWith(
         {
@@ -101,7 +97,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
               auth_time: mockedPayload.profile['auth_time'],
               nonce: mockedPayload.profile['nonce']
             },
-            scope: mockedPayload['scope'],
+            scope: mockedPayload['scope']
           },
           msg: 'luigi.auth.tokenIssued'
         },
@@ -143,7 +139,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
               auth_time: mockedPayload.profile['auth_time'],
               nonce: mockedPayload.profile['nonce']
             },
-            scope: mockedPayload['scope'],
+            scope: mockedPayload['scope']
           },
           msg: 'luigi.auth.tokenIssued'
         },
@@ -178,7 +174,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
             accessTokenExpirationDate: mockedPayload['expires_at'] * 1000,
             idToken: mockedPayload['id_token'],
             profile: undefined,
-            scope: mockedPayload['scope'],
+            scope: mockedPayload['scope']
           },
           msg: 'luigi.auth.tokenIssued'
         },
@@ -192,7 +188,8 @@ describe('auth-oidc-pkce addUserLoaded', () => {
       const mockedPayload = {
         access_token: undefined,
         expires_at: 1000,
-        id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbXktZG9tYWluLmF1dGgwLmNvbSIsInN1YiI6ImF1dGgwfDEyMzQ1NiIsImF1ZCI6IjEyMzRhYmNkZWYiLCJleHAiOjEzMTEyODE5NzAsImlhdCI6MTMxMTI4MDk3MCwibmFtZSI6IkphbmUgRG9lIiwiZ2l2ZW5fbmFtZSI6IkphbmUiLCJmYW1pbHlfbmFtZSI6IkRvZSJ9.bql-jxlG9B_bielkqOnjTY9Di9FillFb6IMQINXoYsw',
+        id_token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbXktZG9tYWluLmF1dGgwLmNvbSIsInN1YiI6ImF1dGgwfDEyMzQ1NiIsImF1ZCI6IjEyMzRhYmNkZWYiLCJleHAiOjEzMTEyODE5NzAsImlhdCI6MTMxMTI4MDk3MCwibmFtZSI6IkphbmUgRG9lIiwiZ2l2ZW5fbmFtZSI6IkphbmUiLCJmYW1pbHlfbmFtZSI6IkRvZSJ9.bql-jxlG9B_bielkqOnjTY9Di9FillFb6IMQINXoYsw',
         profile: {
           auth_time: 300,
           nonce: 'dhfghdfgdfgw4523wsdfsd'
@@ -223,7 +220,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
               auth_time: mockedPayload.profile['auth_time'],
               nonce: mockedPayload.profile['nonce']
             },
-            scope: mockedPayload['scope'],
+            scope: mockedPayload['scope']
           },
           msg: 'luigi.auth.tokenIssued'
         },
@@ -267,7 +264,7 @@ describe('auth-oidc-pkce addUserLoaded', () => {
               auth_time: mockedPayload.profile['auth_time'],
               nonce: mockedPayload.profile['nonce']
             },
-            scope: mockedPayload['scope'],
+            scope: mockedPayload['scope']
           },
           msg: 'luigi.auth.tokenIssued'
         },
