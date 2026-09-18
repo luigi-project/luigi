@@ -171,6 +171,44 @@ const setWebcomponentCreationInterceptor = (
   }
 };
 
+const handleDialogContainers = async (
+  context: Record<string, any>,
+  withoutSync: boolean,
+  luigi: Luigi
+): Promise<void> => {
+  const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
+
+  if (showModalPathInUrl) {
+    const modalService = serviceRegistry.get(ModalService);
+    const routingService = serviceRegistry.get(RoutingService);
+    const hashRouting = !!luigi.getConfigValue('routing.useHashRouting');
+    const routeInfo = RoutingHelpers.getCurrentPath(luigi, hashRouting, true);
+    const closed = await modalService.closeModalsWithDirtyCheck();
+
+    if (closed) {
+      await routingService.handleBookmarkableModalPath(routeInfo, false);
+
+      if (UIModule.drawerContainer && UIModule.drawerContainer?.updateContext) {
+        UIModule.drawerContainer.updateContext(context || {}, { withoutSync });
+      }
+    }
+  } else {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+
+      dialogContainers.forEach((container: any) => {
+        if (container?.updateContext) {
+          container.updateContext(context || {}, { withoutSync });
+        }
+      });
+    }
+  }
+};
+
 export const UIModule = {
   navService: undefined as unknown as NavigationService,
   routingService: undefined as unknown as RoutingService,
@@ -351,11 +389,10 @@ export const UIModule = {
             viewGroupContainer = element;
           } else if (
             !currentNode.viewGroup &&
-              !currentNode.isolateView &&
-              !currentNode.webcomponent &&
-              element.viewurl &&
-              (preventContextUpdate ||
-                (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+            !currentNode.isolateView &&
+            !currentNode.webcomponent &&
+            element.viewurl &&
+            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
             viewGroupContainer = element;
           } else {
@@ -410,6 +447,7 @@ export const UIModule = {
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
             viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
+            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       } else {
@@ -423,6 +461,7 @@ export const UIModule = {
         } else {
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(currentNode.context || {}, { withoutSync });
+            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       }
@@ -574,7 +613,15 @@ export const UIModule = {
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
 
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
+      resolveFn = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+      };
+
       const onCloseRequestHandler = async () => {
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
@@ -583,7 +630,7 @@ export const UIModule = {
         }
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
-        resolve();
+        resolveFn && resolveFn();
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -601,6 +648,7 @@ export const UIModule = {
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
       },
       () => closePromise
     );
