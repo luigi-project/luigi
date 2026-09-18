@@ -231,12 +231,13 @@ export default class openIdConnect {
       this.tryToSignIn()
         .then((authenticatedUser = {}) => {
           if (authenticatedUser.error) {
-            return console.error(
+            console.error(
               '[OIDC] Error',
               authenticatedUser.error,
               authenticatedUser.error_description,
               authenticatedUser
             );
+            return resolve(false);
           }
 
           // since auth storages have no callback we need to wait couple of ms before proceeding
@@ -282,6 +283,7 @@ export default class openIdConnect {
             err,
             this.settings.logoutUrl + '?error=loginError'
           );
+          reject(err);
         });
     });
   }
