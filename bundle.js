@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 
 // Array of folder names
 const foldersToBundle = [
@@ -26,9 +26,7 @@ function runCommand(folder, index, totalFolders, operation) {
   const startTime = new Date();
 
   return new Promise((resolve, reject) => {
-    const command = `cd ${folder} && npm run ${operation}`;
-
-    exec(command, (error, stdout, stderr) => {
+    execFile('npm run ' + operation, { cwd: folder, shell: true }, (error, stdout, stderr) => {
       const endTime = new Date();
       const elapsedTime = (endTime - startTime) / 1000;
       timeToBundle += operation === 'bundle' ? elapsedTime : 0;
