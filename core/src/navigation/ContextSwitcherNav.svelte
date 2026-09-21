@@ -34,10 +34,14 @@
     }
   }
 
+  function keyboardNavEnabled() {
+    return !customOptionsRenderer;
+  }
+
   function focusOpenItem() {
     // Two ContextSwitcher instances share dropDownStates. The mobile copy
     // must not steal focus from the desktop popover that the e2e asserts on.
-    if (!isContextSwitcherDropdownShown || !menuEl || isMobile) {
+    if (!isContextSwitcherDropdownShown || !menuEl || isMobile || !keyboardNavEnabled()) {
       return false;
     }
     const popover = document.getElementById('contextSwitcherPopover');
@@ -58,7 +62,7 @@
   }
 
   function recaptureFocusFromTrigger() {
-    if (!isContextSwitcherDropdownShown || isMobile) {
+    if (!isContextSwitcherDropdownShown || isMobile || !keyboardNavEnabled()) {
       return;
     }
     const popover = document.getElementById('contextSwitcherPopover');
@@ -76,7 +80,7 @@
   }
 
   afterUpdate(() => {
-    if (!isContextSwitcherDropdownShown) {
+    if (!isContextSwitcherDropdownShown || !keyboardNavEnabled()) {
       clearFocusTimeout();
       return;
     }

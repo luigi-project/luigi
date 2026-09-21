@@ -44,6 +44,7 @@
   let popoverEl;
   let focusMenuOnOpen = 'first';
   let skipNextTriggerClick = false;
+  let inertedNodes = [];
   // Keep in sync with $desktopMaxWidth in core/src/styles/_variables.scss.
   let isNarrowViewport =
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -203,7 +204,7 @@
         } else {
           Routing.navigateTo(option.link);
         }
-        if (isMobile) {
+        if (isDropdownOpen()) {
           dispatch('toggleDropdownState');
         }
       },
@@ -224,13 +225,17 @@
     if (typeof document === 'undefined') {
       return;
     }
-    document.querySelectorAll('.iframeContainer, iframe').forEach((node) => {
-      if (isInert) {
-        node.setAttribute('inert', '');
-      } else {
-        node.removeAttribute('inert');
-      }
-    });
+    if (isInert) {
+      IframeHelpers.getVisibleIframes().forEach((node) => {
+        if (!node.hasAttribute('inert')) {
+          node.setAttribute('inert', '');
+          inertedNodes.push(node);
+        }
+      });
+    } else {
+      inertedNodes.forEach((node) => node.removeAttribute('inert'));
+      inertedNodes = [];
+    }
   }
 
   $: if (!isMobile) {
@@ -239,6 +244,10 @@
 
   function isDropdownOpen() {
     return Boolean(dropDownStates && dropDownStates.contextSwitcherPopover);
+  }
+
+  function keyboardNavEnabled() {
+    return !customOptionsRenderer;
   }
 
   function focusMenuItem(which) {
@@ -252,7 +261,7 @@
   }
 
   function scheduleMenuFocus() {
-    if (isMobile) {
+    if (isMobile || !keyboardNavEnabled()) {
       return;
     }
     const attempt = () => {
@@ -301,6 +310,32 @@
   }
 
   function onTriggerKeydown(event) {
+    if (!keyboardNavEnabled()) {
+      const isDisabled = !renderAsDropdown || event.currentTarget.getAttribute('aria-disabled') === 'true';
+      if (isDisabled || event.repeat) {
+        if (DropdownKeyboardHelpers.isActivationKey(event)) {
+          event.preventDefault();
+        }
+        return;
+      }
+      if (DropdownKeyboardHelpers.eventKey(event) === 'Escape') {
+        if (isDropdownOpen()) {
+          event.preventDefault();
+          closeAndFocusTrigger();
+        }
+        return;
+      }
+      if (DropdownKeyboardHelpers.isActivationKey(event)) {
+        event.preventDefault();
+        event.stopPropagation();
+        skipNextTriggerClick = true;
+        setTimeout(() => {
+          skipNextTriggerClick = false;
+        }, 1000);
+        toggleDropdownState();
+      }
+      return;
+    }
     DropdownKeyboardHelpers.handleTriggerKeydown(event, {
       isOpen: isDropdownOpen(),
       isDisabled: !renderAsDropdown || event.currentTarget.getAttribute('aria-disabled') === 'true',
@@ -322,6 +357,13 @@
   }
 
   function onPopoverKeydown(event) {
+    if (!keyboardNavEnabled()) {
+      if (DropdownKeyboardHelpers.eventKey(event) === 'Escape') {
+        event.preventDefault();
+        closeAndFocusTrigger();
+      }
+      return;
+    }
     DropdownKeyboardHelpers.handleMenuKeydown(event, {
       items: DropdownKeyboardHelpers.getMenuItems(event.currentTarget),
       onEscape: closeAndFocusTrigger,
@@ -360,10 +402,8 @@
               {/if}
             </a>
           {:else}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <div
+            <button
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
-              role="button"
               aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
@@ -380,7 +420,7 @@
                 {#if !selectedLabel}{$getTranslation(config.defaultLabel)}{:else}{selectedLabel}{/if}
                 <i class="sap-icon--megamenu fd-shellbar__button--icon" />
               {/if}
-            </div>
+            </button>
           {/if}
         </div>
         <!-- svelte-ignore a11y-click-events-have-key-events -->

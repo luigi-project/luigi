@@ -587,5 +587,25 @@ describe('JS-TEST-APP 4', () => {
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.attr', 'aria-expanded', 'false');
       cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.focus');
     });
+
+    it('leaves keyboard navigation to customOptionsRenderer', () => {
+      newConfig.navigation.contextSwitcher.customOptionsRenderer = (item) => {
+        const option = document.createElement('a');
+        option.setAttribute('href', item.link);
+        option.setAttribute('tabindex', '0');
+        option.setAttribute('role', 'option');
+        option.classList.add('lui-ctx-switch-option');
+        option.textContent = item.label;
+        return option.outerHTML;
+      };
+      cy.visitTestApp('/', newConfig);
+      cy.get('[data-testid="luigi-contextswitcher-button"]').click();
+      cy.get('#contextSwitcherPopover').should('have.attr', 'aria-hidden', 'false');
+      cy.get('#contextSwitcherPopover a.fd-menu__link').should('not.exist');
+      cy.get('#contextSwitcherPopover .lui-ctx-switch-option').should('have.length.at.least', 2);
+      cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.focus');
+      cy.focused().type('{downArrow}');
+      cy.get('[data-testid="luigi-contextswitcher-button"]').should('have.focus');
+    });
   });
 });
