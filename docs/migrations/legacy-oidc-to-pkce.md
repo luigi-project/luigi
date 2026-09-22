@@ -2,6 +2,9 @@
 
 Migrating from `oidc-client` v1 (unmaintained) to `oidc-client-ts` v3 requires a dependency swap, a move from the implicit flow to authorization code + PKCE, several renamed settings, and awareness of stricter security defaults around logout and state validation.
 
+<!-- add-attribute:class:success -->
+>**TIP:** Follow official `oidc-client-ts` [documentation](https://authts.github.io/oidc-client-ts/) for up-to-date information.
+
 ## Runtime dependency swap
 
 Replace the package and update every import path; the two libraries are not drop-in compatible despite the similar API surface.
@@ -57,15 +60,12 @@ oidc-client-ts renamed several `UserManagerSettings` keys for clarity; the old k
 
 | oidc-client v1 key | oidc-client-ts v3 key |
 | --- | --- |
-| `popup_redirect_uri` | `popupRedirectUri` (or keep snake\_case alias in v3, but camelCase is canonical) |
 | `popupWindowFeatures` | `popupWindowFeatures` (unchanged, listed for contrast) |
-| `silent_redirect_uri` | `silentRedirectUri` |
 | `automaticSilentRenew` | `automaticSilentRenew` (unchanged) |
 | `accessTokenExpiringNotificationTime` | `accessTokenExpiringNotificationTimeInSeconds` |
 | `checkSessionInterval` | `checkSessionIntervalInSeconds` |
 | `silentRequestTimeout` | `silentRequestTimeoutInSeconds` |
 | `revokeAccessTokenOnSignout` | `revokeTokensOnSignout` |
-| `filterProtocolClaims` | Removed — protocol claims are filtered via `mergeClaims` behavior instead |
 
 The pattern worth flagging: several timing settings gained an explicit `InSeconds` suffix. Audit any config that sets timeout or interval values and rename the key rather than assuming the old key is aliased.
 
@@ -77,7 +77,7 @@ What changes in practice:
 
 - Remove the setting from config; passing it is a silent no-op, not an error.
 - Third-party cookie detection is no longer built in. Since the move to authorization code + PKCE (see above) also removes the need to renew tokens via a hidden iframe against the IdP's session cookie in most setups, silent renewal via `automaticSilentRenew` should be re-tested end to end against the actual IdP, particularly in Safari and Firefox with stricter cookie partitioning.
-- If silent renewal still fails intermittently after migration, the recommended pattern is refresh-token-based renewal (`useRefreshToken: true` with `offline_access` scope) rather than iframe-based silent renewal, since it does not depend on third-party cookie access at all.
+- If silent renewal still fails intermittently after migration, the recommended pattern is refresh-token-based renewal rather than iframe-based silent renewal, since it does not depend on third-party cookie access at all.
 
 ## New distinction: logoutUrl vs post\_logout\_redirect\_uri
 
@@ -140,7 +140,7 @@ auth: {
       clientId: 'pkce-mock-client',
       scope: 'openid profile email',
       response_type: 'code',
-      redirect_uri: '/'
+      redirect_uri: '/',
       silent_redirect_uri: '/auth/oidc-pkce-silent-callback.html',
       post_logout_redirect_uri: '/?logout',
       metadata: {
