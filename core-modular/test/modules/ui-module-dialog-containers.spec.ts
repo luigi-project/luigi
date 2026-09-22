@@ -77,7 +77,7 @@ describe('UIModule.updateMainContent - dialog containers', () => {
     mockModalService = {
       registerModal: jest.fn(),
       getModalSettings: jest.fn().mockReturnValue({}),
-      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
     mockRoutingService = {
       handleBookmarkableModalPath: jest.fn().mockResolvedValue(true)
@@ -110,10 +110,10 @@ describe('UIModule.updateMainContent - dialog containers', () => {
       value: {
         classes: new Set(),
         add(...names) {
-          names.forEach(name => this.classes.add(name));
+          names.forEach((name) => this.classes.add(name));
         },
         remove(...names) {
-          names.forEach(name => this.classes.delete(name));
+          names.forEach((name) => this.classes.delete(name));
         },
         toggle(name) {
           if (this.classes.has(name)) {

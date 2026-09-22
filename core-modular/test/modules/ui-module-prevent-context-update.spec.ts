@@ -71,7 +71,7 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     const mockModalService = {
       registerModal: jest.fn(),
       getModalSettings: jest.fn().mockReturnValue({}),
-      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
 

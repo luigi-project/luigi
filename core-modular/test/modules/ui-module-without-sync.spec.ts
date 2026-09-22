@@ -55,7 +55,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
     const mockModalService = {
       registerModal: jest.fn(),
       getModalSettings: jest.fn().mockReturnValue({}),
-      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
@@ -98,10 +98,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false);
 
-    expect(existingContainer.updateContext).toHaveBeenCalledWith(
-      { project: 'new-project' },
-      { withoutSync: true }
-    );
+    expect(existingContainer.updateContext).toHaveBeenCalledWith({ project: 'new-project' }, { withoutSync: true });
   });
 
   it('should not call updateViewUrl when withoutSync is true even if hash changed', async () => {
@@ -140,10 +137,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
     expect(existingContainer.searchParams).toEqual({ fresh: 'search' });
     // viewurl untouched -> no iframe reload
     expect(existingContainer.viewurl).toBe('https://example.com/current-mfe.html');
-    expect(existingContainer.updateContext).toHaveBeenCalledWith(
-      { project: 'new-project' },
-      { withoutSync: true }
-    );
+    expect(existingContainer.updateContext).toHaveBeenCalledWith({ project: 'new-project' }, { withoutSync: true });
   });
 
   it('should not update params when withoutSync and preventContextUpdate are both true', async () => {
