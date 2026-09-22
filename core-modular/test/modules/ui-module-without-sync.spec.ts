@@ -19,6 +19,7 @@ jest.mock('../../src/utilities/helpers/auth-helpers', () => ({
 }));
 
 import { UIModule } from '../../src/modules/ui-module';
+import { ModalService } from '../../src/services/modal.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
 describe('UIModule.updateMainContent - withoutSync', () => {
@@ -51,9 +52,18 @@ describe('UIModule.updateMainContent - withoutSync', () => {
       featureToggles: () => ({ getActiveFeatureToggleList: () => [] })
     };
 
-    (serviceRegistry.get as jest.Mock).mockImplementation(() => ({
-      applyDecorators: (url: string) => url
-    }));
+    const mockModalService = {
+      registerModal: jest.fn(),
+      getModalSettings: jest.fn().mockReturnValue({}),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+    };
+
+    (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
+      if (service === ModalService) return mockModalService;
+      return {
+        applyDecorators: (url: string) => url
+      };
+    });
   });
 
   it('should preserve existing container when withoutSync is true and viewUrls differ', async () => {

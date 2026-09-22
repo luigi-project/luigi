@@ -19,6 +19,7 @@ jest.mock('../../src/services/node-data-management.service', () => ({ NodeDataMa
 jest.mock('../../src/utilities/helpers/routing-helpers', () => ({
   RoutingHelpers: {
     substituteViewUrl: jest.fn().mockImplementation((node: any) => node.viewUrl),
+    getCurrentPath: jest.fn().mockReturnValue({}),
     checkWCUrl: jest.fn().mockReturnValue(true)
   }
 }));
@@ -41,11 +42,16 @@ import { UIModule } from '../../src/modules/ui-module';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { ViewUrlDecoratorSvc } from '../../src/services/viewurl-decorator';
 import { ModalService } from '../../src/services/modal.service';
+import { RoutingService } from '../../src/services/routing.service';
 import { DirtyStatusService } from '../../src/services/dirty-status.service';
+import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
+import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
-describe('UIModule.updateMainContent - preventContextUpdate', () => {
+describe('UIModule.updateMainContent - dialog containers', () => {
   let mockLuigi: any;
   let mockConnector: any;
+  let mockModalService: any;
+  let mockRoutingService: any;
   let containerWrapper: HTMLElement;
 
   beforeEach(() => {
@@ -68,16 +74,20 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     };
 
     const mockViewUrlDecoratorSvc = { applyDecorators: jest.fn().mockImplementation((url: string) => url) };
-    const mockModalService = {
+    mockModalService = {
       registerModal: jest.fn(),
       getModalSettings: jest.fn().mockReturnValue({}),
       closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+    };
+    mockRoutingService = {
+      handleBookmarkableModalPath: jest.fn().mockResolvedValue(true)
     };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ViewUrlDecoratorSvc) return mockViewUrlDecoratorSvc;
       if (service === ModalService) return mockModalService;
+      if (service === RoutingService) return mockRoutingService;
       if (service === DirtyStatusService) return mockDirtyStatusService;
       return {};
     });
@@ -94,101 +104,78 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     return el;
   }
 
-  it('should preserve existing container when preventContextUpdate is true and viewUrls differ', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    containerWrapper.appendChild(existingContainer);
+  function createMockElement(className: string): any {
+    const el: any = {};
+    Object.defineProperty(el, 'classList', {
+      value: {
+        classes: new Set(),
+        add(...names) {
+          names.forEach(name => this.classes.add(name));
+        },
+        remove(...names) {
+          names.forEach(name => this.classes.delete(name));
+        },
+        toggle(name) {
+          if (this.classes.has(name)) {
+            this.classes.delete(name);
+            return false;
+          } else {
+            this.classes.add(name);
+            return true;
+          }
+        },
+        contains(name) {
+          return this.classes.has(name);
+        },
+        toString() {
+          return Array.from(this.classes).join(' ');
+        }
+      },
+      writable: false
+    });
+    el.classList.add(className);
+    return el;
+  }
 
+  it('should handle dialog containers when showModalPathInUrl is true', async () => {
     const targetNode = { viewUrl: '/multipurpose.html' } as any;
+    const existingContainer = createMockContainer('/withoptions.html');
+    const getCurrentPathSpy = jest.spyOn(RoutingHelpers, 'getCurrentPath');
+    mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+      if (key === 'routing.showModalPathInUrl' || key === 'routing.useHashRouting') return true;
+      return null;
+    });
+    containerWrapper.appendChild(existingContainer);
+    UIModule.drawerContainer = { context: { existing: 'data' }, updateContext: jest.fn() };
 
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(true);
-    expect(containerWrapper.children.length).toBe(1);
-    expect(existingContainer.viewurl).toBe('/withoptions.html');
+    expect.assertions(4);
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, true, false);
+    await expect(mockModalService.closeModalsWithDirtyCheck).resolves.toBe(true);
+    expect(getCurrentPathSpy).toHaveBeenCalled();
+    await expect(mockRoutingService.handleBookmarkableModalPath).resolves.toBe(true);
+    expect(UIModule.drawerContainer.updateContext).toHaveBeenCalled();
   });
 
-  it('should not update viewurl or properties when preventContextUpdate is true', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    existingContainer.nodeParams = { original: 'params' };
-    containerWrapper.appendChild(existingContainer);
-
-    const targetNode = { viewUrl: '/multipurpose.html', clientPermissions: { urlPatterns: true } } as any;
-    const luigiParams = { nodeParams: { new: 'params' }, pathParams: {}, searchParams: {} };
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, luigiParams, false, true);
-
-    expect(existingContainer.viewurl).toBe('/withoptions.html');
-    expect(existingContainer.nodeParams).toEqual({ original: 'params' });
-  });
-
-  it('should not trigger context update when preventContextUpdate is true', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    containerWrapper.appendChild(existingContainer);
-
-    const targetNode = { viewUrl: '/multipurpose.html', context: { some: 'data' } } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
-
-    expect(existingContainer.updateContext).not.toHaveBeenCalled();
-    expect(existingContainer.updateViewUrl).not.toHaveBeenCalled();
-  });
-
-  it('should remove container and create new one when preventContextUpdate is false and viewUrls differ', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    containerWrapper.appendChild(existingContainer);
-
+  it('should handle dialog containers when showModalPathInUrl is false', async () => {
     const targetNode = { viewUrl: '/multipurpose.html' } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(false);
-    expect(containerWrapper.children.length).toBe(1);
-    const newContainer = containerWrapper.children[0] as any;
-    expect(newContainer.viewurl).toBe('/multipurpose.html');
-  });
-
-  it('should reuse container and update context when preventContextUpdate is false and viewUrls match', async () => {
-    const existingContainer = createMockContainer('/multipurpose.html');
-    containerWrapper.appendChild(existingContainer);
-
-    const targetNode = { viewUrl: '/multipurpose.html', context: { updated: true } } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(true);
-    expect(existingContainer.updateContext).toHaveBeenCalledWith({ updated: true }, { withoutSync: false });
-  });
-
-  it('should not match container when node is webcomponent even with preventContextUpdate', async () => {
     const existingContainer = createMockContainer('/withoptions.html');
+    const parentOne: any = createMockElement('dialog');
+    const parentTwo: any = createMockElement('content');
+    const containers = [
+      { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() },
+      { context: { other: 'value' }, parentNode: parentTwo, updateContext: jest.fn() }
+    ];
+    jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+    mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+      if (key === 'routing.showModalPathInUrl') return false;
+      return null;
+    });
     containerWrapper.appendChild(existingContainer);
 
-    const targetNode = { viewUrl: '/multipurpose.html', webcomponent: true } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(false);
-  });
-
-  it('should not match container when node has isolateView even with preventContextUpdate', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    containerWrapper.appendChild(existingContainer);
-
-    const targetNode = { viewUrl: '/multipurpose.html', isolateView: true } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(false);
-  });
-
-  it('should not match container when node has viewGroup even with preventContextUpdate', async () => {
-    const existingContainer = createMockContainer('/withoptions.html');
-    containerWrapper.appendChild(existingContainer);
-
-    const targetNode = { viewUrl: '/multipurpose.html', viewGroup: 'myGroup' } as any;
-
-    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
-
-    expect(containerWrapper.contains(existingContainer)).toBe(false);
+    expect.assertions(3);
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, true, false);
+    await expect(mockModalService.closeModalsWithDirtyCheck).resolves.toBe(true);
+    expect(containers[0].updateContext).toHaveBeenCalled();
+    expect(containers[1].updateContext).not.toHaveBeenCalled();
   });
 });

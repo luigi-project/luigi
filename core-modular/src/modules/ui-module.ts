@@ -177,13 +177,13 @@ const handleDialogContainers = async (
   luigi: Luigi
 ): Promise<void> => {
   const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
+  const modalService = serviceRegistry.get(ModalService);
+  const closed = await modalService.closeModalsWithDirtyCheck();
 
   if (showModalPathInUrl) {
-    const modalService = serviceRegistry.get(ModalService);
     const routingService = serviceRegistry.get(RoutingService);
     const hashRouting = !!luigi.getConfigValue('routing.useHashRouting');
     const routeInfo = RoutingHelpers.getCurrentPath(luigi, hashRouting, true);
-    const closed = await modalService.closeModalsWithDirtyCheck();
 
     if (closed) {
       await routingService.handleBookmarkableModalPath(routeInfo, false);
@@ -195,7 +195,7 @@ const handleDialogContainers = async (
   } else {
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
 
-    if (allContainers?.length > 1) {
+    if (allContainers?.length > 1 && closed) {
       const dialogContainers = allContainers.filter(
         (container: any) => !container.parentNode.classList.contains('content')
       );
@@ -447,7 +447,7 @@ export const UIModule = {
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
             viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
-            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       } else {
@@ -461,7 +461,7 @@ export const UIModule = {
         } else {
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(currentNode.context || {}, { withoutSync });
-            handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
           }
         }
       }
