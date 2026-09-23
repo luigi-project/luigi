@@ -55,6 +55,7 @@
   export let searchResult;
   export let burgerTooltip;
   export let responsiveShellbarPadding;
+  export let fastNavGroup = null;
 
   let store = getContext('store');
   let contextSwitcherToggle = false;
@@ -278,6 +279,7 @@
     class="fd-shellbar {responsiveShellbarPadding
       ? 'fd-shellbar--responsive-paddings'
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
+    data-luigi-fast-nav-group={fastNavGroup}
     tabindex="0"
   >
     <div class="fd-shellbar__group fd-shellbar__group--product" role="heading" aria-level="1">

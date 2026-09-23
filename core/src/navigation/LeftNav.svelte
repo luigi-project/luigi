@@ -152,6 +152,7 @@
   export let burgerTooltip;
   export let navHeader;
   export let navParentNode;
+  export let fastNavGroup = null;
   let context;
   let previousPathData;
   let sideNavCompactMode;
@@ -727,6 +728,8 @@
       : ''}
         {isSemiCollapsed ? 'fd-navigation--snapped' : ''}"
     role="navigation"
+    data-luigi-fast-nav-group={fastNavGroup}
+    tabindex={fastNavGroup ? '-1' : null}
     style="width: var(--luigi__left-sidenav--width); height: 100%;"
   >
     {#if navHeader}
@@ -1099,6 +1102,8 @@
     semiCollapsibleButton
       ? 'hasFooter'
       : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}"
+    data-luigi-fast-nav-group={fastNavGroup}
+    tabindex={fastNavGroup ? '-1' : null}
   >
     {#if navHeader}
       <div class="lui-nav-title" bind:this={navHeaderContainer}>

@@ -22,7 +22,8 @@
     AuthHelpers,
     StorageHelper,
     UserSettingsHelper,
-    NavigationHelpers
+    NavigationHelpers,
+    FastNavHelpers
   } from './utilities/helpers';
   import {
     LuigiI18N,
@@ -662,6 +663,7 @@
   let previousWindowWidth;
   let configTag;
   let isHeaderDisabled;
+  let f6NavigationEnabled;
 
   const closeLeftNav = () => {
     document.body.classList.remove('lui-leftNavToggle');
@@ -1820,9 +1822,15 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     configTag = LuigiConfig.getConfigValue('tag');
     isHeaderDisabled = LuigiConfig.getConfigValue('settings.header.disabled');
+    f6NavigationEnabled = LuigiConfig.getConfigValue('settings.F6Navigation');
   });
 
   const handleKeyDown = (event) => {
+    if (f6NavigationEnabled && event.key === 'F6') {
+      FastNavHelpers.handleF6(event, document);
+      event.preventDefault();
+      return;
+    }
     if (event.keyCode === KEYCODE_ESC && mfModalList && mfModalList.length > 0) {
       closeModal(mfModalList.length - 1);
     }
@@ -1906,6 +1914,7 @@
                 bind:inputElem
                 bind:customSearchItemRendererSlot
                 {burgerTooltip}
+                fastNavGroup={f6NavigationEnabled ? 'banner' : null}
               />
             {/if}
           </div>
@@ -1920,6 +1929,7 @@
                   on:handleClick={handleNavClick}
                   on:resizeTabNav={onResizeTabNav}
                   {burgerTooltip}
+                  fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
                 />
               </div>
             </div>
@@ -1935,6 +1945,7 @@
                   class="fd-page iframeContainer"
                   class:lui-split-view={mfSplitView.displayed}
                   class:lui-collapsed={mfSplitView.collapsed}
+                  data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
                   tabindex="0"
                   use:init
                 >
@@ -1992,6 +2003,7 @@
         bind:inputElem
         bind:customSearchItemRendererSlot
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'banner' : null}
       />
     {/if}
     {#if !(hideNav || hideSideNav)}
@@ -2001,6 +2013,7 @@
         on:handleClick={handleNavClick}
         on:resizeTabNav={onResizeTabNav}
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
       />
     {/if}
     <Backdrop disable={disableBackdrop}>
@@ -2009,6 +2022,7 @@
         class="fd-page iframeContainer"
         class:lui-split-view={mfSplitView.displayed}
         class:lui-collapsed={mfSplitView.collapsed}
+        data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
         tabindex="0"
         use:init
       >
