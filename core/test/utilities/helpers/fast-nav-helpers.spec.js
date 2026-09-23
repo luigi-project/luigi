@@ -117,6 +117,21 @@ describe('Fast-nav-helpers', () => {
       assert.strictEqual(document.activeElement, btn2);
     });
 
+    it('moves focus out when the active element is an iframe inside a group (forwarded F6)', () => {
+      const iframe = document.createElement('iframe');
+      group2.appendChild(iframe);
+      iframe.focus();
+      assert.strictEqual(document.activeElement, iframe);
+
+      // Simulates the synthetic event core builds when a micro frontend forwards
+      // its F6 keydown via the `luigi.fast-nav` postMessage.
+      FastNavHelpers.handleF6(
+        { key: 'F6', shiftKey: false, preventDefault: () => {}, stopPropagation: () => {} },
+        document
+      );
+      assert.strictEqual(document.activeElement, btn0);
+    });
+
     it('prevents default when handling F6', () => {
       const event = f6();
       assert.isTrue(event.defaultPrevented_);

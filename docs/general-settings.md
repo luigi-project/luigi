@@ -150,6 +150,16 @@ Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 - **type**: boolean
 - **description**: enables keyboard fast navigation. When set to `true`, users can press <kbd>F6</kbd> to move focus to the first focusable element of the next page group (header, side navigation, content) and <kbd>Shift</kbd>+<kbd>F6</kbd> to move to the previous group, cycling around the ends. This improves keyboard accessibility by letting users skip between major regions instead of tabbing through every element.
 - **default**: by default, the parameter is set to `false`, which means fast navigation is disabled.
+<!-- add-attribute:class:warning -->
+> **NOTE:** While focus is inside a micro frontend's iframe, the <kbd>F6</kbd> keydown fires in the micro frontend's own document and never reaches Luigi Core, so focus cannot leave the iframe automatically. To let users jump back out of the iframe, the micro frontend must forward the event to Luigi Core:
+> ```javascript
+> window.addEventListener('keydown', (e) => {
+>   if (e.key === 'F6') {
+>     e.preventDefault(); // stop the browser's default F6 behavior
+>     window.parent.postMessage({ msg: 'luigi.fast-nav', shiftKey: e.shiftKey }, '*');
+>   }
+> });
+> ```
 
 ### featureToggles.queryStringParam
 - **description**: allows you to set the query parameter name for the feature toggles. This parameter is then used when setting feature toggles via appending to the URL like `?ft=name`. You will need this value set before using the feature toggle functionality.

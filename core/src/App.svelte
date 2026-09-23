@@ -1284,6 +1284,21 @@
         iframe.luigi.initOk = true;
       }
 
+      if ('luigi.fast-nav' === e.data.msg) {
+        if (f6NavigationEnabled) {
+          FastNavHelpers.handleF6(
+            {
+              key: 'F6',
+              shiftKey: !!e.data.shiftKey,
+              preventDefault: () => {},
+              stopPropagation: () => {}
+            },
+            document
+          );
+        }
+        return;
+      }
+
       if ('luigi.navigate.ok' === e.data.msg) {
         iframe.luigi.viewUrl = iframe.luigi.nextViewUrl;
         iframe.luigi.nextViewUrl = '';
