@@ -112,25 +112,19 @@ export class NavigationService {
         const allContainers = [...containerWrapper.childNodes].filter(
           (element: any) => element.tagName?.indexOf('LUIGI-') === 0
         ) as any;
-        const activeContainer = allContainers.find(
-          (element: any) => element.style?.display !== 'none'
-        ) as any;
+        const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
 
         if (activeContainer?.updateContext) {
           activeContainer.updateContext({ goBackContext }, { withoutSync: false });
         } else {
           if (allContainers.length === 1) {
             const mainContainer = allContainers[0];
-            const observer = new ElementStyleObserver(
-              mainContainer,
-              ['display'],
-              (changes: any) => {
-                if (changes?.display?.newValue === 'block' && mainContainer?.updateContext) {
-                  mainContainer.updateContext({ goBackContext }, { withoutSync: false });
-                  observer.stop();
-                }
+            const observer = new ElementStyleObserver(mainContainer, ['display'], (changes: any) => {
+              if (changes?.display?.newValue === 'block' && mainContainer?.updateContext) {
+                mainContainer.updateContext({ goBackContext }, { withoutSync: false });
+                observer.stop();
               }
-            );
+            });
 
             observer.start();
             setTimeout(() => observer.stop(), 3000);

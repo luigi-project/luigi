@@ -2864,7 +2864,7 @@ describe('NavigationService', () => {
     });
 
     it('should handle dialog container when context is valid', () => {
-      const ctx = {foo: 'bar'};
+      const ctx = { foo: 'bar' };
       const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
       const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
 
