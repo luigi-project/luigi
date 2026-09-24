@@ -362,9 +362,12 @@ export const UIModule = {
             element.viewurl &&
             (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
+            element.style.display = 'block';
             viewGroupContainer = element;
           } else {
-            if (!withoutSync && !preserveView) {
+            if (preserveView) {
+              element.style.display = 'none';
+            } else if (!withoutSync) {
               element.remove();
             }
           }
