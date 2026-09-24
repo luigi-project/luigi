@@ -67,7 +67,7 @@ export class NavigationService {
 
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
-    let pathSegments = path.split('/');
+    let pathSegments = path?.split('/');
 
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
@@ -683,11 +683,18 @@ export class NavigationService {
       };
     }
 
+    const logoConfig = cfg.settings?.header?.logo;
+
+    if (logoConfig && typeof cfg.settings?.header?.altText === 'string') {
+      logoConfig.alt = this.luigi.i18n().getTranslation(cfg.settings.header.altText);
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      favicon: cfg.settings?.header?.favicon,
       globalSearch,
       isHeaderDisabled: !!cfg.settings?.header?.disabled,
-      logo: cfg.settings?.header?.logo,
+      logo: logoConfig,
       topNodes: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
       contextSwitcher,
