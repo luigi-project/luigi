@@ -1285,7 +1285,9 @@
       }
 
       if ('luigi.fast-nav' === e.data.msg) {
-        if (f6NavigationEnabled) {
+        // Ignore forwarded F6 while a backdrop-bearing overlay is open: the
+        // regions behind the backdrop are inert, so focus must stay trapped.
+        if (f6NavigationEnabled && !isFastNavBlockedByBackdrop()) {
           FastNavHelpers.handleF6(
             {
               key: 'F6',
@@ -1840,8 +1842,28 @@
     f6NavigationEnabled = LuigiConfig.getConfigValue('settings.F6Navigation');
   });
 
+  // Returns whether an overlay with an active backdrop is currently open. Luigi
+  // makes the regions behind a backdrop inert (see IframeHelpers.disableA11Y*),
+  // which covers modals, confirmation modals, drawers with backdrop and the
+  // client-driven `luigi.add-backdrop`. FastNavHelpers detects that inert state
+  // from the DOM markers those helpers leave behind, so F6 fast navigation stays
+  // suppressed for every backdrop type. A drawer without a backdrop leaves the
+  // background interactive and therefore does NOT block fast navigation.
+  const isFastNavBlockedByBackdrop = () => {
+    return FastNavHelpers.isBackgroundInert(document);
+  };
+
   const handleKeyDown = (event) => {
     if (f6NavigationEnabled && event.key === 'F6') {
+      // While a backdrop-bearing overlay (modal, confirmation modal, or drawer
+      // with backdrop) is open, the regions behind it are made inert, so F6 must
+      // not move focus out of the overlay. Suppress fast navigation (and the
+      // browser default) to keep focus trapped. A backdrop-less drawer keeps the
+      // background interactive, so F6 stays enabled there.
+      if (isFastNavBlockedByBackdrop()) {
+        event.preventDefault();
+        return;
+      }
       FastNavHelpers.handleF6(event, document);
       event.preventDefault();
       return;

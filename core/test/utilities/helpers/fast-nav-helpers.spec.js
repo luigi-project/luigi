@@ -50,6 +50,24 @@ describe('Fast-nav-helpers', () => {
     });
   });
 
+  describe('isBackgroundInert', () => {
+    it('returns false when no backdrop inert markers are present', () => {
+      assert.isFalse(FastNavHelpers.isBackgroundInert(document));
+    });
+
+    it('returns true when a modal/drawer inert marker (oldtab) is present', () => {
+      // disableA11YKeyboardExceptClassName leaves `oldtab` on backgrounded elements.
+      group0.setAttribute('oldtab', '0');
+      assert.isTrue(FastNavHelpers.isBackgroundInert(document));
+    });
+
+    it('returns true when a client-backdrop inert marker (oldTab) is present', () => {
+      // disableA11yOfInactiveIframe (luigi.add-backdrop) leaves `oldTab`.
+      group1.setAttribute('oldTab', 'null');
+      assert.isTrue(FastNavHelpers.isBackgroundInert(document));
+    });
+  });
+
   describe('focusFirstTabbable', () => {
     it('focuses the first tabbable descendant', () => {
       FastNavHelpers.focusFirstTabbable(group1);

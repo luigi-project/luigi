@@ -5,6 +5,14 @@
 
 export const FAST_NAV_GROUP_ATTR = 'data-luigi-fast-nav-group';
 
+// Marker attributes that Luigi's a11y helpers leave on backgrounded elements
+// while an overlay with an active backdrop is open. `disableA11YKeyboardExceptClassName`
+// (modals / drawers-with-backdrop / confirmation modals) uses `oldtab`;
+// `disableA11yOfInactiveIframe` (client-driven `luigi.add-backdrop`) uses `oldTab`.
+// Both are removed when the backdrop is torn down, so their presence is a reliable
+// runtime signal that the regions behind the backdrop are currently inert.
+export const A11Y_INERT_MARKER_SELECTOR = '[oldtab], [oldTab]';
+
 // Elements that can receive focus via keyboard.
 export const TABBABLE_SELECTOR = [
   'a[href]',
@@ -26,6 +34,21 @@ class FastNavHelpersClass {
    */
   isVisible(el) {
     return !!el && typeof el.getClientRects === 'function' && el.getClientRects().length > 0;
+  }
+
+  /**
+   * Returns whether the regions behind an active backdrop are currently inert.
+   * Luigi makes the background inert (tabindex="-1") whenever a backdrop-bearing
+   * overlay is open — a modal, a confirmation modal, a drawer with backdrop, or a
+   * client-driven `luigi.add-backdrop`. Each path leaves an `oldtab`/`oldTab`
+   * marker on the backgrounded elements, so their presence is a single reliable
+   * signal covering all overlay types. While inert, F6 fast navigation must be
+   * suppressed so focus stays trapped in the overlay.
+   * @param {Document|Element} root
+   * @returns {boolean}
+   */
+  isBackgroundInert(root = document) {
+    return !!root.querySelector(A11Y_INERT_MARKER_SELECTOR);
   }
 
   /**
