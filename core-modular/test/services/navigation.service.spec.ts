@@ -8,12 +8,29 @@ import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { ContextSwitcherHelpers } from '../../src/utilities/helpers/context-switcher-helpers';
 
 describe('NavigationService', () => {
+  let containerWrapper: HTMLElement;
+  let activeContainer: any;
+  let mockConnector: any;
   let luigiMock: any;
   let navigationService: NavigationService;
   let mockModalService: any;
   let mockNodeDataManagementService: any;
 
+  function createMockContainer(viewurl: string): any {
+    const el = document.createElement('luigi-container') as any;
+    el.viewurl = viewurl;
+    el.updateContext = jest.fn();
+    el.updateViewUrl = jest.fn();
+    return el;
+  }
+
   beforeEach(() => {
+    containerWrapper = document.createElement('div');
+    activeContainer = createMockContainer('/microfrontend.html');
+    containerWrapper.appendChild(activeContainer);
+    mockConnector = {
+      getContainerWrapper: jest.fn().mockReturnValue(containerWrapper)
+    };
     luigiMock = {
       getConfigValue: jest.fn(),
       getConfig: jest.fn(),
@@ -24,6 +41,9 @@ describe('NavigationService', () => {
       }),
       featureToggles: jest.fn().mockReturnValue({
         getActiveFeatureToggleList: jest.fn()
+      }),
+      getEngine: () => ({
+        _connector: mockConnector
       })
     };
     navigationService = new NavigationService(luigiMock);
@@ -1034,6 +1054,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('hashchange');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: true,
         preventHistoryEntry: false,
         withoutSync: false
@@ -1101,6 +1122,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: false,
         withoutSync: true
@@ -1144,6 +1166,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: true,
         withoutSync: false
@@ -2794,6 +2817,61 @@ describe('NavigationService', () => {
       const result = await navigationService.getTabNavData('/tabs', pathData);
 
       expect(result.headerNode!.context).toEqual({ fallback: 'node-context' });
+    });
+  });
+
+  describe('NavigationService.isValidBackRoute', () => {
+    it.each(['', 'fake-route'])('should return false when route is invalid', (route) => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute(route);
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return false when there are no preserved views', () => {
+      navigationService._preservedViews = [];
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return true when route is valid', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('NavigationService.processGoBackContext', () => {
+    it.each([undefined, {}])('should not handle dialog container when context is invalid', (ctx) => {
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(handleDialogContainerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle dialog container when context is valid', () => {
+      const ctx = { foo: 'bar' };
+      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
     });
   });
 });

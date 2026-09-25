@@ -293,7 +293,8 @@ export const UIModule = {
     luigi: Luigi,
     luigiParams?: LuigiParams,
     withoutSync?: boolean,
-    preventContextUpdate?: boolean
+    preventContextUpdate?: boolean,
+    preserveView?: boolean
   ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
@@ -348,18 +349,25 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            viewGroupContainer = element;
+            if (preserveView) {
+              element.style.display = 'none';
+            } else {
+              element.style.display = 'block';
+              viewGroupContainer = element;
+            }
           } else if (
             !currentNode.viewGroup &&
-              !currentNode.isolateView &&
-              !currentNode.webcomponent &&
-              element.viewurl &&
-              (preventContextUpdate ||
-                (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+            !currentNode.isolateView &&
+            !currentNode.webcomponent &&
+            element.viewurl &&
+            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
+            element.style.display = 'block';
             viewGroupContainer = element;
           } else {
-            if (!withoutSync) {
+            if (preserveView) {
+              element.style.display = 'none';
+            } else if (!withoutSync) {
               element.remove();
             }
           }
@@ -478,17 +486,7 @@ export const UIModule = {
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
-          if (goBackContext && Object.keys(goBackContext).length) {
-            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
-            if (containerWrapper) {
-              const activeContainer = [...containerWrapper.childNodes].find(
-                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
-              ) as any;
-              if (activeContainer?.updateContext) {
-                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
-              }
-            }
-          }
+          UIModule.navService.processGoBackContext(goBackContext);
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -556,7 +554,7 @@ export const UIModule = {
     luigi: Luigi,
     node: Node,
     drawerSettings: DrawerSettings,
-    onCloseCallback?: () => void,
+    onCloseCallback?: (goBackValue?: any) => void,
     luigiParams?: LuigiParams
   ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
@@ -574,7 +572,15 @@ export const UIModule = {
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
 
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
+      resolveFn = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+      };
+
       const onCloseRequestHandler = async () => {
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
@@ -583,10 +589,23 @@ export const UIModule = {
         }
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
-        resolve();
+        resolveFn && resolveFn();
+      };
+
+      const onGoBackRequestHandler = async (event: any) => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        const goBackContext = event?.detail || event?.payload;
+        onCloseCallback?.(goBackContext);
+        resolveFn && resolveFn();
+        UIModule.navService.processGoBackContext(goBackContext);
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+      lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
     });
 
     luigi.getEngine()._connector?.renderDrawer(
@@ -601,6 +620,7 @@ export const UIModule = {
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
       },
       () => closePromise
     );

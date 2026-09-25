@@ -27,6 +27,8 @@ describe('Navigation', () => {
       openViewInNewTab: jest.fn(),
       handleNavigationRequest: jest.fn(),
       shouldPreventNavigationForPath: jest.fn().mockReturnValue(false),
+      getPreservedViewsLength: jest.fn().mockReturnValue(0),
+      handleGoBackRequest: jest.fn(),
       getPathData: jest.fn()
     };
 
@@ -383,6 +385,34 @@ describe('Navigation', () => {
       await navigation.updateTopNavigation();
 
       expect(configChangedSpy).toHaveBeenCalledWith('navigation');
+    });
+  });
+
+  describe('hasBack', () => {
+    it('should return false if there is no modal or preserved view in stack', () => {
+      expect(navigation.hasBack()).toEqual(false);
+    });
+
+    it('should return true if there is at least one modal in stack', () => {
+      mockNavService.getPreservedViewsLength.mockReturnValue(0);
+      modalServiceMock.getModalStackLength.mockReturnValue(1);
+      expect(navigation.hasBack()).toEqual(true);
+    });
+
+    it('should return true if there is at least one view in stack', () => {
+      mockNavService.getPreservedViewsLength.mockReturnValue(1);
+      modalServiceMock.getModalStackLength.mockReturnValue(0);
+      expect(navigation.hasBack()).toEqual(true);
+    });
+  });
+
+  describe('goBack', () => {
+    it.each([{ foo: 'bar' }, true])('should handle "goBack" request with context', (context) => {
+      const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
+
+      navigation.goBack(context);
+
+      expect(goBackRequestSpy).toHaveBeenCalledWith(context);
     });
   });
 });
