@@ -617,7 +617,7 @@
                 <div
                   class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
                   aria-controls="profilePopover"
-                  aria-expanded="true"
+                  aria-expanded={dropDownStates.profilePopover || false}
                   aria-haspopup="true"
                   title={userInfo.name || undefined}
                   role="button"
@@ -658,7 +658,7 @@
                   <div
                     class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
                     aria-controls="profilePopover"
-                    aria-expanded="true"
+                    aria-expanded={dropDownStates.profilePopover || false}
                     aria-haspopup="true"
                     title={userInfo.name || undefined}
                     role="button"
