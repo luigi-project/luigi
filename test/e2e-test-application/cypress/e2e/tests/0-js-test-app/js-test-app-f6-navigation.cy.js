@@ -41,6 +41,10 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
     it('cycles focus forward through the groups with F6', () => {
       cy.visitTestApp('/home', newConfig);
+      // Wait for the content iframe to finish its Luigi handshake: Luigi focuses the
+      // iframe on load, so pressing F6 before that would race with the iframe
+      // stealing focus and land focus in the "main" group instead of the target.
+      cy.waitForLuigiHandshake();
       cy.window().then((win) => win.focus());
       cy.get('body').click();
 
@@ -61,6 +65,7 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
     it('cycles focus backward through the groups with Shift+F6', () => {
       cy.visitTestApp('/home', newConfig);
+      cy.waitForLuigiHandshake();
       cy.window().then((win) => win.focus());
       cy.get('body').click();
 
@@ -81,13 +86,14 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
     it('does not move focus out of an open modal (backdrop traps focus)', () => {
       cy.visitTestApp('/home', newConfig);
+      cy.waitForLuigiHandshake();
       cy.window().then((win) => win.focus());
       cy.get('body').click();
 
-      // Open a modal MF; its backdrop makes the regions behind it inert.
-      cy.window().then((win) => {
-        win.Luigi.navigation().navigate('/home/modalMf');
-      });
+      // Open a modal MF; its backdrop makes the regions behind it inert. Clicking
+      // the nav entry is the proven way to open an `openNodeInModal` node (calling
+      // navigate('/home/modalMf') would route to it as a page, not as a modal).
+      cy.get('.fd-app__sidebar').contains('Modal MF').click({ force: true });
       cy.get('.lui-modal-index-0').should('exist');
 
       // Wait until the backdrop has actually made the background inert: the
@@ -119,6 +125,7 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
     it('does not move focus on F6', () => {
       cy.visitTestApp('/home', newConfig);
+      cy.waitForLuigiHandshake();
       cy.window().then((win) => win.focus());
       cy.get('body').click();
       cy.tab();
