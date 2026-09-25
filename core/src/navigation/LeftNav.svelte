@@ -1099,6 +1099,7 @@
     semiCollapsibleButton
       ? 'hasFooter'
       : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}"
+    role="navigation"
   >
     {#if navHeader}
       <div class="lui-nav-title" bind:this={navHeaderContainer}>

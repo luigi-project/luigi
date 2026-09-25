@@ -278,6 +278,7 @@
     class="fd-shellbar {responsiveShellbarPadding
       ? 'fd-shellbar--responsive-paddings'
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
+    role="banner"
     tabindex="0"
   >
     <div class="fd-shellbar__group fd-shellbar__group--product" role="heading" aria-level="1">
