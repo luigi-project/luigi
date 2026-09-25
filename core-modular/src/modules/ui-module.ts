@@ -554,7 +554,7 @@ export const UIModule = {
     luigi: Luigi,
     node: Node,
     drawerSettings: DrawerSettings,
-    onCloseCallback?: () => void,
+    onCloseCallback?: (goBackValue?: any) => void,
     luigiParams?: LuigiParams
   ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
@@ -572,7 +572,15 @@ export const UIModule = {
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
 
+    let resolved = false;
+    let resolveFn: (() => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
+      resolveFn = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+      };
+
       const onCloseRequestHandler = async () => {
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
@@ -581,10 +589,23 @@ export const UIModule = {
         }
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
-        resolve();
+        resolveFn && resolveFn();
+      };
+
+      const onGoBackRequestHandler = async (event: any) => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        const goBackContext = event?.detail || event?.payload;
+        onCloseCallback?.(goBackContext);
+        resolveFn && resolveFn();
+        UIModule.navService.processGoBackContext(goBackContext);
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+      lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
     });
 
     luigi.getEngine()._connector?.renderDrawer(
@@ -599,6 +620,7 @@ export const UIModule = {
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
         dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
       },
       () => closePromise
     );
