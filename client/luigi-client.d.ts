@@ -225,6 +225,19 @@ export declare interface UxManager {
   isF6NavigationEnabled: () => boolean;
 
   /**
+   * Starts forwarding F6 / Shift+F6 keydown events from this micro frontend to Luigi Core, so that keyboard fast navigation can move focus out of the iframe to the next / previous page group.
+   * While focus is inside the iframe, the F6 keydown fires in the micro frontend's own document and never reaches Luigi Core; calling this method bridges those events. Forwarding only takes effect while core has fast navigation enabled (see {@link #isF6NavigationEnabled isF6NavigationEnabled()}), so it is safe to call unconditionally.
+   * @returns {function} a cleanup function that stops forwarding when called, e.g. on micro frontend teardown
+   * @memberof uxManager
+   * @since NEXTRELEASE
+   * @example
+   * const stopF6Forwarding = LuigiClient.uxManager().enableF6NavigationForwarding();
+   * // later, e.g. on teardown:
+   * stopF6Forwarding();
+   */
+  enableF6NavigationForwarding: () => () => void;
+
+  /**
    * Sets current locale to the specified one.
    *
    * **NOTE:** this must be explicitly allowed on the navigation node level by setting `clientPermissions.changeCurrentLocale` to `true`. (See {@link navigation-parameters-reference.md Node parameters}.)
