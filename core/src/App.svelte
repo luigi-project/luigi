@@ -22,7 +22,8 @@
     AuthHelpers,
     StorageHelper,
     UserSettingsHelper,
-    NavigationHelpers
+    NavigationHelpers,
+    FastNavHelpers
   } from './utilities/helpers';
   import {
     LuigiI18N,
@@ -122,6 +123,7 @@
       viewStackSize: preservedViews.length,
       clientPermissions: iframeConf.nextViewUrl ? iframeConf.nextClientPermissions : iframeConf.clientPermissions,
       thirdPartyCookieCheck: await LuigiConfig.getConfigValue('settings.thirdPartyCookieCheck'),
+      fastNavigation: !!LuigiConfig.getConfigValue('settings.F6Navigation'),
       userSettings: hasUserSettings ? userSettingGroups[userSettingsGroupName] : null,
       anchor: LuigiRouting.getAnchor(),
       cssVariables: await LuigiTheming.getCSSVariables()
@@ -662,6 +664,7 @@
   let previousWindowWidth;
   let configTag;
   let isHeaderDisabled;
+  let f6NavigationEnabled;
 
   const closeLeftNav = () => {
     document.body.classList.remove('lui-leftNavToggle');
@@ -1282,6 +1285,23 @@
         iframe.luigi.initOk = true;
       }
 
+      if ('luigi.fast-nav' === e.data.msg) {
+        // Ignore forwarded F6 while a backdrop-bearing overlay is open: the
+        // regions behind the backdrop are inert, so focus must stay trapped.
+        if (f6NavigationEnabled && !isFastNavBlockedByBackdrop()) {
+          FastNavHelpers.handleF6(
+            {
+              key: 'F6',
+              shiftKey: !!e.data.shiftKey,
+              preventDefault: () => {},
+              stopPropagation: () => {}
+            },
+            document
+          );
+        }
+        return;
+      }
+
       if ('luigi.navigate.ok' === e.data.msg) {
         iframe.luigi.viewUrl = iframe.luigi.nextViewUrl;
         iframe.luigi.nextViewUrl = '';
@@ -1820,9 +1840,35 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     configTag = LuigiConfig.getConfigValue('tag');
     isHeaderDisabled = LuigiConfig.getConfigValue('settings.header.disabled');
+    f6NavigationEnabled = LuigiConfig.getConfigValue('settings.F6Navigation');
   });
 
+  // Returns whether an overlay with an active backdrop is currently open. Luigi
+  // makes the regions behind a backdrop inert (see IframeHelpers.disableA11Y*),
+  // which covers modals, confirmation modals, drawers with backdrop and the
+  // client-driven `luigi.add-backdrop`. FastNavHelpers detects that inert state
+  // from the DOM markers those helpers leave behind, so F6 fast navigation stays
+  // suppressed for every backdrop type. A drawer without a backdrop leaves the
+  // background interactive and therefore does NOT block fast navigation.
+  const isFastNavBlockedByBackdrop = () => {
+    return FastNavHelpers.isBackgroundInert(document);
+  };
+
   const handleKeyDown = (event) => {
+    if (f6NavigationEnabled && event.key === 'F6') {
+      // While a backdrop-bearing overlay (modal, confirmation modal, or drawer
+      // with backdrop) is open, the regions behind it are made inert, so F6 must
+      // not move focus out of the overlay. Suppress fast navigation (and the
+      // browser default) to keep focus trapped. A backdrop-less drawer keeps the
+      // background interactive, so F6 stays enabled there.
+      if (isFastNavBlockedByBackdrop()) {
+        event.preventDefault();
+        return;
+      }
+      FastNavHelpers.handleF6(event, document);
+      event.preventDefault();
+      return;
+    }
     if (event.keyCode === KEYCODE_ESC && mfModalList && mfModalList.length > 0) {
       closeModal(mfModalList.length - 1);
     }
@@ -1906,6 +1952,7 @@
                 bind:inputElem
                 bind:customSearchItemRendererSlot
                 {burgerTooltip}
+                fastNavGroup={f6NavigationEnabled ? 'banner' : null}
               />
             {/if}
           </div>
@@ -1920,6 +1967,7 @@
                   on:handleClick={handleNavClick}
                   on:resizeTabNav={onResizeTabNav}
                   {burgerTooltip}
+                  fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
                 />
               </div>
             </div>
@@ -1935,6 +1983,7 @@
                   class="fd-page iframeContainer"
                   class:lui-split-view={mfSplitView.displayed}
                   class:lui-collapsed={mfSplitView.collapsed}
+                  data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
                   tabindex="0"
                   use:init
                 >
@@ -1992,6 +2041,7 @@
         bind:inputElem
         bind:customSearchItemRendererSlot
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'banner' : null}
       />
     {/if}
     {#if !(hideNav || hideSideNav)}
@@ -2001,6 +2051,7 @@
         on:handleClick={handleNavClick}
         on:resizeTabNav={onResizeTabNav}
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
       />
     {/if}
     <Backdrop disable={disableBackdrop}>
@@ -2009,6 +2060,7 @@
         class="fd-page iframeContainer"
         class:lui-split-view={mfSplitView.displayed}
         class:lui-collapsed={mfSplitView.collapsed}
+        data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
         tabindex="0"
         use:init
       >

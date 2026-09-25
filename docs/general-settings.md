@@ -146,6 +146,20 @@ Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 - **description** if you have a [category](https://docs.luigi-project.io/docs/navigation-parameters-reference/?section=category) set to `collapsible`, you can set this parameter to `true` in order to expand the category when navigating to one of its children.
 
 
+### F6Navigation
+- **type**: boolean
+- **description**: enables keyboard fast navigation. When set to `true`, users can press <kbd>F6</kbd> to move focus to the first focusable element of the next page group (header, side navigation, content) and <kbd>Shift</kbd>+<kbd>F6</kbd> to move to the previous group, cycling around the ends. This improves keyboard accessibility by letting users skip between major regions instead of tabbing through every element.
+- **default**: by default, the parameter is set to `false`, which means fast navigation is disabled.
+<!-- add-attribute:class:warning -->
+> **NOTE:** While focus is inside a micro frontend's iframe, the <kbd>F6</kbd> keydown fires in the micro frontend's own document and never reaches Luigi Core, so focus cannot leave the iframe automatically. To let users jump back out of the iframe, the micro frontend must forward the event to Luigi Core. Call `LuigiClient.uxManager().enableF6NavigationForwarding()` to opt in — it forwards <kbd>F6</kbd> / <kbd>Shift</kbd>+<kbd>F6</kbd> and is a no-op while core has fast navigation disabled:
+> ```javascript
+> import LuigiClient from '@luigi-project/client';
+>
+> // Returns a cleanup function; call it to stop forwarding (e.g. on teardown).
+> const stopF6Forwarding = LuigiClient.uxManager().enableF6NavigationForwarding();
+> ```
+> If you prefer to handle the event yourself, `LuigiClient.uxManager().isF6NavigationEnabled()` returns whether core has fast navigation enabled.
+
 ### featureToggles.queryStringParam
 - **description**: allows you to set the query parameter name for the feature toggles. This parameter is then used when setting feature toggles via appending to the URL like `?ft=name`. You will need this value set before using the feature toggle functionality.
 

@@ -355,6 +355,94 @@ describe('UxManager', () => {
     });
   });
 
+  describe('isF6NavigationEnabled', () => {
+    it('returns true when fast navigation is enabled in core', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      expect(uxManager.isF6NavigationEnabled()).toBe(true);
+    });
+
+    it('returns false when fast navigation is disabled in core', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = false;
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+
+    it('returns false when the flag is not set', () => {
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+
+    it('returns false when no internal context', () => {
+      lifecycleManager.currentContext = {};
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+  });
+
+  describe('enableF6NavigationForwarding', () => {
+    let cleanup;
+
+    afterEach(() => {
+      if (cleanup) {
+        cleanup();
+        cleanup = undefined;
+      }
+    });
+
+    const pressKey = (key, shiftKey = false) => {
+      const event = new KeyboardEvent('keydown', { key, shiftKey, cancelable: true });
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+      window.dispatchEvent(event);
+      return preventDefaultSpy;
+    };
+
+    it('forwards F6 to Luigi Core when fast navigation is enabled', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      cleanup = uxManager.enableF6NavigationForwarding();
+
+      const preventDefaultSpy = pressKey('F6');
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      expect(sendPostMessageSpy).toHaveBeenCalledWith({ msg: 'luigi.fast-nav', shiftKey: false });
+    });
+
+    it('forwards Shift+F6 with shiftKey true', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      cleanup = uxManager.enableF6NavigationForwarding();
+
+      pressKey('F6', true);
+
+      expect(sendPostMessageSpy).toHaveBeenCalledWith({ msg: 'luigi.fast-nav', shiftKey: true });
+    });
+
+    it('ignores keys other than F6', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      cleanup = uxManager.enableF6NavigationForwarding();
+
+      const preventDefaultSpy = pressKey('F7');
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(sendPostMessageSpy).not.toHaveBeenCalled();
+    });
+
+    it('does nothing on F6 when fast navigation is disabled', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = false;
+      cleanup = uxManager.enableF6NavigationForwarding();
+
+      const preventDefaultSpy = pressKey('F6');
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(sendPostMessageSpy).not.toHaveBeenCalled();
+    });
+
+    it('stops forwarding after the cleanup function is called', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      const stop = uxManager.enableF6NavigationForwarding();
+
+      stop();
+      pressKey('F6');
+
+      expect(sendPostMessageSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getCSSVariables', () => {
     it('returns CSS variables from context', () => {
       lifecycleManager.currentContext.internal.cssVariables = {
