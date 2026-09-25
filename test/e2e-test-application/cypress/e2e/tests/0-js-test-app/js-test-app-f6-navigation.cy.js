@@ -14,9 +14,14 @@ describe('JS-TEST-APP F6 fast navigation', () => {
   const assertFocusInGroup = (groupName) => {
     cy.focused().should(($el) => {
       const el = $el[0];
-      const desc = el ? `${el.tagName}.${el.className} [group=${el.closest('[data-luigi-fast-nav-group]')?.getAttribute('data-luigi-fast-nav-group')}]` : 'none';
+      const desc = el
+        ? `${el.tagName}.${el.className} [group=${el.closest('[data-luigi-fast-nav-group]')?.getAttribute('data-luigi-fast-nav-group')}]`
+        : 'none';
       const group = $el.closest(`[data-luigi-fast-nav-group="${groupName}"]`);
-      expect(group.length, `focus should be in "${groupName}" group, but focused element is: ${desc}`).to.be.greaterThan(0);
+      expect(
+        group.length,
+        `focus should be in "${groupName}" group, but focused element is: ${desc}`
+      ).to.be.greaterThan(0);
     });
   };
 
@@ -43,15 +48,12 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
     it('cycles focus forward through the groups with F6', () => {
       cy.visitTestApp('/home', newConfig);
-      // Wait for the content iframe to finish its Luigi handshake: Luigi focuses the
-      // iframe on load, so pressing F6 before that would race with the iframe
-      // stealing focus and land focus in the "main" group instead of the target.
+      // Luigi focuses the iframe / active nav link on load, so "focus is outside every
+      // group" is not a state we can reliably start from. Instead establish a known
+      // origin by focusing the banner group container (it carries tabindex="0"), then
+      // assert the deterministic forward cycle banner -> navigation -> main -> banner.
       cy.waitForLuigiHandshake();
-      cy.window().then((win) => win.focus());
-      cy.get('body').click();
-
-      // From outside any group, F6 lands in the first group (banner).
-      pressF6();
+      cy.get('[data-luigi-fast-nav-group="banner"]').focus();
       assertFocusInGroup('banner');
 
       pressF6();
@@ -68,10 +70,11 @@ describe('JS-TEST-APP F6 fast navigation', () => {
     it('cycles focus backward through the groups with Shift+F6', () => {
       cy.visitTestApp('/home', newConfig);
       cy.waitForLuigiHandshake();
-      cy.window().then((win) => win.focus());
-      cy.get('body').click();
+      // Start from a known origin (banner), then assert the reverse cycle
+      // banner -> main -> navigation -> banner (Shift+F6 wraps the other way).
+      cy.get('[data-luigi-fast-nav-group="banner"]').focus();
+      assertFocusInGroup('banner');
 
-      // From outside any group, Shift+F6 lands in the last group (main).
       pressF6(true);
       assertFocusInGroup('main');
 
@@ -80,10 +83,6 @@ describe('JS-TEST-APP F6 fast navigation', () => {
 
       pressF6(true);
       assertFocusInGroup('banner');
-
-      // Wraps from the first group back to the last.
-      pressF6(true);
-      assertFocusInGroup('main');
     });
 
     it('does not move focus out of an open modal (backdrop traps focus)', () => {
