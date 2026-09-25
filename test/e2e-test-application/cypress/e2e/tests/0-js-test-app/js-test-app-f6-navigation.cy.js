@@ -13,8 +13,10 @@ describe('JS-TEST-APP F6 fast navigation', () => {
   // fast-nav name (or is the group container itself, which is the focus fallback).
   const assertFocusInGroup = (groupName) => {
     cy.focused().should(($el) => {
+      const el = $el[0];
+      const desc = el ? `${el.tagName}.${el.className} [group=${el.closest('[data-luigi-fast-nav-group]')?.getAttribute('data-luigi-fast-nav-group')}]` : 'none';
       const group = $el.closest(`[data-luigi-fast-nav-group="${groupName}"]`);
-      expect(group.length, `focus is inside the "${groupName}" group`).to.be.greaterThan(0);
+      expect(group.length, `focus should be in "${groupName}" group, but focused element is: ${desc}`).to.be.greaterThan(0);
     });
   };
 
@@ -101,12 +103,18 @@ describe('JS-TEST-APP F6 fast navigation', () => {
       // against pressing F6 before the a11y markers are applied.
       cy.get('[data-luigi-fast-nav-group="banner"]').should('have.attr', 'tabindex', '-1');
 
-      // F6 must be suppressed while the backdrop is up: focus stays out of the
-      // banner / navigation / main groups behind the backdrop.
-      pressF6();
-      cy.focused().should(($el) => {
-        const inBackgroundGroup = $el.closest('[data-luigi-fast-nav-group]').length > 0;
-        expect(inBackgroundGroup, 'focus did not escape into a background group').to.be.false;
+      // Move focus onto the modal's close button (a focusable element that is NOT
+      // inside any background fast-nav group), then press F6. Because the background
+      // is inert, Luigi suppresses fast navigation, so focus must stay exactly where
+      // it was and must not jump into the banner / navigation / main groups.
+      cy.get('[data-testid="lui-modal-index-0"]').focus();
+      cy.focused().then(($before) => {
+        pressF6();
+        cy.focused().should(($after) => {
+          expect($after[0], 'focus stayed on the same element (F6 suppressed)').to.equal($before[0]);
+          const inBackgroundGroup = $after.closest('[data-luigi-fast-nav-group]').length > 0;
+          expect(inBackgroundGroup, 'focus did not escape into a background group').to.be.false;
+        });
       });
     });
   });
