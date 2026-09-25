@@ -13,15 +13,8 @@ describe('JS-TEST-APP F6 fast navigation', () => {
   // fast-nav name (or is the group container itself, which is the focus fallback).
   const assertFocusInGroup = (groupName) => {
     cy.focused().should(($el) => {
-      const el = $el[0];
-      const desc = el
-        ? `${el.tagName}.${el.className} [group=${el.closest('[data-luigi-fast-nav-group]')?.getAttribute('data-luigi-fast-nav-group')}]`
-        : 'none';
       const group = $el.closest(`[data-luigi-fast-nav-group="${groupName}"]`);
-      expect(
-        group.length,
-        `focus should be in "${groupName}" group, but focused element is: ${desc}`
-      ).to.be.greaterThan(0);
+      expect(group.length, `focus is inside the "${groupName}" group`).to.be.greaterThan(0);
     });
   };
 
