@@ -87,16 +87,7 @@
     // example: http://localhost:3000/?preset=test-preset1
     const presetId = new URLSearchParams(window.location.search).get('preset');
     if (presetId) {
-      const preset = presets.find((p) => p.id === presetId);
-      const presetConfig = preset ? preset.config : defaultConfigString;
-      try {
-        exec(presetConfig);
-        configString = presetConfig;
-      } catch (e) {
-        console.error(e);
-        exec(defaultConfigString);
-        configString = defaultConfigString;
-      }
+      loadPreset(presetId);
       return;
     }
 
@@ -122,6 +113,26 @@
     } catch (e) {
       console.error(e);
       sessionStorage.removeItem('fiddle');
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+    }
+  }
+
+  // Loads a bundled preset by id. On success the id is written to <body data-preset="...">
+  function loadPreset(presetId) {
+    const preset = presets.find((p) => p.id === presetId);
+    if (!preset) {
+      console.warn(`[fiddle] Unknown preset "${presetId}", falling back to the default config.`);
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+      return;
+    }
+    try {
+      exec(preset.config);
+      configString = preset.config;
+      document.body.dataset.preset = preset.id;
+    } catch (e) {
+      console.error(`[fiddle] Preset "${presetId}" failed to load, falling back to the default config.`, e);
       exec(defaultConfigString);
       configString = defaultConfigString;
     }
