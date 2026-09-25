@@ -1,10 +1,16 @@
 // file that gathers all the preset configs. Read by the dropdown in App.svelte
 import defaultConfig from './defaultConfig.js';
-import test1 from './test-preset1.js';
-import test2 from './test-preset2.js';
+import viewGroupPreset from "./viewGroupPreset";
+import basicNavigation from './basicNavigationPreset.js';
+import userSettingsPreset from './userSettingsPreset.js';
+import compoundPreset from './compoundPreset.js';
+import globalSearchPreset from './globalSearchPreset.js';
 
 export default [
-    { id: 'default-config', label: 'Default Config', config: defaultConfig },
-    { id: 'test-preset1', label: 'Test Preset 1', config: test1 },
-    { id: 'test-preset2', label: 'Test Preset 2', config: test2 }
+    { id: 'defaultConfig', label: 'Default Config', config: defaultConfig },
+    { id: 'basicNavigation', label: 'Basic Navigation Preset', config: basicNavigation },
+    { id: 'userSettingsPreset', label: 'Settings Preset', config: userSettingsPreset },
+    { id: 'viewGroupPreset', label: 'View Group Preset', config: viewGroupPreset },
+    { id: 'compoundPreset', label: 'Compound Container Preset', config: compoundPreset },
+    { id: 'globalSearchPreset', label: 'Global Search Preset', config: globalSearchPreset }
 ];
