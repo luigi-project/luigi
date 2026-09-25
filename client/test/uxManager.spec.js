@@ -355,6 +355,27 @@ describe('UxManager', () => {
     });
   });
 
+  describe('isF6NavigationEnabled', () => {
+    it('returns true when fast navigation is enabled in core', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = true;
+      expect(uxManager.isF6NavigationEnabled()).toBe(true);
+    });
+
+    it('returns false when fast navigation is disabled in core', () => {
+      lifecycleManager.currentContext.internal.fastNavigation = false;
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+
+    it('returns false when the flag is not set', () => {
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+
+    it('returns false when no internal context', () => {
+      lifecycleManager.currentContext = {};
+      expect(uxManager.isF6NavigationEnabled()).toBe(false);
+    });
+  });
+
   describe('getCSSVariables', () => {
     it('returns CSS variables from context', () => {
       lifecycleManager.currentContext.internal.cssVariables = {

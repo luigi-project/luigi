@@ -280,6 +280,18 @@ class UxManager extends LuigiClientBase {
   }
 
   /**
+   * Returns whether F6 fast navigation is enabled in the Luigi Core configuration (`settings.F6Navigation`).
+   * When `true`, a micro frontend should forward its F6 / Shift+F6 keydown events to Luigi Core so that focus can move out of the iframe to the next / previous page group.
+   * @returns {boolean} whether F6 fast navigation is enabled
+   * @memberof uxManager
+   * @since NEXTRELEASE
+   * @example LuigiClient.uxManager().isF6NavigationEnabled();
+   */
+  isF6NavigationEnabled() {
+    return !!lifecycleManager.currentContext?.internal?.fastNavigation;
+  }
+
+  /**
    * <!-- label-success: Web App API only  -->
    * Gets the CSS variables from Luigi Core with their key and value.
    * @returns {Object} CSS variables with their key and value.

@@ -123,6 +123,7 @@
       viewStackSize: preservedViews.length,
       clientPermissions: iframeConf.nextViewUrl ? iframeConf.nextClientPermissions : iframeConf.clientPermissions,
       thirdPartyCookieCheck: await LuigiConfig.getConfigValue('settings.thirdPartyCookieCheck'),
+      fastNavigation: !!LuigiConfig.getConfigValue('settings.F6Navigation'),
       userSettings: hasUserSettings ? userSettingGroups[userSettingsGroupName] : null,
       anchor: LuigiRouting.getAnchor(),
       cssVariables: await LuigiTheming.getCSSVariables()

@@ -1061,6 +1061,19 @@ Gets the current theme.
 
   
 **Returns**: <code>\*</code> - current themeObj  
+### isF6NavigationEnabled&nbsp;  
+Returns whether F6 fast navigation is enabled in the Luigi Core configuration (`settings.F6Navigation`).
+When `true`, a micro frontend should forward its F6 / Shift+F6 keydown events to Luigi Core so that focus can move out of the iframe to the next / previous page group.
+
+  
+**Example**  
+```js
+LuigiClient.uxManager().isF6NavigationEnabled();
+```
+**Returns**: <code>boolean</code> - whether F6 fast navigation is enabled  
+  
+**Meta**:  
+* **since:** NEXTRELEASE
 ### getCSSVariables&nbsp;  
 <!-- label-success: Web App API only  -->
 Gets the CSS variables from Luigi Core with their key and value.

@@ -215,6 +215,16 @@ export declare interface UxManager {
   getCurrentTheme: () => any;
 
   /**
+   * Returns whether F6 fast navigation is enabled in the Luigi Core configuration (`settings.F6Navigation`).
+   * When `true`, a micro frontend should forward its F6 / Shift+F6 keydown events to Luigi Core so that focus can move out of the iframe to the next / previous page group.
+   * @returns {boolean} whether F6 fast navigation is enabled
+   * @memberof uxManager
+   * @since NEXTRELEASE
+   * @example LuigiClient.uxManager().isF6NavigationEnabled();
+   */
+  isF6NavigationEnabled: () => boolean;
+
+  /**
    * Sets current locale to the specified one.
    *
    * **NOTE:** this must be explicitly allowed on the navigation node level by setting `clientPermissions.changeCurrentLocale` to `true`. (See {@link navigation-parameters-reference.md Node parameters}.)
