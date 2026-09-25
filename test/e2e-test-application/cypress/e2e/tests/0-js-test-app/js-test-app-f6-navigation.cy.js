@@ -23,6 +23,13 @@ describe('JS-TEST-APP F6 fast navigation', () => {
     beforeEach(() => {
       newConfig = structuredClone(defaultLuigiConfig);
       newConfig.settings.F6Navigation = true;
+      newConfig.navigation.nodes[0].children.push({
+        pathSegment: 'modalMf',
+        label: 'Modal MF',
+        loadingIndicator: { enabled: false },
+        viewUrl: '/examples/microfrontends/multipurpose.html',
+        openNodeInModal: true
+      });
     });
 
     it('marks the three page regions as fast-nav groups', () => {
@@ -70,6 +77,31 @@ describe('JS-TEST-APP F6 fast navigation', () => {
       // Wraps from the first group back to the last.
       pressF6(true);
       assertFocusInGroup('main');
+    });
+
+    it('does not move focus out of an open modal (backdrop traps focus)', () => {
+      cy.visitTestApp('/home', newConfig);
+      cy.window().then((win) => win.focus());
+      cy.get('body').click();
+
+      // Open a modal MF; its backdrop makes the regions behind it inert.
+      cy.window().then((win) => {
+        win.Luigi.navigation().navigate('/home/modalMf');
+      });
+      cy.get('.lui-modal-index-0').should('exist');
+
+      // Wait until the backdrop has actually made the background inert: the
+      // banner group behind the backdrop must carry tabindex="-1". This guards
+      // against pressing F6 before the a11y markers are applied.
+      cy.get('[data-luigi-fast-nav-group="banner"]').should('have.attr', 'tabindex', '-1');
+
+      // F6 must be suppressed while the backdrop is up: focus stays out of the
+      // banner / navigation / main groups behind the backdrop.
+      pressF6();
+      cy.focused().should(($el) => {
+        const inBackgroundGroup = $el.closest('[data-luigi-fast-nav-group]').length > 0;
+        expect(inBackgroundGroup, 'focus did not escape into a background group').to.be.false;
+      });
     });
   });
 
