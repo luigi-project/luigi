@@ -43,6 +43,8 @@
   let isContextSwitcherDropdownShown;
   let focusMenuOnOpen = 'first';
   let inertedNodes = [];
+  let popoverEl;
+  let triggerEl;
 
   onMount(async () => {
     StateHelpers.doOnStoreChange(store, async () => {
@@ -242,8 +244,7 @@
   }
 
   function focusMenuItem(which) {
-    const popover = document.getElementById('contextSwitcherPopover');
-    const items = DropdownKeyboardHelpers.getMenuItems(popover);
+    const items = DropdownKeyboardHelpers.getMenuItems(popoverEl);
     if (!items.length) {
       return;
     }
@@ -251,33 +252,12 @@
     DropdownKeyboardHelpers.applyRovingTabindex(items, index);
   }
 
-  function focusMenuWhenVisible(which) {
-    const popover = document.getElementById('contextSwitcherPopover');
-    if (!popover) {
-      return;
-    }
-    const body = popover.querySelector('.fd-popover__body') || popover;
-    if (window.getComputedStyle(body).visibility === 'visible') {
-      focusMenuItem(which);
-      return;
-    }
-    const onTransitionEnd = (event) => {
-      if (event.target !== body || event.propertyName !== 'visibility') {
-        return;
-      }
-      body.removeEventListener('transitionend', onTransitionEnd);
-      focusMenuItem(which);
-    };
-    body.addEventListener('transitionend', onTransitionEnd);
-  }
-
   async function focusMenuAfterOpen() {
     await tick();
-    const popover = document.getElementById('contextSwitcherPopover');
-    if (popover) {
-      popover.removeAttribute('inert');
+    if (popoverEl) {
+      popoverEl.removeAttribute('inert');
     }
-    focusMenuWhenVisible(focusMenuOnOpen);
+    requestAnimationFrame(() => focusMenuItem(focusMenuOnOpen));
   }
 
   async function closeAndFocusTrigger() {
@@ -285,9 +265,8 @@
       toggleDropdownState();
     }
     await tick();
-    const trigger = document.querySelector('[data-testid="luigi-contextswitcher-button"]');
-    if (trigger) {
-      trigger.focus();
+    if (triggerEl) {
+      triggerEl.focus();
     }
   }
 
@@ -365,6 +344,7 @@
             <a
               href={selectedOption ? getRouteLink(selectedOption) : undefined}
               class="fd-button fd-button--transparent fd-shellbar__button fd-button--menu fd-shellbar__button--menu lui-ctx-switch-menu"
+              bind:this={triggerEl}
               aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
@@ -385,6 +365,7 @@
           {:else}
             <button
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
+              bind:this={triggerEl}
               aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
@@ -408,6 +389,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
           class="fd-popover__body fd-popover__body--right"
+          bind:this={popoverEl}
           aria-hidden={!(dropDownStates.contextSwitcherPopover || false)}
           id="contextSwitcherPopover"
           data-testid="luigi-contextswitcher-popover"
