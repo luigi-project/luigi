@@ -4,47 +4,12 @@ class DropdownKeyboardHelpersClass {
   }
 
   eventKey(event) {
-    if (event.key && event.key !== 'Unidentified') {
-      return event.key;
-    }
-    const code = event.code;
-    const which = event.which || event.keyCode;
-    if (code === 'Enter' || which === 13) {
-      return 'Enter';
-    }
-    if (code === 'Escape' || code === 'Esc' || which === 27) {
-      return 'Escape';
-    }
-    if (code === 'ArrowDown' || which === 40) {
-      return 'ArrowDown';
-    }
-    if (code === 'ArrowUp' || which === 38) {
-      return 'ArrowUp';
-    }
-    if (code === 'ArrowLeft' || which === 37) {
-      return 'ArrowLeft';
-    }
-    if (code === 'ArrowRight' || which === 39) {
-      return 'ArrowRight';
-    }
-    if (code === 'Home' || which === 36) {
-      return 'Home';
-    }
-    if (code === 'End' || which === 35) {
-      return 'End';
-    }
-    if (code === 'Tab' || which === 9) {
-      return 'Tab';
-    }
-    if (code === 'Space' || code === 'Spacebar' || which === 32) {
-      return ' ';
-    }
-    return event.key;
+    // Legacy browsers emit 'Spacebar' instead of ' ' for the space key.
+    return event.key === 'Spacebar' ? ' ' : event.key;
   }
 
   isSpaceKey(event) {
-    const key = this.eventKey(event);
-    return key === ' ' || key === 'Spacebar' || event.code === 'Space';
+    return this.eventKey(event) === ' ' || event.code === 'Space';
   }
 
   isActivationKey(event) {

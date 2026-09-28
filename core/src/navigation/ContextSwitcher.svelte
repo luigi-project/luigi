@@ -45,6 +45,7 @@
   let inertedNodes = [];
   let popoverEl;
   let triggerEl;
+  let focusRafId;
 
   onMount(async () => {
     StateHelpers.doOnStoreChange(store, async () => {
@@ -96,6 +97,9 @@
   });
 
   onDestroy(() => {
+    if (focusRafId) {
+      cancelAnimationFrame(focusRafId);
+    }
     setContentInert(false);
   });
 
@@ -257,7 +261,15 @@
     if (popoverEl) {
       popoverEl.removeAttribute('inert');
     }
-    requestAnimationFrame(() => focusMenuItem(focusMenuOnOpen));
+    // tick() waits for the DOM flush; rAF waits for the popover to actually
+    // become visible so focus() lands on a rendered, focusable element.
+    focusRafId = requestAnimationFrame(() => {
+      focusRafId = undefined;
+      if (!isDropdownOpen()) {
+        return;
+      }
+      focusMenuItem(focusMenuOnOpen);
+    });
   }
 
   async function closeAndFocusTrigger() {
