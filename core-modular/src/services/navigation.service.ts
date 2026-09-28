@@ -67,7 +67,7 @@ export class NavigationService {
     return this.nodeDataManagementService;
   }
 
-  private handleDialogContainer(context: Record<string, any>): void {
+  private handleDialogContainer(goBackContext: Record<string, any>): boolean {
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
 
     if (allContainers?.length > 1) {
@@ -77,9 +77,13 @@ export class NavigationService {
 
       dialogContainers.forEach((container: any) => {
         if (container?.updateContext) {
-          container.updateContext(context || {}, { withoutSync: false });
+          container.updateContext({ goBackContext }, { withoutSync: false });
         }
       });
+
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -107,8 +111,9 @@ export class NavigationService {
   processGoBackContext(goBackContext: any): void {
     if (goBackContext && Object.keys(goBackContext).length) {
       const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+      const dialogUpdated = this.handleDialogContainer(goBackContext);
 
-      if (containerWrapper) {
+      if (containerWrapper && !dialogUpdated) {
         const allContainers = [...containerWrapper.childNodes].filter(
           (element: any) => element.tagName?.indexOf('LUIGI-') === 0
         ) as any;
@@ -131,8 +136,6 @@ export class NavigationService {
           }
         }
       }
-
-      this.handleDialogContainer(goBackContext);
     }
   }
 

@@ -450,16 +450,19 @@ export const UIModule = {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     let resolved = false;
-    let resolveFn: (() => void) | undefined;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
     let onCloseRequestHandler: (() => void) | undefined;
 
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
-        resolveFn = () => {
+        resolveFn = (goBackValue?: any) => {
           if (resolved) return;
           resolved = true;
           resolve();
           modalService.removeLastModalFromStack();
+          if (goBackValue) {
+            setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+          }
         };
 
         onCloseRequestHandler = async () => {
@@ -482,11 +485,10 @@ export const UIModule = {
           }
           const goBackContext = event?.detail || event?.payload;
           onCloseCallback?.(goBackContext);
-          resolveFn && resolveFn();
+          resolveFn && resolveFn(goBackContext);
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
-          UIModule.navService.processGoBackContext(goBackContext);
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -573,12 +575,15 @@ export const UIModule = {
     UIModule.drawerContainer = lc;
 
     let resolved = false;
-    let resolveFn: (() => void) | undefined;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
-      resolveFn = () => {
+      resolveFn = (goBackValue?: any) => {
         if (resolved) return;
         resolved = true;
         resolve();
+        if (goBackValue) {
+          setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+        }
       };
 
       const onCloseRequestHandler = async () => {
@@ -600,8 +605,7 @@ export const UIModule = {
         }
         const goBackContext = event?.detail || event?.payload;
         onCloseCallback?.(goBackContext);
-        resolveFn && resolveFn();
-        UIModule.navService.processGoBackContext(goBackContext);
+        resolveFn && resolveFn(goBackContext);
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
