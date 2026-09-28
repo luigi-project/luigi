@@ -214,6 +214,7 @@ export interface Category {
   label?: string;
   nodes?: NavItem[];
   tooltip?: string;
+  navigateOnClick?: boolean | string;
 }
 
 export interface BreadcrumbItem {
@@ -235,6 +236,13 @@ export interface NavItem {
   label?: string;
   selected?: boolean;
   tooltip?: string;
+  // Set by the navigation service on the category node that a tab's text click
+  // should navigate to, as resolved from the category's navigateOnClick option.
+  navigateOnClick?: boolean;
+  // Set by the navigation service when a navigate-on-click target node has no
+  // label of its own and should therefore only act as the tab text click target,
+  // not appear as an entry in the tab's dropdown.
+  hideFromDropdown?: boolean;
 }
 
 export interface TabNavConfig {
