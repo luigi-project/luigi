@@ -1935,6 +1935,7 @@
                   class="fd-page iframeContainer"
                   class:lui-split-view={mfSplitView.displayed}
                   class:lui-collapsed={mfSplitView.collapsed}
+                  role="main"
                   tabindex="0"
                   use:init
                 >
@@ -2009,6 +2010,7 @@
         class="fd-page iframeContainer"
         class:lui-split-view={mfSplitView.displayed}
         class:lui-collapsed={mfSplitView.collapsed}
+        role="main"
         tabindex="0"
         use:init
       >
