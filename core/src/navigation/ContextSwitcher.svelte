@@ -41,7 +41,7 @@
   let selectedNodePath;
   export let addNavHrefForAnchor;
   let isContextSwitcherDropdownShown;
-  let focusMenuOnOpen = 'first';
+  let focusMenuOnOpen = 'selected';
   let inertedNodes = [];
   let popoverEl;
   let triggerEl;
@@ -252,17 +252,18 @@
     if (!items.length) {
       return;
     }
-    const index = which === 'last' ? items.length - 1 : 0;
+    let index = 0;
+    if (which === 'last') {
+      index = items.length - 1;
+    } else if (which === 'selected') {
+      const selectedIndex = items.findIndex((item) => item.classList.contains('is-selected'));
+      index = selectedIndex >= 0 ? selectedIndex : 0;
+    }
     DropdownKeyboardHelpers.applyRovingTabindex(items, index);
   }
 
   async function focusMenuAfterOpen() {
     await tick();
-    if (popoverEl) {
-      popoverEl.removeAttribute('inert');
-    }
-    // tick() waits for the DOM flush; rAF waits for the popover to actually
-    // become visible so focus() lands on a rendered, focusable element.
     focusRafId = requestAnimationFrame(() => {
       focusRafId = undefined;
       if (!isDropdownOpen()) {
@@ -289,7 +290,7 @@
     if (!renderAsDropdown) {
       return;
     }
-    focusMenuOnOpen = 'first';
+    focusMenuOnOpen = 'selected';
     toggleDropdownState();
   }
 
@@ -319,7 +320,7 @@
       isOpen: isDropdownOpen(),
       isDisabled: !renderAsDropdown || event.currentTarget.getAttribute('aria-disabled') === 'true',
       onToggle: (focus) => {
-        focusMenuOnOpen = focus || 'first';
+        focusMenuOnOpen = focus || 'selected';
         toggleDropdownState();
       },
       onFocusFirst: () => focusMenuItem('first'),
@@ -339,7 +340,8 @@
     DropdownKeyboardHelpers.handleMenuKeydown(event, {
       items: DropdownKeyboardHelpers.getMenuItems(event.currentTarget),
       onEscape: closeAndFocusTrigger,
-      onActivate: (item) => item.click()
+      onActivate: (item) => item.click(),
+      onLeave: closeAndFocusTrigger
     });
   }
 </script>

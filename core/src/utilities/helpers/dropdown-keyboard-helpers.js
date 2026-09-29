@@ -26,8 +26,8 @@ class DropdownKeyboardHelpersClass {
   }
 
   applyRovingTabindex(items, focusedIndex) {
-    items.forEach((item) => {
-      item.setAttribute('tabindex', '0');
+    items.forEach((item, index) => {
+      item.setAttribute('tabindex', index === focusedIndex ? '0' : '-1');
     });
     if (items[focusedIndex]) {
       items[focusedIndex].focus({ preventScroll: true });
@@ -44,7 +44,7 @@ class DropdownKeyboardHelpersClass {
     return (currentIndex + direction + length) % length;
   }
 
-  handleMenuKeydown(event, { items = [], onEscape, onActivate } = {}) {
+  handleMenuKeydown(event, { items = [], onEscape, onActivate, onLeave } = {}) {
     const currentIndex = items.indexOf(document.activeElement);
     const key = this.eventKey(event);
 
@@ -69,6 +69,11 @@ class DropdownKeyboardHelpersClass {
       const direction = event.shiftKey ? -1 : 1;
       const leavingMenu = (direction > 0 && currentIndex === items.length - 1) || (direction < 0 && currentIndex === 0);
       if (leavingMenu) {
+        if (onLeave) {
+          event.preventDefault();
+          event.stopPropagation();
+          onLeave(direction);
+        }
         return;
       }
       event.preventDefault();
