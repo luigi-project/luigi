@@ -1130,7 +1130,7 @@ const connector = {
         }
 
         dropdownNodes.forEach((subItem) => {
-          if (subItem.hideFromDropdown) {
+          if (subItem.navigateOnClick && !subItem.label) {
             return;
           }
           const subTab = document.createElement('ui5-tab');

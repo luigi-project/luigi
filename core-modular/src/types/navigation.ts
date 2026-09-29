@@ -237,7 +237,6 @@ export interface NavItem {
   selected?: boolean;
   tooltip?: string;
   navigateOnClick?: boolean;
-  hideFromDropdown?: boolean;
 }
 
 export interface TabNavConfig {

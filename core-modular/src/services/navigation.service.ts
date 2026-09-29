@@ -347,9 +347,6 @@ export class NavigationService {
           : item.category.nodes.find((subItem) => subItem.node?.pathSegment === navigateOnClick);
       if (targetNode) {
         targetNode.navigateOnClick = true;
-        if (!targetNode.label) {
-          targetNode.hideFromDropdown = true;
-        }
       }
     });
 

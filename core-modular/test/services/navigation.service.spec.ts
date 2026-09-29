@@ -1443,7 +1443,7 @@ describe('NavigationService', () => {
         expect(siblingItem?.navigateOnClick).toBeUndefined();
       });
 
-      it('hides a labelless navigateOnClick target from the dropdown', async () => {
+      it('flags a labelless navigateOnClick target so the renderer can hide it from the dropdown', async () => {
         const target: Node = {
           pathSegment: 'alert17',
           category: { id: 'cat', label: 'Cat', navigateOnClick: true },
@@ -1456,7 +1456,8 @@ describe('NavigationService', () => {
 
         const catNodes = data.items[0].category?.nodes ?? [];
         const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
-        expect(targetItem?.hideFromDropdown).toBe(true);
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(targetItem?.label).toBeUndefined();
       });
 
       it('keeps a labelled navigateOnClick target visible in the dropdown', async () => {
@@ -1474,7 +1475,7 @@ describe('NavigationService', () => {
         const catNodes = data.items[0].category?.nodes ?? [];
         const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
         expect(targetItem?.navigateOnClick).toBe(true);
-        expect(targetItem?.hideFromDropdown).toBeUndefined();
+        expect(targetItem?.label).toBe('Alert 17');
       });
 
       it('resolves a string navigateOnClick to the sibling with the matching pathSegment', async () => {
@@ -1494,7 +1495,7 @@ describe('NavigationService', () => {
         const declaringItem = catNodes.find((n: any) => n.node?.pathSegment === 'strcat-first');
         expect(targetItem?.navigateOnClick).toBe(true);
         // labelled target stays in the dropdown
-        expect(targetItem?.hideFromDropdown).toBeUndefined();
+        expect(targetItem?.label).toBe('Second');
         expect(declaringItem?.navigateOnClick).toBeUndefined();
       });
 
@@ -1522,7 +1523,6 @@ describe('NavigationService', () => {
 
         const catNodes = data.items[0].category?.nodes ?? [];
         expect(catNodes.some((n: any) => n.navigateOnClick)).toBe(false);
-        expect(catNodes.some((n: any) => n.hideFromDropdown)).toBe(false);
       });
     });
   });
