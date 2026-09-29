@@ -178,12 +178,12 @@ const handleDialogContainers = async (
 ): Promise<void> => {
   const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
   const modalService = serviceRegistry.get(ModalService);
-  const closed = await modalService.closeModalsWithDirtyCheck();
 
   if (showModalPathInUrl) {
     const routingService = serviceRegistry.get(RoutingService);
     const hashRouting = !!luigi.getConfigValue('routing.useHashRouting');
     const routeInfo = RoutingHelpers.getCurrentPath(luigi, hashRouting, true);
+    const closed = await modalService.closeModalsWithDirtyCheck();
 
     if (closed) {
       await routingService.handleBookmarkableModalPath(routeInfo, false);
@@ -194,8 +194,28 @@ const handleDialogContainers = async (
     }
   } else {
     const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    const checkContainer = async (container: any): Promise<void> => {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(container)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(container);
+        } catch (e) {
+          return;
+        }
+      }
+    };
 
-    if (allContainers?.length > 1 && closed) {
+    if (UIModule.modalContainer.length) {
+      for (const container of UIModule.modalContainer) {
+        await checkContainer(container);
+      }
+    }
+
+    if (UIModule.drawerContainer) {
+      await checkContainer(UIModule.drawerContainer);
+    }
+
+    if (allContainers?.length > 1) {
       const dialogContainers = allContainers.filter(
         (container: any) => !container.parentNode.classList.contains('content')
       );
