@@ -272,7 +272,8 @@ export class NavigationService {
               id: catId,
               label: catLabel,
               nodes: [],
-              tooltip: this.resolveTooltipText(node.category, catLabel)
+              tooltip: this.resolveTooltipText(node.category, catLabel),
+              navigateOnClick: node.category.navigateOnClick ?? false
             }
           };
           catMap[catId] = catNode;
@@ -334,6 +335,20 @@ export class NavigationService {
     };
 
     items.unshift(...orphanItems);
+
+    items.forEach((item) => {
+      if (!item.category?.navigateOnClick || !item.category.nodes?.length) {
+        return;
+      }
+      const navigateOnClick = item.category.navigateOnClick;
+      const targetNode =
+        navigateOnClick === true
+          ? item.category.nodes.find((subItem) => subItem.node?.category?.navigateOnClick)
+          : item.category.nodes.find((subItem) => subItem.node?.pathSegment === navigateOnClick);
+      if (targetNode) {
+        targetNode.navigateOnClick = true;
+      }
+    });
 
     return { items, totalBadgeNode };
   }
