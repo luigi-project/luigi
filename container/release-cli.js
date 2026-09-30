@@ -20,6 +20,11 @@ const GITHUB_OWNER = 'luigi-project';
 const GITHUB_REPO = 'luigi';
 const GITHUB_TOKEN = process.env.GITHUB_AUTH;
 
+if (!GITHUB_TOKEN || typeof GITHUB_TOKEN !== 'string' || !GITHUB_TOKEN.trim()) {
+  console.error('Error: GITHUB_AUTH environment variable must be set to a valid GitHub token before running this script.');
+  process.exit(1);
+}
+
 const listReleases = async () => {
   try {
     const url = `${GITHUB_API_URL}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases`;
