@@ -280,6 +280,7 @@
       ? 'fd-shellbar--responsive-paddings'
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
     data-luigi-fast-nav-group={fastNavGroup}
+    role="banner"
     tabindex="0"
   >
     <div class="fd-shellbar__group fd-shellbar__group--product" role="heading" aria-level="1">

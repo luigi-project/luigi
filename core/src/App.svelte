@@ -1984,6 +1984,7 @@
                   class:lui-split-view={mfSplitView.displayed}
                   class:lui-collapsed={mfSplitView.collapsed}
                   data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
+                  role="main"
                   tabindex="0"
                   use:init
                 >
@@ -2061,6 +2062,7 @@
         class:lui-split-view={mfSplitView.displayed}
         class:lui-collapsed={mfSplitView.collapsed}
         data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
+        role="main"
         tabindex="0"
         use:init
       >

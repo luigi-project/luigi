@@ -1104,6 +1104,7 @@
       : ''} {footerText && !semiCollapsibleButton ? 'hasOnlyFooterText' : ''}"
     data-luigi-fast-nav-group={fastNavGroup}
     tabindex={fastNavGroup ? '-1' : null}
+    role="navigation"
   >
     {#if navHeader}
       <div class="lui-nav-title" bind:this={navHeaderContainer}>
