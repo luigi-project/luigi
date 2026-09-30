@@ -1116,7 +1116,23 @@ const connector = {
         item.selected ? item.selected && tab.setAttribute('selected', '') : '';
       } else if (item.category) {
         tab.setAttribute('text', item.category.label || item.category.id);
-        item.category.nodes?.forEach((subItem) => {
+
+        const dropdownNodes = item.category.nodes || [];
+
+        const targetNode = dropdownNodes.find((subItem) => subItem.navigateOnClick);
+
+        if (targetNode?.node?.pathSegment) {
+          tab.setAttribute('luigi-route', tabNavData.basePath + '/' + targetNode.node.pathSegment);
+          if (targetNode.selected) {
+            tab.setAttribute('selected', '');
+          }
+          tab.appendChild(document.createTextNode(item.category.label || item.category.id));
+        }
+
+        dropdownNodes.forEach((subItem) => {
+          if (subItem.navigateOnClick && !subItem.label) {
+            return;
+          }
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
           subTab.setAttribute('text', subItem.label || subItem.node?.pathSegment || '');
