@@ -1466,6 +1466,121 @@ describe('NavigationService', () => {
       expect(data.items[2].category?.id).toBe('cat1');
       expect(data.items[3].label).toBe('Regular');
     });
+
+    describe('navigateOnClick target resolution', () => {
+      const buildPathData = (nodes: Node[]): PathData => ({
+        selectedNode: undefined,
+        selectedNodeChildren: nodes,
+        nodesInPath: [],
+        rootNodes: nodes,
+        pathParams: {},
+        matchedPath: ''
+      });
+
+      beforeEach(() => {
+        luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      });
+
+      it('flags the category-declaring node as navigateOnClick target when navigateOnClick is true', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        const siblingItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert18');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(siblingItem?.navigateOnClick).toBeUndefined();
+      });
+
+      it('flags a labelless navigateOnClick target so the renderer can hide it from the dropdown', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(targetItem?.label).toBeUndefined();
+      });
+
+      it('keeps a labelled navigateOnClick target visible in the dropdown', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          label: 'Alert 17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(targetItem?.label).toBe('Alert 17');
+      });
+
+      it('resolves a string navigateOnClick to the sibling with the matching pathSegment', async () => {
+        const declaring: Node = {
+          pathSegment: 'strcat-first',
+          label: 'First',
+          category: { id: 'strcat', label: 'StrCat', navigateOnClick: 'strcat-second' },
+          children: []
+        };
+        const target: Node = { pathSegment: 'strcat-second', label: 'Second', category: 'strcat', children: [] };
+        const nodes = [declaring, target];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'strcat-second');
+        const declaringItem = catNodes.find((n: any) => n.node?.pathSegment === 'strcat-first');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        // labelled target stays in the dropdown
+        expect(targetItem?.label).toBe('Second');
+        expect(declaringItem?.navigateOnClick).toBeUndefined();
+      });
+
+      it('does not flag any node when the string navigateOnClick matches no sibling', async () => {
+        const declaring: Node = {
+          pathSegment: 'strcat-first',
+          label: 'First',
+          category: { id: 'strcat', label: 'StrCat', navigateOnClick: 'missing' },
+          children: []
+        };
+        const nodes = [declaring];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        expect(catNodes.some((n: any) => n.navigateOnClick)).toBe(false);
+      });
+
+      it('leaves category nodes unflagged when navigateOnClick is not set', async () => {
+        const node1: Node = { pathSegment: 'n1', label: 'N1', category: { id: 'cat', label: 'Cat' }, children: [] };
+        const node2: Node = { pathSegment: 'n2', label: 'N2', category: 'cat', children: [] };
+        const nodes = [node1, node2];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        expect(catNodes.some((n: any) => n.navigateOnClick)).toBe(false);
+      });
+    });
   });
 
   describe('NavigationService.getChildren', () => {

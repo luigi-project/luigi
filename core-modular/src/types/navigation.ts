@@ -214,6 +214,7 @@ export interface Category {
   label?: string;
   nodes?: NavItem[];
   tooltip?: string;
+  navigateOnClick?: boolean | string;
 }
 
 export interface BreadcrumbItem {
@@ -235,6 +236,7 @@ export interface NavItem {
   label?: string;
   selected?: boolean;
   tooltip?: string;
+  navigateOnClick?: boolean;
 }
 
 export interface TabNavConfig {
