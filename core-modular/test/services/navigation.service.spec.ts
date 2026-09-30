@@ -2922,15 +2922,18 @@ describe('NavigationService', () => {
     });
 
     it('should remove last preserved view', () => {
-      navigationService._preservedViews.push({
-        context: {},
-        nextPath: '/next-route',
-        path: '/current-route'
-      },{
-        context: {},
-        nextPath: '/another-route',
-        path: '/next-route'
-      });
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
 
       expect(navigationService._preservedViews.length).toEqual(2);
       navigationService.removeLastPreservedView();
@@ -2938,15 +2941,18 @@ describe('NavigationService', () => {
     });
 
     it('should get number of preserved views', () => {
-      navigationService._preservedViews.push({
-        context: {},
-        nextPath: '/next-route',
-        path: '/current-route'
-      },{
-        context: {},
-        nextPath: '/another-route',
-        path: '/next-route'
-      });
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
 
       const result = navigationService.getPreservedViewsLength();
       expect(result).toEqual(2);
@@ -2974,9 +2980,7 @@ describe('NavigationService', () => {
     it('should not update context in any container', () => {
       const ctx = { foo: 'bar' };
       const parentOne: any = createMockElement('dialog');
-      const containers = [
-        { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() }
-      ];
+      const containers = [{ context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() }];
       jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
 
       const result = (navigationService as any).handleDialogContainer(ctx);
