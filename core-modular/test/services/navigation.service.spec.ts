@@ -24,6 +24,39 @@ describe('NavigationService', () => {
     return el;
   }
 
+  function createMockElement(className: string): any {
+    const el: any = {};
+    Object.defineProperty(el, 'classList', {
+      value: {
+        classes: new Set(),
+        add(...names) {
+          names.forEach((name) => this.classes.add(name));
+        },
+        remove(...names) {
+          names.forEach((name) => this.classes.delete(name));
+        },
+        toggle(name) {
+          if (this.classes.has(name)) {
+            this.classes.delete(name);
+            return false;
+          } else {
+            this.classes.add(name);
+            return true;
+          }
+        },
+        contains(name) {
+          return this.classes.has(name);
+        },
+        toString() {
+          return Array.from(this.classes).join(' ');
+        }
+      },
+      writable: false
+    });
+    el.classList.add(className);
+    return el;
+  }
+
   beforeEach(() => {
     containerWrapper = document.createElement('div');
     activeContainer = createMockContainer('/microfrontend.html');
@@ -2872,6 +2905,84 @@ describe('NavigationService', () => {
 
       expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
       expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+    });
+  });
+
+  describe('NavigationService._preservedViews', () => {
+    it('should clear preserved views', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      expect(navigationService._preservedViews.length).toEqual(1);
+      navigationService.clearPreservedViews();
+      expect(navigationService._preservedViews.length).toEqual(0);
+    });
+
+    it('should remove last preserved view', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      },{
+        context: {},
+        nextPath: '/another-route',
+        path: '/next-route'
+      });
+
+      expect(navigationService._preservedViews.length).toEqual(2);
+      navigationService.removeLastPreservedView();
+      expect(navigationService._preservedViews.length).toEqual(1);
+    });
+
+    it('should get number of preserved views', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      },{
+        context: {},
+        nextPath: '/another-route',
+        path: '/next-route'
+      });
+
+      const result = navigationService.getPreservedViewsLength();
+      expect(result).toEqual(2);
+    });
+  });
+
+  describe('NavigationService.handleDialogContainer', () => {
+    it('should update context in active container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const parentTwo: any = createMockElement('content');
+      const containers = [
+        { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() },
+        { context: { other: 'value' }, parentNode: parentTwo, updateContext: jest.fn() }
+      ];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).toHaveBeenCalled();
+      expect(containers[1].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(true);
+    });
+
+    it('should not update context in any container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const containers = [
+        { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() }
+      ];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
     });
   });
 });

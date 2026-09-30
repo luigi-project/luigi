@@ -1,4 +1,5 @@
 import { Navigation } from '../../src/core-api/navigation';
+import { DirtyStatusService } from '../../src/services/dirty-status.service';
 import { ModalService } from '../../src/services/modal.service';
 import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
@@ -9,6 +10,7 @@ import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 describe('Navigation', () => {
   let luigiMock: any;
   let navigation: Navigation;
+  let dirtyStatusService: DirtyStatusService;
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
@@ -50,6 +52,8 @@ describe('Navigation', () => {
         showAlert: jest.fn()
       })
     };
+
+    dirtyStatusService = new DirtyStatusService(luigiMock);
 
     modalServiceMock = {
       closeModals: jest.fn().mockResolvedValue(undefined),
@@ -407,12 +411,15 @@ describe('Navigation', () => {
   });
 
   describe('goBack', () => {
-    it.each([{ foo: 'bar' }, true])('should handle "goBack" request with context', (context) => {
+    it.each([{ foo: 'bar' }, true])('should handle "goBack" request with context', async (context) => {
       const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
+      jest.spyOn(mockNavService, 'getPreservedViewsLength').mockResolvedValue(1);
 
       navigation.goBack(context);
 
+      expect.assertions(2);
       expect(goBackRequestSpy).toHaveBeenCalledWith(context);
+      await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
     });
   });
 });

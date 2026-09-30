@@ -74,12 +74,11 @@ export class NavigationService {
       const dialogContainers = allContainers.filter(
         (container: any) => !container.parentNode.classList.contains('content')
       );
+      const activeContainer: any = dialogContainers.at(-1);
 
-      dialogContainers.forEach((container: any) => {
-        if (container?.updateContext) {
-          container.updateContext({ goBackContext }, { withoutSync: false });
-        }
-      });
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+      }
 
       return true;
     } else {
@@ -89,6 +88,12 @@ export class NavigationService {
 
   clearPreservedViews(): void {
     this._preservedViews.length = 0;
+  }
+
+  removeLastPreservedView(): void {
+    if (this._preservedViews.length) {
+      this._preservedViews.pop();
+    }
   }
 
   getPreservedViewsLength(): number {

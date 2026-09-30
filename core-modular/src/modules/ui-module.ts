@@ -461,6 +461,7 @@ export const UIModule = {
           resolve();
           modalService.removeLastModalFromStack();
           if (goBackValue) {
+            UIModule.navService.removeLastPreservedView();
             setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
           }
         };
@@ -582,6 +583,7 @@ export const UIModule = {
         resolved = true;
         resolve();
         if (goBackValue) {
+          UIModule.navService.removeLastPreservedView();
           setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
         }
       };
