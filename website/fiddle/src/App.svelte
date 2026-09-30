@@ -84,7 +84,7 @@
 
     // deep-link support: ?preset=<id> loads a bundled preset;
     // unknown ids fall back to default
-    // example: http://localhost:3000/?preset=test-preset1
+    // example: http://localhost:3000/?preset=basicNavigation
     const presetId = new URLSearchParams(window.location.search).get('preset');
     if (presetId) {
       loadPreset(presetId);
@@ -118,7 +118,7 @@
     }
   }
 
-  // Loads a bundled preset by id. On success the id is written to <body data-preset="...">
+  // Loads a bundled preset by id. Unknown ids and presets that fail to load fall back to the default config.
   function loadPreset(presetId) {
     const preset = presets.find((p) => p.id === presetId);
     if (!preset) {
@@ -130,7 +130,6 @@
     try {
       exec(preset.config);
       configString = preset.config;
-      document.body.dataset.preset = preset.id;
     } catch (e) {
       console.error(`[fiddle] Preset "${presetId}" failed to load, falling back to the default config.`, e);
       exec(defaultConfigString);

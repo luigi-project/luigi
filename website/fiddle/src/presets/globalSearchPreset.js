@@ -30,7 +30,7 @@ Luigi.setConfig({
                 viewUrl: '/examples/microfrontends/multipurpose.html',
                 context: {
                     title: 'Customers',
-                    content: 'Customer master data.'
+                    content: 'Customer data.'
                 }
             },{
                 pathSegment: 'invoices',
@@ -48,7 +48,7 @@ Luigi.setConfig({
                 viewUrl: '/examples/microfrontends/multipurpose.html',
                 context: {
                     title: 'Reports',
-                    content: 'Sales reports and KPIs.'
+                    content: 'Sales reports'
                 }
             }]
         }]
