@@ -8,6 +8,7 @@ export interface TopNavData {
   isHeaderDisabled: boolean;
   globalSearch?: GlobalSearch;
   logo: string;
+  logoAltText: string;
   navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;

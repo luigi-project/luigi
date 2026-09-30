@@ -698,10 +698,10 @@ export class NavigationService {
       };
     }
 
-    const logoConfig = cfg.settings?.header?.logo;
+    let logoAltText = '';
 
-    if (logoConfig && typeof cfg.settings?.header?.altText === 'string') {
-      logoConfig.alt = this.luigi.i18n().getTranslation(cfg.settings.header.altText);
+    if (typeof cfg.settings?.header?.altText === 'string') {
+      logoAltText = this.luigi.i18n().getTranslation(cfg.settings.header.altText);
     }
 
     return {
@@ -709,7 +709,8 @@ export class NavigationService {
       favicon: cfg.settings?.header?.favicon,
       globalSearch,
       isHeaderDisabled: !!cfg.settings?.header?.disabled,
-      logo: logoConfig,
+      logo: cfg.settings?.header?.logo,
+      logoAltText,
       topNodes: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
       contextSwitcher,
