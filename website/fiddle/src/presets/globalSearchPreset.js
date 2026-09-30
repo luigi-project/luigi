@@ -12,7 +12,7 @@ Luigi.setConfig({
                 viewUrl: '/examples/microfrontends/multipurpose.html',
                 context: {
                     title: 'Global Search',
-                    content: 'Type into the search field at the top, for example "or". The search provider filters the labels of the navigation nodes.'
+                    content: 'Type into the search field at the top. The search provider filters the labels of the navigation nodes.'
                 }
             },{
                 pathSegment: 'orders',
