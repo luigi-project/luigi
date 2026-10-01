@@ -329,6 +329,11 @@ const replacePlaceholdersWithUI5Links = (text, linksObj) => {
 
 function renderNodeOrCategory(item, leftNavData) {
   const frag = document.createDocumentFragment();
+
+  if (item.node?.hideFromNav) {
+    return frag;
+  }
+
   if (item.node && item.label) {
     const el = document.createElement('ui5-side-navigation-item');
     el.setAttribute('text', item.label);
@@ -1058,9 +1063,41 @@ const connector = {
 
   renderTabNav: (tabNavData) => {
     const tabcontainer = document.querySelector('ui5-tabcontainer');
+    let tabHeaderContainer = document.querySelector('.lui-tab-header');
     tabcontainer?.setAttribute('no-auto-selection', '');
     if (tabcontainer) tabcontainer.innerHTML = '';
-    if (Object.keys(tabNavData).length === 0) {
+
+    // Handle tab header web component
+    if (tabNavData.headerNode) {
+      if (!tabHeaderContainer) {
+        tabHeaderContainer = document.createElement('div');
+        tabHeaderContainer.className = 'lui-tab-header';
+        tabcontainer?.parentElement?.insertBefore(tabHeaderContainer, tabcontainer);
+      }
+      tabHeaderContainer.classList.add('lui-tab-header--active');
+      const existingLc = tabHeaderContainer.querySelector('luigi-container');
+      if (existingLc && existingLc.getAttribute('viewurl') === tabNavData.headerNode.viewUrl) {
+        // Update context on existing container
+        existingLc.context = tabNavData.headerNode.context || {};
+      } else {
+        // Create new container
+        tabHeaderContainer.innerHTML = '';
+        const lc = document.createElement('luigi-container');
+        lc.setAttribute('viewurl', tabNavData.headerNode.viewUrl);
+        lc.setAttribute('webcomponent', 'true');
+        lc.setAttribute('skipInitCheck', 'true');
+        lc.setAttribute('noShadow', 'true');
+        if (tabNavData.headerNode.context) {
+          lc.context = tabNavData.headerNode.context;
+        }
+        tabHeaderContainer.appendChild(lc);
+      }
+    } else if (tabHeaderContainer) {
+      tabHeaderContainer.innerHTML = '';
+      tabHeaderContainer.classList.remove('lui-tab-header--active');
+    }
+
+    if (Object.keys(tabNavData).length === 0 || !tabNavData.items?.length) {
       document.querySelector('.content-wrapper > ui5-tabcontainer')?.classList.add('ui5-tabcontainer-hidden');
       return;
     }
@@ -1079,7 +1116,23 @@ const connector = {
         item.selected ? item.selected && tab.setAttribute('selected', '') : '';
       } else if (item.category) {
         tab.setAttribute('text', item.category.label || item.category.id);
-        item.category.nodes?.forEach((subItem) => {
+
+        const dropdownNodes = item.category.nodes || [];
+
+        const targetNode = dropdownNodes.find((subItem) => subItem.navigateOnClick);
+
+        if (targetNode?.node?.pathSegment) {
+          tab.setAttribute('luigi-route', tabNavData.basePath + '/' + targetNode.node.pathSegment);
+          if (targetNode.selected) {
+            tab.setAttribute('selected', '');
+          }
+          tab.appendChild(document.createTextNode(item.category.label || item.category.id));
+        }
+
+        dropdownNodes.forEach((subItem) => {
+          if (subItem.navigateOnClick && !subItem.label) {
+            return;
+          }
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
           subTab.setAttribute('text', subItem.label || subItem.node?.pathSegment || '');

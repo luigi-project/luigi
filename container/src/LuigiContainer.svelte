@@ -322,6 +322,9 @@
   onDestroy(async () => {});
 
   function createIframe(): void {
+    if (!mainComponent) {
+      return;
+    }
     const iframe = document.createElement('iframe');
     iframe.title = label || '';
     iframe.src = viewurl;

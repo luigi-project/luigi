@@ -344,17 +344,18 @@ export const UIModule = {
           }
         } else {
           if (
+            withoutSync ||
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
             viewGroupContainer = element;
           } else if (
             !currentNode.viewGroup &&
-            !currentNode.isolateView &&
-            !currentNode.webcomponent &&
-            element.viewurl &&
-            resolvedViewUrl &&
-            GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)
+              !currentNode.isolateView &&
+              !currentNode.webcomponent &&
+              element.viewurl &&
+              (preventContextUpdate ||
+                (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
             viewGroupContainer = element;
           } else {
@@ -373,7 +374,7 @@ export const UIModule = {
       if (viewGroupContainer) {
         const previousViewUrl = viewGroupContainer.viewurl;
 
-        if (!withoutSync) {
+        if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = resolvedViewUrl;
           viewGroupContainer.nodeParams = nodeParams;
@@ -390,16 +391,25 @@ export const UIModule = {
           setAllowRules(viewGroupContainer, luigi);
         }
 
+        if (withoutSync && !preventContextUpdate) {
+          // withoutSync: forward the fresh params to the client so navigations that change
+          // node/path/search params don't leave the client with stale params (parity with core).
+          // Deliberately does NOT touch viewurl/display, preserving the no-reload guarantee.
+          viewGroupContainer.nodeParams = nodeParams;
+          viewGroupContainer.pathParams = pathParams;
+          viewGroupContainer.searchParams = searchParams;
+        }
+
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
 
-          if (hashChanged && !viewGroupContainer.virtualTree) {
+          if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
-            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: false });
+            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
           }
         }
       } else {

@@ -23,6 +23,7 @@ import type {
   ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
+  TabNavConfig,
   TabNavData,
   TopNavData,
   UserInfo,
@@ -271,7 +272,8 @@ export class NavigationService {
               id: catId,
               label: catLabel,
               nodes: [],
-              tooltip: this.resolveTooltipText(node.category, catLabel)
+              tooltip: this.resolveTooltipText(node.category, catLabel),
+              navigateOnClick: node.category.navigateOnClick ?? false
             }
           };
           catMap[catId] = catNode;
@@ -333,6 +335,20 @@ export class NavigationService {
     };
 
     items.unshift(...orphanItems);
+
+    items.forEach((item) => {
+      if (!item.category?.navigateOnClick || !item.category.nodes?.length) {
+        return;
+      }
+      const navigateOnClick = item.category.navigateOnClick;
+      const targetNode =
+        navigateOnClick === true
+          ? item.category.nodes.find((subItem) => subItem.node?.category?.navigateOnClick)
+          : item.category.nodes.find((subItem) => subItem.node?.pathSegment === navigateOnClick);
+      if (targetNode) {
+        targetNode.navigateOnClick = true;
+      }
+    });
 
     return { items, totalBadgeNode };
   }
@@ -744,6 +760,14 @@ export class NavigationService {
       parentNode = this.getParentNode(selectedNode, pathData) as Node;
       if (parentNode && !parentNode.tabNav) return {};
     }
+
+    const tabNavNode = parentNode || selectedNode;
+    const tabNavConfig = this.getTabNavConfig(tabNavNode);
+
+    if (tabNavConfig && !('hideTabNavAutomatically' in tabNavConfig) && !tabNavConfig.showAsTabHeader) {
+      console.warn('tabNav:{hideTabNavAutomatically:true|false} is not configured correctly.');
+    }
+
     let basePath = '';
     pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
@@ -751,18 +775,40 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = parentNode
+    const children = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
-    const navData = await this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
 
-    return {
+    if (tabNavConfig?.hideTabNavAutomatically && children.length <= 1) {
+      return {};
+    }
+
+    const navData = await this.buildNavItems(children, selectedNode, pathData);
+
+    const result: TabNavData = {
       selectedNode,
       items: navData.items,
       totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
+      overflowLabel: this.luigi.i18n().getTranslation('luigi.navigation.tabNav.more'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
+
+    if (tabNavConfig?.showAsTabHeader && tabNavNode.webcomponent && tabNavNode.viewUrl) {
+      result.headerNode = {
+        viewUrl: tabNavNode.viewUrl,
+        context: pathData.context || tabNavNode.context,
+        webcomponent: tabNavNode.webcomponent
+      };
+    }
+
+    return result;
+  }
+
+  private getTabNavConfig(node: Node): TabNavConfig | undefined {
+    if (!node.tabNav) return undefined;
+    if (typeof node.tabNav === 'object') return node.tabNav as TabNavConfig;
+    return undefined;
   }
 
   async getBreadcrumbData(
@@ -1105,7 +1151,15 @@ export class NavigationService {
     const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
 
-    if (GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)) {
+    // Navigating to the page you are already on is a no-op, but an overlay is not a navigation:
+    // a modal or drawer is independent of the main route, so it must open even when its path
+    // equals the current location.
+    const isOverlayRequest = Boolean(drawerSettings || modalSettings);
+
+    if (
+      !isOverlayRequest &&
+      GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)
+    ) {
       return;
     }
 
@@ -1172,7 +1226,7 @@ export class NavigationService {
 
       if (hashRouting) {
         const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
-        if (!withoutSync && method !== 'replaceState') {
+        if (!withoutSync && !preventContextUpdate && method !== 'replaceState') {
           location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
@@ -1416,7 +1470,7 @@ export class NavigationService {
    * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
    * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
    */
-  async getCurrentRoutePath(options: NavigationOptions): Promise<string|undefined> {
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string | undefined> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
     const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);

@@ -49,7 +49,6 @@ const PACKAGES = [
   'client-frameworks-support/testing-utilities/test',
   'website/docs',
   'website/fiddle',
-  'website/landingpage/dev',
   'test/e2e-test-application',
   'test/e2e-test-application/externalMf',
   'test/e2e-js-test-application',

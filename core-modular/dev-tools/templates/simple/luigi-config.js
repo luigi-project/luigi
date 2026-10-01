@@ -193,6 +193,73 @@ window.onload = () => {
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
             {
+              pathSegment: 'compound',
+              label: 'Compound',
+              icon: 'product',
+              context: {
+                content: 'Global Data'
+              },
+              nodeParams: {
+                foo: 'bar'
+              },
+              webcomponent: true,
+              compound: {
+                renderer: {
+                  use: 'grid',
+                  config: {
+                    columns: '1fr 1fr',
+                    layouts: [
+                      {
+                        minWidth: 0,
+                        maxWidth: 600,
+                        columns: '1fr',
+                        gap: 0
+                      },
+                      {
+                        minWidth: 600,
+                        maxWidth: 1024,
+                        columns: '1fr 1fr',
+                        gap: '30px'
+                      }
+                    ]
+                  }
+                },
+                children: [
+                  {
+                    id: 'one',
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent1.js'
+                  },
+                  {
+                    id: 'two',
+                    context: {
+                      content: 'Local Data'
+                    },
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent2.js'
+                  },
+                  {
+                    id: 'three',
+                    layoutConfig: {
+                      row: '1',
+                      column: '1 / -1'
+                    },
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent3.js'
+                  },
+                  {
+                    id: 'four',
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent4.js',
+                    eventListeners: [
+                      {
+                        source: 'one',
+                        name: 'sendBtn',
+                        action: 'update',
+                        dataConverter: (data) => data
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
               pathSegment: 'c1',
               label: 'MFE1',
               icon: 'group',
@@ -232,6 +299,26 @@ window.onload = () => {
               label: 'wc',
               viewUrl: '/helloWorldWC.js',
               webcomponent: true
+            },
+            {
+              pathSegment: 'wctabs',
+              label: 'WC Tabs',
+              viewUrl: '/helloWorldWC.js',
+              tabNav: { showAsTabHeader: true },
+              webcomponent: true,
+              children: [
+                {
+                  pathSegment: 'wctabschild1',
+                  label: 'WC Tab Child 1',
+                  viewUrl: '/helloWorldWC.js',
+                  webcomponent: true
+                },
+                {
+                  pathSegment: 'wctabschild2',
+                  label: 'WC Tab Child 2',
+                  viewUrl: '/microfrontend.html#wctabchild2'
+                }
+              ]
             },
             {
               pathSegment: 'c3',
@@ -410,6 +497,24 @@ window.onload = () => {
               label: 'Child 2',
               viewUrl: '/microfrontend.html#child2',
               icon: 'calendar'
+            }
+          ]
+        },
+        {
+          pathSegment: 'withoptionstest',
+          label: 'WithOptions Test',
+          icon: 'lab',
+          viewUrl: '/microfrontend.html',
+          children: [
+            {
+              pathSegment: 'child1',
+              label: 'Child 1',
+              viewUrl: '/microfrontend.html'
+            },
+            {
+              pathSegment: 'child2',
+              label: 'Child 2',
+              viewUrl: '/withoptions-test.html'
             }
           ]
         },
