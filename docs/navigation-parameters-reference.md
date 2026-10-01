@@ -289,6 +289,34 @@ Node parameters are all the parameters that can be added to an individual naviga
   - **id** if this property is defined all nodes with the same category `id` will be grouped.
   - **titleExpandButton** adds the HTML `title` attribute with the defined value to the expand button.
   - **titleCollapseButton** adds the HTML `title` attribute with the defined value to the collapse button.
+  - **navigateOnClick** makes the category label itself navigable in the horizontal ([tab](navigation-parameters-reference.md#tabnav)) navigation, in addition to opening the drop-down. By default, clicking a category in the tab navigation only opens its drop-down menu; with `navigateOnClick` the tab text also navigates directly to a target node. It accepts either a boolean or a string:
+    - `true` navigates to the node that declares the category (the node that defines the category as an object). If that node has no `label` of its own, it acts solely as the click target and is not listed as a separate entry in the drop-down.
+    - a string navigates to the sibling node in the same category whose `pathSegment` matches the given value. If no sibling matches, no node is flagged as navigable. A matching node that has a `label` remains visible in the drop-down.
+    - This only applies to nodes rendered as tab navigation. (core-modular)
+- **example**:
+    ```javascript
+    // `navigateOnClick: true` — the category-declaring node is the click target.
+    // Because it has no label, it is hidden from the drop-down and only reachable
+    // by clicking the tab text.
+    children: [
+      {
+        pathSegment: 'overview',
+        category: { id: 'products', label: 'Products', navigateOnClick: true }
+      },
+      { pathSegment: 'details', label: 'Details', category: 'products' }
+    ]
+
+    // `navigateOnClick: '<pathSegment>'` — clicking the tab text navigates to the
+    // sibling with the matching pathSegment. A labelled target stays in the drop-down.
+    children: [
+      {
+        pathSegment: 'first',
+        label: 'First',
+        category: { id: 'products', label: 'Products', navigateOnClick: 'second' }
+      },
+      { pathSegment: 'second', label: 'Second', category: 'products' }
+    ]
+    ```
 
 ### children
 - **type**: array | function
