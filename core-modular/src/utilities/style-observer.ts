@@ -12,7 +12,7 @@ export class ElementStyleObserver {
   private mutationObserver: any;
   private pollingTimer: any;
 
-  constructor(element: HTMLElement, properties: string[], callback: any, interval = 200) {
+  constructor(element: HTMLElement, properties: string[], callback: any, interval = 100) {
     if (!(element instanceof Element)) {
       throw new Error('element must be a DOM Element');
     }

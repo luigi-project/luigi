@@ -50,6 +50,7 @@ export class NavigationService {
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
+  private styleObserver: any = null;
 
   constructor(private luigi: Luigi) {}
 
@@ -83,6 +84,13 @@ export class NavigationService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  resetStyleObserver(): void {
+    if (this.styleObserver) {
+      this.styleObserver.stop();
+      this.styleObserver = null;
     }
   }
 
@@ -129,15 +137,15 @@ export class NavigationService {
         } else {
           if (allContainers.length === 1) {
             const mainContainer = allContainers[0];
-            const observer = new ElementStyleObserver(mainContainer, ['display'], (changes: any) => {
+
+            this.styleObserver = new ElementStyleObserver(mainContainer, ['display'], (changes: any) => {
               if (changes?.display?.newValue === 'block' && mainContainer?.updateContext) {
                 mainContainer.updateContext({ goBackContext }, { withoutSync: false });
-                observer.stop();
+                this.resetStyleObserver();
               }
             });
 
-            observer.start();
-            setTimeout(() => observer.stop(), 3000);
+            this.styleObserver.start();
           }
         }
       }

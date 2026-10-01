@@ -371,6 +371,8 @@ export const UIModule = {
               element.remove();
             }
           }
+
+          setTimeout(() => UIModule.navService.resetStyleObserver());
         }
       });
 
