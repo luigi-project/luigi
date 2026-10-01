@@ -48,17 +48,11 @@ class DropdownKeyboardHelpersClass {
     const currentIndex = items.indexOf(document.activeElement);
     const key = this.eventKey(event);
 
-    if (key === 'ArrowDown') {
+    if (key === 'ArrowDown' || key === 'ArrowUp') {
       event.preventDefault();
       event.stopPropagation();
-      this.applyRovingTabindex(items, this.nextIndex(currentIndex, items.length, 1));
-      return;
-    }
-
-    if (key === 'ArrowUp') {
-      event.preventDefault();
-      event.stopPropagation();
-      this.applyRovingTabindex(items, this.nextIndex(currentIndex, items.length, -1));
+      const direction = key === 'ArrowDown' ? 1 : -1;
+      this.applyRovingTabindex(items, this.nextIndex(currentIndex, items.length, direction));
       return;
     }
 
@@ -82,15 +76,9 @@ class DropdownKeyboardHelpersClass {
       return;
     }
 
-    if (key === 'Home') {
+    if (key === 'Home' || key === 'End') {
       event.preventDefault();
-      this.applyRovingTabindex(items, 0);
-      return;
-    }
-
-    if (key === 'End') {
-      event.preventDefault();
-      this.applyRovingTabindex(items, items.length - 1);
+      this.applyRovingTabindex(items, key === 'Home' ? 0 : items.length - 1);
       return;
     }
 
