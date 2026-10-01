@@ -159,10 +159,10 @@ export class Navigation {
     if (!settings.header?.title) {
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
       const title = label || '';
-      if (!settings.header) {
-        settings.header = { title };
-      } else {
+      if (settings.header && Object.keys(settings.header).length) {
         settings.header.title = title;
+      } else {
+        settings.header = { title };
       }
     }
     if (settings.overlap === undefined) {

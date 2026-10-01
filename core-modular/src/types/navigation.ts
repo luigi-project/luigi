@@ -4,9 +4,11 @@ export interface TopNavData {
   appSwitcher?: AppSwitcher;
   appTitle: string;
   contextSwitcher?: ContextSwitcher;
+  favicon?: string;
   isHeaderDisabled: boolean;
   globalSearch?: GlobalSearch;
   logo: string;
+  logoAltText: string;
   navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
