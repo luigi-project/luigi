@@ -170,7 +170,7 @@ Luigi.setConfig({
             }],
             productSwitcher: {
                 items: [{
-                    icon: 'https://raw.githubusercontent.com/luigi-project/luigi/main/website/landingpage/public/assets/img/logos/sap.svg',
+                    icon: 'https://luigi-project.io/assets/img/logos/sap.svg',
                     label: 'SAP homepage',
                     externalLink: {
                       url: 'https://www.sap.com',
