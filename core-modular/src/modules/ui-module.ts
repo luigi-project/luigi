@@ -471,7 +471,7 @@ export const UIModule = {
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
           const goBackContext = UIModule.navService.getGoBackContext() || {};
-          const newContext = {...currentNode.context, ...goBackContext};
+          const newContext = { ...currentNode.context, ...goBackContext };
 
           if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = newContext || {};
@@ -491,7 +491,7 @@ export const UIModule = {
           }
         } else {
           const goBackContext = UIModule.navService.getGoBackContext() || {};
-          const newContext = {...currentNode.context, ...goBackContext};
+          const newContext = { ...currentNode.context, ...goBackContext };
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext || {}, { withoutSync });

@@ -79,7 +79,6 @@ describe('UIModule.updateMainContent - withoutSync', () => {
       viewUrl: 'https://example.com/different-mfe.html'
     };
 
-
     await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false);
 
     expect(containerWrapper.contains(existingContainer)).toBe(true);
