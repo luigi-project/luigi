@@ -582,6 +582,12 @@
     text-shadow: none;
   }
 
+  .editor_container .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+    margin: 0;
+  }
+
   .lui-preset-chooser .fd-link:hover {
     color: #76ffb6;
   }
