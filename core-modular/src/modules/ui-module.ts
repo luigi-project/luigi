@@ -429,8 +429,6 @@ export const UIModule = {
               element.remove();
             }
           }
-
-          setTimeout(() => UIModule.navService.resetStyleObserver());
         }
       });
 
@@ -472,13 +470,15 @@ export const UIModule = {
           //IMPORTANT!!! This needs to be at the end
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = {...currentNode.context, ...goBackContext};
 
           if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
-            viewGroupContainer.context = currentNode.context || {};
+            viewGroupContainer.context = newContext || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
-            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
-            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            viewGroupContainer.updateContext(newContext || {}, { withoutSync: !!withoutSync });
+            await handleDialogContainers(newContext || {}, !!withoutSync, luigi);
           }
         }
       } else {
@@ -490,12 +490,17 @@ export const UIModule = {
             connector?.showLoadingIndicator(containerWrapper);
           }
         } else {
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = {...currentNode.context, ...goBackContext};
+
           if (!preventContextUpdate && currentContainer) {
-            currentContainer.updateContext(currentNode.context || {}, { withoutSync });
-            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            currentContainer.updateContext(newContext || {}, { withoutSync });
+            await handleDialogContainers(newContext || {}, !!withoutSync, luigi);
           }
         }
       }
+
+      UIModule.navService.clearGoBackContext();
     }
   },
   openModal: async (

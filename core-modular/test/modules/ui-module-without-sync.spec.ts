@@ -58,12 +58,19 @@ describe('UIModule.updateMainContent - withoutSync', () => {
       closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
 
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
+
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ModalService) return mockModalService;
       return {
         applyDecorators: (url: string) => url
       };
     });
+
+    (UIModule as any).navService = mockNavigationService;
   });
 
   it('should preserve existing container when withoutSync is true and viewUrls differ', async () => {
@@ -71,6 +78,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
       label: 'Target',
       viewUrl: 'https://example.com/different-mfe.html'
     };
+
 
     await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false);
 

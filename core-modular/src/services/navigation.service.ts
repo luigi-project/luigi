@@ -38,7 +38,6 @@ import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers'
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
-import { ElementStyleObserver } from '../utilities/style-observer';
 import { AuthLayerSvc } from './auth-layer.service';
 import { DirtyStatusService } from './dirty-status.service';
 import { ModalService } from './modal.service';
@@ -49,8 +48,8 @@ export class NavigationService {
   _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
+  private goBackContext: Record<string, any> | null = null;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
-  private styleObserver: any = null;
 
   constructor(private luigi: Luigi) {}
 
@@ -87,11 +86,12 @@ export class NavigationService {
     }
   }
 
-  resetStyleObserver(): void {
-    if (this.styleObserver) {
-      this.styleObserver.stop();
-      this.styleObserver = null;
-    }
+  clearGoBackContext(): void {
+    this.goBackContext = null;
+  }
+
+  getGoBackContext(): Record<string, any> | null {
+    return this.goBackContext;
   }
 
   clearPreservedViews(): void {
@@ -126,6 +126,8 @@ export class NavigationService {
       const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
       const dialogUpdated = this.handleDialogContainer(goBackContext);
 
+      this.goBackContext = { goBackContext };
+
       if (containerWrapper && !dialogUpdated) {
         const allContainers = [...containerWrapper.childNodes].filter(
           (element: any) => element.tagName?.indexOf('LUIGI-') === 0
@@ -134,25 +136,14 @@ export class NavigationService {
 
         if (activeContainer?.updateContext) {
           activeContainer.updateContext({ goBackContext }, { withoutSync: false });
-        } else {
-          if (allContainers.length === 1) {
-            const mainContainer = allContainers[0];
-
-            this.styleObserver = new ElementStyleObserver(mainContainer, ['display'], (changes: any) => {
-              if (changes?.display?.newValue === 'block' && mainContainer?.updateContext) {
-                mainContainer.updateContext({ goBackContext }, { withoutSync: false });
-                this.resetStyleObserver();
-              }
-            });
-
-            this.styleObserver.start();
-          }
         }
       }
     }
   }
 
   handleGoBackRequest(goBackContext?: any): void {
+    this.clearGoBackContext();
+
     if (this.getPreservedViewsLength() > 0) {
       const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
@@ -172,7 +163,6 @@ export class NavigationService {
           if (previousActiveViewData?.path) {
             this.handleNavigationRequest({
               path: previousActiveViewData.path,
-              preventContextUpdate: true,
               withoutSync: false
             });
           }
