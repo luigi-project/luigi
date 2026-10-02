@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount, getContext, beforeUpdate } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy, getContext, beforeUpdate, tick } from 'svelte';
   import { ContextSwitcherHelpers } from './services/context-switcher';
   import ContextSwitcherNav from './ContextSwitcherNav.svelte';
   import { LuigiConfig } from '../core-api';
@@ -10,7 +10,8 @@
     StateHelpers,
     NavigationHelpers,
     GenericHelpers,
-    EventListenerHelpers
+    EventListenerHelpers,
+    DropdownKeyboardHelpers
   } from '../utilities/helpers';
 
   const dispatch = createEventDispatcher();
@@ -40,6 +41,11 @@
   let selectedNodePath;
   export let addNavHrefForAnchor;
   let isContextSwitcherDropdownShown;
+  let focusMenuOnOpen = 'selected';
+  let inertedNodes = [];
+  let popoverEl;
+  let triggerEl;
+  let focusRafId;
 
   onMount(async () => {
     StateHelpers.doOnStoreChange(store, async () => {
@@ -88,6 +94,13 @@
     });
 
     defaultLabel = config.defaultLabel;
+  });
+
+  onDestroy(() => {
+    if (focusRafId) {
+      cancelAnimationFrame(focusRafId);
+    }
+    setContentInert(false);
   });
 
   beforeUpdate(() => {
@@ -179,7 +192,7 @@
         } else {
           Routing.navigateTo(option.link);
         }
-        if (isMobile) {
+        if (isDropdownOpen()) {
           dispatch('toggleDropdownState');
         }
       },
@@ -195,30 +208,164 @@
       fetchOptions();
     }
   }
+
+  function setContentInert(isInert) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    if (isInert) {
+      IframeHelpers.getVisibleIframes().forEach((node) => {
+        if (!node.hasAttribute('inert')) {
+          node.setAttribute('inert', '');
+          inertedNodes.push(node);
+        }
+      });
+    } else {
+      inertedNodes.forEach((node) => node.removeAttribute('inert'));
+      inertedNodes = [];
+    }
+  }
+
+  $: if (!isMobile) {
+    setContentInert(Boolean(dropDownStates && dropDownStates.contextSwitcherPopover));
+  }
+
+  let wasDropdownOpen = false;
+  $: if (!isMobile) {
+    const open = Boolean(dropDownStates && dropDownStates.contextSwitcherPopover);
+    if (open && !wasDropdownOpen && !customOptionsRenderer) {
+      focusMenuAfterOpen();
+    }
+    wasDropdownOpen = open;
+  }
+
+  function isDropdownOpen() {
+    return Boolean(dropDownStates && dropDownStates.contextSwitcherPopover);
+  }
+
+  function keyboardNavEnabled() {
+    return !customOptionsRenderer;
+  }
+
+  function focusMenuItem(which) {
+    const items = DropdownKeyboardHelpers.getMenuItems(popoverEl);
+    if (!items.length) {
+      return;
+    }
+    let index = 0;
+    if (which === 'last') {
+      index = items.length - 1;
+    } else if (which === 'selected') {
+      const selectedIndex = items.findIndex((item) => item.classList.contains('is-selected'));
+      index = selectedIndex >= 0 ? selectedIndex : 0;
+    }
+    DropdownKeyboardHelpers.applyRovingTabindex(items, index);
+  }
+
+  async function focusMenuAfterOpen() {
+    await tick();
+    focusRafId = requestAnimationFrame(() => {
+      focusRafId = undefined;
+      if (!isDropdownOpen()) {
+        return;
+      }
+      focusMenuItem(focusMenuOnOpen);
+    });
+  }
+
+  async function closeAndFocusTrigger() {
+    if (isDropdownOpen()) {
+      toggleDropdownState();
+    }
+    await tick();
+    if (triggerEl) {
+      triggerEl.focus();
+    }
+  }
+
+  function onTriggerClick(event) {
+    if (event) {
+      event.preventDefault();
+    }
+    if (!renderAsDropdown) {
+      return;
+    }
+    focusMenuOnOpen = 'selected';
+    toggleDropdownState();
+  }
+
+  function onTriggerKeydown(event) {
+    if (!keyboardNavEnabled()) {
+      const isDisabled = !renderAsDropdown || event.currentTarget.getAttribute('aria-disabled') === 'true';
+      if (isDisabled || event.repeat) {
+        if (DropdownKeyboardHelpers.isActivationKey(event)) {
+          event.preventDefault();
+        }
+        return;
+      }
+      if (DropdownKeyboardHelpers.eventKey(event) === 'Escape') {
+        if (isDropdownOpen()) {
+          event.preventDefault();
+          closeAndFocusTrigger();
+        }
+        return;
+      }
+      if (DropdownKeyboardHelpers.isActivationKey(event)) {
+        event.preventDefault();
+        toggleDropdownState();
+      }
+      return;
+    }
+    DropdownKeyboardHelpers.handleTriggerKeydown(event, {
+      isOpen: isDropdownOpen(),
+      isDisabled: !renderAsDropdown || event.currentTarget.getAttribute('aria-disabled') === 'true',
+      onToggle: (focus) => {
+        focusMenuOnOpen = focus || 'selected';
+        toggleDropdownState();
+      },
+      onFocusFirst: () => focusMenuItem('first'),
+      onFocusLast: () => focusMenuItem('last'),
+      onClose: closeAndFocusTrigger
+    });
+  }
+
+  function onPopoverKeydown(event) {
+    if (!keyboardNavEnabled()) {
+      if (DropdownKeyboardHelpers.eventKey(event) === 'Escape') {
+        event.preventDefault();
+        closeAndFocusTrigger();
+      }
+      return;
+    }
+    DropdownKeyboardHelpers.handleMenuKeydown(event, {
+      items: DropdownKeyboardHelpers.getMenuItems(event.currentTarget),
+      onEscape: closeAndFocusTrigger,
+      onActivate: (item) => item.click(),
+      onLeave: closeAndFocusTrigger
+    });
+  }
 </script>
 
 {#if contextSwitcherEnabled}
   <!-- DESKTOP VERSION (popover): -->
   {#if !isMobile}
     <div class="fd-shellbar__action fd-shellbar__action--desktop">
-      <div class="fd-popover fd-popover--right">
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="fd-popover fd-popover--right" on:click|stopPropagation={() => {}}>
         <div class="fd-popover__control" role="presentation" on:click|stopPropagation={() => {}}>
-          {#if addNavHrefForAnchor && selectedOption !== config.defaultLabel}
+          {#if addNavHrefForAnchor && selectedOption}
             <a
               href={selectedOption ? getRouteLink(selectedOption) : undefined}
               class="fd-button fd-button--transparent fd-shellbar__button fd-button--menu fd-shellbar__button--menu lui-ctx-switch-menu"
+              bind:this={triggerEl}
+              aria-controls="contextSwitcherPopover"
+              aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
-              on:click|preventDefault={() => {
-                if (renderAsDropdown) toggleDropdownState();
-              }}
-              on:keyup={(event) => {
-                if (renderAsDropdown) {
-                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
-                }
-              }}
+              on:click={onTriggerClick}
+              on:keydown={onTriggerKeydown}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
             >
@@ -232,19 +379,14 @@
           {:else}
             <button
               class="fd-button fd-button--transparent fd-button--menu fd-shellbar__button fd-shellbar__button--menu lui-ctx-switch-menu"
+              bind:this={triggerEl}
               aria-controls="contextSwitcherPopover"
               aria-expanded={dropDownStates.contextSwitcherPopover || false}
               aria-haspopup="true"
               tabindex="0"
               title={selectedLabel ? selectedLabel : config.defaultLabel}
-              on:click={() => {
-                if (renderAsDropdown) toggleDropdownState();
-              }}
-              on:keyup={(event) => {
-                if (renderAsDropdown) {
-                  (event.key === 'Enter' || event.code === 'Space') && toggleDropdownState();
-                }
-              }}
+              on:click={onTriggerClick}
+              on:keydown={onTriggerKeydown}
               aria-disabled={!renderAsDropdown}
               data-testid="luigi-contextswitcher-button"
             >
@@ -257,11 +399,15 @@
             </button>
           {/if}
         </div>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
           class="fd-popover__body fd-popover__body--right"
+          bind:this={popoverEl}
           aria-hidden={!(dropDownStates.contextSwitcherPopover || false)}
           id="contextSwitcherPopover"
           data-testid="luigi-contextswitcher-popover"
+          on:keydown={onPopoverKeydown}
         >
           <ContextSwitcherNav
             {actions}
