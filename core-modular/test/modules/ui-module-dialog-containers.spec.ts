@@ -83,6 +83,10 @@ describe('UIModule.updateMainContent - dialog containers', () => {
       handleBookmarkableModalPath: jest.fn().mockResolvedValue(true)
     };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ViewUrlDecoratorSvc) return mockViewUrlDecoratorSvc;
@@ -94,6 +98,7 @@ describe('UIModule.updateMainContent - dialog containers', () => {
 
     UIModule.modalContainer = [];
     UIModule.drawerContainer = undefined;
+    (UIModule as any).navService = mockNavigationService;
   });
 
   function createMockContainer(viewurl: string): any {

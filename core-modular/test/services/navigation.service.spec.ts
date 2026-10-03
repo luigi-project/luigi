@@ -8,12 +8,62 @@ import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { ContextSwitcherHelpers } from '../../src/utilities/helpers/context-switcher-helpers';
 
 describe('NavigationService', () => {
+  let containerWrapper: HTMLElement;
+  let activeContainer: any;
+  let mockConnector: any;
   let luigiMock: any;
   let navigationService: NavigationService;
   let mockModalService: any;
   let mockNodeDataManagementService: any;
 
+  function createMockContainer(viewurl: string): any {
+    const el = document.createElement('luigi-container') as any;
+    el.viewurl = viewurl;
+    el.updateContext = jest.fn();
+    el.updateViewUrl = jest.fn();
+    return el;
+  }
+
+  function createMockElement(className: string): any {
+    const el: any = {};
+    Object.defineProperty(el, 'classList', {
+      value: {
+        classes: new Set(),
+        add(...names) {
+          names.forEach((name) => this.classes.add(name));
+        },
+        remove(...names) {
+          names.forEach((name) => this.classes.delete(name));
+        },
+        toggle(name) {
+          if (this.classes.has(name)) {
+            this.classes.delete(name);
+            return false;
+          } else {
+            this.classes.add(name);
+            return true;
+          }
+        },
+        contains(name) {
+          return this.classes.has(name);
+        },
+        toString() {
+          return Array.from(this.classes).join(' ');
+        }
+      },
+      writable: false
+    });
+    el.classList.add(className);
+    return el;
+  }
+
   beforeEach(() => {
+    containerWrapper = document.createElement('div');
+    activeContainer = createMockContainer('/microfrontend.html');
+    containerWrapper.appendChild(activeContainer);
+    mockConnector = {
+      getContainerWrapper: jest.fn().mockReturnValue(containerWrapper)
+    };
     luigiMock = {
       getConfigValue: jest.fn(),
       getConfig: jest.fn(),
@@ -24,6 +74,9 @@ describe('NavigationService', () => {
       }),
       featureToggles: jest.fn().mockReturnValue({
         getActiveFeatureToggleList: jest.fn()
+      }),
+      getEngine: () => ({
+        _connector: mockConnector
       })
     };
     navigationService = new NavigationService(luigiMock);
@@ -1034,6 +1087,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('hashchange');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: true,
         preventHistoryEntry: false,
         withoutSync: false
@@ -1101,6 +1155,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: false,
         withoutSync: true
@@ -1144,6 +1199,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: true,
         withoutSync: false
@@ -2909,6 +2965,143 @@ describe('NavigationService', () => {
       const result = await navigationService.getTabNavData('/tabs', pathData);
 
       expect(result.headerNode!.context).toEqual({ fallback: 'node-context' });
+    });
+  });
+
+  describe('NavigationService.isValidBackRoute', () => {
+    it.each(['', 'fake-route'])('should return false when route is invalid', (route) => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute(route);
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return false when there are no preserved views', () => {
+      navigationService._preservedViews = [];
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return true when route is valid', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('NavigationService.processGoBackContext', () => {
+    it.each([undefined, {}])('should not handle dialog container when context is invalid', (ctx) => {
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(handleDialogContainerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle dialog container when context is valid', () => {
+      const ctx = { foo: 'bar' };
+      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+    });
+  });
+
+  describe('NavigationService._preservedViews', () => {
+    it('should clear preserved views', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      expect(navigationService._preservedViews.length).toEqual(1);
+      navigationService.clearPreservedViews();
+      expect(navigationService._preservedViews.length).toEqual(0);
+    });
+
+    it('should remove last preserved view', () => {
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
+
+      expect(navigationService._preservedViews.length).toEqual(2);
+      navigationService.removeLastPreservedView();
+      expect(navigationService._preservedViews.length).toEqual(1);
+    });
+
+    it('should get number of preserved views', () => {
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
+
+      const result = navigationService.getPreservedViewsLength();
+      expect(result).toEqual(2);
+    });
+  });
+
+  describe('NavigationService.handleDialogContainer', () => {
+    it('should update context in active container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const parentTwo: any = createMockElement('content');
+      const containers = [
+        { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() },
+        { context: { other: 'value' }, parentNode: parentTwo, updateContext: jest.fn() }
+      ];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).toHaveBeenCalled();
+      expect(containers[1].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(true);
+    });
+
+    it('should not update context in any container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const containers = [{ context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() }];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
     });
   });
 });

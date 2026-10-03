@@ -351,7 +351,8 @@ export const UIModule = {
     luigi: Luigi,
     luigiParams?: LuigiParams,
     withoutSync?: boolean,
-    preventContextUpdate?: boolean
+    preventContextUpdate?: boolean,
+    preserveView?: boolean
   ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
@@ -406,7 +407,12 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            viewGroupContainer = element;
+            if (preserveView) {
+              element.style.display = 'none';
+            } else {
+              element.style.display = 'block';
+              viewGroupContainer = element;
+            }
           } else if (
             !currentNode.viewGroup &&
             !currentNode.isolateView &&
@@ -414,9 +420,12 @@ export const UIModule = {
             element.viewurl &&
             (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
+            element.style.display = 'block';
             viewGroupContainer = element;
           } else {
-            if (!withoutSync) {
+            if (preserveView) {
+              element.style.display = 'none';
+            } else if (!withoutSync) {
               element.remove();
             }
           }
@@ -461,13 +470,15 @@ export const UIModule = {
           //IMPORTANT!!! This needs to be at the end
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = { ...currentNode.context, ...goBackContext };
 
           if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
-            viewGroupContainer.context = currentNode.context || {};
+            viewGroupContainer.context = newContext || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
-            viewGroupContainer.updateContext(currentNode.context || {}, { withoutSync: !!withoutSync });
-            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            viewGroupContainer.updateContext(newContext || {}, { withoutSync: !!withoutSync });
+            await handleDialogContainers(newContext || {}, !!withoutSync, luigi);
           }
         }
       } else {
@@ -479,12 +490,17 @@ export const UIModule = {
             connector?.showLoadingIndicator(containerWrapper);
           }
         } else {
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = { ...currentNode.context, ...goBackContext };
+
           if (!preventContextUpdate && currentContainer) {
-            currentContainer.updateContext(currentNode.context || {}, { withoutSync });
-            await handleDialogContainers(currentNode.context || {}, !!withoutSync, luigi);
+            currentContainer.updateContext(newContext || {}, { withoutSync });
+            await handleDialogContainers(newContext || {}, !!withoutSync, luigi);
           }
         }
       }
+
+      UIModule.navService.clearGoBackContext();
     }
   },
   openModal: async (
@@ -501,16 +517,20 @@ export const UIModule = {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     let resolved = false;
-    let resolveFn: (() => void) | undefined;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
     let onCloseRequestHandler: (() => void) | undefined;
 
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
-        resolveFn = () => {
+        resolveFn = (goBackValue?: any) => {
           if (resolved) return;
           resolved = true;
           resolve();
           modalService.removeLastModalFromStack();
+          if (goBackValue) {
+            UIModule.navService.removeLastPreservedView();
+            setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+          }
         };
 
         onCloseRequestHandler = async () => {
@@ -533,20 +553,9 @@ export const UIModule = {
           }
           const goBackContext = event?.detail || event?.payload;
           onCloseCallback?.(goBackContext);
-          resolveFn && resolveFn();
+          resolveFn && resolveFn(goBackContext);
           if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
-          }
-          if (goBackContext && Object.keys(goBackContext).length) {
-            const containerWrapper = luigi.getEngine()._connector?.getContainerWrapper();
-            if (containerWrapper) {
-              const activeContainer = [...containerWrapper.childNodes].find(
-                (el: any) => el.tagName?.indexOf('LUIGI-') === 0 && el.style?.display !== 'none'
-              ) as any;
-              if (activeContainer?.updateContext) {
-                activeContainer.updateContext({ goBackContext }, { withoutSync: false });
-              }
-            }
           }
         };
 
@@ -615,7 +624,7 @@ export const UIModule = {
     luigi: Luigi,
     node: Node,
     drawerSettings: DrawerSettings,
-    onCloseCallback?: () => void,
+    onCloseCallback?: (goBackValue?: any) => void,
     luigiParams?: LuigiParams
   ) => {
     const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
@@ -634,12 +643,16 @@ export const UIModule = {
     UIModule.drawerContainer = lc;
 
     let resolved = false;
-    let resolveFn: (() => void) | undefined;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
     const closePromise = new Promise<void>((resolve) => {
-      resolveFn = () => {
+      resolveFn = (goBackValue?: any) => {
         if (resolved) return;
         resolved = true;
         resolve();
+        if (goBackValue) {
+          UIModule.navService.removeLastPreservedView();
+          setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+        }
       };
 
       const onCloseRequestHandler = async () => {
@@ -653,7 +666,19 @@ export const UIModule = {
         resolveFn && resolveFn();
       };
 
+      const onGoBackRequestHandler = async (event: any) => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        const goBackContext = event?.detail || event?.payload;
+        onCloseCallback?.(goBackContext);
+        resolveFn && resolveFn(goBackContext);
+      };
+
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+      lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
     });
 
     luigi.getEngine()._connector?.renderDrawer(

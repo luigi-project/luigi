@@ -70,6 +70,10 @@ describe('UIModule - iframeCreationInterceptor', () => {
     const mockViewUrlDecoratorSvc = { applyDecorators: jest.fn().mockImplementation((url: string) => url) };
     const mockModalService = { registerModal: jest.fn(), getModalSettings: jest.fn().mockReturnValue({}) };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ViewUrlDecoratorSvc) return mockViewUrlDecoratorSvc;
@@ -80,6 +84,7 @@ describe('UIModule - iframeCreationInterceptor', () => {
 
     UIModule.modalContainer = [];
     UIModule.drawerContainer = undefined;
+    (UIModule as any).navService = mockNavigationService;
   });
 
   it('should set iframeCreationInterceptor on container when configured', async () => {
