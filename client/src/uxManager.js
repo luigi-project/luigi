@@ -284,7 +284,7 @@ class UxManager extends LuigiClientBase {
    * When `true`, a micro frontend should forward its F6 / Shift+F6 keydown events to Luigi Core so that focus can move out of the iframe to the next / previous page group.
    * @returns {boolean} whether F6 fast navigation is enabled
    * @memberof uxManager
-   * @since NEXTRELEASE
+   * @since 2.32.0
    * @example LuigiClient.uxManager().isF6NavigationEnabled();
    */
   isF6NavigationEnabled() {
@@ -296,7 +296,7 @@ class UxManager extends LuigiClientBase {
    * While focus is inside the iframe, the F6 keydown fires in the micro frontend's own document and never reaches Luigi Core; calling this method bridges those events. Forwarding only takes effect while core has fast navigation enabled (see {@link #isF6NavigationEnabled isF6NavigationEnabled()}), so it is safe to call unconditionally.
    * @returns {function} a cleanup function that stops forwarding when called, e.g. on micro frontend teardown
    * @memberof uxManager
-   * @since NEXTRELEASE
+   * @since 2.32.0
    * @example
    * const stopF6Forwarding = LuigiClient.uxManager().enableF6NavigationForwarding();
    * // later, e.g. on teardown:

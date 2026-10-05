@@ -1335,4 +1335,4 @@ The global search is an input field available in the top navigation bar. The sea
 ### style
 - **type**: string
 - **description**: selects the visual layout of the global search field. When set to `'vega'`, the magnifier icon is rendered inside the search input pill (along with a clear-input button), matching the Fundamental Styles shellbar reference. The outside toggle button is hidden while the field is expanded so the pill visually wraps around it. Any other value (or omitting the property) keeps the original two-button layout where the magnifier sits outside the input as a separate toggle. When `'vega'` is active, you can implement `searchProvider.onSearchBtnClick` to handle clicks on the in-pill magnifier; if not provided, it falls back to `searchProvider.onEnter`.
-- **since**: NEXTRELEASE
+- **since**: 2.32.0
