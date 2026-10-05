@@ -255,12 +255,12 @@
         <div id="editor" class="lui-mobile-hide"></div>
         <textarea id="editorTA" class="lui-mobile-show"></textarea>
       </div>
-      <footer class="fd-dialog__footer fd-bar fd-bar--footer">
-        <div class="fd-bar__right">
+      <footer class="fd-dialog__footer fd-bar fd-bar--footer fiddle-toolbar">
+        <div class="fd-bar__right fd-action-bar__actions">
 
           <div class="fd-bar__element">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle"
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
               onclick={togglePresets}
               >Select Presets
               {#if showPresets}
@@ -277,23 +277,23 @@
 
           <div class="fd-bar__element">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact btn-primary"
               onclick={resetConfig}>Reset</button
             >
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}>Cancel</button
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}>Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfig}>Apply</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-show">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfigTA}>Apply</button
             >
           </div>
@@ -441,6 +441,15 @@
     z-index: -1;
   }
 
+  .editor_container .fd-dialog__content {
+    border: 1px solid lightgray;
+  }
+
+  .editor_container .fd-dialog__header {
+    background: #3c4553;
+    --sapTextColor: white;
+  }
+
   :global(body.lui-v1_0) .editor_container .fd-dialog__content {
     background: white;
     padding: 0.5rem;
@@ -575,6 +584,8 @@
   .editor_container .fd-dialog__footer {
     position: relative;
     z-index: 10;
+    display: flex;
+    align-items: center;
   }
 
   .lui-preset-chooser .fd-link {
@@ -585,7 +596,7 @@
   .editor_container .lui-preset-chooser .fd-link {
     color: #2deb8a;
     text-shadow: none;
-    margin: 0;
+    margin: 5px;
   }
 
   .lui-preset-chooser .fd-link:hover {
