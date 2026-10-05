@@ -257,7 +257,6 @@
       </div>
       <footer class="fd-dialog__footer fd-bar fd-bar--footer fiddle-toolbar">
         <div class="fd-bar__right fd-action-bar__actions">
-
           <div class="fd-bar__element">
             <button
               class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
@@ -282,7 +281,8 @@
             >
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}>Cancel</button
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}
+              >Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
@@ -548,7 +548,7 @@
   }
 
   .lui-version-chooser,
-  .lui-preset-chooser{
+  .lui-preset-chooser {
     position: absolute;
     bottom: 2rem;
     max-width: 300px;
