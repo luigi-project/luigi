@@ -347,14 +347,8 @@ function renderNodeOrCategory(item, leftNavData) {
       if (item.href) el.setAttribute('href', item.href);
     }
     if (item.node?.statusBadge?.label) {
-      const typeMap = {
-        critical: 'Critical',
-        informative: 'Information',
-        negative: 'Negative',
-        positive: 'Positive'
-      }
       const badge = document.createElement('ui5-tag');
-      badge.setAttribute('design', item.node.statusBadge.type ? typeMap[item.node.statusBadge.type] : 'Neutral');
+      badge.setAttribute('design', item.node.statusBadge.type);
       badge.setAttribute('hide-state-icon', true);
       badge.setAttribute('slot', 'tag');
       badge.textContent = item.node.statusBadge.label;
