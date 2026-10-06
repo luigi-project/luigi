@@ -168,6 +168,9 @@ export class Navigation {
     if (settings.overlap === undefined) {
       settings.overlap = true;
     }
+    if (!settings.size) {
+      settings.size = 's';
+    }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     this.luigi
       .getEngine()
