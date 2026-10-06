@@ -7,11 +7,11 @@
     "dev": "node patch.js && node build_patch_ui5.js && concurrently -k \"webpack --watch\" \"node ../../scripts/tools/simple-server/cli.mjs public --port 3000 --proxy /luigi-cdn=https://www.unpkg.com/@luigi-project\""
   },
   "dependencies": {
-    "@luigi-project/client": "^2.31.0",
-    "@luigi-project/container": "^1.7.7",
-    "@luigi-project/core": "^2.31.0",
-    "@luigi-project/plugin-auth-oauth2": "^2.31.0",
-    "@luigi-project/plugin-auth-oidc": "^2.31.0",
+    "@luigi-project/client": "^2.32.0",
+    "@luigi-project/container": "^1.7.8",
+    "@luigi-project/core": "^2.32.0",
+    "@luigi-project/plugin-auth-oauth2": "^2.32.0",
+    "@luigi-project/plugin-auth-oidc": "^2.32.0",
     "@luigi-project/plugin-auth-oidc-pkce": "^0.42.0",
     "@ui5/webcomponents": "2.20.1",
     "@ui5/webcomponents-fiori": "2.20.1",
