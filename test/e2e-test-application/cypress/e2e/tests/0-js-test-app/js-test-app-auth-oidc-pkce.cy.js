@@ -24,6 +24,14 @@ import { OIDC_MOCK, installOidcPkceIntercepts, buildOidcPkceAuthConfig } from '.
 describe('JS-TEST-APP auth-oidc-pkce', () => {
   const AUTH_KEY = 'luigi.auth';
 
+  // The FIRST intercepted request of each test is gated on a cold app boot: page load, the
+  // synchronous `luigi.js`, Luigi initialization, our `setConfig`, then the plugin's auto-login
+  // redirect to `/authorize`. On a loaded CI machine that chain can exceed Cypress's default 5s
+  // `cy.wait` timeout, which surfaces as "No request ever occurred" on the first wait of every
+  // test (the reported flake). Give that first wait plenty of headroom; later waits keep the
+  // default since by then the app is warm.
+  const FIRST_REQUEST_TIMEOUT = { timeout: 30000 };
+
   const baseConfig = (win, authOverrides = {}, authRootOverrides = {}) => {
     const auth = buildOidcPkceAuthConfig(win);
     Object.assign(auth.openIdConnect, authOverrides);
@@ -60,9 +68,23 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
         return false;
       };
       if (trySetConfig()) return;
-      win.document.addEventListener('readystatechange', trySetConfig);
-      win.addEventListener('DOMContentLoaded', trySetConfig);
-      win.addEventListener('load', trySetConfig);
+
+      // `luigi.js` is a synchronous <script> at the end of <body>, so `win.Luigi` appears at
+      // some point AFTER this `window:before:load` handler runs. The previous implementation
+      // only listened for `readystatechange`/`DOMContentLoaded`/`load` — but if `win.Luigi` is
+      // assigned while `document.readyState` is already `interactive`/`complete` (common on
+      // fast or cached loads, and on the redirect-driven callback load), none of those events
+      // fire again and the config is never applied. The plugin then never auto-logs-in, so
+      // `/authorize` is never requested and every `cy.wait('@oidc...')` times out with
+      // "No request ever occurred" — the exact CI flake. Poll on a short interval instead so
+      // we catch `win.Luigi` no matter when it becomes available; the interval is cleared as
+      // soon as the config is applied or the window is torn down.
+      const poll = win.setInterval(() => {
+        if (trySetConfig()) {
+          win.clearInterval(poll);
+        }
+      }, 20);
+      win.addEventListener('unload', () => win.clearInterval(poll));
     };
     loadHandlers.push(handler);
     Cypress.on('window:before:load', handler);
@@ -85,7 +107,7 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     applyConfigOnEveryLoad();
     cy.visit(`${OIDC_MOCK.redirectUri}`);
 
-    cy.wait('@oidcAuthorize');
+    cy.wait('@oidcAuthorize', FIRST_REQUEST_TIMEOUT);
     cy.wait('@oidcToken');
 
     // Tokens are persisted under localStorage['luigi.auth'] by the plugin's `userLoaded`
@@ -107,7 +129,7 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     applyConfigOnEveryLoad();
     cy.visit(`${OIDC_MOCK.redirectUri}#/home`);
 
-    cy.wait('@oidcAuthorize').then((interception) => {
+    cy.wait('@oidcAuthorize', FIRST_REQUEST_TIMEOUT).then((interception) => {
       // oidc-client-ts round-trips the caller-supplied state; the plugin set it to the href
       // captured at login time, so the deep path is present in what the IdP receives back.
       const state = new URL(interception.request.url).searchParams.get('state') || '';
@@ -129,7 +151,7 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
     const authRoot = { disableAutoLogin: false };
     applyConfigOnEveryLoad({}, authRoot);
     cy.visit(`${OIDC_MOCK.redirectUri}`);
-    cy.wait('@oidcToken');
+    cy.wait('@oidcToken', FIRST_REQUEST_TIMEOUT);
     cy.window().its('localStorage').invoke('getItem', AUTH_KEY).should('not.be.null');
 
     // Wait until the authenticated shell has rendered before logging out. `logout()` reads
@@ -176,7 +198,7 @@ describe('JS-TEST-APP auth-oidc-pkce', () => {
 
     // Consume the interactive /authorize (no prompt) from the initial auto-login so the next
     // `@oidcAuthorize` we wait on is unambiguously the silent-renew one.
-    cy.wait('@oidcAuthorize').then((interception) => {
+    cy.wait('@oidcAuthorize', FIRST_REQUEST_TIMEOUT).then((interception) => {
       expect(new URL(interception.request.url).searchParams.get('prompt'), 'initial login is interactive').to.not.eq(
         'none'
       );
