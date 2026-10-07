@@ -353,6 +353,8 @@ function renderNodeOrCategory(item, leftNavData) {
       badge.setAttribute('slot', 'tag');
       badge.textContent = item.node.statusBadge.label;
       el.appendChild(badge);
+      el.setAttribute('text', `${item.label} [${item.node.statusBadge.label}]`);
+      el.setAttribute('tooltip', `${item.tooltip} [${item.node.statusBadge.label}]`);
     }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
