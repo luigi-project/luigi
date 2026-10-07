@@ -9,3 +9,7 @@ reason = "False positive: terser-webpack-plugin uses serialize-javascript only f
 [[IgnoredVulns]]
 id = "GHSA-mh99-v99m-4gvg"
 reason = "brace-expansion is a dev-only transitive dep (via globby, test-exclude) used to expand glob patterns supplied by our own configs, not untrusted input. The 1.x and 2.x branches have no backport yet as of this writing; @luigi-project/client ships from client/public/ with zero runtime dependencies so end users never receive brace-expansion. Revisit when 1.1.17 / 2.1.3 are published."
+
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+reason = "braces is a dev-only transitive dep (via micromatch, under fast-glob/globby, rollup-plugin-copy) used to expand glob patterns supplied by our own build/test configs, not untrusted input. The vulnerability is a stack-exhaustion DoS requiring attacker-controlled deeply-nested brace patterns, which never reach these code paths. braces 3.0.3 is the latest published version with no fix available yet; @luigi-project/client ships from client/public/ with zero runtime dependencies so end users never receive braces. Revisit when a patched braces (>3.0.3) is released."
