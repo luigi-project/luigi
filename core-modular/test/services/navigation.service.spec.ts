@@ -3104,4 +3104,68 @@ describe('NavigationService', () => {
       expect(result).toEqual(false);
     });
   });
+
+  describe('NavigationService.handleGoBackRequest', () => {
+    const flushPromises = () => new Promise(process.nextTick);
+
+    it('should handle goBack request and trigger navigation when preserved view is stored', async () => {
+      const ctx = { foo: 'bar' };
+      const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
+      const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
+      const handleNavigationRequestSpy = jest.spyOn(navigationService, 'handleNavigationRequest').mockResolvedValue(true);
+
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+      navigationService.handleGoBackRequest(ctx);
+
+      expect.assertions(3);
+      expect(clearGoBackContextSpy).toHaveBeenCalled();
+      await flushPromises();
+      expect(prepareGoBackContextForNavigationSpy).toHaveBeenCalledWith(ctx);
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith({
+        path: '/current-route',
+        withoutSync: false
+      });
+    });
+
+    it('should handle goBack request and not trigger navigation when preserved view is not stored', async () => {
+      const ctx = { foo: 'bar' };
+      const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
+      const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
+      const handleNavigationRequestSpy = jest.spyOn(navigationService, 'handleNavigationRequest').mockResolvedValue(true);
+
+      jest.spyOn(navigationService, 'getPreservedViewsLength').mockReturnValue(0);
+      navigationService.handleGoBackRequest(ctx);
+
+      expect.assertions(3);
+      expect(clearGoBackContextSpy).toHaveBeenCalled();
+      await flushPromises();
+      expect(prepareGoBackContextForNavigationSpy).not.toHaveBeenCalled();
+      expect(handleNavigationRequestSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('NavigationService.prepareGoBackContextForNavigation', () => {
+    it('should update local "go-back" context when it is valid', () => {
+      const ctx = { foo: 'bar' };
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      (navigationService as any).prepareGoBackContextForNavigation(ctx);
+
+      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+      expect((navigationService as any).goBackContext).toEqual({ goBackContext: ctx });
+    });
+
+    it.each([{}, undefined])('should not update local "go-back" context when it is invalid', (ctx) => {
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      (navigationService as any).prepareGoBackContextForNavigation(ctx);
+
+      expect(handleDialogContainerSpy).not.toHaveBeenCalled();
+      expect((navigationService as any).goBackContext).toEqual(null);
+    });
+  });
 });

@@ -77,12 +77,19 @@ export class NavigationService {
       const activeContainer: any = dialogContainers.at(-1);
 
       if (activeContainer?.updateContext) {
-        activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+        activeContainer.updateContext({ ...activeContainer.context, goBackContext }, { withoutSync: false });
       }
 
       return true;
     } else {
       return false;
+    }
+  }
+
+  private prepareGoBackContextForNavigation(goBackContext: any): void {
+    if (goBackContext && Object.keys(goBackContext).length) {
+      this.handleDialogContainer(goBackContext);
+      this.goBackContext = { goBackContext };
     }
   }
 
@@ -135,7 +142,7 @@ export class NavigationService {
         const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
 
         if (activeContainer?.updateContext) {
-          activeContainer.updateContext({ goBackContext }, { withoutSync: false });
+          activeContainer.updateContext({ ...activeContainer.context, goBackContext }, { withoutSync: false });
         }
       }
     }
@@ -149,16 +156,9 @@ export class NavigationService {
 
       dirtyStatusService.getUnsavedChangesModalPromise().then(
         () => {
-          const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
-          const activeContainer = containerWrapper
-            ? [...containerWrapper.childNodes].find(
-                (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
-              )
-            : undefined;
           const previousActiveViewData = this._preservedViews.pop();
 
-          activeContainer?.remove();
-          this.processGoBackContext(goBackContext);
+          this.prepareGoBackContextForNavigation(goBackContext);
 
           if (previousActiveViewData?.path) {
             this.handleNavigationRequest({

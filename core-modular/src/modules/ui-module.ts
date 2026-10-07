@@ -374,6 +374,7 @@ export const UIModule = {
         currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
       }
 
+      const hasBackContext = !!UIModule.navService.getGoBackContext();
       const resolvedViewUrl = currentNode.viewUrl
         ? serviceRegistry
             .get(ViewUrlDecoratorSvc)
@@ -407,9 +408,11 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            if (preserveView) {
+            if (preserveView || (element as any)._luigiPreserved) {
+              (element as any)._luigiPreserved = !hasBackContext;
               element.style.display = 'none';
             } else {
+              (element as any)._luigiPreserved = hasBackContext;
               element.style.display = 'block';
               viewGroupContainer = element;
             }
@@ -420,12 +423,14 @@ export const UIModule = {
             element.viewurl &&
             (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
+            (element as any)._luigiPreserved = false;
             element.style.display = 'block';
             viewGroupContainer = element;
           } else {
             if (preserveView) {
+              (element as any)._luigiPreserved = true;
               element.style.display = 'none';
-            } else if (!withoutSync) {
+            } else if (!withoutSync && !(element as any)._luigiPreserved) {
               element.remove();
             }
           }
@@ -497,6 +502,16 @@ export const UIModule = {
             currentContainer.updateContext(newContext || {}, { withoutSync });
             await handleDialogContainers(newContext || {}, !!withoutSync, luigi);
           }
+        }
+      }
+
+      const allChildNodes = [...containerWrapper.childNodes];
+
+      if (hasBackContext && !UIModule.navService.getPreservedViewsLength() && allChildNodes.length > 1) {
+        const lastItem: any = allChildNodes.at(-1);
+
+        if (lastItem && lastItem.style.display === 'none') {
+          lastItem.remove();
         }
       }
 

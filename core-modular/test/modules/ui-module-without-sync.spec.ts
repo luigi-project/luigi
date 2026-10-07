@@ -60,6 +60,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     const mockNavigationService = {
       clearGoBackContext: jest.fn(),
+      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
       getGoBackContext: jest.fn().mockResolvedValue(null)
     };
 
@@ -83,6 +84,19 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     expect(containerWrapper.contains(existingContainer)).toBe(true);
     expect(existingContainer.style.display).toBe('block');
+  });
+
+  it('should not preserve existing container when withoutSync is true, viewUrls differ and preserveView is set', async () => {
+    const currentNode = {
+      label: 'Target',
+      viewUrl: 'https://example.com/different-mfe.html'
+    };
+
+    await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(true);
+    expect(existingContainer.style.display).toBe('none');
+    expect((existingContainer as any)._luigiPreserved).toBe(false);
   });
 
   it('should not update viewurl property when withoutSync is true', async () => {

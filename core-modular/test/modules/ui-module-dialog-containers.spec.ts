@@ -85,6 +85,7 @@ describe('UIModule.updateMainContent - dialog containers', () => {
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
     const mockNavigationService = {
       clearGoBackContext: jest.fn(),
+      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
       getGoBackContext: jest.fn().mockResolvedValue(null)
     };
 
