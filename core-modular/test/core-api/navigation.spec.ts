@@ -144,7 +144,7 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label', size: 'l' },
+        { title: 'Node Label', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -159,7 +159,7 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Modal Title', size: 'l' },
+        { title: 'Modal Title', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -174,7 +174,39 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Modal Title', size: 'm' },
+        { title: 'Modal Title', size: 'm', closebtn_data_testid: 'lui-modal-index-0' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should set closebtn_data_testid based on current modal stack length', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      // simulate one modal already open in the stack
+      modalServiceMock.getModalStackLength.mockReturnValue(1);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', keepPrevious: true });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', keepPrevious: true, size: 'l', closebtn_data_testid: 'lui-modal-index-1' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should not override closebtn_data_testid if provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', closebtn_data_testid: 'my-custom-testid' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'l', closebtn_data_testid: 'my-custom-testid' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -201,7 +233,11 @@ describe('Navigation', () => {
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title', size: 'l' });
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', {
+        title: 'Modal Title',
+        size: 'l',
+        closebtn_data_testid: 'lui-modal-index-0'
+      });
     });
     it('should append nodeParams to modal path in URL', async () => {
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
@@ -218,7 +254,8 @@ describe('Navigation', () => {
 
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', {
         title: 'Modal Title',
-        size: 'l'
+        size: 'l',
+        closebtn_data_testid: 'lui-modal-index-0'
       });
     });
   });

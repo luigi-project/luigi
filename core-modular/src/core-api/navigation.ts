@@ -125,6 +125,9 @@ export class Navigation {
     if (!settings.size) {
       settings.size = 'l';
     }
+    if (!settings.closebtn_data_testid) {
+      settings.closebtn_data_testid = `lui-modal-index-${this.modalService.getModalStackLength()}`;
+    }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
     if (nodeParams && Object.keys(nodeParams).length > 0) {
