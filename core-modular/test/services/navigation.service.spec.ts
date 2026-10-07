@@ -3112,7 +3112,9 @@ describe('NavigationService', () => {
       const ctx = { foo: 'bar' };
       const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
       const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
-      const handleNavigationRequestSpy = jest.spyOn(navigationService, 'handleNavigationRequest').mockResolvedValue(true);
+      const handleNavigationRequestSpy = jest
+        .spyOn(navigationService, 'handleNavigationRequest')
+        .mockResolvedValue(true);
 
       navigationService._preservedViews.push({
         context: {},
@@ -3135,7 +3137,9 @@ describe('NavigationService', () => {
       const ctx = { foo: 'bar' };
       const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
       const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
-      const handleNavigationRequestSpy = jest.spyOn(navigationService, 'handleNavigationRequest').mockResolvedValue(true);
+      const handleNavigationRequestSpy = jest
+        .spyOn(navigationService, 'handleNavigationRequest')
+        .mockResolvedValue(true);
 
       jest.spyOn(navigationService, 'getPreservedViewsLength').mockReturnValue(0);
       navigationService.handleGoBackRequest(ctx);
