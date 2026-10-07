@@ -456,13 +456,11 @@ export const UIModule = {
           viewGroupContainer.pathParams = pathParams;
           viewGroupContainer.searchParams = searchParams;
         }
-
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          const hashChanged =
-            GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+          const viewUrlChanged = !!previousViewUrl && !!resolvedViewUrl && previousViewUrl !== resolvedViewUrl;
 
-          if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
+          if (viewUrlChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {

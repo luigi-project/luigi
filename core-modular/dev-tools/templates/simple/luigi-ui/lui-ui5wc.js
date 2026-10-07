@@ -918,6 +918,7 @@ const connector = {
       sidenav._leftNavData = leftNavData;
       if (!sidenav._selectionChangeListener) {
         sidenav._selectionChangeListener = true;
+        // Normal navigation goes through UI5's `selection-change`.
         sidenav.addEventListener('selection-change', async (event) => {
           event.preventDefault();
           const selectedItem = event.detail.item;
@@ -929,17 +930,25 @@ const connector = {
             // navigation was cancelled (e.g. unsaved changes dismissed)
           }
         });
-        // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
-        // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
-        sidenav.addEventListener(
-          'click',
-          (event) => {
-            if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
-              event.preventDefault();
-            }
-          },
-          true
-        );
+        // UI5's `selection-change` only fires when the selection actually changes, so a re-click on
+        // the already-selected item is silent.
+        sidenav.addEventListener('click', (event) => {
+          const detail = event.detail || {};
+          if (detail.ctrlKey || detail.metaKey || detail.shiftKey) return;
+          const navItemEl = event
+            .composedPath()
+            .find(
+              (el) =>
+                el.nodeType === 1 &&
+                (el.localName === 'ui5-side-navigation-item' || el.localName === 'ui5-side-navigation-sub-item') &&
+                el._luigiItem
+            );
+          const luigiItem = navItemEl?._luigiItem;
+          if (!luigiItem || !luigiItem.selected || luigiItem.externalLink?.url) return;
+          Promise.resolve(sidenav._leftNavData.navClick(luigiItem)).catch(() => {
+            // navigation was cancelled (e.g. unsaved changes dismissed)
+          });
+        });
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
