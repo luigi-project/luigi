@@ -43,7 +43,9 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "overrides_comment": "postcss-selector-parser forced to ^7.1.6 to fix GHSA-rj75-hqrm-r3gf (CPU exhaustion). The cssnano 5.x chain via the unmaintained rollup-plugin-postcss@4.0.2 pins it at ^6; 7.x is a drop-in (same parser API, same engines). Remove when migrated off rollup-plugin-postcss.",
   "overrides": {
-    "js-yaml": "^4.2.0"
+    "js-yaml": "^4.2.0",
+    "postcss-selector-parser": "^7.1.6"
   }
 }
