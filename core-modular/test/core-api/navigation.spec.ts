@@ -144,7 +144,37 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label' },
+        { title: 'Node Label', size: 'l' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should set default modal size to "l" if not provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'l' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should not override modal size if provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', size: 'm' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'm' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -171,7 +201,7 @@ describe('Navigation', () => {
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title', size: 'l' });
     });
     it('should append nodeParams to modal path in URL', async () => {
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
@@ -186,7 +216,10 @@ describe('Navigation', () => {
 
       await navigation.openAsModal('/modal/path', { title: 'Modal Title', nodeParams: { test: 'true', foo: 'bar' } });
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', { title: 'Modal Title' });
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', {
+        title: 'Modal Title',
+        size: 'l'
+      });
     });
   });
 
@@ -201,7 +234,40 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { header: { title: 'Node Label' }, overlap: true },
+        { header: { title: 'Node Label' }, overlap: true, size: 's' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+
+    it('should set default drawer size to "s" if not provided', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsDrawer('/drawer/path', { header: { title: 'Custom Drawer Title' } });
+
+      expect(openDrawerSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { header: { title: 'Custom Drawer Title' }, overlap: true, size: 's' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+
+    it('should not override drawer size if provided', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' }, size: 'm' };
+
+      await navigation.openAsDrawer('/drawer/path', drawerSettings);
+
+      expect(openDrawerSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { header: { title: 'Custom Drawer Title' }, overlap: true, size: 'm' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );

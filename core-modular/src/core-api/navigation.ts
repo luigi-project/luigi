@@ -122,6 +122,9 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node?.label;
     }
+    if (!settings.size) {
+      settings.size = 'l';
+    }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
     if (nodeParams && Object.keys(nodeParams).length > 0) {
