@@ -88,9 +88,9 @@
     const presetId = new URLSearchParams(window.location.search).get('preset');
     if (presetId) {
       loadPreset(presetId);
+      removePresetParam();
       return;
     }
-
     let customConfig = sessionStorage.getItem('fiddle');
     let customConfigPreviousSession = localStorage.getItem('fiddle');
 
@@ -116,6 +116,14 @@
       exec(defaultConfigString);
       configString = defaultConfigString;
     }
+  }
+
+  // Removes ?preset=<id> from the address bar without reloading the page.
+  // Other query params and the hash route (#/...) are kept.
+  function removePresetParam() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('preset');
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   }
 
   // Loads a bundled preset by id. Unknown ids and presets that fail to load fall back to the default config.
