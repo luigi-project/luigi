@@ -8,9 +8,9 @@ import globalSearchPreset from './globalSearchPreset.js';
 
 export default [
     { id: 'defaultConfig', label: 'Default Config', config: defaultConfig },
-    { id: 'basicNavigation', label: 'Basic Navigation Preset', config: basicNavigation },
-    { id: 'userSettingsPreset', label: 'Settings Preset', config: userSettingsPreset },
-    { id: 'viewGroupPreset', label: 'View Group Preset', config: viewGroupPreset },
-    { id: 'compoundPreset', label: 'Compound Container Preset', config: compoundPreset },
-    { id: 'globalSearchPreset', label: 'Global Search Preset', config: globalSearchPreset }
+    { id: 'basicNavigation', label: 'Basic Navigation', config: basicNavigation },
+    { id: 'userSettings', label: 'Settings', config: userSettingsPreset },
+    { id: 'viewGroup', label: 'View Group', config: viewGroupPreset },
+    { id: 'compound', label: 'Compound Container', config: compoundPreset },
+    { id: 'globalSearch', label: 'Global Search', config: globalSearchPreset }
 ];
