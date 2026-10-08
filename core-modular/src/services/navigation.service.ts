@@ -1165,7 +1165,7 @@ export class NavigationService {
       GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)
     ) {
       const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
-      if (containerWrapper) {
+      if (containerWrapper?.childNodes) {
         const activeContainer = [...containerWrapper.childNodes].find(
           (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
         ) as HTMLElement | undefined;
