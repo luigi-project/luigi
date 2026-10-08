@@ -140,6 +140,8 @@ export interface BadgeCounter {
   label?: string;
 }
 
+export type StatusBadgeType = 'critical' | 'informative' | 'negative' | 'neutral' | 'positive';
+
 export interface Node {
   altText?: string;
   anonymousAccess?: any;
@@ -174,6 +176,11 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
+  statusBadge?: {
+    align: 'left' | 'right';
+    label: string;
+    type: StatusBadgeType;
+  };
   tabNav?: boolean | TabNavConfig;
   titleResolver?: TitleResolver;
   tooltipText?: string;
