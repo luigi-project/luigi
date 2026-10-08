@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from 'svelte';
 
   import luigiCorePkgInfo from '../node_modules/@luigi-project/core/package.json';
-  import defaultConfig from './defaultConfig.js';
+  import defaultConfig from './presets/defaultConfig.js';
+  import presets from './presets/index.js';
 
   let {
     luigiVersion = $bindable(luigiCorePkgInfo.version),
@@ -13,6 +14,7 @@
 
   let defaultConfigString = defaultConfig;
   let configString = defaultConfigString;
+  let showPresets = $state(false);
 
   function exec(jsString) {
     return eval(jsString);
@@ -20,6 +22,7 @@
 
   function closeDropdowns() {
     showVersions = false;
+    showPresets = false;
   }
 
   async function injectLuigiAssets() {
@@ -76,11 +79,20 @@
   }
 
   function reloadConfig() {
-    let customConfig = sessionStorage.getItem('fiddle');
-    let customConfigPreviousSession = localStorage.getItem('fiddle');
-
     // init keyboard events
     initKeyboardEvents();
+
+    // deep-link support: ?preset=<id> loads a bundled preset;
+    // unknown ids fall back to default
+    // example: http://localhost:3000/?preset=basicNavigation
+    const presetId = new URLSearchParams(window.location.search).get('preset');
+    if (presetId) {
+      loadPreset(presetId);
+      removePresetParam();
+      return;
+    }
+    let customConfig = sessionStorage.getItem('fiddle');
+    let customConfigPreviousSession = localStorage.getItem('fiddle');
 
     // check if config saved from a previous session
     if (!customConfig && customConfigPreviousSession) {
@@ -101,6 +113,33 @@
     } catch (e) {
       console.error(e);
       sessionStorage.removeItem('fiddle');
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+    }
+  }
+
+  // Removes ?preset=<id> from the address bar without reloading the page.
+  // Other query params and the hash route (#/...) are kept.
+  function removePresetParam() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('preset');
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  }
+
+  // Loads a bundled preset by id. Unknown ids and presets that fail to load fall back to the default config.
+  function loadPreset(presetId) {
+    const preset = presets.find((p) => p.id === presetId);
+    if (!preset) {
+      console.warn(`[fiddle] Unknown preset "${presetId}", falling back to the default config.`);
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+      return;
+    }
+    try {
+      exec(preset.config);
+      configString = preset.config;
+    } catch (e) {
+      console.error(`[fiddle] Preset "${presetId}" failed to load, falling back to the default config.`, e);
       exec(defaultConfigString);
       configString = defaultConfigString;
     }
@@ -144,6 +183,20 @@
     window.editorTA.textContent = configString;
     window.editor.clearSelection();
     document.body.classList.add('editorVisible');
+  }
+
+  function togglePresets(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    showPresets = !showPresets;
+  }
+
+  function applyPreset(config) {
+    // load the preset into the editor (same as resetConfig, but with the preset string)
+    // the real apply happens when the user clicks "Apply" (saveConfig)
+    window.editor.setValue(config);
+    window.editorTA.textContent = config;
+    window.editor.clearSelection();
   }
 
   function hide() {
@@ -210,27 +263,45 @@
         <div id="editor" class="lui-mobile-hide"></div>
         <textarea id="editorTA" class="lui-mobile-show"></textarea>
       </div>
-      <footer class="fd-dialog__footer fd-bar fd-bar--footer">
-        <div class="fd-bar__right">
+      <footer class="fd-dialog__footer fd-bar fd-bar--footer fiddle-toolbar">
+        <div class="fd-bar__right fd-action-bar__actions">
           <div class="fd-bar__element">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
+              onclick={togglePresets}
+              >Select Presets
+              {#if showPresets}
+                <div class="lui-preset-chooser">
+                  {#each presets as preset}
+                    <a class="fd-link" href="#top" onclick={() => applyPreset(preset.config)}>
+                      {preset.label}
+                    </a><br />
+                  {/each}
+                </div>
+              {/if}
+            </button>
+          </div>
+
+          <div class="fd-bar__element">
+            <button
+              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact btn-primary"
               onclick={resetConfig}>Reset</button
             >
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}>Cancel</button
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}
+              >Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfig}>Apply</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-show">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfigTA}>Apply</button
             >
           </div>
@@ -369,9 +440,22 @@
     text-shadow: none;
   }
 
+  .fiddle-toolbar .fd-link:hover {
+    color: #76ffb6;
+  }
+
   .editor_container {
     visibility: hidden;
     z-index: -1;
+  }
+
+  .editor_container .fd-dialog__content {
+    border: 1px solid lightgray;
+  }
+
+  .editor_container .fd-dialog__header {
+    background: #3c4553;
+    --sapTextColor: white;
   }
 
   :global(body.lui-v1_0) .editor_container .fd-dialog__content {
@@ -471,7 +555,8 @@
     }
   }
 
-  .lui-version-chooser {
+  .lui-version-chooser,
+  .lui-preset-chooser {
     position: absolute;
     bottom: 2rem;
     max-width: 300px;
@@ -490,6 +575,40 @@
     a {
       white-space: nowrap;
     }
+  }
+
+  .editor_container .preset-toggle {
+    position: relative;
+    overflow: visible;
+  }
+
+  .editor_container .fd-dialog__footer,
+  .editor_container .fd-dialog__footer .fd-bar__right,
+  .editor_container .fd-dialog__footer .fd-bar__element {
+    overflow: visible;
+  }
+
+  /* needed so that the presets sit above the horizontal scrollbar */
+  .editor_container .fd-dialog__footer {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+  }
+
+  .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+  }
+
+  .editor_container .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+    margin: 5px;
+  }
+
+  .lui-preset-chooser .fd-link:hover {
+    color: #76ffb6;
   }
 
   .fiddle_spinner {
