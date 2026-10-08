@@ -403,7 +403,10 @@ export const UIModule = {
         } else {
           if (
             withoutSync ||
-            element.viewGroup ||
+            (element.viewGroup &&
+              (!element.viewurl ||
+                !resolvedViewUrl ||
+                NavigationHelpers.getUrlOrigin(element.viewurl) === NavigationHelpers.getUrlOrigin(resolvedViewUrl))) ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
             viewGroupContainer = element;
@@ -458,9 +461,9 @@ export const UIModule = {
         }
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          const viewUrlChanged = !!previousViewUrl && !!resolvedViewUrl && previousViewUrl !== resolvedViewUrl;
-
-          if (viewUrlChanged && !viewGroupContainer.virtualTree && !withoutSync) {
+          const hashChanged =
+            GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+          if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
