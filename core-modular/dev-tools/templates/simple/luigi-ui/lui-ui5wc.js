@@ -346,6 +346,16 @@ function renderNodeOrCategory(item, leftNavData) {
       el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
       if (item.href) el.setAttribute('href', item.href);
     }
+    if (item.node?.statusBadge?.label) {
+      const badge = document.createElement('ui5-tag');
+      badge.setAttribute('design', item.node.statusBadge.type);
+      badge.setAttribute('hide-state-icon', true);
+      badge.setAttribute('slot', 'tag');
+      badge.textContent = item.node.statusBadge.label;
+      el.appendChild(badge);
+      el.setAttribute('text', `${item.label} [${item.node.statusBadge.label}]`);
+      el.setAttribute('tooltip', `${item.tooltip} [${item.node.statusBadge.label}]`);
+    }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
     frag.appendChild(el);
