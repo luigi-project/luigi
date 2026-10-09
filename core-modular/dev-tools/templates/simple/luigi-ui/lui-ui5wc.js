@@ -1033,6 +1033,7 @@ const connector = {
 
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
+    btn.setAttribute('data-testid', modalSettings.closebtn_data_testid || 'lui-modal-index-0');
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
