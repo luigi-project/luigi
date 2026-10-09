@@ -6,6 +6,7 @@ import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../../src/utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { ContextSwitcherHelpers } from '../../src/utilities/helpers/context-switcher-helpers';
+import { UIModule } from '../../src/modules/ui-module';
 
 describe('NavigationService', () => {
   let luigiMock: any;
@@ -950,10 +951,22 @@ describe('NavigationService', () => {
       expect(openAsDrawerMock).toHaveBeenCalledWith('/projects/pr2', { size: 's' }, expect.any(Function));
     });
 
-    it('should still drop a plain navigation to the current location', async () => {
+    it('should reload the current microfrontend without changing history when navigating to the current location', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
       jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+
+      // Active main container that must be dropped and rebuilt (parity with classic core).
+      const activeContainer = document.createElement('luigi-container');
+      const removeSpy = jest.spyOn(activeContainer, 'remove');
+      const containerWrapper = document.createElement('div');
+      containerWrapper.appendChild(activeContainer);
+      luigiMock.getEngine = jest.fn().mockReturnValue({
+        _connector: { getContainerWrapper: jest.fn().mockReturnValue(containerWrapper) }
+      });
+      const handleRouteChangeSpy = jest.fn().mockResolvedValue(undefined);
+      (UIModule as any).routingService = { handleRouteChange: handleRouteChangeSpy };
+
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
@@ -968,11 +981,51 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
+      // Same-path navigation must not add a history entry / dispatch a route change ...
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
+      // ... but it must drop the active container and re-run route handling to rebuild it.
+      expect(removeSpy).toHaveBeenCalled();
+      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: '/projects/pr2', query: '' });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
+    });
+
+    it('should reload a view-group microfrontend by removing + rebuilding the container (same-path)', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+
+      // A view-group container shares one element in core-modular (no separate hidden cache), so a
+      // same-path reload drops + rebuilds it just like any other container — a true reload.
+      const activeContainer = document.createElement('luigi-container') as any;
+      activeContainer.viewGroup = 'group1';
+      activeContainer.viewurl = 'http://localhost:4400/microfrontend.html#child2';
+      const removeSpy = jest.spyOn(activeContainer, 'remove');
+      const containerWrapper = document.createElement('div');
+      containerWrapper.appendChild(activeContainer);
+      luigiMock.getEngine = jest.fn().mockReturnValue({
+        _connector: { getContainerWrapper: jest.fn().mockReturnValue(containerWrapper) }
+      });
+      const handleRouteChangeSpy = jest.fn().mockResolvedValue(undefined);
+      (UIModule as any).routingService = { handleRouteChange: handleRouteChangeSpy };
+
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/projects/pr2',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      // Reload = remove the active container and re-run route handling to rebuild it.
+      expect(removeSpy).toHaveBeenCalled();
+      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: '/projects/pr2', query: '' });
     });
 
     it('should close modals and update history if no modalSettings and not using hash routing', async () => {

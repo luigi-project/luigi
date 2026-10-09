@@ -1172,15 +1172,21 @@ export class NavigationService {
     const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
 
-    // Navigating to the page you are already on is a no-op, but an overlay is not a navigation:
-    // a modal or drawer is independent of the main route, so it must open even when its path
-    // equals the current location.
     const isOverlayRequest = Boolean(drawerSettings || modalSettings);
-
     if (
       !isOverlayRequest &&
       GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)
     ) {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+      if (containerWrapper?.childNodes) {
+        const activeContainer = [...containerWrapper.childNodes].find(
+          (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
+        ) as HTMLElement | undefined;
+        if (activeContainer) {
+          activeContainer.remove();
+          await UIModule.routingService.handleRouteChange({ path: currentPath, query: currentQuery });
+        }
+      }
       return;
     }
 
