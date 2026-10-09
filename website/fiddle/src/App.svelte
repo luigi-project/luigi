@@ -15,6 +15,11 @@
   let defaultConfigString = defaultConfig;
   let configString = defaultConfigString;
   let showPresets = $state(false);
+  let showQuicksave = $state(false);
+  let hasQuicksave = $state(false);
+  let quicksaveSaved = $state(false);
+
+  const QUICKSAVE_KEY = 'fiddle_custom';
 
   function exec(jsString) {
     return eval(jsString);
@@ -23,6 +28,7 @@
   function closeDropdowns() {
     showVersions = false;
     showPresets = false;
+    showQuicksave = false;
   }
 
   async function injectLuigiAssets() {
@@ -172,12 +178,6 @@
     document.body.classList.remove('editorVisible');
   }
 
-  function resetConfig() {
-    window.editor.setValue(defaultConfigString);
-    window.editorTA.textContent = defaultConfigString;
-    window.editor.clearSelection();
-  }
-
   function openConfig() {
     window.editor.setValue(configString);
     window.editorTA.textContent = configString;
@@ -197,6 +197,40 @@
     window.editor.setValue(config);
     window.editorTA.textContent = config;
     window.editor.clearSelection();
+  }
+
+  function toggleQuicksave(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    showQuicksave = !showQuicksave;
+  }
+
+  // Stores the current editor content in the custom slot so it can be loaded again later.
+  // Does not apply the config - the user applies it via "Apply" after loading.
+  // Closes the popover (like the presets chooser) and shows a transient confirmation toast.
+  function quicksaveStore(event) {
+    // stop the click from bubbling to the parent button's toggleQuicksave, which would reopen the popover
+    event.stopPropagation();
+    event.preventDefault();
+    localStorage.setItem(QUICKSAVE_KEY, window.editor.getValue());
+    hasQuicksave = true;
+    showQuicksave = false;
+    quicksaveSaved = true;
+    clearTimeout(window.quicksaveToastTimer);
+    window.quicksaveToastTimer = setTimeout(() => {
+      quicksaveSaved = false;
+    }, 2000);
+  }
+
+  // Loads the quicksaved config into the editor (like a preset). User applies it via "Apply".
+  function quicksaveLoad(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    const value = localStorage.getItem(QUICKSAVE_KEY);
+    if (value) {
+      applyPreset(value);
+    }
+    showQuicksave = false;
   }
 
   function hide() {
@@ -244,11 +278,15 @@
     window.editor = ace.edit('editor');
     window.editorTA = document.getElementById('editorTA');
     editor.session.setMode('ace/mode/javascript');
+    hasQuicksave = !!localStorage.getItem(QUICKSAVE_KEY);
     reloadConfig();
   });
 </script>
 
 <svelte:window onclick={closeDropdowns} onblur={closeDropdowns} />
+{#if quicksaveSaved}
+  <div class="lui-quicksave-toast">Config saved</div>
+{/if}
 <div class="editor_container">
   <div class="fd-dialog" role="dialog">
     <div class="fd-dialog__content" role="document" style="width:80%; max-width:80%;">
@@ -269,7 +307,7 @@
             <button
               class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
               onclick={togglePresets}
-              >Select Presets
+              >Select Preset...
               {#if showPresets}
                 <div class="lui-preset-chooser">
                   {#each presets as preset}
@@ -284,9 +322,18 @@
 
           <div class="fd-bar__element">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact btn-primary"
-              onclick={resetConfig}>Reset</button
-            >
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
+              onclick={toggleQuicksave}
+              >Quicksave…
+              {#if showQuicksave}
+                <div class="lui-preset-chooser">
+                  <a class="fd-link" href="#top" onclick={quicksaveStore}> Save current config </a><br />
+                  {#if hasQuicksave}
+                    <a class="fd-link" href="#top" onclick={quicksaveLoad}> Load saved config </a><br />
+                  {/if}
+                </div>
+              {/if}
+            </button>
           </div>
           <div class="fd-bar__element">
             <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}
@@ -609,6 +656,21 @@
 
   .lui-preset-chooser .fd-link:hover {
     color: #76ffb6;
+  }
+
+  .lui-quicksave-toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3c4553;
+    color: white;
+    border: 1px solid #2deb8a;
+    border-radius: 1rem;
+    padding: 8px 20px;
+    font-size: 13px;
+    z-index: 100000000001;
+    box-shadow: 0 8px 24px -12px #000101;
   }
 
   .fiddle_spinner {
