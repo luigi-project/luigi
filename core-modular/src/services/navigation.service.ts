@@ -130,26 +130,41 @@ export class NavigationService {
   }
 
   processGoBackContext(goBackContext: any): void {
-    if (goBackContext && Object.keys(goBackContext).length) {
+    const updateContext = (context: any) => {
       const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+
+      if (!containerWrapper) {
+        return;
+      }
+
+      const allContainers = [...containerWrapper.childNodes].filter(
+        (element: any) => element.tagName?.indexOf('LUIGI-') === 0
+      ) as any;
+      const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
+
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ ...activeContainer.context, ...context }, { withoutSync: false });
+      }
+    };
+
+    if (goBackContext && Object.keys(goBackContext).length) {
       const dialogUpdated = this.handleDialogContainer(goBackContext);
 
-      this.goBackContext = { goBackContext };
+      if (!dialogUpdated) {
+        updateContext({ goBackContext });
+      }
+    } else {
+      this.clearGoBackContext();
 
-      if (containerWrapper && !dialogUpdated) {
-        const allContainers = [...containerWrapper.childNodes].filter(
-          (element: any) => element.tagName?.indexOf('LUIGI-') === 0
-        ) as any;
-        const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
-
-        if (activeContainer?.updateContext) {
-          activeContainer.updateContext({ ...activeContainer.context, goBackContext }, { withoutSync: false });
-        }
+      if (!this.luigi.getConfigValue('routing.showModalPathInUrl')) {
+        updateContext({});
       }
     }
   }
 
   handleGoBackRequest(goBackContext?: any): void {
+    const backContext = goBackContext && typeof goBackContext === 'string' ? JSON.parse(goBackContext) : goBackContext;
+
     this.clearGoBackContext();
 
     if (this.getPreservedViewsLength() > 0) {
@@ -159,7 +174,7 @@ export class NavigationService {
         () => {
           const previousActiveViewData = this._preservedViews.pop();
 
-          this.prepareGoBackContextForNavigation(goBackContext);
+          this.prepareGoBackContextForNavigation(backContext);
 
           if (previousActiveViewData?.path) {
             this.handleNavigationRequest({

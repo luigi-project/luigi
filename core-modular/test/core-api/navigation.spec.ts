@@ -418,7 +418,7 @@ describe('Navigation', () => {
       navigation.goBack(context);
 
       expect.assertions(2);
-      expect(goBackRequestSpy).toHaveBeenCalledWith(context);
+      expect(goBackRequestSpy).toHaveBeenCalledWith(context && JSON.stringify(context));
       await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
     });
   });

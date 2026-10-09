@@ -375,6 +375,7 @@ export const UIModule = {
       }
 
       const hasBackContext = !!UIModule.navService.getGoBackContext();
+      const viewStackSize = UIModule.navService.getPreservedViewsLength();
       const resolvedViewUrl = currentNode.viewUrl
         ? serviceRegistry
             .get(ViewUrlDecoratorSvc)
@@ -445,6 +446,8 @@ export const UIModule = {
       if (viewGroupContainer) {
         const previousViewUrl = viewGroupContainer.viewurl;
 
+        viewGroupContainer.viewStackSize = viewStackSize;
+
         if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
           viewGroupContainer.viewurl = resolvedViewUrl;
@@ -489,14 +492,19 @@ export const UIModule = {
       } else {
         if (!withoutSync) {
           const container = await createContainer(currentNode, luigi, luigiParams, 'main');
-          containerWrapper?.appendChild(container);
           const connector = luigi.getEngine()._connector;
+
+          (container as any).viewStackSize = viewStackSize;
+          containerWrapper?.appendChild(container);
+
           if (currentNode.loadingIndicator?.enabled !== false) {
             connector?.showLoadingIndicator(containerWrapper);
           }
         } else {
           const goBackContext = UIModule.navService.getGoBackContext() || {};
           const newContext = { ...currentNode.context, ...goBackContext };
+
+          currentContainer.viewStackSize = viewStackSize;
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext || {}, { withoutSync });
@@ -507,7 +515,7 @@ export const UIModule = {
 
       const allChildNodes = [...containerWrapper.childNodes];
 
-      if (hasBackContext && !UIModule.navService.getPreservedViewsLength() && allChildNodes.length > 1) {
+      if (hasBackContext && !viewStackSize && allChildNodes.length > 1) {
         const lastItem: any = allChildNodes.at(-1);
 
         if (lastItem && lastItem.style.display === 'none') {
