@@ -74,6 +74,11 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
       closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
     };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ViewUrlDecoratorSvc) return mockViewUrlDecoratorSvc;
@@ -84,6 +89,7 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
 
     UIModule.modalContainer = [];
     UIModule.drawerContainer = undefined;
+    (UIModule as any).navService = mockNavigationService;
   });
 
   function createMockContainer(viewurl: string): any {
