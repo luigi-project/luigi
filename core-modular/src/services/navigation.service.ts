@@ -23,6 +23,7 @@ import type {
   ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
+  StatusBadgeType,
   TabNavConfig,
   TabNavData,
   TopNavData,
@@ -253,6 +254,18 @@ export class NavigationService {
 
         externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
         nodeHref = externalLink.url;
+      }
+
+      if (node.statusBadge) {
+        const typeMap: Record<StatusBadgeType, string> = {
+          critical: 'Critical',
+          informative: 'Information',
+          negative: 'Negative',
+          neutral: 'Neutral',
+          positive: 'Positive'
+        };
+
+        node.statusBadge.type = (typeMap[node.statusBadge.type] || 'Neutral') as any;
       }
 
       const isCategoryValid =
