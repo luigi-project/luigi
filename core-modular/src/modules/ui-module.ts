@@ -403,10 +403,7 @@ export const UIModule = {
         } else {
           if (
             withoutSync ||
-            (element.viewGroup &&
-              (!element.viewurl ||
-                !resolvedViewUrl ||
-                NavigationHelpers.getUrlOrigin(element.viewurl) === NavigationHelpers.getUrlOrigin(resolvedViewUrl))) ||
+            element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
             viewGroupContainer = element;
