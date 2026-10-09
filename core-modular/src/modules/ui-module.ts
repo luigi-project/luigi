@@ -39,11 +39,11 @@ const createContainer = async (
     lcc.setAttribute('lui_container', 'true');
     lcc.viewurl = node.viewUrl
       ? serviceRegistry
-          .get(ViewUrlDecoratorSvc)
-          .applyDecorators(
-            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
-            node.decodeViewUrl ?? false
-          )
+        .get(ViewUrlDecoratorSvc)
+        .applyDecorators(
+          RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+          node.decodeViewUrl ?? false
+        )
       : '';
     lcc.webcomponent = node.webcomponent ?? false;
     lcc.compoundConfig = node.compound;
@@ -68,11 +68,11 @@ const createContainer = async (
     lc.setAttribute('lui_container', 'true');
     lc.viewurl = node.viewUrl
       ? serviceRegistry
-          .get(ViewUrlDecoratorSvc)
-          .applyDecorators(
-            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
-            node.decodeViewUrl ?? false
-          )
+        .get(ViewUrlDecoratorSvc)
+        .applyDecorators(
+          RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
+          node.decodeViewUrl ?? false
+        )
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
@@ -375,11 +375,11 @@ export const UIModule = {
 
       const resolvedViewUrl = currentNode.viewUrl
         ? serviceRegistry
-            .get(ViewUrlDecoratorSvc)
-            .applyDecorators(
-              RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
-              currentNode.decodeViewUrl ?? false
-            )
+          .get(ViewUrlDecoratorSvc)
+          .applyDecorators(
+            RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
+            currentNode.decodeViewUrl ?? false
+          )
         : '';
 
       [...containerWrapper.childNodes].forEach((element: any) => {
@@ -461,7 +461,7 @@ export const UIModule = {
           //IMPORTANT!!! This needs to be at the end
           const hashChanged =
             GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
-            
+
           if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = currentNode.context || {};
             viewGroupContainer.updateViewUrl(resolvedViewUrl);
