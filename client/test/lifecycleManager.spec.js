@@ -48,6 +48,45 @@ describe('LifecycleManager', () => {
       expect(postMessageSpy).toHaveBeenCalledWith(expect.objectContaining({ msg: 'luigi.get-context' }), '*');
       postMessageSpy.mockRestore();
     });
+
+    it('retries a lost context request and stops after Luigi initializes', () => {
+      jest.useFakeTimers();
+      const parent = Object.getOwnPropertyDescriptor(window, 'parent');
+      const postMessage = jest.fn();
+      const listeners = {};
+      Object.defineProperty(window, 'parent', { configurable: true, value: { postMessage } });
+      const listenerSpy = jest.spyOn(helpers, 'addEventListener').mockImplementation((name, callback) => {
+        listeners[name] = callback;
+      });
+      const initAckSpy = jest.spyOn(helpers, 'sendPostMessageToLuigiCore').mockImplementation(() => {});
+      const tpcSpy = jest.spyOn(lcManager, '_tpcCheck').mockImplementation(() => {});
+
+      try {
+        lcManager.luigiClientInit();
+        expect(postMessage).toHaveBeenCalledTimes(1);
+        lcManager.luigiClientInit();
+        expect(postMessage).toHaveBeenCalledTimes(1);
+        expect(listenerSpy).toHaveBeenCalledTimes(4);
+        jest.advanceTimersByTime(1000);
+        expect(postMessage).toHaveBeenCalledTimes(2);
+
+        listeners['luigi.init']({
+          origin: 'http://luigi.test',
+          data: { context: { account: 'demo' }, internal: {} }
+        });
+        expect(lcManager.isLuigiClientInitialized()).toBe(true);
+        expect(lcManager.getContext()).toEqual({ account: 'demo' });
+        expect(initAckSpy).toHaveBeenCalledWith({ msg: 'luigi.init.ok' });
+        jest.advanceTimersByTime(3000);
+        expect(postMessage).toHaveBeenCalledTimes(2);
+      } finally {
+        if (parent) Object.defineProperty(window, 'parent', parent);
+        listenerSpy.mockRestore();
+        initAckSpy.mockRestore();
+        tpcSpy.mockRestore();
+        jest.useRealTimers();
+      }
+    });
   });
 
   describe('addInitListener', () => {
