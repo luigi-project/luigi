@@ -259,22 +259,24 @@ export interface LuigiConnector {
    *
    * Core invokes `dialogSettings.renderMicroFrontendContainer(viewUrl, groupKey)`
    * (which it installs before calling this method) to mount per-group MFEs
-   * inside the dialog, and `dialogSettings.onCloseCallback(stored, previous)`
-   * when the dialog closes — the connector is responsible for calling both
-   * at the appropriate moments.
+   * inside the dialog, and `dialogSettings.onCloseCallback(stored)` when the
+   * dialog closes — the connector is responsible for calling both at the
+   * appropriate moments.
    *
-   * @param dialogSettings dialog header, save/dismiss button labels, plus
-   *   the two core-installed hooks (`renderMicroFrontendContainer`,
+   * @param dialogSettings dialog header, save/dismiss button labels, plus the
+   *   two core-installed hooks (`renderMicroFrontendContainer`,
    *   `onCloseCallback`) the connector must invoke.
    * @param userSettingData static schema describing the available
    *   user-settings groups (one entry per group).
-   * @param previousUserSettings persisted user-settings state to prefill
-   *   the dialog with, or `null` on first open.
+   * @param initialUserSettings the complete settings object the connector
+   *   should use as the dialog's initial state — defaults for every configured
+   *   setting, overlaid with the persisted values. Core builds this, so the
+   *   connector never has to prefill defaults itself.
    */
   openUserSettings(
     dialogSettings: UserSettingsDialogSettings,
     userSettingData: Record<string, any>[],
-    previousUserSettings: Record<string, any> | null
+    initialUserSettings: Record<string, any>
   ): void;
 
   /**

@@ -214,7 +214,7 @@ describe('UX', () => {
 
       expect(luigiMock.readUserSettings).toHaveBeenCalled();
       expect(uiOpen).toHaveBeenCalledTimes(1);
-      const [dialogSettings, data, prev, luigiArg] = uiOpen.mock.calls[0];
+      const [dialogSettings, data, prev, initial, luigiArg] = uiOpen.mock.calls[0];
       expect(dialogSettings).toEqual({
         dialogHeader: 'Custom Header',
         saveBtn: 'Save',
@@ -222,6 +222,9 @@ describe('UX', () => {
       });
       expect(data).toBe(groups);
       expect(prev).toBe(previous);
+      // initialUserSettings is the complete object (defaults overlaid with the
+      // persisted values); the raw previous is kept separately.
+      expect(initial).toEqual({ profile: { theme: 'dark' } });
       expect(luigiArg).toBe(luigiMock);
     });
 

@@ -123,4 +123,52 @@ describe('UserSettings-helpers', () => {
     activeCustomUserSettingsIframe = UserSettingsHelper.findActiveCustomUserSettingsIframe(eventSource2);
     expect(activeCustomUserSettingsIframe).toEqual(null);
   });
+
+  describe('prepareUserSettingsObj', () => {
+    // Shape as returned by processUserSettingGroups: an array with one entry per group.
+    const userSettingData = [
+      { account: { settings: { name: {}, email: {} } } },
+      { theme: { settings: { theme: {} } } },
+      { custom: { viewUrl: 'https://url.to.mf' } } // group without `settings` (MFE)
+    ];
+
+    it('prefills every configured setting with a default on first open (no persisted values)', () => {
+      expect(UserSettingsHelper.prepareUserSettingsObj(userSettingData, null)).toEqual({
+        account: { name: '', email: '' },
+        theme: { theme: '' },
+        custom: {}
+      });
+    });
+
+    it('treats an empty object the same as null', () => {
+      expect(UserSettingsHelper.prepareUserSettingsObj(userSettingData, {})).toEqual({
+        account: { name: '', email: '' },
+        theme: { theme: '' },
+        custom: {}
+      });
+    });
+
+    it('overlays persisted values on top of the defaults', () => {
+      const previous = { account: { name: 'Mario', email: 'mario@example.com' }, theme: { theme: 'red' } };
+      expect(UserSettingsHelper.prepareUserSettingsObj(userSettingData, previous)).toEqual({
+        account: { name: 'Mario', email: 'mario@example.com' },
+        theme: { theme: 'red' },
+        custom: {}
+      });
+    });
+
+    it('fills newly added config properties with a default for an existing user', () => {
+      // persisted data from before `email` and `theme` existed in the config
+      const previous = { account: { name: 'Mario' } };
+      expect(UserSettingsHelper.prepareUserSettingsObj(userSettingData, previous)).toEqual({
+        account: { name: 'Mario', email: '' },
+        theme: { theme: '' },
+        custom: {}
+      });
+    });
+
+    it('returns an empty object when there are no groups', () => {
+      expect(UserSettingsHelper.prepareUserSettingsObj([], null)).toEqual({});
+    });
+  });
 });

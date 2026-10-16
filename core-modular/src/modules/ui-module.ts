@@ -683,6 +683,7 @@ export const UIModule = {
     userSettingsDialogSettings: UserSettingsDialogSettings,
     userSettingData: any,
     previousUserSettings: any,
+    initialUserSettings: any,
     luigi: Luigi
   ) => {
     const mfeStoredSettings: Record<string, any> = {};
@@ -708,12 +709,12 @@ export const UIModule = {
 
       return lc;
     };
-    const onCloseCallback = async (storedUserSettings: any, previousUserSettings: any) => {
+    const onCloseCallback = async (storedUserSettings: any) => {
       const merged = { ...storedUserSettings, ...mfeStoredSettings };
       await luigi.storeUserSettings(merged, previousUserSettings);
     };
     userSettingsDialogSettings.renderMicroFrontendContainer = renderMicroFrontendContainer;
     userSettingsDialogSettings.onCloseCallback = onCloseCallback;
-    luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings);
+    luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, initialUserSettings);
   }
 };
