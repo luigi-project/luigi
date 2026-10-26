@@ -73,7 +73,6 @@
       };
 
       return class extends customElementConstructor {
-        getInternalData = () => GenericHelperFunctions.prepareInternalDataObject(this);
         sendCustomMessage = notInitFn('sendCustomMessage');
         updateContext = notInitFn('updateContext');
         updateViewUrl = notInitFn('updateViewUrl');
@@ -233,7 +232,11 @@
 
       thisComponent.updateViewUrl = (viewUrl: string, internal?: object) => {
         if (viewUrl?.length) {
-          ContainerAPI.updateViewUrl(viewUrl, GenericHelperFunctions.resolveContext(context), internal, iframeHandle);
+          const internalObj = {
+            ...(internal || {}),
+            ...GenericHelperFunctions.prepareInternalDataObject(thisComponent)
+          };
+          ContainerAPI.updateViewUrl(viewUrl, GenericHelperFunctions.resolveContext(context), internalObj, iframeHandle);
         }
       };
 
