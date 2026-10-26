@@ -486,7 +486,7 @@ export const UIModule = {
 
           if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
             viewGroupContainer.context = newContext;
-            viewGroupContainer.updateViewUrl(resolvedViewUrl, viewGroupContainer.getInternalData());
+            viewGroupContainer.updateViewUrl(resolvedViewUrl);
           } else {
             viewGroupContainer.updateContext(newContext, { withoutSync: !!withoutSync });
             await handleDialogContainers(newContext, !!withoutSync, luigi);
