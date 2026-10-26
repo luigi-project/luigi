@@ -118,7 +118,7 @@ describe('GenericHelpers', () => {
   describe('prepareInternalDataObject', () => {
     it('should return default values when targetCnt has no properties set', () => {
       const targetCnt = {};
-      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result).toEqual({
         activeFeatureToggleList: [],
         currentLocale: undefined,
@@ -150,7 +150,7 @@ describe('GenericHelpers', () => {
         clientPermissions: { urlHistory: true },
         skipCookieCheck: 'true'
       };
-      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result).toEqual({
         activeFeatureToggleList: ['feature1', 'feature2'],
         currentLocale: 'de-DE',
@@ -169,31 +169,31 @@ describe('GenericHelpers', () => {
 
     it('should set thirdPartyCookieCheck.disabled to false when skipCookieCheck is not "true"', () => {
       const targetCnt = { skipCookieCheck: 'false' };
-      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result.thirdPartyCookieCheck.disabled).toBe(false);
     });
 
     it('should set thirdPartyCookieCheck.disabled to false when skipCookieCheck is undefined', () => {
       const targetCnt = {};
-      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result.thirdPartyCookieCheck.disabled).toBe(false);
     });
 
     it('should keep userSettings as null when not provided', () => {
       const targetCnt = { userSettings: undefined };
-      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result.userSettings).toBeNull();
     });
 
     it('should use viewStackSize 0 as default when not provided', () => {
       const targetCnt = {};
-      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result.viewStackSize).toBe(0);
     });
 
     it('should pass through viewStackSize 0 explicitly set', () => {
       const targetCnt = { viewStackSize: 0 };
-      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
       expect(result.viewStackSize).toBe(0);
     });
   });
