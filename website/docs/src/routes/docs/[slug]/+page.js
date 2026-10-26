@@ -1,6 +1,6 @@
 // @ts-nocheck
 // import pre-bundled docs.json to avoid bundling again on runtime
-import docsJSON from '$lib/data/docs.json';
+import docsJSON from '#lib/data/docs.json';
 
 const docsArray = Array.from(docsJSON);
 
