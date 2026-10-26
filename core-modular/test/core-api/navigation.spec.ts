@@ -489,6 +489,89 @@ describe('Navigation', () => {
     });
   });
 
+  describe('withOptions', () => {
+    it('should set preventHistoryEntry option', () => {
+      const result = navigation.withOptions({ preventHistoryEntry: true });
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(true);
+    });
+
+    it('should set preventContextUpdate option', () => {
+      const result = navigation.withOptions({ preventContextUpdate: true });
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventContextUpdate).toBe(true);
+    });
+
+    it('should set both options together', () => {
+      navigation.withOptions({ preventHistoryEntry: true, preventContextUpdate: true });
+
+      expect(navigation.preventHistoryEntry).toBe(true);
+      expect(navigation.preventContextUpdate).toBe(true);
+    });
+
+    it('should keep default values when options are not provided', () => {
+      navigation.withOptions({});
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should ignore unknown options', () => {
+      navigation.withOptions({ foo: 'bar' } as any);
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+      expect((navigation.options as any).foo).toBeUndefined();
+    });
+
+    it('should allow explicitly setting options to false', () => {
+      navigation.preventHistoryEntry = true;
+      navigation.preventContextUpdate = true;
+
+      navigation.withOptions({ preventHistoryEntry: false, preventContextUpdate: false });
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should return instance without modifying when a non-object is passed', () => {
+      const result = navigation.withOptions('invalid' as any);
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should return instance without modifying when null is passed', () => {
+      const result = navigation.withOptions(null as any);
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should pass options top-level to handleNavigationRequest when chained with navigate', () => {
+      const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+
+      navigation.withOptions({ preventHistoryEntry: true, preventContextUpdate: true }).navigate('/overview');
+
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/overview',
+          preventHistoryEntry: true,
+          preventContextUpdate: true
+        }),
+        undefined
+      );
+      // the prevent flags live top-level on the request, not inside options
+      const requestArg = handleNavigationRequestSpy.mock.calls[0][0] as NavigationRequestParams;
+      expect(requestArg.options).not.toHaveProperty('preventHistoryEntry');
+      expect(requestArg.options).not.toHaveProperty('preventContextUpdate');
+    });
+  });
+
   describe('updateTopNavigation', () => {
     it('should trigger config change for navigation', async () => {
       const configChangedSpy = jest.spyOn(luigiMock, 'configChanged');
