@@ -394,7 +394,7 @@ describe('WebComponentService', function () {
       });
 
       WebComponentService.includeSelfRegisteredWCFromUrl(node, '/mfe.js', () => {});
-      expect(element.getAttribute('src')).to.equal('/mfe.js');
+      expect(element.getAttribute('src')).to.equal('http://localhost/mfe.js');
     });
 
     it('check if script tag is not added for untrusted url', () => {

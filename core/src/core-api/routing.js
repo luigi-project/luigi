@@ -31,12 +31,11 @@ class LuigiRouting {
     }
 
     for (const [key, value] of entries) {
-      if (!DENYLIST.some((denied) => key === denied)) {
-        queryParams[key] = value;
-      } else {
+      if (DENYLIST.includes(key)) {
         console.warn(`Blocked because of potentially dangerous query param: ${key}`);
         continue;
       }
+      queryParams[key] = value;
     }
     return queryParams;
   }

@@ -1,6 +1,5 @@
 // Helper methods for 'iframe.js' file. They don't require any method from 'iframe.js` but are required by them.
-import { EscapingHelpers } from './';
-import { GenericHelpers } from './';
+import { EscapingHelpers, GenericHelpers } from './';
 import { MICROFRONTEND_TYPES } from './../constants';
 import { LuigiConfig, LuigiFeatureToggles, LuigiI18N, LuigiTheming } from '../../core-api';
 import { ViewUrlDecorator } from '../../services';
