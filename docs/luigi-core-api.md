@@ -329,7 +329,9 @@ Navigates to the given path in the application. It contains either a full absolu
   
 **Example**  
 ```js
-Luigi.navigation().navigate('/overview')Luigi.navigation().navigate('users/groups/stakeholders')Luigi.navigation().navigate('/settings', null, true) // preserve view
+Luigi.navigation().navigate('/overview')
+Luigi.navigation().navigate('users/groups/stakeholders')
+Luigi.navigation().navigate('/settings', null, true) // preserve view
 ```
 ### navigateToIntent&nbsp;  
 Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing parameters.
@@ -342,7 +344,8 @@ Offers an alternative way of navigating with intents. This involves specifying a
   
 **Example**  
 ```js
-Luigi.navigation().navigateToIntent('Sales-settings')Luigi.navigation().navigateToIntent('Sales-settings', {project: 'pr1'})
+Luigi.navigation().navigateToIntent('Sales-settings')
+Luigi.navigation().navigateToIntent('Sales-settings', {project: 'pr1'})
 ```
   
 **Meta**:  
@@ -402,7 +405,8 @@ Opens a view in a drawer. You can specify if the drawer has a header, if a backd
   
 **Example**  
 ```js
-Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
+Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:true, backdrop:true, size:'s'});
+Luigi.navigation().openAsDrawer('projects/pr1/drawer', {header:{title:'My drawer component'}, backdrop:true, size:'xs'});
 ```
   
 **Meta**:  
@@ -459,7 +463,9 @@ Gets the Luigi route associated with the current micro frontend.
   
 **Example**  
 ```js
-Luigi.navigation().getCurrentRoute();Luigi.navigation().fromContext('project').getCurrentRoute();Luigi.navigation().fromVirtualTreeRoot().getCurrentRoute();
+Luigi.navigation().getCurrentRoute();
+Luigi.navigation().fromContext('project').getCurrentRoute();
+Luigi.navigation().fromVirtualTreeRoot().getCurrentRoute();
 ```
 **Returns**: a String value specifying the current Luigi route  
   
@@ -475,9 +481,32 @@ Sends node parameters to the route. The parameters are used by the `navigate` fu
   
 **Example**  
 ```js
-Luigi.navigation().withParams({foo: "bar"}).navigate("path")// Can be chained with context setting functions such as:Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
+Luigi.navigation().withParams({foo: "bar"}).navigate("path")
+
+// Can be chained with context setting functions such as:
+Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
 ```
 **Returns**: <code>linkManager</code> - link manager instance  
+### withOptions&nbsp;  
+Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+
+**Params**
+
+- options <code>Object</code> - navigation options
+    - .preventHistoryEntry <code>boolean</code> - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+    - .preventContextUpdate <code>boolean</code> - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+
+  
+**Example**  
+```js
+Luigi.navigation().withOptions(
+  { preventContextUpdate: true, preventHistoryEntry: true }
+).navigate('/overview')
+```
+**Returns**: <code>linkManager</code> - link manager instance  
+  
+**Meta**:  
+* **since:** NEXTRELEASE
 ### pathExists&nbsp;  
 Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
 
@@ -488,7 +517,13 @@ Checks if the path you can navigate to exists in the main application. For examp
   
 **Example**  
 ```js
-let pathExists; Luigi .navigation() .pathExists('projects/pr2') .then(   (pathExists) => {  } );
+let pathExists;
+ Luigi
+ .navigation()
+ .pathExists('projects/pr2')
+ .then(
+   (pathExists) => {  }
+ );
 ```
 **Returns**: <code>promise</code> - a promise which resolves to a Boolean variable specifying whether the path exists or not  
 ### hasBack&nbsp;  
@@ -506,7 +541,8 @@ Discards the active view and navigates back to the last visited view. Works with
   
 **Example**  
 ```js
-Luigi.navigation().goBack({ foo: 'bar' });Luigi.navigation().goBack(true);
+Luigi.navigation().goBack({ foo: 'bar' });
+Luigi.navigation().goBack(true);
 ```
 ## <code>Luigi.i18n()</code>&nbsp;  
 ### LuigiI18N&nbsp;  

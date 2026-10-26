@@ -31,7 +31,7 @@
     "@angular/build": "22.2.3",
     "@angular/cli": "22.2.3",
     "@angular/compiler-cli": "22.2.3",
-    "@happy-dom/jest-environment": "20.8.9",
+    "@happy-dom/jest-environment": "21.0.4",
     "@standard-schema/spec": "1.1.0",
     "@stylistic/eslint-plugin": "5.7.1",
     "@types/jest": "30.0.0",

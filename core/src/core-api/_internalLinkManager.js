@@ -18,7 +18,9 @@ export class linkManager extends LuigiCoreAPIBase {
       fromParent: false,
       fromClosestContext: false,
       relative: false,
-      link: ''
+      link: '',
+      preventHistoryEntry: false,
+      preventContextUpdate: false
     };
   }
 
@@ -150,6 +152,20 @@ export class linkManager extends LuigiCoreAPIBase {
     if (nodeParams) {
       Object.assign(this.options.nodeParams, nodeParams);
     }
+    return this;
+  }
+
+  withOptions(options) {
+    if (!GenericHelpers.isObject(options)) return this;
+
+    if (options['preventHistoryEntry'] !== undefined) {
+      this.options.preventHistoryEntry = options['preventHistoryEntry'];
+    }
+
+    if (options['preventContextUpdate'] !== undefined) {
+      this.options.preventContextUpdate = options['preventContextUpdate'];
+    }
+
     return this;
   }
 
