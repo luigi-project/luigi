@@ -1,3 +1,4 @@
+import type { ContainerElement } from '../constants/container.model';
 export class GenericHelpersClass {
   /**
    * DUPLICATE: Duplicate of 'core/src/utilities/helpers/generic-helpers.js > isFunction'
@@ -43,6 +44,30 @@ export class GenericHelpersClass {
    */
   resolveContext(context: object | string): object {
     return context ? (typeof context === 'string' ? JSON.parse(context) : context) : {};
+  }
+
+  /**
+   * Prepares the internal data object for the target container.
+   * @param {any} targetCnt - the target container
+   * @returns {object} the prepared internal data object
+   */
+  prepareInternalDataObject(targetCnt: ContainerElement): object {
+    return {
+      activeFeatureToggleList: targetCnt.activeFeatureToggleList || [],
+      currentLocale: targetCnt.locale,
+      currentTheme: targetCnt.theme,
+      userSettings: targetCnt.userSettings || null,
+      cssVariables: targetCnt.cssVariables || {},
+      anchor: targetCnt.anchor || '',
+      drawer: targetCnt.drawer || false,
+      modal: targetCnt.modal || false,
+      viewStackSize: targetCnt.viewStackSize || 0,
+      isNavigateBack: targetCnt.isNavigateBack || false,
+      clientPermissions: targetCnt.clientPermissions || {},
+      thirdPartyCookieCheck: {
+        disabled: targetCnt.skipCookieCheck === 'true'
+      }
+    };
   }
 }
 
