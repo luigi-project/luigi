@@ -236,7 +236,12 @@
             ...(internal || {}),
             ...GenericHelperFunctions.prepareInternalDataObject(thisComponent)
           };
-          ContainerAPI.updateViewUrl(viewUrl, GenericHelperFunctions.resolveContext(context), internalObj, iframeHandle);
+          ContainerAPI.updateViewUrl(
+            viewUrl,
+            GenericHelperFunctions.resolveContext(context),
+            internalObj,
+            iframeHandle
+          );
         }
       };
 
