@@ -1,5 +1,4 @@
 import type { ContainerElement } from '../constants/container.model';
-
 export class GenericHelpersClass {
   /**
    * DUPLICATE: Duplicate of 'core/src/utilities/helpers/generic-helpers.js > isFunction'

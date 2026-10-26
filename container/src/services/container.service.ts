@@ -135,7 +135,6 @@ export class ContainerService {
                 break;
               case LuigiInternalMessageID.GET_CONTEXT: {
                 const internalData = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
-                targetCnt._luiInternalData = internalData;
                 // Automatically send a luigi.init message to complete the initial handshake with the microfrontend
                 target.postMessage(
                   {

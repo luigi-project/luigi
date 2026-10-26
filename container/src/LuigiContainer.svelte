@@ -5,7 +5,7 @@
       activeFeatureToggleList: {
         type: 'Array',
         reflect: false,
-        attribute: 'active-feature-toggle-list'
+        attribute: 'active-feature-toggle-list',
       },
       allowRules: { type: 'Array', reflect: false, attribute: 'allow-rules' },
       anchor: { type: 'String', reflect: false, attribute: 'anchor' },
@@ -13,19 +13,19 @@
       clientPermissions: {
         type: 'Object',
         reflect: false,
-        attribute: 'client-permissions'
+        attribute: 'client-permissions',
       },
       context: { type: 'String', reflect: false, attribute: 'context' },
       deferInit: { type: 'Boolean', attribute: 'defer-init' },
       dirtyStatus: {
         type: 'Boolean',
         reflect: false,
-        attribute: 'dirty-status'
+        attribute: 'dirty-status',
       },
       documentTitle: {
         type: 'String',
         reflect: false,
-        attribute: 'document-title'
+        attribute: 'document-title',
       },
       hasBack: { type: 'Boolean', reflect: false, attribute: 'has-back' },
       label: { type: 'String', reflect: false, attribute: 'label' },
@@ -36,52 +36,55 @@
       sandboxRules: {
         type: 'Array',
         reflect: false,
-        attribute: 'sandbox-rules'
+        attribute: 'sandbox-rules',
       },
       searchParams: {
         type: 'Object',
         reflect: false,
-        attribute: 'search-params'
+        attribute: 'search-params',
       },
       skipCookieCheck: {
         type: 'String',
         reflect: false,
-        attribute: 'skip-cookie-check'
+        attribute: 'skip-cookie-check',
       },
       skipInitCheck: {
         type: 'Boolean',
         reflect: false,
-        attribute: 'skip-init-check'
+        attribute: 'skip-init-check',
       },
       theme: { type: 'String', reflect: false, attribute: 'theme' },
       userSettings: {
         type: 'Object',
         reflect: false,
-        attribute: 'user-settings'
+        attribute: 'user-settings',
       },
       viewurl: { type: 'String', reflect: false, attribute: 'viewurl' },
       webcomponent: {
         type: 'String',
         reflect: false,
-        attribute: 'webcomponent'
-      }
+        attribute: 'webcomponent',
+      },
     },
     extend: (customElementConstructor) => {
       let notInitFn = (name) => {
         return () =>
-          console.warn(name + " can't be called on luigi-container before its micro frontend is attached to the DOM.");
+          console.warn(
+            name +
+              " can't be called on luigi-container before its micro frontend is attached to the DOM.",
+          );
       };
 
       return class extends customElementConstructor {
-        getInternalData = () => {
-          return this._luiInternalData;
-        };
+        getInternalData = () => GenericHelperFunctions.prepareInternalDataObject(this);
         sendCustomMessage = notInitFn('sendCustomMessage');
         updateContext = notInitFn('updateContext');
         updateViewUrl = notInitFn('updateViewUrl');
         closeAlert = notInitFn('closeAlert');
         notifyAlertClosed = notInitFn('notifyAlertClosed');
-        notifyConfirmationModalClosed = notInitFn('notifyConfirmationModalClosed');
+        notifyConfirmationModalClosed = notInitFn(
+          'notifyConfirmationModalClosed',
+        );
         attributeChangedCallback(name, oldValue, newValue) {
           try {
             super.attributeChangedCallback(name, oldValue, newValue);
@@ -93,7 +96,10 @@
               this.updateContext(JSON.parse(newValue));
             }
             if (name === 'auth-data') {
-              ContainerAPI.updateAuthData(this.iframeHandle, JSON.parse(newValue));
+              ContainerAPI.updateAuthData(
+                this.iframeHandle,
+                JSON.parse(newValue),
+              );
             }
           }
         }
@@ -102,7 +108,7 @@
           return this.hasAttribute('no-shadow') || this.noShadow;
         }
       };
-    }
+    },
   }}
 />
 
@@ -110,7 +116,10 @@
   import { onMount, onDestroy } from 'svelte';
   import { ContainerAPI } from './api/container-api';
   import { Events } from './constants/communication';
-  import type { IframeHandle, ContainerElement } from './constants/container.model';
+  import type {
+    IframeHandle,
+    ContainerElement,
+  } from './constants/container.model';
   import { containerService } from './services/container.service';
   import { getAllowRules } from './services/iframe-helpers';
   import { WebComponentService } from './services/webcomponents.service';
@@ -143,7 +152,7 @@
   /* eslint-enable */
 
   const iframeHandle: IframeHandle = {
-    iframe: undefined
+    iframe: undefined,
   };
   let mainComponent: ContainerElement;
   let containerInitialized = false;
@@ -185,20 +194,30 @@
           thisComponent.getNoShadow() ? thisComponent : mainComponent,
           !!webcomponent,
           iframeHandle,
-          data
+          data,
         );
       };
 
       thisComponent.updateContext = (contextObj: object, internal?: object) => {
         context = contextObj;
         if (webcomponent) {
-          (thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent.context = contextObj;
+          (thisComponent.getNoShadow()
+            ? thisComponent
+            : mainComponent
+          )._luigi_mfe_webcomponent.context = contextObj;
         } else {
           const internalObj = {
             ...(internal || {}),
-            ...GenericHelperFunctions.prepareInternalDataObject(thisComponent)
+            ...GenericHelperFunctions.prepareInternalDataObject(thisComponent),
           };
-          ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
+          ContainerAPI.updateContext(
+            contextObj,
+            internalObj,
+            iframeHandle,
+            nodeParams,
+            pathParams,
+            searchParams,
+          );
         }
       };
 
@@ -235,7 +254,12 @@
 
       thisComponent.updateViewUrl = (viewUrl: string, internal?: object) => {
         if (viewUrl?.length) {
-          ContainerAPI.updateViewUrl(viewUrl, GenericHelperFunctions.resolveContext(context), internal, iframeHandle);
+          ContainerAPI.updateViewUrl(
+            viewUrl,
+            GenericHelperFunctions.resolveContext(context),
+            internal,
+            iframeHandle,
+          );
         }
       };
 
@@ -250,10 +274,13 @@
         }
 
         if (!skipInitCheck) {
-          (thisComponent.getNoShadow() ? thisComponent : mainComponent).addEventListener('wc_ready', () => {
+          (thisComponent.getNoShadow()
+            ? thisComponent
+            : mainComponent
+          ).addEventListener('wc_ready', () => {
             if (
-              !(thisComponent.getNoShadow() ? thisComponent : mainComponent)._luigi_mfe_webcomponent
-                ?.deferLuigiClientWCInit
+              !(thisComponent.getNoShadow() ? thisComponent : mainComponent)
+                ._luigi_mfe_webcomponent?.deferLuigiClientWCInit
             ) {
               thisComponent.initialized = true;
               webcomponentService.dispatchLuigiEvent(Events.INITIALIZED, {});
@@ -261,12 +288,15 @@
           });
         }
 
-        const webComponentValue = GenericHelperFunctions.checkWebcomponentValue(webcomponent);
+        const webComponentValue =
+          GenericHelperFunctions.checkWebcomponentValue(webcomponent);
         webcomponentService.renderWebComponent(
           viewurl,
           thisComponent.getNoShadow() ? thisComponent : mainComponent,
           ctx,
-          typeof webComponentValue === 'object' ? { webcomponent: webComponentValue } : {}
+          typeof webComponentValue === 'object'
+            ? { webcomponent: webComponentValue }
+            : {},
         );
       } else {
         if (!thisComponent.getNoShadow()) {
@@ -334,7 +364,7 @@
           iframe,
           thisComponent?.viewGroup,
           thisComponent?._luigiCurrentNode,
-          thisComponent?._luigiMicroFrontendType
+          thisComponent?._luigiMicroFrontendType,
         );
       } catch (err) {
         console.error('Error applying iframe creation interceptor: ', err);
@@ -346,7 +376,10 @@
   }
 </script>
 
-<main bind:this={mainComponent} class={webcomponent ? undefined : 'lui-isolated'}>
+<main
+  bind:this={mainComponent}
+  class={webcomponent ? undefined : 'lui-isolated'}
+>
   {#if containerInitialized}
     {#if !webcomponent || webcomponent === 'false'}
       <style>
