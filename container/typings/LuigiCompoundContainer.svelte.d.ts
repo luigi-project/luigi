@@ -220,7 +220,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @param {Object} context - the context object passed to the web component
    * @param {string} nodeId - the node identifier
    * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
-   * @since NEXT_RELEASE
+   * @since 1.7.10
    * @type {Function}
    * @kind member
    * @memberof LuigiCompoundContainer
