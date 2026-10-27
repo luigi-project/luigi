@@ -115,6 +115,89 @@ describe('GenericHelpers', () => {
     });
   });
 
+  describe('prepareInternalDataObject', () => {
+    it('should return default values when targetCnt has no properties set', () => {
+      const targetCnt = {};
+      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result).toEqual({
+        activeFeatureToggleList: [],
+        currentLocale: undefined,
+        currentTheme: undefined,
+        userSettings: null,
+        cssVariables: {},
+        anchor: '',
+        drawer: false,
+        modal: false,
+        viewStackSize: 0,
+        isNavigateBack: false,
+        clientPermissions: {},
+        thirdPartyCookieCheck: { disabled: false }
+      });
+    });
+
+    it('should use provided values from targetCnt', () => {
+      const targetCnt = {
+        activeFeatureToggleList: ['feature1', 'feature2'],
+        locale: 'de-DE',
+        theme: 'dark',
+        userSettings: { timezone: 'UTC' },
+        cssVariables: { '--color': 'red' },
+        anchor: 'section1',
+        drawer: true,
+        modal: true,
+        viewStackSize: 3,
+        isNavigateBack: true,
+        clientPermissions: { urlHistory: true },
+        skipCookieCheck: 'true'
+      };
+      const result = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result).toEqual({
+        activeFeatureToggleList: ['feature1', 'feature2'],
+        currentLocale: 'de-DE',
+        currentTheme: 'dark',
+        userSettings: { timezone: 'UTC' },
+        cssVariables: { '--color': 'red' },
+        anchor: 'section1',
+        drawer: true,
+        modal: true,
+        viewStackSize: 3,
+        isNavigateBack: true,
+        clientPermissions: { urlHistory: true },
+        thirdPartyCookieCheck: { disabled: true }
+      });
+    });
+
+    it('should set thirdPartyCookieCheck.disabled to false when skipCookieCheck is not "true"', () => {
+      const targetCnt = { skipCookieCheck: 'false' };
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result.thirdPartyCookieCheck.disabled).toBe(false);
+    });
+
+    it('should set thirdPartyCookieCheck.disabled to false when skipCookieCheck is undefined', () => {
+      const targetCnt = {};
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result.thirdPartyCookieCheck.disabled).toBe(false);
+    });
+
+    it('should keep userSettings as null when not provided', () => {
+      const targetCnt = { userSettings: undefined };
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result.userSettings).toBeNull();
+    });
+
+    it('should use viewStackSize 0 as default when not provided', () => {
+      const targetCnt = {};
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result.viewStackSize).toBe(0);
+    });
+
+    it('should pass through viewStackSize 0 explicitly set', () => {
+      const targetCnt = { viewStackSize: 0 };
+      const result: any = GenericHelperFunctions.prepareInternalDataObject(targetCnt as any);
+      expect(result.viewStackSize).toBe(0);
+    });
+  });
+
   describe('resolveContext', () => {
     it('should parse a valid JSON string and return an object', () => {
       const stringObject = '{"key": "value"}';

@@ -14,6 +14,7 @@ import type {
 import { Events, LuigiEvent } from '../constants/communication';
 import type { ContainerElement, IframeHandle } from '../constants/container.model';
 import { LuigiInternalMessageID } from '../constants/internal-communication';
+import { GenericHelperFunctions } from '../utilities/helpers';
 
 export class ContainerService {
   /**
@@ -132,28 +133,14 @@ export class ContainerService {
                   });
                 }
                 break;
-              case LuigiInternalMessageID.GET_CONTEXT:
+              case LuigiInternalMessageID.GET_CONTEXT: {
+                const internalData = GenericHelperFunctions.prepareInternalDataObject(targetCnt);
                 // Automatically send a luigi.init message to complete the initial handshake with the microfrontend
                 target.postMessage(
                   {
                     msg: LuigiInternalMessageID.SEND_CONTEXT_HANDSHAKE,
                     context: targetCnt.context || {},
-                    internal: {
-                      thirdPartyCookieCheck: {
-                        disabled: targetCnt.skipCookieCheck === 'true'
-                      },
-                      currentTheme: targetCnt.theme,
-                      currentLocale: targetCnt.locale,
-                      activeFeatureToggleList: targetCnt.activeFeatureToggleList || [],
-                      cssVariables: targetCnt.cssVariables || {},
-                      anchor: targetCnt.anchor || '',
-                      userSettings: targetCnt.userSettings || null,
-                      drawer: targetCnt.drawer || false,
-                      modal: targetCnt.modal || false,
-                      viewStackSize: targetCnt.viewStackSize || 0,
-                      isNavigateBack: targetCnt.isNavigateBack || false,
-                      clientPermissions: targetCnt.clientPermissions || {}
-                    },
+                    internal: internalData,
                     authData: targetCnt.authData || {},
                     nodeParams: targetCnt.nodeParams || {},
                     searchParams: targetCnt.searchParams || {},
@@ -162,6 +149,7 @@ export class ContainerService {
                   event.origin
                 );
                 break;
+              }
               case LuigiInternalMessageID.NAVIGATION_REQUEST:
                 this.dispatch(
                   Events.NAVIGATION_REQUEST,
