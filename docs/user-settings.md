@@ -45,6 +45,7 @@ Luigi allows you to display a user settings dialog and to manage user data, thro
 
 The following example describes how user settings and a corresponding userSettingGroups configuration could look like:
 
+<!-- fiddle-preset:userSettings -->
 ```javascript
 settings:{
 ...
