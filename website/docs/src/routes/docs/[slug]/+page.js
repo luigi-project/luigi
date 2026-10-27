@@ -1,13 +1,13 @@
 // @ts-nocheck
 // import pre-bundled docs.json to avoid bundling again on runtime
-import docsJSON from '$lib/data/docs.json';
+import docsJSON from '#lib/data/docs.json';
 
 const docsArray = Array.from(docsJSON);
 
 /** @type {import('./$types').PageLoad} */
 // @ts-ignore
 export function load({ params }) {
-  const thisMfDocu = docsArray.find(item => item.shortName === params.slug);
+  const thisMfDocu = docsArray.find((item) => item.shortName === params.slug);
   if (thisMfDocu) {
     return {
       content: thisMfDocu.contents.value,
@@ -22,7 +22,7 @@ export function load({ params }) {
  * @returns list of all possible slugs
  */
 export function entries() {
-  const listOfSlugs = docsArray.map(item => {
+  const listOfSlugs = docsArray.map((item) => {
     return {
       slug: item.shortName
     };
