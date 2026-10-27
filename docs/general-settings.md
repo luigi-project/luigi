@@ -388,7 +388,7 @@ settings:{
   }
 }
 ```
-- **since** NEXT_RELEASE
+- **since** v2.24.0
 
 ### webcomponentCreationInterceptor
 - **type**: function
