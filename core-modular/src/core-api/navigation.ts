@@ -29,6 +29,8 @@ export class Navigation {
     fromParent: false,
     nodeParams: {}
   };
+  preventHistoryEntry: boolean = false;
+  preventContextUpdate: boolean = false;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -58,8 +60,8 @@ export class Navigation {
       options: this.options,
       path,
       preserveView,
-      preventContextUpdate: false,
-      preventHistoryEntry: false,
+      preventContextUpdate: this.preventContextUpdate,
+      preventHistoryEntry: this.preventHistoryEntry,
       withoutSync: false
     };
 
@@ -281,6 +283,32 @@ export class Navigation {
     this.options.fromClosestContext = false;
     this.options.fromVirtualTreeRoot = false;
     this.options.fromParent = true;
+    return this;
+  }
+
+  /**
+   * Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+   * @param {Object} options - navigation options
+   * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+   * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+   * @returns {Navigation} navigation instance
+   * @since NEXTRELEASE
+   * @example
+   * Luigi.navigation().withOptions(
+   *   { preventContextUpdate: true, preventHistoryEntry: true }
+   * ).navigate('/overview')
+   */
+  withOptions(options: { preventHistoryEntry?: boolean; preventContextUpdate?: boolean }): Navigation {
+    if (!GenericHelpers.isObject(options)) return this;
+
+    if (options['preventHistoryEntry'] !== undefined) {
+      this.preventHistoryEntry = options['preventHistoryEntry'];
+    }
+
+    if (options['preventContextUpdate'] !== undefined) {
+      this.preventContextUpdate = options['preventContextUpdate'];
+    }
+
     return this;
   }
 

@@ -193,19 +193,7 @@
         } else {
           const internalObj = {
             ...(internal || {}),
-            ...{
-              activeFeatureToggleList: thisComponent.activeFeatureToggleList || [],
-              currentLocale: thisComponent.locale,
-              currentTheme: thisComponent.theme,
-              userSettings: thisComponent.userSettings || null,
-              cssVariables: thisComponent.cssVariables || {},
-              anchor: thisComponent.anchor || '',
-              drawer: thisComponent.drawer || false,
-              modal: thisComponent.modal || false,
-              viewStackSize: thisComponent.viewStackSize || 0,
-              isNavigateBack: thisComponent.isNavigateBack || false,
-              clientPermissions: thisComponent.clientPermissions || {}
-            }
+            ...GenericHelperFunctions.prepareInternalDataObject(thisComponent)
           };
           ContainerAPI.updateContext(contextObj, internalObj, iframeHandle, nodeParams, pathParams, searchParams);
         }
@@ -244,7 +232,16 @@
 
       thisComponent.updateViewUrl = (viewUrl: string, internal?: object) => {
         if (viewUrl?.length) {
-          ContainerAPI.updateViewUrl(viewUrl, GenericHelperFunctions.resolveContext(context), internal, iframeHandle);
+          const internalObj = {
+            ...(internal || {}),
+            ...GenericHelperFunctions.prepareInternalDataObject(thisComponent)
+          };
+          ContainerAPI.updateViewUrl(
+            viewUrl,
+            GenericHelperFunctions.resolveContext(context),
+            internalObj,
+            iframeHandle
+          );
         }
       };
 

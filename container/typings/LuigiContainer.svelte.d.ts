@@ -254,7 +254,7 @@ export default class LuigiContainer extends HTMLElement {
    * @param {Object} context - the context object passed to the web component
    * @param {string} nodeId - the node identifier
    * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
-   * @since NEXT_RELEASE
+   * @since 1.7.10
    * @type {Function}
    * @kind member
    * @memberof LuigiContainer
@@ -270,7 +270,7 @@ export default class LuigiContainer extends HTMLElement {
    * @param {string} viewGroup - the view group name
    * @param {Object} currentNode - the current navigation node
    * @param {string} microFrontendType - type of micro frontend ('main', 'modal', 'drawer', 'usersettings')
-   * @since NEXT_RELEASE
+   * @since 1.7.9
    * @type {Function}
    * @kind member
    * @memberof LuigiContainer
