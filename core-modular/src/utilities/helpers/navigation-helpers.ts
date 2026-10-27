@@ -341,11 +341,8 @@ export const NavigationHelpers = {
     if (pathParams) {
       url = GenericHelpers.replaceVars(url, pathParams, ':', false);
     }
-    let safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(url);
+    const safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(url);
     if (safeUrl) {
-      if (safeUrl.charAt(safeUrl.length - 1) === '/') {
-        safeUrl = safeUrl.slice(0, -1);
-      }
       if (externalLink.sameWindow) {
         window.location.href = safeUrl;
       } else {
@@ -355,8 +352,6 @@ export const NavigationHelpers = {
           newWindow.focus();
         }
       }
-    } else {
-      console.warn(`Blocked unsafe external navigation URL: ${url}`);
     }
   }
 };

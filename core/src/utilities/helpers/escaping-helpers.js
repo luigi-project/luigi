@@ -62,7 +62,7 @@ class EscapingHelpersClass {
       .replace(/\//g, '&sol;');
   }
 
-  sanitizeExternalNavigationUrl(url = '', skipOrigin = true) {
+  sanitizeExternalNavigationUrl(url = '') {
     try {
       const parsedUrl = new URL(url, window?.location?.href ? window.location.href : undefined);
       const allowedProtocols = ['http:', 'https:'];
@@ -71,15 +71,9 @@ class EscapingHelpersClass {
         return undefined;
       }
 
-      const partialUrl = parsedUrl.href.replace(parsedUrl.origin, '');
-      let newUrl = parsedUrl.href;
-
-      if (skipOrigin && partialUrl !== '/' && partialUrl !== '') {
-        newUrl = partialUrl;
-      }
-
-      return newUrl;
+      return parsedUrl.href.replace(/\/$/, '');
     } catch (error) {
+      console.warn(`Blocked unsafe external navigation URL: ${url}`);
       return undefined;
     }
   }

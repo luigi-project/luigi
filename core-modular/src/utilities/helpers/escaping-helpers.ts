@@ -73,8 +73,9 @@ export const EscapingHelpers = {
         return undefined;
       }
 
-      return parsedUrl.href;
+      return parsedUrl.href.replace(/\/$/, '');
     } catch (error) {
+      console.warn(`Blocked unsafe external navigation URL: ${url}`);
       return undefined;
     }
   },
