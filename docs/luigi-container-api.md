@@ -358,7 +358,7 @@ containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId
 ```
   
 **Meta**:  
-* **since:** NEXT_RELEASE
+* **since:** 1.7.10
 ### iframeCreationInterceptor&nbsp;  
 <p>A function called after the iframe for the microfrontend is created.
 It allows modifying the iframe element before it is used, e.g. setting attributes.
@@ -378,7 +378,7 @@ containerElement.iframeCreationInterceptor = (iframe, viewGroup, navigationNode,
 ```
   
 **Meta**:  
-* **since:** NEXT_RELEASE
+* **since:** 1.7.9
 ### documentTitle&nbsp;  
 <p>The document title value to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>

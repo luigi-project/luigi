@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-m5mm-p8h7-m29v"
+reason = "False positive: oidc-client uses serialize-javascript for build cache metadata only. Build-time only, never in production. Exploitation requires attacker control over serialized function .toString() which is not possible in this code path."
+
+[[IgnoredVulns]]
 id = "GHSA-5c6j-r48x-rmvq"
 reason = "False positive: copy-webpack-plugin and oidc-client use serialize-javascript for build cache metadata only. Build-time only, never in production."
 
