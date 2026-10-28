@@ -14,6 +14,7 @@
   import { LuigiAuth, LuigiConfig, LuigiI18N } from '../core-api';
   import {
     AuthHelpers,
+    DeviceHelpers,
     NavigationHelpers,
     RoutingHelpers,
     StateHelpers,
@@ -681,7 +682,9 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right"
+                  class="fd-popover__body fd-popover__body--right {!DeviceHelpers.isDesktop()
+                    ? 'fd-user-menu--mobile'
+                    : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
                   id="profilePopover"
                   on:click|stopPropagation
@@ -728,7 +731,9 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right"
+                  class="fd-popover__body fd-popover__body--right {!DeviceHelpers.isDesktop()
+                    ? 'fd-user-menu--mobile'
+                    : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
                   id="profilePopover"
                   on:click|stopPropagation
@@ -851,5 +856,16 @@
 
   .lui-shellbar-wrapper {
     column-gap: 2rem;
+  }
+
+  :global(.lui-handheldMode .fd-user-menu--mobile) {
+    height: calc(100vh - 10px - var(--luigi__shellbar--height));
+    width: calc(100vw - 30px);
+  }
+
+  @media (min-width: 900px) {
+    :global(.lui-handheldMode .lui-shellbar-wrapper:has(.lui-productSwitcher) .fd-user-menu--mobile) {
+      width: calc(100vw - 80px);
+    }
   }
 </style>

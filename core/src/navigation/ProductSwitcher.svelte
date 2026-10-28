@@ -93,7 +93,7 @@
 {#if productSwitcherItems && productSwitcherItems.length && Object.keys(productSwitcherItems[0]).length}
   <!-- DESKTOP VERSION (popover): -->
   {#if !isMobile}
-    <div class="fd-shellbar__action fd-shellbar__action--desktop">
+    <div class="fd-shellbar__action fd-shellbar__action--desktop lui-productSwitcher">
       <div class="fd-product-switch">
         <div class="fd-popover fd-popover--right">
           <!-- svelte-ignore a11y-click-events-have-key-events -->
