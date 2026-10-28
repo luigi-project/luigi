@@ -284,6 +284,8 @@ class WebComponentSvcClass {
         onload();
       });
       document.body.appendChild(scriptTag);
+    } else {
+      console.warn(`View URL '${viewUrl}' not allowed to be included`);
     }
   }
 
