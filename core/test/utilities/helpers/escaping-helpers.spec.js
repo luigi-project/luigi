@@ -58,6 +58,45 @@ describe('Escaping-helpers', () => {
     assert.equal(escapedRegexp2, '');
   });
 
+  describe('sanitizeExternalNavigationUrl', () => {
+    it('keeps valid relative urls unchanged', () => {
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('/mfe.js'), '/mfe.js');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('/cats/cat1#details'), '/cats/cat1#details');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('/a2.html#p='), '/a2.html#p=');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('/'), '/');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('/?x=1'), '/?x=1');
+    });
+
+    it('keeps valid absolute urls unchanged', () => {
+      assert.equal(
+        EscapingHelpers.sanitizeExternalNavigationUrl('https://github.com/luigi-project/luigi'),
+        'https://github.com/luigi-project/luigi'
+      );
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com'), 'https://example.com');
+    });
+
+    it('preserves the presence or absence of a trailing slash', () => {
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/'), 'https://example.com/app/');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app'), 'https://example.com/app');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/'), 'http://localhost/');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost'), 'http://localhost');
+    });
+
+    it('does not insert a slash before query or fragment on a bare authority', () => {
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar'), 'http://localhost?foo=bar');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost#frag'), 'http://localhost#frag');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar'), 'http://localhost/?foo=bar');
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/#frag'), 'http://localhost/#frag');
+    });
+
+    it('blocks non-http(s) protocols', () => {
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('javascript:alert(1)'), undefined);
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('  javascript:alert(1)'), undefined);
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('data:text/html,x'), undefined);
+      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('vbscript:msgbox(1)'), undefined);
+    });
+  });
+
   describe('processTextAndLinks', () => {
     beforeEach(() => {
       // added suffixes to make sure the sanitazion gets executed in the right places

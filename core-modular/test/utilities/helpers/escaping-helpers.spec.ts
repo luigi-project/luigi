@@ -39,4 +39,42 @@ describe('EscapingHelpers', () => {
       expect(result).toEqual(data.output);
     });
   });
+
+  describe('sanitizeExternalNavigationUrl', () => {
+    it('keeps valid relative urls unchanged', () => {
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('/mfe.js')).toEqual('/mfe.js');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('/cats/cat1#details')).toEqual('/cats/cat1#details');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('/a2.html#p=')).toEqual('/a2.html#p=');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('/')).toEqual('/');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('/?x=1')).toEqual('/?x=1');
+    });
+
+    it('keeps valid absolute urls unchanged', () => {
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://github.com/luigi-project/luigi')).toEqual(
+        'https://github.com/luigi-project/luigi'
+      );
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com')).toEqual('https://example.com');
+    });
+
+    it('preserves the presence or absence of a trailing slash', () => {
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/')).toEqual('https://example.com/app/');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app')).toEqual('https://example.com/app');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/')).toEqual('http://localhost/');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost')).toEqual('http://localhost');
+    });
+
+    it('does not insert a slash before query or fragment on a bare authority', () => {
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar')).toEqual('http://localhost?foo=bar');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost#frag')).toEqual('http://localhost#frag');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar')).toEqual('http://localhost/?foo=bar');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/#frag')).toEqual('http://localhost/#frag');
+    });
+
+    it('blocks non-http(s) protocols', () => {
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('javascript:alert(1)')).toBeUndefined();
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('  javascript:alert(1)')).toBeUndefined();
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('data:text/html,x')).toBeUndefined();
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('vbscript:msgbox(1)')).toBeUndefined();
+    });
+  });
 });
