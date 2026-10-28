@@ -47,6 +47,8 @@ You can paste this view group example in [Luigi Fiddle](https://fiddle.luigi-pro
 
 ### Code example
 
+<!-- fiddle-preset:viewGroup -->
+
 ```javascript
 Luigi.setConfig({
             navigation: {
