@@ -66,14 +66,23 @@ export const EscapingHelpers = {
 
   sanitizeExternalNavigationUrl(url = ''): string | undefined {
     try {
-      const parsedUrl = new URL(url, window?.location?.href ? window.location.href : undefined);
+      const sentinelOrigin = 'https://sentinel.invalid';
+      const parsedUrl = new URL(url, sentinelOrigin);
       const allowedProtocols = ['http:', 'https:'];
 
       if (!allowedProtocols.includes(parsedUrl.protocol)) {
         return undefined;
       }
 
-      return String(url).replace(/^\s*(javascript|data|vbscript):/i, '');
+      let safeUrl =
+        parsedUrl.origin === sentinelOrigin
+          ? parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
+          : parsedUrl.protocol + '//' + parsedUrl.host + parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+
+      if (safeUrl.endsWith('/') && !String(url).endsWith('/') && !parsedUrl.search && !parsedUrl.hash) {
+        safeUrl = safeUrl.slice(0, -1);
+      }
+      return safeUrl;
     } catch (error) {
       console.warn(`Blocked unsafe external navigation URL: ${url}`);
       return undefined;
