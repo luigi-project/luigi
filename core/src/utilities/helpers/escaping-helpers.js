@@ -71,7 +71,7 @@ class EscapingHelpersClass {
         return undefined;
       }
 
-      return parsedUrl.href.replace(/\/$/, '');
+      return String(url).replace(/^\s*(javascript|data|vbscript):/i, '');
     } catch (error) {
       console.warn(`Blocked unsafe external navigation URL: ${url}`);
       return undefined;
