@@ -76,16 +76,25 @@ describe('Escaping-helpers', () => {
     });
 
     it('preserves the presence or absence of a trailing slash', () => {
-      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/'), 'https://example.com/app/');
+      assert.equal(
+        EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/'),
+        'https://example.com/app/'
+      );
       assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app'), 'https://example.com/app');
       assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/'), 'http://localhost/');
       assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost'), 'http://localhost');
     });
 
     it('does not insert a slash before query or fragment on a bare authority', () => {
-      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar'), 'http://localhost?foo=bar');
+      assert.equal(
+        EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar'),
+        'http://localhost?foo=bar'
+      );
       assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost#frag'), 'http://localhost#frag');
-      assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar'), 'http://localhost/?foo=bar');
+      assert.equal(
+        EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar'),
+        'http://localhost/?foo=bar'
+      );
       assert.equal(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/#frag'), 'http://localhost/#frag');
     });
 
@@ -100,13 +109,13 @@ describe('Escaping-helpers', () => {
   describe('processTextAndLinks', () => {
     beforeEach(() => {
       // added suffixes to make sure the sanitazion gets executed in the right places
-      sinon.stub(EscapingHelpers, 'sanitizeParam').callsFake(input => {
+      sinon.stub(EscapingHelpers, 'sanitizeParam').callsFake((input) => {
         return input + '-sanitizeParam';
       });
-      sinon.stub(EscapingHelpers, 'sanitizeHtml').callsFake(input => {
+      sinon.stub(EscapingHelpers, 'sanitizeHtml').callsFake((input) => {
         return input + '-sanitizeHtml';
       });
-      sinon.stub(EscapingHelpers, 'escapeKeyForRegexp').callsFake(input => {
+      sinon.stub(EscapingHelpers, 'escapeKeyForRegexp').callsFake((input) => {
         return input;
       });
     });

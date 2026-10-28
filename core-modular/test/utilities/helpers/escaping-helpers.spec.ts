@@ -57,16 +57,24 @@ describe('EscapingHelpers', () => {
     });
 
     it('preserves the presence or absence of a trailing slash', () => {
-      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/')).toEqual('https://example.com/app/');
-      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app')).toEqual('https://example.com/app');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app/')).toEqual(
+        'https://example.com/app/'
+      );
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('https://example.com/app')).toEqual(
+        'https://example.com/app'
+      );
       expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/')).toEqual('http://localhost/');
       expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost')).toEqual('http://localhost');
     });
 
     it('does not insert a slash before query or fragment on a bare authority', () => {
-      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar')).toEqual('http://localhost?foo=bar');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost?foo=bar')).toEqual(
+        'http://localhost?foo=bar'
+      );
       expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost#frag')).toEqual('http://localhost#frag');
-      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar')).toEqual('http://localhost/?foo=bar');
+      expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/?foo=bar')).toEqual(
+        'http://localhost/?foo=bar'
+      );
       expect(EscapingHelpers.sanitizeExternalNavigationUrl('http://localhost/#frag')).toEqual('http://localhost/#frag');
     });
 
