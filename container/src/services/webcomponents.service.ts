@@ -440,6 +440,13 @@ export class WebComponentService {
         });
       },
       getUserSettings: (): object => {
+        if (isCompoundChild) {
+          const group = eventBusElement?._luigi_node?.userSettingsGroup;
+          return (group && this.thisComponent.userSettingsGroups?.[group]) || {};
+        }
+        if (nodeId === '_root') {
+          return {};
+        }
         return this.thisComponent.userSettings || {};
       },
       setViewGroupData: (data) => {
@@ -486,15 +493,9 @@ export class WebComponentService {
 
     if (wcCreationInterceptor && typeof wcCreationInterceptor === 'function') {
       try {
-        const isSpecialMf = !!this.thisComponent._luigiMicroFrontendType &&
-          this.thisComponent._luigiMicroFrontendType !== 'main';
-        wcCreationInterceptor(
-          wc,
-          this.thisComponent.currentNode,
-          ctx,
-          nodeId,
-          isSpecialMf
-        );
+        const isSpecialMf =
+          !!this.thisComponent._luigiMicroFrontendType && this.thisComponent._luigiMicroFrontendType !== 'main';
+        wcCreationInterceptor(wc, this.thisComponent.currentNode, ctx, nodeId, isSpecialMf);
       } catch (err) {
         console.error('Error applying web component creation interceptor: ', err);
       }

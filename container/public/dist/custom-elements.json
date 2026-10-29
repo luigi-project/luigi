@@ -630,6 +630,15 @@
               "default": "undefined"
             },
             {
+              "kind": "field",
+              "name": "userSettingsGroups",
+              "type": {
+                "text": "object"
+              },
+              "description": "No description",
+              "default": "undefined"
+            },
+            {
               "kind": "method",
               "name": "updateContext"
             },
