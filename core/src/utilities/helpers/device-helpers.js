@@ -65,7 +65,10 @@ class DeviceHelpersClass {
         return false;
       }
 
-      return !!(window.navigator.platform.match(/iPhone|iPad|iPod/)) || !!(this.internals.userAgent().match(/Mac/) && 'ontouchend' in window.document);
+      return (
+        !!window.navigator.platform.match(/iPhone|iPad|iPod/) ||
+        !!(this.internals.userAgent().match(/Mac/) && 'ontouchend' in window.document)
+      );
     },
     android: () => {
       if (this.isSSR) {
@@ -86,7 +89,10 @@ class DeviceHelpersClass {
         return false;
       }
 
-      return /ipad/i.test(this.internals.userAgent()) || (/Macintosh/i.test(this.internals.userAgent()) && 'ontouchend' in window.document);
+      return (
+        /ipad/i.test(this.internals.userAgent()) ||
+        (/Macintosh/i.test(this.internals.userAgent()) && 'ontouchend' in window.document)
+      );
     },
     _isPhone: () => {
       this.detectTablet();
@@ -132,7 +138,7 @@ class DeviceHelpersClass {
       this.webkitVersion = matches ? parseFloat(matches[1]) : 0;
     }
 
-    return this.webkitVersion >= 537.10;
+    return this.webkitVersion >= 537.1;
   }
 
   detectTablet() {
@@ -166,11 +172,13 @@ class DeviceHelpersClass {
         densityFactor = 1;
       }
 
-      this.tablet = (Math.min(window.screen.width / densityFactor, window.screen.height / densityFactor) >= 600);
+      this.tablet = Math.min(window.screen.width / densityFactor, window.screen.height / densityFactor) >= 600;
       return;
     }
 
-    this.tablet = this.internals.userAgent().indexOf('Touch') !== -1 || (this.internals.android() && !this.internals.androidPhone());
+    this.tablet =
+      this.internals.userAgent().indexOf('Touch') !== -1 ||
+      (this.internals.android() && !this.internals.androidPhone());
   }
 
   supportsTouch() {
