@@ -1,33 +1,42 @@
 import { CommunicationModule } from '../../src/modules/communicaton-module';
+import { NavigationService } from '../../src/services/navigation.service';
+import { serviceRegistry } from '../../src/services/service-registry';
 
 jest.mock('@luigi-project/container', () => {
   const Events = {
+    ADD_BACKDROP_REQUEST: 'add-backdrop-request',
+    ADD_NODE_PARAMS_REQUEST: 'add-node-params-request',
+    ADD_SEARCH_PARAMS_REQUEST: 'add-search-params-request',
+    ALERT_REQUEST: 'alert-request',
+    CLOSE_USER_SETTINGS_REQUEST: 'close-user-settings-request',
+    COLLAPSE_LEFT_NAV_REQUEST: 'collapse-left-nav-request',
+    GO_BACK_REQUEST: 'navigate-back-request',
+    HIDE_LOADING_INDICATOR_REQUEST: 'hide-loading-indicator-request',
     INITIALIZED: 'initialized',
     NAVIGATION_COMPLETED_REPORT: 'navigation-completed-report',
     NAVIGATION_REQUEST: 'navigation-request',
-    RUNTIME_ERROR_HANDLING_REQUEST: 'runtime-error-handling-request',
-    ALERT_REQUEST: 'alert-request',
-    SHOW_CONFIRMATION_MODAL_REQUEST: 'show-confirmation-modal-request',
-    SET_DOCUMENT_TITLE_REQUEST: 'set-document-title-request',
-    SHOW_LOADING_INDICATOR_REQUEST: 'show-loading-indicator-request',
-    HIDE_LOADING_INDICATOR_REQUEST: 'hide-loading-indicator-request',
-    ADD_BACKDROP_REQUEST: 'add-backdrop-request',
-    REMOVE_BACKDROP_REQUEST: 'remove-backdrop-request',
-    SET_DIRTY_STATUS_REQUEST: 'set-dirty-status-request',
-    ADD_NODE_PARAMS_REQUEST: 'add-node-params-request',
-    COLLAPSE_LEFT_NAV_REQUEST: 'collapse-left-nav-request',
     OPEN_USER_SETTINGS_REQUEST: 'open-user-settings-request',
-    CLOSE_USER_SETTINGS_REQUEST: 'close-user-settings-request',
-    ADD_SEARCH_PARAMS_REQUEST: 'add-search-params-request',
-    UPDATE_MODAL_SETTINGS_REQUEST: 'update-modal-settings-request',
+    REMOVE_BACKDROP_REQUEST: 'remove-backdrop-request',
+    RUNTIME_ERROR_HANDLING_REQUEST: 'runtime-error-handling-request',
     SET_CURRENT_LOCALE_REQUEST: 'set-current-locale-request',
-    SET_VIEW_GROUP_DATA_REQUEST: 'set-viewgroup-data-request'
+    SET_DIRTY_STATUS_REQUEST: 'set-dirty-status-request',
+    SET_DOCUMENT_TITLE_REQUEST: 'set-document-title-request',
+    SET_VIEW_GROUP_DATA_REQUEST: 'set-viewgroup-data-request',
+    SHOW_CONFIRMATION_MODAL_REQUEST: 'show-confirmation-modal-request',
+    SHOW_LOADING_INDICATOR_REQUEST: 'show-loading-indicator-request',
+    UPDATE_MODAL_SETTINGS_REQUEST: 'update-modal-settings-request'
   };
   return { __esModule: true, default: Events, ...Events };
 });
 
 jest.mock('../../src/services/service-registry', () => ({
-  serviceRegistry: { get: jest.fn().mockReturnValue({ viewGroupLoaded: jest.fn(), preload: jest.fn() }) }
+  serviceRegistry: {
+    get: jest.fn().mockReturnValue({
+      handleGoBackRequest: jest.fn(),
+      viewGroupLoaded: jest.fn(),
+      preload: jest.fn()
+    })
+  }
 }));
 jest.mock('../../src/modules/ui-module', () => ({
   UIModule: { luigi: { getEngine: () => ({ _connector: {} }) } }
@@ -50,6 +59,7 @@ jest.mock('../../src/utilities/helpers/i18n-helpers', () => ({
 describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
   let luigiMock: any;
   let containerElement: HTMLElement & { viewGroup?: string };
+  let navigationServiceMock: any;
 
   beforeEach(() => {
     luigiMock = {
@@ -72,6 +82,13 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
     };
     containerElement = document.createElement('div') as any;
     containerElement.viewGroup = 'testGroup';
+    document.body.appendChild(containerElement);
+    document.body.classList.add('content');
+    navigationServiceMock = { handleGoBackRequest: jest.fn() };
+    jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
+      if (service === NavigationService) return navigationServiceMock;
+      return {} as any;
+    });
     CommunicationModule.init(luigiMock);
     CommunicationModule.addListeners(containerElement, luigiMock);
   });
@@ -126,5 +143,14 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
 
     expect(vgSettings['testGroup']._liveCustomData).toEqual({ new: 'data' });
     expect(vgSettings['testGroup'].customData).toEqual({ keep: 'this' });
+  });
+
+  it.each([true, 'test', {foo: 'bar'}])('should handle goBack request with correct value', (value: any) => {
+    const event = new CustomEvent('navigate-back-request', {
+      detail: value
+    });
+    containerElement.dispatchEvent(event);
+
+    expect(navigationServiceMock.handleGoBackRequest).toHaveBeenCalledWith(JSON.stringify(value));
   });
 });
