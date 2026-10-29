@@ -145,7 +145,7 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
     expect(vgSettings['testGroup'].customData).toEqual({ keep: 'this' });
   });
 
-  it.each([true, 'test', {foo: 'bar'}])('should handle goBack request with correct value', (value: any) => {
+  it.each([true, 'test', { foo: 'bar' }])('should handle goBack request with correct value', (value: any) => {
     const event = new CustomEvent('navigate-back-request', {
       detail: value
     });
