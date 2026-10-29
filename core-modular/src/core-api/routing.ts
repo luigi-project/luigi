@@ -64,7 +64,7 @@ export class Routing {
     }
 
     for (const [key, value] of entries) {
-      if (DENYLIST.includes(key)) {
+      if (DENYLIST.some((denied) => key === denied)) {
         console.warn(`Blocked because of potentially dangerous query param: ${key}`);
         continue;
       }

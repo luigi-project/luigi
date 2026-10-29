@@ -64,14 +64,28 @@ class EscapingHelpersClass {
 
   sanitizeExternalNavigationUrl(url = '') {
     try {
-      const parsedUrl = new URL(url, window?.location?.href ? window.location.href : undefined);
+      const sentinelOrigin = 'https://sentinel.invalid';
+      const parsedUrl = new URL(url, sentinelOrigin);
       const allowedProtocols = ['http:', 'https:'];
 
       if (!allowedProtocols.includes(parsedUrl.protocol)) {
         return undefined;
       }
 
-      return parsedUrl.href.replace(/\/$/, '');
+      const isRelative = parsedUrl.origin === sentinelOrigin;
+      let path = parsedUrl.pathname;
+
+      if (path === '/') {
+        const raw = String(url);
+        const afterHost = isRelative ? raw : raw.slice((parsedUrl.protocol + '//' + parsedUrl.host).length);
+        if (!afterHost.startsWith('/')) {
+          path = '';
+        }
+      }
+
+      return isRelative
+        ? path + parsedUrl.search + parsedUrl.hash
+        : parsedUrl.protocol + '//' + parsedUrl.host + path + parsedUrl.search + parsedUrl.hash;
     } catch (error) {
       console.warn(`Blocked unsafe external navigation URL: ${url}`);
       return undefined;

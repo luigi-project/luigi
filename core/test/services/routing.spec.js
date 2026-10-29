@@ -682,7 +682,7 @@ describe('Routing', function () {
       // given
       const path = '#/projects/a1?~param1=tets';
       const expectedViewUrl = '/{context.varA1}/a1.html#p={nodeParams.param1}';
-      const expectedProcessedViewUrl = 'http://localhost/maskopatol/a1.html#p=tets';
+      const expectedProcessedViewUrl = '/maskopatol/a1.html#p=tets';
 
       // when
       const iframeMock = { src: null };
@@ -699,7 +699,7 @@ describe('Routing', function () {
       // given
       const path = '#/projects/a2?~param1=tets';
       const expectedViewUrl = '{context.varA2}/a2.html#p={nodeParams.param2}';
-      const expectedProcessedViewUrl = 'http://localhost/a2.html#p=';
+      const expectedProcessedViewUrl = '/a2.html#p=';
 
       // when
       const iframeMock = { src: null };
@@ -715,7 +715,7 @@ describe('Routing', function () {
     it('should set component data with path param', async () => {
       // given
       const path = '#/projects/categories/cat1';
-      const expectedViewUrl = 'http://localhost/cats/cat1#details';
+      const expectedViewUrl = '/cats/cat1#details';
 
       // when
       const iframeMock = { src: null };
@@ -730,7 +730,7 @@ describe('Routing', function () {
     it('should set component data with multiple path params', async () => {
       // given
       const path = '#/projects/categories/cat1/sub23';
-      const expectedViewUrl = 'http://localhost/cats/cat1/sub23';
+      const expectedViewUrl = '/cats/cat1/sub23';
 
       // when
       const iframeMock = { src: null };
