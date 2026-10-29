@@ -53,6 +53,7 @@ const createContainer = async (
     lcc.pathParams = pathParams;
     (lcc as any).userSettingsGroup = node.userSettingsGroup;
     lcc.userSettings = userSettings;
+    (lcc as any).userSettingsGroups = userSettingGroups;
     lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
@@ -406,6 +407,10 @@ export const UIModule = {
               element.pathParams = {};
             }
           }
+        } else if (element.webcomponent) {
+          if (!withoutSync && !(element as any)._luigiPreserved) {
+            element.remove();
+          }
         } else {
           if (
             withoutSync ||
@@ -463,6 +468,7 @@ export const UIModule = {
           viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
           viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
           viewGroupContainer.userSettings = userSettings;
+          viewGroupContainer.userSettingsGroups = userSettingGroups;
 
           setSandboxRules(viewGroupContainer, luigi);
           setAllowRules(viewGroupContainer, luigi);
