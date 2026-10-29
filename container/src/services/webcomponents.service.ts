@@ -440,6 +440,13 @@ export class WebComponentService {
         });
       },
       getUserSettings: (): object => {
+        if (isCompoundChild) {
+          const group = eventBusElement?._luigi_node?.userSettingsGroup;
+          return (group && this.thisComponent.userSettingsGroups?.[group]) || {};
+        }
+        if (nodeId === '_root') {
+          return {};
+        }
         return this.thisComponent.userSettings || {};
       },
       setViewGroupData: (data) => {
