@@ -300,10 +300,11 @@ export declare interface LinkManager {
    * @param {boolean} modalSettings.keepPrevious Lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
    * @param {string} modalSettings.closebtn_data_testid lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
    * @param {Function} onCloseCallback callback function called upon closing the opened modal
+   * @returns {promise} which is resolved when closing the modal. By using LuigiClient.linkManager().goBack({ foo: 'bar' }) to close the modal you have access to the `goBackContext` when the promise will be resolved.
    * @example
    * LuigiClient.linkManager().openAsModal('projects/pr1/users', {title:'Users', size:'m'});
    */
-  openAsModal: (nodepath: string, modalSettings?: ModalSettings, onCloseCallback?: Function) => void;
+  openAsModal: <T = unknown>(nodepath: string, modalSettings?: ModalSettings, onCloseCallback?: Function) => Promise<T>;
 
   /**
    * Opens a view in a split view. You can specify the split view's title and size. If you don't specify the title, it is the node label. If there is no node label, the title remains empty. The default size of the split view is 40, which means 40% height of the split view.
@@ -498,6 +499,26 @@ export declare interface Options {
  * @returns {String} Returns the processed literal.
  */
 export declare const html: (strings: TemplateStringsArray, ...keys: unknown[]) => string;
+
+/**
+ * Registers a web component that the micro frontend bundle defines itself, making it
+ * available to Luigi as a web component micro frontend. Use this when your bundle builds
+ * and owns its own custom element class (for example Angular Elements) instead of relying
+ * on Luigi to define the element for you.
+ *
+ * The Luigi Core application must be present on the page. If it is not, an error is logged
+ * and the call is a no-op.
+ * @param {string} srcString the URL of the web component bundle, which must resolve to the same URL Luigi uses for the node (the node's `viewUrl`). Luigi hex-encodes the resolved absolute URL to derive the custom element id (`luigi-wc-<encoded-url>`) the component is registered under; if `srcString` resolves to a different URL, Luigi registers and looks the element up under different ids and the component never renders. From the bundle registering itself, pass `import.meta.url` (ES module) or `document.currentScript?.src` (classic script), depending on how the bundle is loaded.
+ * @param {HTMLElement} element the web component class (custom element constructor) to register
+ * @since NEXTRELEASE
+ * @example
+ * import { registerWebComponent } from '@luigi-project/client/luigi-element.js';
+ *
+ * export class MyComponent extends LuigiElement { \/* ... *\/ }
+ *
+ * registerWebComponent(import.meta.url, MyComponent);
+ */
+export declare function registerWebComponent(srcString: string, element: HTMLElement): void;
 
 export interface LuigiClient {
   /**

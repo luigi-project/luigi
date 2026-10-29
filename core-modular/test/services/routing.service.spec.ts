@@ -74,6 +74,8 @@ describe('Routing Service', () => {
       getTabNavData: jest.fn(),
       handleNavigationRequest: jest.fn(),
       extractDataFromPath: jest.fn(),
+      isValidBackRoute: jest.fn().mockResolvedValue(false),
+      clearPreservedViews: jest.fn(),
       getPathData: jest.fn(),
       findMatchingNode: jest.fn(),
       getPathParams: jest.fn(),
@@ -236,6 +238,7 @@ describe('Routing Service', () => {
         mockLuigi,
         customParams,
         false,
+        false,
         false
       );
     });
@@ -267,6 +270,7 @@ describe('Routing Service', () => {
         mockLuigi,
         customParams,
         false,
+        false,
         false
       );
     });
@@ -296,7 +300,7 @@ describe('Routing Service', () => {
       expect(mockConnector.renderTopNav).toHaveBeenCalled();
       expect(mockConnector.renderLeftNav).toHaveBeenCalled();
       expect(mockConnector.renderTabNav).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith({}, mockLuigi, customParams, false, false);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith({}, mockLuigi, customParams, false, false, false);
     });
 
     it('should not call onNodeChange if current node has not changed', async () => {
@@ -353,7 +357,7 @@ describe('Routing Service', () => {
       await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, false);
 
       expect(featureToggleSpy).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, false);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, false, false);
     });
 
     it('should handle route change without sync and preventContextUpdate and call UI module', async () => {
@@ -369,7 +373,23 @@ describe('Routing Service', () => {
       await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, true);
 
       expect(featureToggleSpy).toHaveBeenCalled();
-      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, true);
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, true, false);
+    });
+
+    it('should handle route change without sync, preventContextUpdate and preserveView and call UI module', async () => {
+      const featureToggleSpy = jest.spyOn(routingService, 'setFeatureToggle');
+      const fakeNode = { nodeParams: {}, viewUrl: '/some/url' };
+      const customParams = { nodeParams: { foo: 'bar' }, pathParams: {}, searchParams: { foo: 'bar' } };
+
+      jest.spyOn(navigationService, 'getPathData').mockResolvedValue({ isExistingRoute: true, nodesInPath: [] } as any);
+      jest.spyOn(routingService, 'handlePageNotFound').mockResolvedValue(false);
+      routingService.shouldSkipRoutingForUrlPatterns = jest.fn().mockImplementation(() => false);
+      (mockNavService.getCurrentNode as jest.Mock).mockReturnValue(fakeNode);
+
+      await routingService.handleRouteChange({ path: '/abc', query: 'foo=bar' }, true, true, true);
+
+      expect(featureToggleSpy).toHaveBeenCalled();
+      expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, true, true);
     });
   });
 
@@ -526,7 +546,7 @@ describe('Routing Service', () => {
       expect(historyPushSpy).toHaveBeenCalled();
     });
 
-    it('should not add modalPathParams if modalParams is empty', () => {
+    it('should add modalPathParams with the bookmarkable settings', () => {
       locationSpy.mockImplementation(
         () =>
           ({
@@ -537,10 +557,13 @@ describe('Routing Service', () => {
       jest.spyOn(mockLuigi, 'getConfigValue').mockReturnValue(true); // hashRoutingActive
       jest.spyOn(RoutingHelpers, 'getQueryParams').mockReturnValue({});
 
-      routingService.appendModalDataToUrl('newPath', {});
+      // openAsModal always sets at least title + size, so appendModalDataToUrl never
+      // receives empty modalParams in practice.
+      routingService.appendModalDataToUrl('newPath', { title: 'My Modal', size: 'l' });
 
       expect(RoutingHelpers.encodeParams).toHaveBeenCalledWith({
-        modalPath: 'newPath'
+        modalPath: 'newPath',
+        modalPathParams: JSON.stringify({ size: 'l', title: 'My Modal' })
       });
       expect(historyPushSpy).toHaveBeenCalled();
     });
@@ -726,6 +749,33 @@ describe('Routing Service', () => {
 
       routingService.updateModalDataInUrl(modalPath, modalParams, false);
 
+      expect(window.history.replaceState).toHaveBeenCalledWith(
+        {},
+        '',
+        'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
+      );
+    });
+
+    it('should not write closebtn_data_testid to the url (regression for #5508 modal update)', () => {
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal',
+          hash: '#/settings?mySpecialModal=%252Fproject-modal'
+        } as any;
+      });
+      window.state = {};
+      mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.useHashRouting') return true;
+        return null;
+      });
+
+      routingService.updateModalDataInUrl(
+        modalPath,
+        { title: 'world', closebtn_data_testid: 'lui-modal-index-0' } as any,
+        false
+      );
+
+      // the serialized modalParams must contain only the bookmarkable 'title', not closebtn_data_testid
       expect(window.history.replaceState).toHaveBeenCalledWith(
         {},
         '',
@@ -1074,7 +1124,13 @@ describe('Routing Service', () => {
 
   describe('handleRouteChange - nav re-rendering on blocked route', () => {
     it('should re-render left and tab nav when handleViewUrlMisconfigured blocks the route', async () => {
-      const emptyViewUrlNode = { pathSegment: 'emptyViewUrl', viewUrl: '', compound: undefined, children: undefined, intendToHaveEmptyViewUrl: false };
+      const emptyViewUrlNode = {
+        pathSegment: 'emptyViewUrl',
+        viewUrl: '',
+        compound: undefined,
+        children: undefined,
+        intendToHaveEmptyViewUrl: false
+      };
       const mockPathData = {
         nodesInPath: [{ pathSegment: 'home' }, emptyViewUrlNode],
         pathParams: {},

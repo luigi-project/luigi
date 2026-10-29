@@ -6,6 +6,19 @@
 
 
 
+## [v2.32.0] (2026-10-05)
+
+#### :rocket: Added
+
+* [#5480](https://github.com/luigi-project/luigi/pull/5480) feat(a11y): keyboard navigation for context switcher dropdown ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5472](https://github.com/luigi-project/luigi/pull/5472) feat(core): add ARIA landmark roles for accessibility (#5470) ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5471](https://github.com/luigi-project/luigi/pull/5471) F6 navigation ([@hardl](https://github.com/hardl))
+
+#### :bug: Fixed
+
+* [#5287](https://github.com/luigi-project/luigi/pull/5287) Missing preventLuigiConfigUpdate param ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
 ## [v2.31.0] (2026-06-12)
 
 #### :rocket: Added
@@ -2160,3 +2173,4 @@
 [v2.29.0]: https://github.com/luigi-project/luigi/compare/v2.28.0...v2.29.0
 [v2.30.0]: https://github.com/luigi-project/luigi/compare/v2.29.0...v2.30.0
 [v2.31.0]: https://github.com/luigi-project/luigi/compare/v2.30.0...v2.31.0
+[v2.32.0]: https://github.com/luigi-project/luigi/compare/v2.31.0...v2.32.0

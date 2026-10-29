@@ -4,7 +4,6 @@ import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
   AppSwitcherItem,
-  BadgeCounter,
   BreadcrumbData,
   BreadcrumbItem,
   ContextSwitcher,
@@ -23,6 +22,7 @@ import type {
   ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
+  StatusBadgeType,
   TabNavConfig,
   TabNavData,
   TopNavData,
@@ -44,9 +44,19 @@ import { ModalService } from './modal.service';
 import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 
+const statusBadgeTypes: Record<StatusBadgeType, string> = {
+  critical: 'Critical',
+  informative: 'Information',
+  negative: 'Negative',
+  neutral: 'Neutral',
+  positive: 'Positive'
+};
+
 export class NavigationService {
+  _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
+  private goBackContext: Record<string, any> | null = null;
   private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
   constructor(private luigi: Luigi) {}
@@ -65,9 +75,137 @@ export class NavigationService {
     return this.nodeDataManagementService;
   }
 
+  private handleDialogContainer(goBackContext: any): boolean {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    this.goBackContext = { goBackContext };
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+      const activeContainer: any = dialogContainers.at(-1);
+
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ ...activeContainer.context, goBackContext }, { withoutSync: false });
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private prepareGoBackContextForNavigation(goBackContext: any): void {
+    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+      this.handleDialogContainer(goBackContext);
+    }
+  }
+
+  clearGoBackContext(): void {
+    this.goBackContext = null;
+  }
+
+  getGoBackContext(): Record<string, any> | null {
+    return this.goBackContext;
+  }
+
+  clearPreservedViews(): void {
+    this._preservedViews.length = 0;
+  }
+
+  removeLastPreservedView(): void {
+    if (this._preservedViews.length) {
+      this._preservedViews.pop();
+    }
+  }
+
+  getPreservedViewsLength(): number {
+    return this._preservedViews.length;
+  }
+
+  isValidBackRoute(route: string): boolean {
+    if (this._preservedViews.length === 0) {
+      return false;
+    }
+
+    const routePath = route.startsWith('/') ? route : `/${route}`;
+    const lastPreservedView = [...this._preservedViews].pop();
+    const removeQueryParams = (path: string) => path.split('?')[0];
+    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+
+    return paths.includes(removeQueryParams(routePath));
+  }
+
+  processGoBackContext(goBackContext: any): void {
+    const updateContext = (context: any) => {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+
+      if (!containerWrapper) {
+        return;
+      }
+
+      const allContainers = [...containerWrapper.childNodes].filter(
+        (element: any) => element.tagName?.indexOf('LUIGI-') === 0
+      ) as any;
+      const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
+
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ ...activeContainer.context, ...context }, { withoutSync: false });
+      }
+    };
+
+    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+      const dialogUpdated = this.handleDialogContainer(goBackContext);
+
+      if (!dialogUpdated) {
+        updateContext({ goBackContext });
+      }
+    } else {
+      this.clearGoBackContext();
+
+      if (!this.luigi.getConfigValue('routing.showModalPathInUrl')) {
+        updateContext({});
+      }
+    }
+  }
+
+  handleGoBackRequest(goBackContext?: any): void {
+    const backContext = goBackContext && typeof goBackContext === 'string' ? JSON.parse(goBackContext) : goBackContext;
+
+    this.clearGoBackContext();
+
+    if (this.getPreservedViewsLength() > 0) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      dirtyStatusService.getUnsavedChangesModalPromise().then(
+        () => {
+          const previousActiveViewData = this._preservedViews.pop();
+
+          this.prepareGoBackContextForNavigation(backContext);
+
+          if (previousActiveViewData?.path) {
+            this.handleNavigationRequest({
+              path: previousActiveViewData.path,
+              withoutSync: false
+            });
+          }
+        },
+        () => {}
+      );
+    } else {
+      if (goBackContext) {
+        console.warn(
+          `Warning: goBack() does not support goBackContext value. This is available only when using the Luigi preserveView feature.`
+        );
+      }
+      history.back();
+    }
+  }
+
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
-    let pathSegments = path.split('/');
+    let pathSegments = path?.split('/');
 
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
@@ -213,12 +351,13 @@ export class NavigationService {
     pathData: PathData
   ): Promise<{
     items: NavItem[];
-    totalBadgeNode: BadgeCounter | undefined;
   }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
     const orphanItems: NavItem[] = [];
-    const badgeCountsToSumUp: number[] = [];
+    // Consumer badge counters are never invoked here — a slow/hanging count() must not block
+    // the nav build. The engine passes counters through structurally and heads resolve them
+    // (and aggregate category/overflow totals) when they render.
 
     for (const node of nodes) {
       if (
@@ -232,14 +371,8 @@ export class NavigationService {
         continue;
       }
 
-      const hasBadge = !!node.badgeCounter;
       const externalLink = node.externalLink ? { ...node.externalLink } : undefined;
       let nodeHref = RoutingHelpers.getNodeHref(node, pathData?.pathParams, this.luigi);
-      let badgeCount = 0;
-
-      if (node.badgeCounter) {
-        badgeCount = await (node.badgeCounter.count as any)();
-      }
 
       if (externalLink?.url) {
         const currentNode: Node = { ...node };
@@ -255,6 +388,10 @@ export class NavigationService {
         nodeHref = externalLink.url;
       }
 
+      if (node.statusBadge) {
+        node.statusBadge.type = (statusBadgeTypes[node.statusBadge.type] || 'Neutral') as any;
+      }
+
       const isCategoryValid =
         node.category && (typeof node.category === 'string' || node.category.id || node.category.label);
 
@@ -265,31 +402,20 @@ export class NavigationService {
 
         if (!catNode) {
           catNode = {
-            badgeCounter: hasBadge ? { count: () => Number(badgeCount), label: '' } : undefined,
+            // Badge counters are never invoked or aggregated by the engine. Heads that render a
+            // category badge sum the counters of catNode.category.nodes themselves.
             category: {
               altText: node.category.altText || '',
               icon: node.category.icon,
               id: catId,
               label: catLabel,
               nodes: [],
-              tooltip: this.resolveTooltipText(node.category, catLabel)
+              tooltip: this.resolveTooltipText(node.category, catLabel),
+              navigateOnClick: node.category.navigateOnClick ?? false
             }
           };
           catMap[catId] = catNode;
           items.push(catNode);
-        } else {
-          if (hasBadge) {
-            if (catNode.badgeCounter) {
-              const nodeBadgeCount = await (catNode.badgeCounter.count as any)();
-
-              catNode.badgeCounter.count = () => Number(nodeBadgeCount + badgeCount);
-            } else {
-              catNode.badgeCounter = {
-                count: () => Number(badgeCount),
-                label: ''
-              };
-            }
-          }
         }
 
         catNode.category?.nodes?.push({
@@ -321,21 +447,25 @@ export class NavigationService {
           items.push(navItem);
         }
       }
-
-      if (badgeCount) {
-        badgeCountsToSumUp.push(badgeCount);
-      }
     }
-
-    const badgeCountSum = badgeCountsToSumUp?.length ? badgeCountsToSumUp.reduce((a, b) => a + b) : 0;
-    const totalBadgeNode: BadgeCounter = {
-      count: () => badgeCountSum,
-      label: ''
-    };
 
     items.unshift(...orphanItems);
 
-    return { items, totalBadgeNode };
+    items.forEach((item) => {
+      if (!item.category?.navigateOnClick || !item.category.nodes?.length) {
+        return;
+      }
+      const navigateOnClick = item.category.navigateOnClick;
+      const targetNode =
+        navigateOnClick === true
+          ? item.category.nodes.find((subItem) => subItem.node?.category?.navigateOnClick)
+          : item.category.nodes.find((subItem) => subItem.node?.pathSegment === navigateOnClick);
+      if (targetNode) {
+        targetNode.navigateOnClick = true;
+      }
+    });
+
+    return { items };
   }
 
   async getCurrentNode(path: string): Promise<Node | undefined> {
@@ -514,7 +644,6 @@ export class NavigationService {
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      totalBadgeNode: navData.totalBadgeNode,
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
@@ -590,6 +719,9 @@ export class NavigationService {
           item.children.forEach((child: ProfileItem) => {
             child.label = this.luigi.i18n().getTranslation(child.label || '');
           });
+        }
+        if (item.statusBadge) {
+          item.statusBadge.type = (statusBadgeTypes[item.statusBadge.type] || 'Neutral') as any;
         }
       });
     }
@@ -683,13 +815,20 @@ export class NavigationService {
       };
     }
 
+    let logoAltText = '';
+
+    if (typeof cfg.settings?.header?.altText === 'string') {
+      logoAltText = this.luigi.i18n().getTranslation(cfg.settings.header.altText);
+    }
+
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      favicon: cfg.settings?.header?.favicon,
       globalSearch,
       isHeaderDisabled: !!cfg.settings?.header?.disabled,
       logo: cfg.settings?.header?.logo,
+      logoAltText,
       topNodes: navData.items,
-      totalBadgeNode: navData.totalBadgeNode,
       contextSwitcher,
       productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
@@ -773,7 +912,6 @@ export class NavigationService {
     const result: TabNavData = {
       selectedNode,
       items: navData.items,
-      totalBadgeNode: navData.totalBadgeNode,
       basePath: basePath.replace(/\/\/+/g, '/'),
       overflowLabel: this.luigi.i18n().getTranslation('luigi.navigation.tabNav.more'),
       navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
@@ -1075,7 +1213,7 @@ export class NavigationService {
    * Deal with route changing scenario.
    * @param {NavigationRequestParams} params - the params to configure navigation request
    * @param {string} params.path - the path of the view to open
-   * @param {string} params.preserveView - preserve a view by setting it to specific value (optional)
+   * @param {boolean} params.preserveView - preserve a view by setting it to specific value (optional)
    * @param {any} params.modalSettings - settings to configure the modal's title and size (optional)
    * @param {boolean} params.newTab - open a view in new tab by setting it to `true` (optional)
    * @param {boolean} params.withoutSync - disables the navigation handling for a single navigation request (optional)
@@ -1136,15 +1274,33 @@ export class NavigationService {
     const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
 
-    // Navigating to the page you are already on is a no-op, but an overlay is not a navigation:
-    // a modal or drawer is independent of the main route, so it must open even when its path
-    // equals the current location.
-    const isOverlayRequest = Boolean(drawerSettings || modalSettings);
+    if (preserveView) {
+      const pathData: PathData = await this.getPathData(currentPath);
 
+      this._preservedViews.push({
+        context: pathData.context,
+        nextPath: computedPath.startsWith('/') ? computedPath : '/' + computedPath,
+        path: pathData?.pathParams
+          ? GenericHelpers.replaceVars(currentPath, pathData.pathParams, ':', false)
+          : currentPath
+      });
+    }
+
+    const isOverlayRequest = Boolean(drawerSettings || modalSettings);
     if (
       !isOverlayRequest &&
       GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)
     ) {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+      if (containerWrapper?.childNodes) {
+        const activeContainer = [...containerWrapper.childNodes].find(
+          (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
+        ) as HTMLElement | undefined;
+        if (activeContainer) {
+          activeContainer.remove();
+          UIModule.routingService.handleRouteChange({ path: currentPath, query: currentQuery });
+        }
+      }
       return;
     }
 
@@ -1170,6 +1326,7 @@ export class NavigationService {
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
+          preserveView: !!preserveView,
           preventContextUpdate: !!preventContextUpdate,
           preventHistoryEntry: !!preventHistoryEntry,
           withoutSync: !!withoutSync
@@ -1211,7 +1368,7 @@ export class NavigationService {
 
       if (hashRouting) {
         const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
-        if (!withoutSync && !preventContextUpdate && method !== 'replaceState') {
+        if (!withoutSync && !preserveView && !preventContextUpdate && method !== 'replaceState') {
           location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);

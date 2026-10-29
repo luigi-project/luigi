@@ -531,6 +531,26 @@ Luigi.navigation().withParams({foo: "bar"}).navigate("path")
 Luigi.navigation().fromContext("currentTeam").withParams({foo: "bar"}).navigate("path")
 ```
 **Returns**: <code>linkManager</code> - link manager instance  
+### withOptions&nbsp;  
+Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+
+**Params**
+
+- options <code>Object</code> - navigation options
+    - .preventHistoryEntry <code>boolean</code> - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+    - .preventContextUpdate <code>boolean</code> - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+
+  
+**Example**  
+```js
+Luigi.navigation().withOptions(
+  { preventContextUpdate: true, preventHistoryEntry: true }
+).navigate('/overview')
+```
+**Returns**: <code>linkManager</code> - link manager instance  
+  
+**Meta**:  
+* **since:** NEXTRELEASE
 ### pathExists&nbsp;  
 Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
 

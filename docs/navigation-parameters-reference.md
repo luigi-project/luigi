@@ -56,6 +56,7 @@ If you don't want Luigi to handle the page not found error, because you've imple
 - **attributes**:
   - **wrongPath** (string): the path that the user tried navigating to.
   - **wasAnyPathFitted** (bool): it is true if Luigi managed to fit a valid path which means **wrongPath** was only partially wrong. Otherwise it is false.
+  - **mode** (string): the special view mode the navigation was requested in. One of `'modal'`, `'splitView'` or `'drawer'`, or `undefined` for a regular navigation. This lets the handler react differently to a `404` depending on how the view was opened (for example, when the **ignoreLuigiErrorHandling** option is returned, Luigi removes the modal data from the URL unless **keepURL** is set). ( **since**: NEXTRELEASE )
 
 ### preserveQueryParams
 - **type**: boolean
@@ -234,7 +235,7 @@ navigation: {
 
 ### validWebcomponentUrls
   - **type**: array
-  - **description**: a list of allowed web component URLs. They must be added as regular expressions to the array.
+  - **description**: a list of allowed web component URLs. They must be added as regular expressions to the array. This is the trust boundary for web component micro frontends: since web components run in the host page's context rather than in an isolated iframe, only add origins you trust.
   - **example**:
 ```javascript
 settings: {
@@ -289,6 +290,34 @@ Node parameters are all the parameters that can be added to an individual naviga
   - **id** if this property is defined all nodes with the same category `id` will be grouped.
   - **titleExpandButton** adds the HTML `title` attribute with the defined value to the expand button.
   - **titleCollapseButton** adds the HTML `title` attribute with the defined value to the collapse button.
+  - **navigateOnClick** makes the category label itself navigable in the horizontal ([tab](navigation-parameters-reference.md#tabnav)) navigation, in addition to opening the drop-down. By default, clicking a category in the tab navigation only opens its drop-down menu; with `navigateOnClick` the tab text also navigates directly to a target node. It accepts either a boolean or a string:
+    - `true` navigates to the node that declares the category (the node that defines the category as an object). If that node has no `label` of its own, it acts solely as the click target and is not listed as a separate entry in the drop-down.
+    - a string navigates to the sibling node in the same category whose `pathSegment` matches the given value. If no sibling matches, no node is flagged as navigable. A matching node that has a `label` remains visible in the drop-down.
+    - This only applies to nodes rendered as tab navigation. (core-modular)
+- **example**:
+    ```javascript
+    // `navigateOnClick: true` — the category-declaring node is the click target.
+    // Because it has no label, it is hidden from the drop-down and only reachable
+    // by clicking the tab text.
+    children: [
+      {
+        pathSegment: 'overview',
+        category: { id: 'products', label: 'Products', navigateOnClick: true }
+      },
+      { pathSegment: 'details', label: 'Details', category: 'products' }
+    ]
+
+    // `navigateOnClick: '<pathSegment>'` — clicking the tab text navigates to the
+    // sibling with the matching pathSegment. A labelled target stays in the drop-down.
+    children: [
+      {
+        pathSegment: 'first',
+        label: 'First',
+        category: { id: 'products', label: 'Products', navigateOnClick: 'second' }
+      },
+      { pathSegment: 'second', label: 'Second', category: 'products' }
+    ]
+    ```
 
 ### children
 - **type**: array | function
@@ -1307,4 +1336,4 @@ The global search is an input field available in the top navigation bar. The sea
 ### style
 - **type**: string
 - **description**: selects the visual layout of the global search field. When set to `'vega'`, the magnifier icon is rendered inside the search input pill (along with a clear-input button), matching the Fundamental Styles shellbar reference. The outside toggle button is hidden while the field is expanded so the pill visually wraps around it. Any other value (or omitting the property) keeps the original two-button layout where the magnifier sits outside the input as a separate toggle. When `'vega'` is active, you can implement `searchProvider.onSearchBtnClick` to handle clicks on the in-pill magnifier; if not provided, it falls back to `searchProvider.onEnter`.
-- **since**: NEXTRELEASE
+- **since**: 2.32.0

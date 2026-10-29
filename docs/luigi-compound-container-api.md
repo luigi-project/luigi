@@ -309,7 +309,7 @@ containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId
 ```
   
 **Meta**:  
-* **since:** NEXT_RELEASE
+* **since:** 1.7.10
 ### skipInitCheck&nbsp;  
 <p>If set to true, skips handshake and ready event is fired immediately. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>

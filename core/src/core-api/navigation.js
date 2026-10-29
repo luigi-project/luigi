@@ -198,6 +198,24 @@ class LuigiNavigationManager {
 
   /** @lends linkManager */
   /**
+   * Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+   * @memberof LuigiNavigation
+   * @param {Object} options - navigation options
+   * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+   * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+   * @returns {linkManager} link manager instance
+   * @since NEXTRELEASE
+   * @example
+   * Luigi.navigation().withOptions(
+   *   { preventContextUpdate: true, preventHistoryEntry: true }
+   * ).navigate('/overview')
+   */
+  withOptions(options) {
+    return new linkManager().withOptions(options);
+  }
+
+  /** @lends linkManager */
+  /**
    * Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
    * @memberof LuigiNavigation
    * @param {string} path - path which existence you want to check

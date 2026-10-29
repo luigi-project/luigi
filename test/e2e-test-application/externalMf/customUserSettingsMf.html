@@ -32,28 +32,29 @@
       }
 
       function changeTheming(theme) {
-        document.querySelectorAll('.btnList button').forEach(button => {
+        document.querySelectorAll('.btnList button').forEach((button) => {
           button.classList.remove('active');
         });
         document.querySelector('.' + theme).classList.add('active');
         myUserSettings.theme = theme;
         window.LuigiClient.sendCustomMessage({
           id: 'luigi.updateUserSettings',
-          data: myUserSettings
+          data: myUserSettings,
         });
       }
 
+      // just a context update example, has nothing to do with user settings dialog
       function setYellowTheme(theme) {
         window.LuigiClient.sendCustomMessage({
           id: 'my-custom-message.update-user-settings',
-          theme: 'yellow'
+          theme: 'yellow',
         });
       }
     </script>
     <div>
       <ul class="btnList">
         <li>
-          <button class="red" style="color:red" onclick="changeTheming('red')">
+          <button class="red" style="color: red" onclick="changeTheming('red')">
             Red
           </button>
         </li>

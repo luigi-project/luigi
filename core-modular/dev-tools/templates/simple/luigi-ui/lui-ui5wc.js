@@ -56,7 +56,7 @@ function addShellbarItem(shellbar, item, navClickFn) {
     itemEl.setAttribute('category-uid', item.category.id);
     itemEl.setAttribute('tooltip', item.category.tooltip);
     shellbar.appendChild(itemEl);
-    renderCategoryPopover(item.category);
+    renderCategoryPopover(item.category, itemEl);
     itemEl.addEventListener('click', createCategoryClickHandler(item.category.id));
   }
 }
@@ -158,7 +158,7 @@ function onProductSwitcherClick(event) {
   }
 }
 
-function renderCategoryPopover(catObj) {
+function renderCategoryPopover(catObj, shellbarItem) {
   const catPopover = document.createElement('ui5-popover');
   catPopover.setAttribute('placement', 'Bottom');
   (catObj.id && catPopover.setAttribute('id', `luigi-${catObj.id}-popover`)) ||
@@ -168,7 +168,23 @@ function renderCategoryPopover(catObj) {
     const catLi = document.createElement('ui5-li');
     catLi.setAttribute('icon', item.icon);
     catLi.setAttribute('luigi-route', item.node.pathSegment);
-    catLi.setAttribute('text', item.label);
+    if (item.node.badgeCounter) {
+      item.node.badgeCounter.count().then((count) => {
+        const badge = document.createElement('ui5-button-badge');
+        badge.setAttribute('design', 'OverlayText');
+        badge.setAttribute('text', count);
+        catLi.setAttribute('count', count);
+        catLi.setAttribute('aria-label', item.node.badgeCounter.label);
+        catLi.appendChild(badge);
+        let totalCount = 0;
+        catList.childNodes.forEach((child) => {
+          const childCount = parseInt(child.getAttribute('count')) || 0;
+          totalCount += childCount;
+        });
+        shellbarItem.setAttribute('count', totalCount);
+      });
+    }
+
     catLi.innerText = item.label;
     catLi.addEventListener('click', () => {
       globalThis.Luigi.navigation().navigate(catLi.getAttribute('luigi-route'));
@@ -345,6 +361,16 @@ function renderNodeOrCategory(item, leftNavData) {
     } else {
       el.setAttribute('luigi-route', leftNavData.basePath + '/' + item.node.pathSegment);
       if (item.href) el.setAttribute('href', item.href);
+    }
+    if (item.node?.statusBadge?.label) {
+      const badge = document.createElement('ui5-tag');
+      badge.setAttribute('design', item.node.statusBadge.type);
+      badge.setAttribute('hide-state-icon', true);
+      badge.setAttribute('slot', 'tag');
+      badge.textContent = item.node.statusBadge.label;
+      el.appendChild(badge);
+      el.setAttribute('text', `${item.label} [${item.node.statusBadge.label}]`);
+      el.setAttribute('tooltip', `${item.tooltip} [${item.node.statusBadge.label}]`);
     }
     el._luigiItem = item;
     if (item.selected) el.setAttribute('selected', '');
@@ -918,6 +944,7 @@ const connector = {
       sidenav._leftNavData = leftNavData;
       if (!sidenav._selectionChangeListener) {
         sidenav._selectionChangeListener = true;
+        // Normal navigation goes through UI5's `selection-change`.
         sidenav.addEventListener('selection-change', async (event) => {
           event.preventDefault();
           const selectedItem = event.detail.item;
@@ -929,17 +956,25 @@ const connector = {
             // navigation was cancelled (e.g. unsaved changes dismissed)
           }
         });
-        // Prevent native anchor navigation when href is set (same as core's handleNavAnchorClickedWithoutMetaKey).
-        // Meta+click still opens in a new tab. Only intercept real user clicks, not synthetic ones from fireDecoratorEvent.
-        sidenav.addEventListener(
-          'click',
-          (event) => {
-            if (event.isTrusted && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
-              event.preventDefault();
-            }
-          },
-          true
-        );
+        // UI5's `selection-change` only fires when the selection actually changes, so a re-click on
+        // the already-selected item is silent.
+        sidenav.addEventListener('click', (event) => {
+          const detail = event.detail || {};
+          if (detail.ctrlKey || detail.metaKey || detail.shiftKey) return;
+          const navItemEl = event
+            .composedPath()
+            .find(
+              (el) =>
+                el.nodeType === 1 &&
+                (el.localName === 'ui5-side-navigation-item' || el.localName === 'ui5-side-navigation-sub-item') &&
+                el._luigiItem
+            );
+          const luigiItem = navItemEl?._luigiItem;
+          if (!luigiItem || !luigiItem.selected || luigiItem.externalLink?.url) return;
+          Promise.resolve(sidenav._leftNavData.navClick(luigiItem)).catch(() => {
+            // navigation was cancelled (e.g. unsaved changes dismissed)
+          });
+        });
       }
       sidenav.innerHTML = '';
       if (leftNavData?.selectedNode?.hideSideNav) {
@@ -1023,6 +1058,7 @@ const connector = {
 
     const btn = document.createElement('ui5-button');
     btn.innerHTML = 'X';
+    btn.setAttribute('data-testid', modalSettings.closebtn_data_testid || 'lui-modal-index-0');
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -1116,7 +1152,23 @@ const connector = {
         item.selected ? item.selected && tab.setAttribute('selected', '') : '';
       } else if (item.category) {
         tab.setAttribute('text', item.category.label || item.category.id);
-        item.category.nodes?.forEach((subItem) => {
+
+        const dropdownNodes = item.category.nodes || [];
+
+        const targetNode = dropdownNodes.find((subItem) => subItem.navigateOnClick);
+
+        if (targetNode?.node?.pathSegment) {
+          tab.setAttribute('luigi-route', tabNavData.basePath + '/' + targetNode.node.pathSegment);
+          if (targetNode.selected) {
+            tab.setAttribute('selected', '');
+          }
+          tab.appendChild(document.createTextNode(item.category.label || item.category.id));
+        }
+
+        dropdownNodes.forEach((subItem) => {
+          if (subItem.navigateOnClick && !subItem.label) {
+            return;
+          }
           const subTab = document.createElement('ui5-tab');
           subTab.setAttribute('slot', 'items');
           subTab.setAttribute('text', subItem.label || subItem.node?.pathSegment || '');
@@ -1245,8 +1297,11 @@ const connector = {
     }
   },
 
-  openUserSettings: async (settings, userSettingData, previousUserSettings, lc) => {
-    const storedUserSettings = previousUserSettings ? { ...previousUserSettings } : {};
+  openUserSettings: async (settings, userSettingData, initialUserSettings, lc) => {
+    // initialUserSettings is the complete object core-modular hands us (defaults for
+    // every configured setting, overlaid with the persisted values). Copy it
+    // into a mutable working state so edits don't mutate the passed-in object.
+    const storedUserSettings = { ...initialUserSettings };
 
     function el(tag, attrs, children) {
       const node = document.createElement(tag);
@@ -1323,7 +1378,7 @@ const connector = {
       if (groupConfig.icon) attrs.icon = groupConfig.icon;
       if (isFirst) attrs.selected = true;
 
-      const groupStoredSettings = previousUserSettings?.[groupKey] || {};
+      const groupStoredSettings = initialUserSettings?.[groupKey] || {};
 
       let content;
       if (groupConfig.viewUrl) {
@@ -1356,18 +1411,21 @@ const connector = {
       }
     }
 
-    // Assemble dialog
+    // Assemble dialog. save-mode renders Save and Cancel buttons in the footer
+    // and fires separate `save`/`cancel` events, so we only persist on Save —
+    // matching Luigi core, where Dismiss just closes without storing.
     const dialog = el(
       'ui5-user-settings-dialog',
       {
         id: 'luigi-user-settings',
-        'header-text': settings?.dialogHeader || 'Settings'
+        'header-text': settings?.dialogHeader || 'Settings',
+        'save-mode': true
       },
       settingsItems
     );
 
-    dialog.addEventListener('close', async () => {
-      settings.onCloseCallback(storedUserSettings, previousUserSettings);
+    const cleanup = () => {
+      dialog.open = false;
       if (dialog.parentElement) {
         document.body.removeChild(dialog);
       }
@@ -1375,6 +1433,19 @@ const connector = {
       if (profilePopover) {
         profilePopover.open = false;
       }
+    };
+
+    dialog.addEventListener('save', async () => {
+      settings.onCloseCallback(storedUserSettings);
+      cleanup();
+    });
+
+    dialog.addEventListener('cancel', () => {
+      cleanup();
+    });
+
+    dialog.addEventListener('close', () => {
+      cleanup();
     });
 
     document.body.appendChild(dialog);
@@ -1399,6 +1470,7 @@ const connector = {
     const loadingIndicator = wrapper.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
+      loadingIndicator.delay = 300;
       loadingIndicator.active = true;
     }
   },
@@ -1408,9 +1480,7 @@ const connector = {
     const loadingIndicator = wrapper.querySelector('ui5-busy-indicator');
 
     if (loadingIndicator) {
-      setTimeout(() => {
-        loadingIndicator.active = false;
-      }, 2000);
+      loadingIndicator.active = false;
     }
   },
 

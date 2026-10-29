@@ -152,6 +152,7 @@ export class UX {
 
     const previousUserSettings = await this.luigi.readUserSettings();
     const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
+    const initialUserSettings = UserSettingsHelper.prepareUserSettingsObj(userSettingData, previousUserSettings);
 
     const userSettingsDialog = userSettings.userSettingsDialog || {};
     const dialogHeader = userSettingsDialog.dialogHeader || TOP_NAV_DEFAULTS.userSettingsDialog.dialogHeader;
@@ -164,7 +165,13 @@ export class UX {
     };
     this.luigi
       .getEngine()
-      ._ui?.openUserSettings(userSettingsDialogSettings, userSettingData, previousUserSettings, this.luigi);
+      ._ui?.openUserSettings(
+        userSettingsDialogSettings,
+        userSettingData,
+        previousUserSettings,
+        initialUserSettings,
+        this.luigi
+      );
   };
 
   /**

@@ -1,3 +1,7 @@
 [[IgnoredVulns]]
 id = "GHSA-mh99-v99m-4gvg"
 reason = "brace-expansion is a dev-only transitive dep in this internal scripts package (never published) used to expand glob patterns supplied by our own configs, not untrusted input. The 1.x and 2.x branches have no backport yet as of this writing. Revisit when 1.1.17 / 2.1.3 are published."
+
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+reason = "braces is a dev-only transitive dep (via micromatch, under fast-glob, jsdoc-api/jsdoc-to-markdown) in this internal scripts package (never published) used to expand glob patterns supplied by our own configs, not untrusted input. The vulnerability is a stack-exhaustion DoS requiring attacker-controlled deeply-nested brace patterns, which never reach these code paths. braces 3.0.3 is the latest published version with no fix available yet. Revisit when a patched braces (>3.0.3) is released."

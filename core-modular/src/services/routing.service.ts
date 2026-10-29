@@ -62,25 +62,29 @@ export class RoutingService {
 
     if (luigiConfig.routing?.useHashRouting) {
       EventListenerHelpers.addEventListener('hashchange', (ev: HashChangeEvent) => {
+        const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, true, true),
           withoutSync,
-          preventContextUpdate
+          preventContextUpdate,
+          preserveView
         );
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
       EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
+        const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, false, true),
           withoutSync,
-          preventContextUpdate
+          preventContextUpdate,
+          preserveView
         );
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
@@ -92,12 +96,14 @@ export class RoutingService {
    * @param {Object} routeInfo - the information about path and query
    * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
    * @param {boolean} preventContextUpdate - make no context update being triggered
+   * @param {boolean} preserveView - preserve a view by setting it to true
    * @returns {Promise<void>} A promise that resolves when route change is complete.
    */
   async handleRouteChange(
     routeInfo: { path: string; query: string },
     withoutSync = false,
-    preventContextUpdate = false
+    preventContextUpdate = false,
+    preserveView = false
   ): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
@@ -119,6 +125,10 @@ export class RoutingService {
 
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;
+    }
+
+    if (!this.getNavigationService().isValidBackRoute(path)) {
+      this.getNavigationService().clearPreservedViews();
     }
 
     this.setFeatureToggle(fullPath);
@@ -174,7 +184,14 @@ export class RoutingService {
       this.currentRoute.node = currentNode;
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      await UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
+      await UIModule.updateMainContent(
+        currentNode,
+        this.luigi,
+        luigiParams,
+        withoutSync,
+        preventContextUpdate,
+        preserveView
+      );
       this.previousPathData = pathData;
     }
   }
@@ -201,7 +218,7 @@ export class RoutingService {
    *
    * @returns {Promise<void>} A promise that resolves when the modal handling is complete.
    */
-  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }): Promise<void> {
+  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }, checkModals = true): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const modalService = serviceRegistry.get(ModalService);
     const urlSearchParams = new URLSearchParams(routeInfo?.query || '');
@@ -209,8 +226,10 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      const closed = await modalService.closeModalsWithDirtyCheck();
-      if (!closed) return;
+      if (checkModals) {
+        const closed = await modalService.closeModalsWithDirtyCheck();
+        if (!closed) return;
+      }
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
@@ -263,8 +282,9 @@ export class RoutingService {
     historyState = RoutingHelpers.handleHistoryState(historyState, pathWithoutModalData);
     if (prevModalPath !== modalPath) {
       params[modalParamName] = modalPath;
-      if (modalParams && Object.keys(modalParams).length) {
-        params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+      const bookmarkableParams = RoutingHelpers.getBookmarkableModalParams(modalParams);
+      if (bookmarkableParams && Object.keys(bookmarkableParams).length) {
+        params[`${modalParamName}Params`] = JSON.stringify(bookmarkableParams);
       }
       if (hashRoutingActive) {
         const queryParamIndex = location.hash.indexOf(queryParamSeparator);
@@ -411,8 +431,9 @@ export class RoutingService {
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
 
     params[modalParamName] = modalPath;
-    if (modalParams && Object.keys(modalParams).length) {
-      params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+    const bookmarkableParams = RoutingHelpers.getBookmarkableModalParams(modalParams);
+    if (bookmarkableParams && Object.keys(bookmarkableParams).length) {
+      params[`${modalParamName}Params`] = JSON.stringify(bookmarkableParams);
     }
     const url = new URL(location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');

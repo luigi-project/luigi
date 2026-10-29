@@ -27,6 +27,8 @@ class Communication {
     'my-micro-frontend-is-ready': () => {
       Luigi.ux().hideAppLoadingIndicator();
     },
+    // just a context update example, has nothing to do with user settings itself,
+    // calling Luigi.storeUserSettings is not ideal here and misleading
     'my-custom-message.update-user-settings': (customMessage, mfObject, mfNodeObj) => {
       Luigi.storeUserSettings({ custom: { theme: customMessage.theme } });
     }

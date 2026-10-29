@@ -1,4 +1,5 @@
 import { Navigation } from '../../src/core-api/navigation';
+import { DirtyStatusService } from '../../src/services/dirty-status.service';
 import { ModalService } from '../../src/services/modal.service';
 import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
@@ -9,6 +10,7 @@ import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 describe('Navigation', () => {
   let luigiMock: any;
   let navigation: Navigation;
+  let dirtyStatusService: DirtyStatusService;
   let mockNavService: any;
   let routingServiceMock: RoutingService;
   let modalServiceMock: any;
@@ -27,6 +29,8 @@ describe('Navigation', () => {
       openViewInNewTab: jest.fn(),
       handleNavigationRequest: jest.fn(),
       shouldPreventNavigationForPath: jest.fn().mockReturnValue(false),
+      getPreservedViewsLength: jest.fn().mockReturnValue(0),
+      handleGoBackRequest: jest.fn(),
       getPathData: jest.fn()
     };
 
@@ -48,6 +52,8 @@ describe('Navigation', () => {
         showAlert: jest.fn()
       })
     };
+
+    dirtyStatusService = new DirtyStatusService(luigiMock);
 
     modalServiceMock = {
       closeModals: jest.fn().mockResolvedValue(undefined),
@@ -144,7 +150,69 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { title: 'Node Label' },
+        { title: 'Node Label', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should set default modal size to "l" if not provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should not override modal size if provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', size: 'm' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'm', closebtn_data_testid: 'lui-modal-index-0' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should set closebtn_data_testid based on current modal stack length', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      // simulate one modal already open in the stack
+      modalServiceMock.getModalStackLength.mockReturnValue(1);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', keepPrevious: true });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', keepPrevious: true, size: 'l', closebtn_data_testid: 'lui-modal-index-1' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+    it('should not override closebtn_data_testid if provided', async () => {
+      const openModalSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openModal');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', closebtn_data_testid: 'my-custom-testid' });
+
+      expect(openModalSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { title: 'Modal Title', size: 'l', closebtn_data_testid: 'my-custom-testid' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -171,7 +239,12 @@ describe('Navigation', () => {
       jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
       await navigation.openAsModal('/modal/path', { title: 'Modal Title' }); // await
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', { title: 'Modal Title' });
+      // navigation passes the full settings; RoutingService strips non-bookmarkable keys before serialization
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', {
+        title: 'Modal Title',
+        size: 'l',
+        closebtn_data_testid: 'lui-modal-index-0'
+      });
     });
     it('should append nodeParams to modal path in URL', async () => {
       luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
@@ -186,7 +259,14 @@ describe('Navigation', () => {
 
       await navigation.openAsModal('/modal/path', { title: 'Modal Title', nodeParams: { test: 'true', foo: 'bar' } });
 
-      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', { title: 'Modal Title' });
+      // nodeParams are appended to the modal path by navigation; the full settings
+      // are passed on and stripped later in RoutingService
+      expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', {
+        title: 'Modal Title',
+        size: 'l',
+        closebtn_data_testid: 'lui-modal-index-0',
+        nodeParams: { test: 'true', foo: 'bar' }
+      });
     });
   });
 
@@ -201,7 +281,40 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { header: { title: 'Node Label' }, overlap: true },
+        { header: { title: 'Node Label' }, overlap: true, size: 's' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+
+    it('should set default drawer size to "s" if not provided', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsDrawer('/drawer/path', { header: { title: 'Custom Drawer Title' } });
+
+      expect(openDrawerSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { header: { title: 'Custom Drawer Title' }, overlap: true, size: 's' },
+        undefined,
+        { nodeParams: {}, pathParams: {}, searchParams: {} }
+      );
+    });
+
+    it('should not override drawer size if provided', async () => {
+      const openDrawerSpy = jest.spyOn(luigiMock.getEngine()._ui, 'openDrawer');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+      const drawerSettings: DrawerSettings = { header: { title: 'Custom Drawer Title' }, size: 'm' };
+
+      await navigation.openAsDrawer('/drawer/path', drawerSettings);
+
+      expect(openDrawerSpy).toHaveBeenCalledWith(
+        luigiMock,
+        { label: 'Node Label', children: [] },
+        { header: { title: 'Custom Drawer Title' }, overlap: true, size: 'm' },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -376,6 +489,89 @@ describe('Navigation', () => {
     });
   });
 
+  describe('withOptions', () => {
+    it('should set preventHistoryEntry option', () => {
+      const result = navigation.withOptions({ preventHistoryEntry: true });
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(true);
+    });
+
+    it('should set preventContextUpdate option', () => {
+      const result = navigation.withOptions({ preventContextUpdate: true });
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventContextUpdate).toBe(true);
+    });
+
+    it('should set both options together', () => {
+      navigation.withOptions({ preventHistoryEntry: true, preventContextUpdate: true });
+
+      expect(navigation.preventHistoryEntry).toBe(true);
+      expect(navigation.preventContextUpdate).toBe(true);
+    });
+
+    it('should keep default values when options are not provided', () => {
+      navigation.withOptions({});
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should ignore unknown options', () => {
+      navigation.withOptions({ foo: 'bar' } as any);
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+      expect((navigation.options as any).foo).toBeUndefined();
+    });
+
+    it('should allow explicitly setting options to false', () => {
+      navigation.preventHistoryEntry = true;
+      navigation.preventContextUpdate = true;
+
+      navigation.withOptions({ preventHistoryEntry: false, preventContextUpdate: false });
+
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should return instance without modifying when a non-object is passed', () => {
+      const result = navigation.withOptions('invalid' as any);
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should return instance without modifying when null is passed', () => {
+      const result = navigation.withOptions(null as any);
+
+      expect(result).toBe(navigation);
+      expect(navigation.preventHistoryEntry).toBe(false);
+      expect(navigation.preventContextUpdate).toBe(false);
+    });
+
+    it('should pass options top-level to handleNavigationRequest when chained with navigate', () => {
+      const handleNavigationRequestSpy = jest.spyOn(mockNavService, 'handleNavigationRequest');
+
+      navigation.withOptions({ preventHistoryEntry: true, preventContextUpdate: true }).navigate('/overview');
+
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/overview',
+          preventHistoryEntry: true,
+          preventContextUpdate: true
+        }),
+        undefined
+      );
+      // the prevent flags live top-level on the request, not inside options
+      const requestArg = handleNavigationRequestSpy.mock.calls[0][0] as NavigationRequestParams;
+      expect(requestArg.options).not.toHaveProperty('preventHistoryEntry');
+      expect(requestArg.options).not.toHaveProperty('preventContextUpdate');
+    });
+  });
+
   describe('updateTopNavigation', () => {
     it('should trigger config change for navigation', async () => {
       const configChangedSpy = jest.spyOn(luigiMock, 'configChanged');
@@ -383,6 +579,37 @@ describe('Navigation', () => {
       await navigation.updateTopNavigation();
 
       expect(configChangedSpy).toHaveBeenCalledWith('navigation');
+    });
+  });
+
+  describe('hasBack', () => {
+    it('should return false if there is no modal or preserved view in stack', () => {
+      expect(navigation.hasBack()).toEqual(false);
+    });
+
+    it('should return true if there is at least one modal in stack', () => {
+      mockNavService.getPreservedViewsLength.mockReturnValue(0);
+      modalServiceMock.getModalStackLength.mockReturnValue(1);
+      expect(navigation.hasBack()).toEqual(true);
+    });
+
+    it('should return true if there is at least one view in stack', () => {
+      mockNavService.getPreservedViewsLength.mockReturnValue(1);
+      modalServiceMock.getModalStackLength.mockReturnValue(0);
+      expect(navigation.hasBack()).toEqual(true);
+    });
+  });
+
+  describe('goBack', () => {
+    it.each([{ foo: 'bar' }, true])('should handle "goBack" request with context', async (context) => {
+      const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
+      jest.spyOn(mockNavService, 'getPreservedViewsLength').mockResolvedValue(1);
+
+      navigation.goBack(context);
+
+      expect.assertions(2);
+      expect(goBackRequestSpy).toHaveBeenCalledWith(context && JSON.stringify(context));
+      await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
     });
   });
 });

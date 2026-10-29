@@ -43,7 +43,7 @@
     "@babel/preset-env": "7.29.0",
     "@babel/preset-typescript": "7.28.5",
     "@cypress/code-coverage": "4.0.1",
-    "@happy-dom/jest-environment": "20.8.9",
+    "@happy-dom/jest-environment": "21.0.4",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@rollup/plugin-commonjs": "28.0.0",
     "@rollup/plugin-node-resolve": "15.3.0",

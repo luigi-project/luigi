@@ -27,6 +27,7 @@ jest.mock('../../src/utilities/helpers/navigation-helpers', () => ({
 }));
 jest.mock('../../src/utilities/helpers/generic-helpers', () => ({
   GenericHelpers: {
+    getNodeList: jest.fn().mockReturnValue([]),
     getRandomId: jest.fn().mockReturnValue('random-id'),
     isFunction: jest.fn((fn: any) => typeof fn === 'function'),
     isSameUrl: jest.fn((a: string, b: string) => a === b)
@@ -67,8 +68,17 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     };
 
     const mockViewUrlDecoratorSvc = { applyDecorators: jest.fn().mockImplementation((url: string) => url) };
-    const mockModalService = { registerModal: jest.fn(), getModalSettings: jest.fn().mockReturnValue({}) };
+    const mockModalService = {
+      registerModal: jest.fn(),
+      getModalSettings: jest.fn().mockReturnValue({}),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
+    };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ViewUrlDecoratorSvc) return mockViewUrlDecoratorSvc;
@@ -79,6 +89,7 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
 
     UIModule.modalContainer = [];
     UIModule.drawerContainer = undefined;
+    (UIModule as any).navService = mockNavigationService;
   });
 
   function createMockContainer(viewurl: string): any {

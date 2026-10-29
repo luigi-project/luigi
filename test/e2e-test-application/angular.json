@@ -76,7 +76,8 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "luigisample:build",
-            "proxyConfig": "proxy.conf.cjs"
+            "proxyConfig": "proxy.conf.cjs",
+            "poll": 2000
           },
           "configurations": {
             "production": {

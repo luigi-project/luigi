@@ -19,6 +19,7 @@ jest.mock('../../src/utilities/helpers/auth-helpers', () => ({
 }));
 
 import { UIModule } from '../../src/modules/ui-module';
+import { ModalService } from '../../src/services/modal.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
 describe('UIModule.updateMainContent - withoutSync', () => {
@@ -51,9 +52,26 @@ describe('UIModule.updateMainContent - withoutSync', () => {
       featureToggles: () => ({ getActiveFeatureToggleList: () => [] })
     };
 
-    (serviceRegistry.get as jest.Mock).mockImplementation(() => ({
-      applyDecorators: (url: string) => url
-    }));
+    const mockModalService = {
+      registerModal: jest.fn(),
+      getModalSettings: jest.fn().mockReturnValue({}),
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true)
+    };
+
+    const mockNavigationService = {
+      clearGoBackContext: jest.fn(),
+      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
+      getGoBackContext: jest.fn().mockResolvedValue(null)
+    };
+
+    (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
+      if (service === ModalService) return mockModalService;
+      return {
+        applyDecorators: (url: string) => url
+      };
+    });
+
+    (UIModule as any).navService = mockNavigationService;
   });
 
   it('should preserve existing container when withoutSync is true and viewUrls differ', async () => {
@@ -66,6 +84,19 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     expect(containerWrapper.contains(existingContainer)).toBe(true);
     expect(existingContainer.style.display).toBe('block');
+  });
+
+  it('should not preserve existing container when withoutSync is true, viewUrls differ and preserveView is set', async () => {
+    const currentNode = {
+      label: 'Target',
+      viewUrl: 'https://example.com/different-mfe.html'
+    };
+
+    await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(true);
+    expect(existingContainer.style.display).toBe('none');
+    expect((existingContainer as any)._luigiPreserved).toBe(false);
   });
 
   it('should not update viewurl property when withoutSync is true', async () => {
@@ -88,10 +119,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     await UIModule.updateMainContent(currentNode as any, mockLuigi, undefined, true, false);
 
-    expect(existingContainer.updateContext).toHaveBeenCalledWith(
-      { project: 'new-project' },
-      { withoutSync: true }
-    );
+    expect(existingContainer.updateContext).toHaveBeenCalledWith({ project: 'new-project' }, { withoutSync: true });
   });
 
   it('should not call updateViewUrl when withoutSync is true even if hash changed', async () => {
@@ -130,10 +158,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
     expect(existingContainer.searchParams).toEqual({ fresh: 'search' });
     // viewurl untouched -> no iframe reload
     expect(existingContainer.viewurl).toBe('https://example.com/current-mfe.html');
-    expect(existingContainer.updateContext).toHaveBeenCalledWith(
-      { project: 'new-project' },
-      { withoutSync: true }
-    );
+    expect(existingContainer.updateContext).toHaveBeenCalledWith({ project: 'new-project' }, { withoutSync: true });
   });
 
   it('should not update params when withoutSync and preventContextUpdate are both true', async () => {

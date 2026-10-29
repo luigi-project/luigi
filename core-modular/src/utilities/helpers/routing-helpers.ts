@@ -1,7 +1,7 @@
 import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { AlertSettings } from '../../types/ux';
-import type { Node, PathData, ViewGroupSettings } from '../../types/navigation';
+import type { Node, PathData, ViewGroupSettings, ModalSettings } from '../../types/navigation';
 import { AsyncHelpers } from './async-helpers';
 import { EscapingHelpers } from './escaping-helpers';
 import { GenericHelpers } from './generic-helpers';
@@ -549,6 +549,32 @@ export const RoutingHelpers = {
   getModalParamsFromPath(luigi: Luigi): any {
     const modalParamsStr = this.getQueryParam(`${this.getModalViewParamName(luigi)}Params`, luigi);
     return modalParamsStr && JSON.parse(modalParamsStr);
+  },
+
+  /**
+   * Returns only the modal settings that may be persisted in the bookmarkable
+   * `modalParams` query string. Everything else is dropped so non-bookmarkable
+   * settings never leak into the URL:
+   * - `nodeParams` are already serialized onto the modal path
+   * - `closebtn_data_testid` is a rendering-only detail
+   *
+   * `keepPrevious` is only kept when truthy (its default/false state is noise).
+   * Properties are copied by explicit name (no computed property writes) to
+   * avoid remote property injection. Returns a shallow copy; the input is left untouched.
+   * @param {ModalSettings} modalParams modal settings about to be written to the URL
+   * @returns {Partial<ModalSettings>} a copy containing only the bookmarkable properties
+   */
+  getBookmarkableModalParams(modalParams: ModalSettings): Partial<ModalSettings> {
+    const val = {
+      size: modalParams.size,
+      width: modalParams.width,
+      height: modalParams.height,
+      title: modalParams.title
+    } as Partial<ModalSettings>;
+    if (modalParams.keepPrevious) {
+      val.keepPrevious = modalParams.keepPrevious;
+    }
+    return val;
   },
 
   /**

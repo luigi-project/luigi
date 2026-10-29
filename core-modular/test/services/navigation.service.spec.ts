@@ -6,14 +6,65 @@ import { GenericHelpers } from '../../src/utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../../src/utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 import { ContextSwitcherHelpers } from '../../src/utilities/helpers/context-switcher-helpers';
+import { UIModule } from '../../src/modules/ui-module';
 
 describe('NavigationService', () => {
+  let containerWrapper: HTMLElement;
+  let activeContainer: any;
+  let mockConnector: any;
   let luigiMock: any;
   let navigationService: NavigationService;
   let mockModalService: any;
   let mockNodeDataManagementService: any;
 
+  function createMockContainer(viewurl: string): any {
+    const el = document.createElement('luigi-container') as any;
+    el.viewurl = viewurl;
+    el.updateContext = jest.fn();
+    el.updateViewUrl = jest.fn();
+    return el;
+  }
+
+  function createMockElement(className: string): any {
+    const el: any = {};
+    Object.defineProperty(el, 'classList', {
+      value: {
+        classes: new Set(),
+        add(...names) {
+          names.forEach((name) => this.classes.add(name));
+        },
+        remove(...names) {
+          names.forEach((name) => this.classes.delete(name));
+        },
+        toggle(name) {
+          if (this.classes.has(name)) {
+            this.classes.delete(name);
+            return false;
+          } else {
+            this.classes.add(name);
+            return true;
+          }
+        },
+        contains(name) {
+          return this.classes.has(name);
+        },
+        toString() {
+          return Array.from(this.classes).join(' ');
+        }
+      },
+      writable: false
+    });
+    el.classList.add(className);
+    return el;
+  }
+
   beforeEach(() => {
+    containerWrapper = document.createElement('div');
+    activeContainer = createMockContainer('/microfrontend.html');
+    containerWrapper.appendChild(activeContainer);
+    mockConnector = {
+      getContainerWrapper: jest.fn().mockReturnValue(containerWrapper)
+    };
     luigiMock = {
       getConfigValue: jest.fn(),
       getConfig: jest.fn(),
@@ -24,6 +75,9 @@ describe('NavigationService', () => {
       }),
       featureToggles: jest.fn().mockReturnValue({
         getActiveFeatureToggleList: jest.fn()
+      }),
+      getEngine: () => ({
+        _connector: mockConnector
       })
     };
     navigationService = new NavigationService(luigiMock);
@@ -950,10 +1004,22 @@ describe('NavigationService', () => {
       expect(openAsDrawerMock).toHaveBeenCalledWith('/projects/pr2', { size: 's' }, expect.any(Function));
     });
 
-    it('should still drop a plain navigation to the current location', async () => {
+    it('should reload the current microfrontend without changing history when navigating to the current location', async () => {
       luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
       jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
       jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+
+      // Active main container that must be dropped and rebuilt (parity with classic core).
+      const activeContainer = document.createElement('luigi-container');
+      const removeSpy = jest.spyOn(activeContainer, 'remove');
+      const containerWrapper = document.createElement('div');
+      containerWrapper.appendChild(activeContainer);
+      luigiMock.getEngine = jest.fn().mockReturnValue({
+        _connector: { getContainerWrapper: jest.fn().mockReturnValue(containerWrapper) }
+      });
+      const handleRouteChangeSpy = jest.fn().mockResolvedValue(undefined);
+      (UIModule as any).routingService = { handleRouteChange: handleRouteChangeSpy };
+
       const pushStateSpy = jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
       const dispatchEventSpy = jest.spyOn(window, 'dispatchEvent').mockImplementation(() => true);
       const navRequestParams: NavigationRequestParams = {
@@ -968,11 +1034,51 @@ describe('NavigationService', () => {
 
       await navigationService.handleNavigationRequest(navRequestParams);
 
+      // Same-path navigation must not add a history entry / dispatch a route change ...
       expect(pushStateSpy).not.toHaveBeenCalled();
       expect(dispatchEventSpy).not.toHaveBeenCalled();
+      // ... but it must drop the active container and re-run route handling to rebuild it.
+      expect(removeSpy).toHaveBeenCalled();
+      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: '/projects/pr2', query: '' });
 
       pushStateSpy.mockRestore();
       dispatchEventSpy.mockRestore();
+    });
+
+    it('should reload a view-group microfrontend by removing + rebuilding the container (same-path)', async () => {
+      luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
+      jest.spyOn(navigationService, 'buildPath').mockResolvedValue('/projects/pr2');
+      jest.spyOn(RoutingHelpers, 'getCurrentPath').mockReturnValue({ path: '/projects/pr2', query: '' });
+
+      // A view-group container shares one element in core-modular (no separate hidden cache), so a
+      // same-path reload drops + rebuilds it just like any other container — a true reload.
+      const activeContainer = document.createElement('luigi-container') as any;
+      activeContainer.viewGroup = 'group1';
+      activeContainer.viewurl = 'http://localhost:4400/microfrontend.html#child2';
+      const removeSpy = jest.spyOn(activeContainer, 'remove');
+      const containerWrapper = document.createElement('div');
+      containerWrapper.appendChild(activeContainer);
+      luigiMock.getEngine = jest.fn().mockReturnValue({
+        _connector: { getContainerWrapper: jest.fn().mockReturnValue(containerWrapper) }
+      });
+      const handleRouteChangeSpy = jest.fn().mockResolvedValue(undefined);
+      (UIModule as any).routingService = { handleRouteChange: handleRouteChangeSpy };
+
+      const navRequestParams: NavigationRequestParams = {
+        modalSettings: undefined,
+        newTab: false,
+        path: '/projects/pr2',
+        preserveView: undefined,
+        preventContextUpdate: false,
+        preventHistoryEntry: false,
+        withoutSync: false
+      };
+
+      await navigationService.handleNavigationRequest(navRequestParams);
+
+      // Reload = remove the active container and re-run route handling to rebuild it.
+      expect(removeSpy).toHaveBeenCalled();
+      expect(handleRouteChangeSpy).toHaveBeenCalledWith({ path: '/projects/pr2', query: '' });
     });
 
     it('should close modals and update history if no modalSettings and not using hash routing', async () => {
@@ -1034,6 +1140,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('hashchange');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: true,
         preventHistoryEntry: false,
         withoutSync: false
@@ -1101,6 +1208,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: false,
         withoutSync: true
@@ -1144,6 +1252,7 @@ describe('NavigationService', () => {
 
       expect(dispatchedEvent.type).toEqual('popstate');
       expect(dispatchedEvent.detail).toEqual({
+        preserveView: false,
         preventContextUpdate: false,
         preventHistoryEntry: true,
         withoutSync: false
@@ -1166,7 +1275,6 @@ describe('NavigationService', () => {
       };
       const data = await navigationService.buildNavItems([], undefined, pathData, true);
       expect(data.items).toEqual([]);
-      expect(data.totalBadgeNode).toBeTruthy();
     });
 
     it('should mark selected node as selected', async () => {
@@ -1241,8 +1349,10 @@ describe('NavigationService', () => {
       expect(data.items.length).toBe(1);
       expect(data.items[0].category?.id).toBe('cat1');
       expect(data.items[0].category?.nodes?.length).toBe(2);
-      expect(data.totalBadgeNode).toBeTruthy();
-      expect(data.totalBadgeNode.count()).toEqual(3);
+      // The engine no longer aggregates badge counters; it passes each node's
+      // counter through so heads can sum category/overflow totals themselves.
+      expect(data.items[0].category?.nodes?.[0].node?.badgeCounter?.count?.()).toBe(1);
+      expect(data.items[0].category?.nodes?.[1].node?.badgeCounter?.count?.()).toBe(2);
     });
 
     it('test translated category label', async () => {
@@ -1259,7 +1369,6 @@ describe('NavigationService', () => {
       const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
       expect(data.items.length).toBe(1);
       expect(data.items[0].category?.label).toBe('Translated Category 1');
-      expect(data.totalBadgeNode).toBeTruthy();
     });
 
     it('translated node label and tooltip', async () => {
@@ -1276,7 +1385,6 @@ describe('NavigationService', () => {
       expect(data.items.length).toBe(1);
       expect(data.items[0].label).toBe('Translated Node 1');
       expect(data.items[0].tooltip).toBe('Translated Tooltip 1');
-      expect(data.totalBadgeNode).toBeTruthy();
     });
 
     it('should include href when addNavHrefs is true', async () => {
@@ -1293,7 +1401,6 @@ describe('NavigationService', () => {
       };
       const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
       expect(data.items[0].href).toBe('#/projects');
-      expect(data.totalBadgeNode).toBeTruthy();
       expect(RoutingHelpers.getNodeHref).toHaveBeenCalledWith(node1, {}, luigiMock);
       jest.restoreAllMocks();
     });
@@ -1312,7 +1419,6 @@ describe('NavigationService', () => {
       };
       const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
       expect(data.items[0].href).toBeUndefined();
-      expect(data.totalBadgeNode).toBeTruthy();
       jest.restoreAllMocks();
     });
 
@@ -1331,7 +1437,6 @@ describe('NavigationService', () => {
       };
       const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
       expect(data.items[0].category?.nodes?.[0].href).toBe('/node1');
-      expect(data.totalBadgeNode).toBeTruthy();
       jest.restoreAllMocks();
     });
 
@@ -1409,6 +1514,121 @@ describe('NavigationService', () => {
       expect(data.items[1].label).toBe('OrphanB');
       expect(data.items[2].category?.id).toBe('cat1');
       expect(data.items[3].label).toBe('Regular');
+    });
+
+    describe('navigateOnClick target resolution', () => {
+      const buildPathData = (nodes: Node[]): PathData => ({
+        selectedNode: undefined,
+        selectedNodeChildren: nodes,
+        nodesInPath: [],
+        rootNodes: nodes,
+        pathParams: {},
+        matchedPath: ''
+      });
+
+      beforeEach(() => {
+        luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
+      });
+
+      it('flags the category-declaring node as navigateOnClick target when navigateOnClick is true', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        const siblingItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert18');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(siblingItem?.navigateOnClick).toBeUndefined();
+      });
+
+      it('flags a labelless navigateOnClick target so the renderer can hide it from the dropdown', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(targetItem?.label).toBeUndefined();
+      });
+
+      it('keeps a labelled navigateOnClick target visible in the dropdown', async () => {
+        const target: Node = {
+          pathSegment: 'alert17',
+          label: 'Alert 17',
+          category: { id: 'cat', label: 'Cat', navigateOnClick: true },
+          children: []
+        };
+        const sibling: Node = { pathSegment: 'alert18', label: 'Alert 18', category: 'cat', children: [] };
+        const nodes = [target, sibling];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'alert17');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        expect(targetItem?.label).toBe('Alert 17');
+      });
+
+      it('resolves a string navigateOnClick to the sibling with the matching pathSegment', async () => {
+        const declaring: Node = {
+          pathSegment: 'strcat-first',
+          label: 'First',
+          category: { id: 'strcat', label: 'StrCat', navigateOnClick: 'strcat-second' },
+          children: []
+        };
+        const target: Node = { pathSegment: 'strcat-second', label: 'Second', category: 'strcat', children: [] };
+        const nodes = [declaring, target];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        const targetItem = catNodes.find((n: any) => n.node?.pathSegment === 'strcat-second');
+        const declaringItem = catNodes.find((n: any) => n.node?.pathSegment === 'strcat-first');
+        expect(targetItem?.navigateOnClick).toBe(true);
+        // labelled target stays in the dropdown
+        expect(targetItem?.label).toBe('Second');
+        expect(declaringItem?.navigateOnClick).toBeUndefined();
+      });
+
+      it('does not flag any node when the string navigateOnClick matches no sibling', async () => {
+        const declaring: Node = {
+          pathSegment: 'strcat-first',
+          label: 'First',
+          category: { id: 'strcat', label: 'StrCat', navigateOnClick: 'missing' },
+          children: []
+        };
+        const nodes = [declaring];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        expect(catNodes.some((n: any) => n.navigateOnClick)).toBe(false);
+      });
+
+      it('leaves category nodes unflagged when navigateOnClick is not set', async () => {
+        const node1: Node = { pathSegment: 'n1', label: 'N1', category: { id: 'cat', label: 'Cat' }, children: [] };
+        const node2: Node = { pathSegment: 'n2', label: 'N2', category: 'cat', children: [] };
+        const nodes = [node1, node2];
+
+        const data = await navigationService.buildNavItems(nodes, undefined, buildPathData(nodes));
+
+        const catNodes = data.items[0].category?.nodes ?? [];
+        expect(catNodes.some((n: any) => n.navigateOnClick)).toBe(false);
+      });
     });
   });
 
@@ -2794,6 +3014,210 @@ describe('NavigationService', () => {
       const result = await navigationService.getTabNavData('/tabs', pathData);
 
       expect(result.headerNode!.context).toEqual({ fallback: 'node-context' });
+    });
+  });
+
+  describe('NavigationService.isValidBackRoute', () => {
+    it.each(['', 'fake-route'])('should return false when route is invalid', (route) => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute(route);
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return false when there are no preserved views', () => {
+      navigationService._preservedViews = [];
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(false);
+    });
+
+    it('should return true when route is valid', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      const result = navigationService.isValidBackRoute('/current-route');
+
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('NavigationService.processGoBackContext', () => {
+    it.each([undefined, null])('should not handle dialog container when context is invalid', (ctx) => {
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(handleDialogContainerSpy).not.toHaveBeenCalled();
+    });
+
+    it.each([{ foo: 'bar' }, {}, true, false])('should handle dialog container when context is valid', (ctx) => {
+      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      navigationService.processGoBackContext(ctx);
+
+      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+    });
+  });
+
+  describe('NavigationService._preservedViews', () => {
+    it('should clear preserved views', () => {
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+
+      expect(navigationService._preservedViews.length).toEqual(1);
+      navigationService.clearPreservedViews();
+      expect(navigationService._preservedViews.length).toEqual(0);
+    });
+
+    it('should remove last preserved view', () => {
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
+
+      expect(navigationService._preservedViews.length).toEqual(2);
+      navigationService.removeLastPreservedView();
+      expect(navigationService._preservedViews.length).toEqual(1);
+    });
+
+    it('should get number of preserved views', () => {
+      navigationService._preservedViews.push(
+        {
+          context: {},
+          nextPath: '/next-route',
+          path: '/current-route'
+        },
+        {
+          context: {},
+          nextPath: '/another-route',
+          path: '/next-route'
+        }
+      );
+
+      const result = navigationService.getPreservedViewsLength();
+      expect(result).toEqual(2);
+    });
+  });
+
+  describe('NavigationService.handleDialogContainer', () => {
+    it('should update context in active container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const parentTwo: any = createMockElement('content');
+      const containers = [
+        { context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() },
+        { context: { other: 'value' }, parentNode: parentTwo, updateContext: jest.fn() }
+      ];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).toHaveBeenCalled();
+      expect(containers[1].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(true);
+    });
+
+    it('should not update context in any container', () => {
+      const ctx = { foo: 'bar' };
+      const parentOne: any = createMockElement('dialog');
+      const containers = [{ context: { existing: 'data' }, parentNode: parentOne, updateContext: jest.fn() }];
+      jest.spyOn(GenericHelpers, 'getNodeList').mockReturnValue(containers as any);
+
+      const result = (navigationService as any).handleDialogContainer(ctx);
+
+      expect(containers[0].updateContext).not.toHaveBeenCalled();
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe('NavigationService.handleGoBackRequest', () => {
+    const flushPromises = () => new Promise(process.nextTick);
+
+    it('should handle goBack request and trigger navigation when preserved view is stored', async () => {
+      const ctx = { foo: 'bar' };
+      const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
+      const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
+      const handleNavigationRequestSpy = jest
+        .spyOn(navigationService, 'handleNavigationRequest')
+        .mockResolvedValue(true);
+
+      navigationService._preservedViews.push({
+        context: {},
+        nextPath: '/next-route',
+        path: '/current-route'
+      });
+      navigationService.handleGoBackRequest(ctx);
+
+      expect.assertions(3);
+      expect(clearGoBackContextSpy).toHaveBeenCalled();
+      await flushPromises();
+      expect(prepareGoBackContextForNavigationSpy).toHaveBeenCalledWith(ctx);
+      expect(handleNavigationRequestSpy).toHaveBeenCalledWith({
+        path: '/current-route',
+        withoutSync: false
+      });
+    });
+
+    it('should handle goBack request and not trigger navigation when preserved view is not stored', async () => {
+      const ctx = { foo: 'bar' };
+      const clearGoBackContextSpy = jest.spyOn(navigationService, 'clearGoBackContext');
+      const prepareGoBackContextForNavigationSpy = jest.spyOn(navigationService, 'prepareGoBackContextForNavigation');
+      const handleNavigationRequestSpy = jest
+        .spyOn(navigationService, 'handleNavigationRequest')
+        .mockResolvedValue(true);
+
+      jest.spyOn(navigationService, 'getPreservedViewsLength').mockReturnValue(0);
+      navigationService.handleGoBackRequest(ctx);
+
+      expect.assertions(3);
+      expect(clearGoBackContextSpy).toHaveBeenCalled();
+      await flushPromises();
+      expect(prepareGoBackContextForNavigationSpy).not.toHaveBeenCalled();
+      expect(handleNavigationRequestSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('NavigationService.prepareGoBackContextForNavigation', () => {
+    it('should update local "go-back" context when it is valid', () => {
+      const ctx = { foo: 'bar' };
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      (navigationService as any).prepareGoBackContextForNavigation(ctx);
+
+      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+      expect((navigationService as any).goBackContext).toEqual({ goBackContext: ctx });
+    });
+
+    it.each([undefined, null])('should not update local "go-back" context when it is invalid', (ctx) => {
+      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+
+      (navigationService as any).prepareGoBackContextForNavigation(ctx);
+
+      expect(handleDialogContainerSpy).not.toHaveBeenCalled();
+      expect((navigationService as any).goBackContext).toEqual(null);
     });
   });
 });

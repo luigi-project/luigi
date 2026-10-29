@@ -29,6 +29,8 @@ export class Navigation {
     fromParent: false,
     nodeParams: {}
   };
+  preventHistoryEntry: boolean = false;
+  preventContextUpdate: boolean = false;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -40,7 +42,7 @@ export class Navigation {
 
   navigate = async (
     path: string,
-    preserveView?: string,
+    preserveView?: boolean,
     modalSettings?: ModalSettings,
     splitViewSettings?: any,
     drawerSettings?: any
@@ -58,8 +60,8 @@ export class Navigation {
       options: this.options,
       path,
       preserveView,
-      preventContextUpdate: false,
-      preventHistoryEntry: false,
+      preventContextUpdate: this.preventContextUpdate,
+      preventHistoryEntry: this.preventHistoryEntry,
       withoutSync: false
     };
 
@@ -122,6 +124,12 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node?.label;
     }
+    if (!settings.size) {
+      settings.size = 'l';
+    }
+    if (!settings.closebtn_data_testid) {
+      settings.closebtn_data_testid = `lui-modal-index-${this.modalService.getModalStackLength()}`;
+    }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
     if (nodeParams && Object.keys(nodeParams).length > 0) {
@@ -131,10 +139,11 @@ export class Navigation {
         .join('&');
       modalPathForUrl += (modalPathForUrl.includes('?') ? '&' : '?') + paramStr;
     }
-    const { nodeParams: _np, ...urlSettings } = settings;
-    // Append modal data to URL only if configured and if no other modals are open
+    // Append modal data to URL only if configured and if no other modals are open.
+    // Non-bookmarkable settings (nodeParams, closebtn_data_testid) are stripped centrally
+    // in RoutingService before serialization.
     if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
-      this.routingService.appendModalDataToUrl(modalPathForUrl, urlSettings as ModalSettings);
+      this.routingService.appendModalDataToUrl(modalPathForUrl, settings);
     }
     this.luigi
       .getEngine()
@@ -159,14 +168,17 @@ export class Navigation {
     if (!settings.header?.title) {
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
       const title = label || '';
-      if (!settings.header) {
-        settings.header = { title };
-      } else {
+      if (settings.header && Object.keys(settings.header).length) {
         settings.header.title = title;
+      } else {
+        settings.header = { title };
       }
     }
     if (settings.overlap === undefined) {
       settings.overlap = true;
+    }
+    if (!settings.size) {
+      settings.size = 's';
     }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     this.luigi
@@ -206,6 +218,25 @@ export class Navigation {
    */
   pathExists = async (path: string): Promise<boolean> => {
     return await RoutingHelpers.pathExists(path, this.luigi);
+  };
+
+  /**
+   * Checks if there is one or more preserved views. You can use it to show a **back** button.
+   * @returns {boolean} indicating if there is a preserved view you can return to
+   */
+  hasBack = (): boolean => {
+    return this.modalService.getModalStackLength() > 0 || this.navService.getPreservedViewsLength() > 0;
+  };
+
+  /**
+   * Discards the active view and navigates back to the last visited view. Works with preserved views, and also acts as the substitute of the browser **back** button. **goBackContext** is only available when using preserved views.
+   * @param {any} goBackValue - data that is passed in the **goBackContext** field to the last visited view when using preserved views
+   * @example
+   * Luigi.navigation().goBack({ foo: 'bar' });
+   * Luigi.navigation().goBack(true);
+   */
+  goBack = (goBackValue?: any): void => {
+    this.navService.handleGoBackRequest(goBackValue && JSON.stringify(goBackValue));
   };
 
   /**
@@ -252,6 +283,32 @@ export class Navigation {
     this.options.fromClosestContext = false;
     this.options.fromVirtualTreeRoot = false;
     this.options.fromParent = true;
+    return this;
+  }
+
+  /**
+   * Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+   * @param {Object} options - navigation options
+   * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+   * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+   * @returns {Navigation} navigation instance
+   * @since NEXTRELEASE
+   * @example
+   * Luigi.navigation().withOptions(
+   *   { preventContextUpdate: true, preventHistoryEntry: true }
+   * ).navigate('/overview')
+   */
+  withOptions(options: { preventHistoryEntry?: boolean; preventContextUpdate?: boolean }): Navigation {
+    if (!GenericHelpers.isObject(options)) return this;
+
+    if (options['preventHistoryEntry'] !== undefined) {
+      this.preventHistoryEntry = options['preventHistoryEntry'];
+    }
+
+    if (options['preventContextUpdate'] !== undefined) {
+      this.preventContextUpdate = options['preventContextUpdate'];
+    }
+
     return this;
   }
 

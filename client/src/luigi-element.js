@@ -156,3 +156,29 @@ export function html(literal, ...keys) {
   });
   return html.replace(/\$\_/gi, 'this.getRootNode().$_');
 }
+
+/**
+ * Registers a web component that the micro frontend bundle defines itself, making it
+ * available to Luigi as a web component micro frontend. Use this when your bundle builds
+ * and owns its own custom element class (for example Angular Elements) instead of relying
+ * on Luigi to define the element for you.
+ *
+ * The Luigi Core application must be present on the page. If it is not, an error is logged
+ * and the call is a no-op.
+ * @param {string} srcString the URL of the web component bundle, which must resolve to the same URL Luigi uses for the node (the node's `viewUrl`). Luigi hex-encodes the resolved absolute URL to derive the custom element id (`luigi-wc-<encoded-url>`) the component is registered under; if `srcString` resolves to a different URL, Luigi registers and looks the element up under different ids and the component never renders. From the bundle registering itself, pass `import.meta.url` (ES module) or `document.currentScript?.src` (classic script), depending on how the bundle is loaded.
+ * @param {HTMLElement} element the web component class (custom element constructor) to register
+ * @since NEXTRELEASE
+ * @example
+ * import { registerWebComponent } from '@luigi-project/client/luigi-element.js';
+ *
+ * export class MyComponent extends LuigiElement { \/* ... *\/ }
+ *
+ * registerWebComponent(import.meta.url, MyComponent);
+ */
+export function registerWebComponent(srcString, element) {
+  if (!window.Luigi) {
+    console.error('Error registering web component, Luigi core app not present.');
+    return;
+  }
+  window.Luigi._registerWebcomponent(srcString, element);
+}

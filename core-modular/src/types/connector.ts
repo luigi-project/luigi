@@ -50,6 +50,14 @@ export interface LuigiConnector {
    *   nodes, profile, context/app/product switchers, optional global-search
    *   config. Any region present should be (re)rendered; absent fields mean
    *   "hide / remove that region".
+   *
+   *   Badge counters are deferred and never aggregated by core: core does not
+   *   invoke a node's `badgeCounter.count()` itself — the head must call it and
+   *   render the result when the returned `Promise<number>` settles (do not
+   *   `await` it on the render path). Core also performs no summation; a
+   *   **category** NavItem carries no aggregate counter, so a head that wants a
+   *   category or overflow badge sums the counters of the items it groups
+   *   (`category.nodes`, or the top-level nodes) itself.
    */
   renderTopNav(data: TopNavData): void;
 
@@ -251,22 +259,24 @@ export interface LuigiConnector {
    *
    * Core invokes `dialogSettings.renderMicroFrontendContainer(viewUrl, groupKey)`
    * (which it installs before calling this method) to mount per-group MFEs
-   * inside the dialog, and `dialogSettings.onCloseCallback(stored, previous)`
-   * when the dialog closes — the connector is responsible for calling both
-   * at the appropriate moments.
+   * inside the dialog, and `dialogSettings.onCloseCallback(stored)` when the
+   * dialog closes — the connector is responsible for calling both at the
+   * appropriate moments.
    *
-   * @param dialogSettings dialog header, save/dismiss button labels, plus
-   *   the two core-installed hooks (`renderMicroFrontendContainer`,
+   * @param dialogSettings dialog header, save/dismiss button labels, plus the
+   *   two core-installed hooks (`renderMicroFrontendContainer`,
    *   `onCloseCallback`) the connector must invoke.
    * @param userSettingData static schema describing the available
    *   user-settings groups (one entry per group).
-   * @param previousUserSettings persisted user-settings state to prefill
-   *   the dialog with, or `null` on first open.
+   * @param initialUserSettings the complete settings object the connector
+   *   should use as the dialog's initial state — defaults for every configured
+   *   setting, overlaid with the persisted values. Core builds this, so the
+   *   connector never has to prefill defaults itself.
    */
   openUserSettings(
     dialogSettings: UserSettingsDialogSettings,
     userSettingData: Record<string, any>[],
-    previousUserSettings: Record<string, any> | null
+    initialUserSettings: Record<string, any>
   ): void;
 
   /**

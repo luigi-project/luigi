@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from 'svelte';
 
   import luigiCorePkgInfo from '../node_modules/@luigi-project/core/package.json';
-  import defaultConfig from './defaultConfig.js';
+  import defaultConfig from './presets/defaultConfig.js';
+  import presets from './presets/index.js';
 
   let {
     luigiVersion = $bindable(luigiCorePkgInfo.version),
@@ -13,6 +14,12 @@
 
   let defaultConfigString = defaultConfig;
   let configString = defaultConfigString;
+  let showPresets = $state(false);
+  let showQuicksave = $state(false);
+  let hasQuicksave = $state(false);
+  let quicksaveSaved = $state(false);
+
+  const QUICKSAVE_KEY = 'fiddle_custom';
 
   function exec(jsString) {
     return eval(jsString);
@@ -20,6 +27,8 @@
 
   function closeDropdowns() {
     showVersions = false;
+    showPresets = false;
+    showQuicksave = false;
   }
 
   async function injectLuigiAssets() {
@@ -76,11 +85,20 @@
   }
 
   function reloadConfig() {
-    let customConfig = sessionStorage.getItem('fiddle');
-    let customConfigPreviousSession = localStorage.getItem('fiddle');
-
     // init keyboard events
     initKeyboardEvents();
+
+    // deep-link support: ?preset=<id> loads a bundled preset;
+    // unknown ids fall back to default
+    // example: http://localhost:3000/?preset=basicNavigation
+    const presetId = new URLSearchParams(window.location.search).get('preset');
+    if (presetId) {
+      loadPreset(presetId);
+      removePresetParam();
+      return;
+    }
+    let customConfig = sessionStorage.getItem('fiddle');
+    let customConfigPreviousSession = localStorage.getItem('fiddle');
 
     // check if config saved from a previous session
     if (!customConfig && customConfigPreviousSession) {
@@ -101,6 +119,33 @@
     } catch (e) {
       console.error(e);
       sessionStorage.removeItem('fiddle');
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+    }
+  }
+
+  // Removes ?preset=<id> from the address bar without reloading the page.
+  // Other query params and the hash route (#/...) are kept.
+  function removePresetParam() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('preset');
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  }
+
+  // Loads a bundled preset by id. Unknown ids and presets that fail to load fall back to the default config.
+  function loadPreset(presetId) {
+    const preset = presets.find((p) => p.id === presetId);
+    if (!preset) {
+      console.warn(`[fiddle] Unknown preset "${presetId}", falling back to the default config.`);
+      exec(defaultConfigString);
+      configString = defaultConfigString;
+      return;
+    }
+    try {
+      exec(preset.config);
+      configString = preset.config;
+    } catch (e) {
+      console.error(`[fiddle] Preset "${presetId}" failed to load, falling back to the default config.`, e);
       exec(defaultConfigString);
       configString = defaultConfigString;
     }
@@ -133,17 +178,59 @@
     document.body.classList.remove('editorVisible');
   }
 
-  function resetConfig() {
-    window.editor.setValue(defaultConfigString);
-    window.editorTA.textContent = defaultConfigString;
-    window.editor.clearSelection();
-  }
-
   function openConfig() {
     window.editor.setValue(configString);
     window.editorTA.textContent = configString;
     window.editor.clearSelection();
     document.body.classList.add('editorVisible');
+  }
+
+  function togglePresets(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    showPresets = !showPresets;
+  }
+
+  function applyPreset(config) {
+    // load the preset into the editor (same as resetConfig, but with the preset string)
+    // the real apply happens when the user clicks "Apply" (saveConfig)
+    window.editor.setValue(config);
+    window.editorTA.textContent = config;
+    window.editor.clearSelection();
+  }
+
+  function toggleQuicksave(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    showQuicksave = !showQuicksave;
+  }
+
+  // Stores the current editor content in the custom slot so it can be loaded again later.
+  // Does not apply the config - the user applies it via "Apply" after loading.
+  // Closes the popover (like the presets chooser) and shows a transient confirmation toast.
+  function quicksaveStore(event) {
+    // stop the click from bubbling to the parent button's toggleQuicksave, which would reopen the popover
+    event.stopPropagation();
+    event.preventDefault();
+    localStorage.setItem(QUICKSAVE_KEY, window.editor.getValue());
+    hasQuicksave = true;
+    showQuicksave = false;
+    quicksaveSaved = true;
+    clearTimeout(window.quicksaveToastTimer);
+    window.quicksaveToastTimer = setTimeout(() => {
+      quicksaveSaved = false;
+    }, 2000);
+  }
+
+  // Loads the quicksaved config into the editor (like a preset). User applies it via "Apply".
+  function quicksaveLoad(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    const value = localStorage.getItem(QUICKSAVE_KEY);
+    if (value) {
+      applyPreset(value);
+    }
+    showQuicksave = false;
   }
 
   function hide() {
@@ -191,11 +278,15 @@
     window.editor = ace.edit('editor');
     window.editorTA = document.getElementById('editorTA');
     editor.session.setMode('ace/mode/javascript');
+    hasQuicksave = !!localStorage.getItem(QUICKSAVE_KEY);
     reloadConfig();
   });
 </script>
 
 <svelte:window onclick={closeDropdowns} onblur={closeDropdowns} />
+{#if quicksaveSaved}
+  <div class="lui-quicksave-toast">Config saved</div>
+{/if}
 <div class="editor_container">
   <div class="fd-dialog" role="dialog">
     <div class="fd-dialog__content" role="document" style="width:80%; max-width:80%;">
@@ -210,27 +301,54 @@
         <div id="editor" class="lui-mobile-hide"></div>
         <textarea id="editorTA" class="lui-mobile-show"></textarea>
       </div>
-      <footer class="fd-dialog__footer fd-bar fd-bar--footer">
-        <div class="fd-bar__right">
+      <footer class="fd-dialog__footer fd-bar fd-bar--footer fiddle-toolbar">
+        <div class="fd-bar__right fd-action-bar__actions">
           <div class="fd-bar__element">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--transparent fd-button--compact"
-              onclick={resetConfig}>Reset</button
-            >
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
+              onclick={togglePresets}
+              >Select Preset...
+              {#if showPresets}
+                <div class="lui-preset-chooser">
+                  {#each presets as preset}
+                    <a class="fd-link" href="#top" onclick={() => applyPreset(preset.config)}>
+                      {preset.label}
+                    </a><br />
+                  {/each}
+                </div>
+              {/if}
+            </button>
+          </div>
+
+          <div class="fd-bar__element">
+            <button
+              class="fd-dialog__decisive-button fd-button fd-button--compact preset-toggle btn-primary"
+              onclick={toggleQuicksave}
+              >Quicksave…
+              {#if showQuicksave}
+                <div class="lui-preset-chooser">
+                  <a class="fd-link" href="#top" onclick={quicksaveStore}> Save current config </a><br />
+                  {#if hasQuicksave}
+                    <a class="fd-link" href="#top" onclick={quicksaveLoad}> Load saved config </a><br />
+                  {/if}
+                </div>
+              {/if}
+            </button>
           </div>
           <div class="fd-bar__element">
-            <button class="fd-dialog__decisive-button fd-button fd-button--compact" onclick={closeConfig}>Cancel</button
+            <button class="fd-dialog__decisive-button fd-button fd-button--compact btn-primary" onclick={closeConfig}
+              >Cancel</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-hide">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfig}>Apply</button
             >
           </div>
           <div class="fd-bar__element lui-mobile-show">
             <button
-              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact"
+              class="fd-dialog__decisive-button fd-button fd-button--emphasized fd-button--compact btn-primary"
               onclick={saveConfigTA}>Apply</button
             >
           </div>
@@ -369,9 +487,22 @@
     text-shadow: none;
   }
 
+  .fiddle-toolbar .fd-link:hover {
+    color: #76ffb6;
+  }
+
   .editor_container {
     visibility: hidden;
     z-index: -1;
+  }
+
+  .editor_container .fd-dialog__content {
+    border: 1px solid lightgray;
+  }
+
+  .editor_container .fd-dialog__header {
+    background: #3c4553;
+    --sapTextColor: white;
   }
 
   :global(body.lui-v1_0) .editor_container .fd-dialog__content {
@@ -471,7 +602,8 @@
     }
   }
 
-  .lui-version-chooser {
+  .lui-version-chooser,
+  .lui-preset-chooser {
     position: absolute;
     bottom: 2rem;
     max-width: 300px;
@@ -490,6 +622,55 @@
     a {
       white-space: nowrap;
     }
+  }
+
+  .editor_container .preset-toggle {
+    position: relative;
+    overflow: visible;
+  }
+
+  .editor_container .fd-dialog__footer,
+  .editor_container .fd-dialog__footer .fd-bar__right,
+  .editor_container .fd-dialog__footer .fd-bar__element {
+    overflow: visible;
+  }
+
+  /* needed so that the presets sit above the horizontal scrollbar */
+  .editor_container .fd-dialog__footer {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+  }
+
+  .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+  }
+
+  .editor_container .lui-preset-chooser .fd-link {
+    color: #2deb8a;
+    text-shadow: none;
+    margin: 5px;
+  }
+
+  .lui-preset-chooser .fd-link:hover {
+    color: #76ffb6;
+  }
+
+  .lui-quicksave-toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3c4553;
+    color: white;
+    border: 1px solid #2deb8a;
+    border-radius: 1rem;
+    padding: 8px 20px;
+    font-size: 13px;
+    z-index: 100000000001;
+    box-shadow: 0 8px 24px -12px #000101;
   }
 
   .fiddle_spinner {

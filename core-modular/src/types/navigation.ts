@@ -4,14 +4,15 @@ export interface TopNavData {
   appSwitcher?: AppSwitcher;
   appTitle: string;
   contextSwitcher?: ContextSwitcher;
+  favicon?: string;
   isHeaderDisabled: boolean;
   globalSearch?: GlobalSearch;
   logo: string;
+  logoAltText: string;
   navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
   topNodes: NavItem[];
-  totalBadgeNode?: BadgeCounter;
 }
 
 export interface AppSwitcher {
@@ -84,14 +85,19 @@ export interface ProfileLogout {
 }
 
 export interface ProfileItem {
+  altText?: string;
   children?: ProfileItem[];
-  label?: string;
-  link?: string;
   externalLink?: ExternalLink;
   icon?: string;
-  testId?: string;
-  altText?: string;
+  label?: string;
+  link?: string;
   openNodeInModal?: boolean | ModalSettings;
+  statusBadge?: {
+    align: 'left' | 'right';
+    label: string;
+    type: StatusBadgeType;
+  };
+  testId?: string;
 }
 
 export interface UserSettingsDialogSettings {
@@ -99,7 +105,7 @@ export interface UserSettingsDialogSettings {
   saveBtn?: string;
   dismissBtn?: string;
   renderMicroFrontendContainer?: (viewUrl: string, groupKey: string) => Promise<any>;
-  onCloseCallback?: (storedUserSettings: any, previousUserSettings: any) => void;
+  onCloseCallback?: (storedUserSettings: any) => void;
 }
 
 export interface UserInfo {
@@ -115,7 +121,6 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  totalBadgeNode?: BadgeCounter;
   navClick?: (item: NavItem) => Promise<void>;
 }
 
@@ -137,6 +142,8 @@ export interface BadgeCounter {
   count?: () => number | Promise<number>;
   label?: string;
 }
+
+export type StatusBadgeType = 'critical' | 'informative' | 'negative' | 'neutral' | 'positive';
 
 export interface Node {
   altText?: string;
@@ -172,6 +179,11 @@ export interface Node {
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
   showBreadcrumbs?: boolean;
+  statusBadge?: {
+    align: 'left' | 'right';
+    label: string;
+    type: StatusBadgeType;
+  };
   tabNav?: boolean | TabNavConfig;
   titleResolver?: TitleResolver;
   tooltipText?: string;
@@ -214,6 +226,7 @@ export interface Category {
   label?: string;
   nodes?: NavItem[];
   tooltip?: string;
+  navigateOnClick?: boolean | string;
 }
 
 export interface BreadcrumbItem {
@@ -235,6 +248,7 @@ export interface NavItem {
   label?: string;
   selected?: boolean;
   tooltip?: string;
+  navigateOnClick?: boolean;
 }
 
 export interface TabNavConfig {
@@ -253,7 +267,6 @@ export interface TabNavData {
   navClick?: (item: NavItem) => Promise<void>;
   overflowLabel?: string;
   selectedNode?: any;
-  totalBadgeNode?: BadgeCounter;
 }
 
 export interface BreadcrumbData {
@@ -322,6 +335,7 @@ export interface NavigationOptions {
 }
 
 export interface NavigationRequestBase {
+  preserveView?: boolean;
   preventContextUpdate?: boolean;
   preventHistoryEntry?: boolean;
   withoutSync?: boolean;
@@ -334,7 +348,6 @@ export interface NavigationRequestParams extends NavigationRequestBase {
   modalSettings?: any;
   newTab?: boolean;
   path: string;
-  preserveView?: string;
 }
 
 export interface NavigationRequestEvent {
@@ -343,20 +356,20 @@ export interface NavigationRequestEvent {
 
 export interface NavigationRequestDetail {
   drawer: unknown;
-  link: string;
+  fromClosestContext: boolean;
+  fromContext: string | null;
+  fromParent: boolean;
+  fromVirtualTreeRoot: boolean;
   intent: boolean;
-  preserveView: string;
+  link: string;
   modal: unknown;
   newTab: boolean;
-  withoutSync: boolean;
+  nodeParams: Record<string, string>;
+  preserveView: boolean;
   preventContextUpdate: boolean;
   preventHistoryEntry: boolean;
-  fromVirtualTreeRoot: boolean;
-  fromContext: string | null;
-  fromClosestContext: boolean;
-  fromParent: boolean;
   relative: boolean;
-  nodeParams: Record<string, string>;
+  withoutSync: boolean;
 }
 
 /**

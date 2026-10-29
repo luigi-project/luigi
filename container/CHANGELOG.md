@@ -4,6 +4,16 @@
 
 
 
+## [v1.7.12] (2026-10-27)
+
+#### :bug: Fixed
+
+* [#5535](https://github.com/luigi-project/luigi/pull/5535) Container - refactor internal Data ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5436](https://github.com/luigi-project/luigi/pull/5436) null check against mainComponent ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
 ## [v1.7.11] (2026-08-11)
 
 #### :bug: Fixed
@@ -217,3 +227,4 @@
 [v1.7.9]: https://github.com/luigi-project/luigi/compare/container/v1.7.8...container/v1.7.9
 [v1.7.10]: https://github.com/luigi-project/luigi/compare/container/v1.7.9...container/v1.7.10
 [v1.7.11]: https://github.com/luigi-project/luigi/compare/container/v1.7.10...container/v1.7.11
+[v1.7.12]: https://github.com/luigi-project/luigi/compare/container/v1.7.11...container/v1.7.12
