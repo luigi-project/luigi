@@ -830,18 +830,30 @@ class RoutingClass {
     let url = new URL(location.href);
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     if (hashRoutingActive) {
-      let modalParamsObj = {};
-      if (params[modalParamName]) {
-        modalParamsObj[modalParamName] = params[modalParamName];
-      }
-      if (params[`${modalParamName}Params`]) {
-        modalParamsObj[`${modalParamName}Params`] = params[`${modalParamName}Params`];
-      }
-      let prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
-      if (url.hash.includes(`?${prevModalPath}`)) {
-        url.hash = url.hash.replace(`?${prevModalPath}`, '');
-      } else if (url.hash.includes(`&${prevModalPath}`)) {
-        url.hash = url.hash.replace(`&${prevModalPath}`, '');
+      const hashPart = url.hash.slice(1);
+
+      if (hashPart) {
+        let [hashPath, ...rest] = hashPart.split('?');
+        rest = rest.join('?');
+        let [hashSearch, ...hashHash] = rest.split('#');
+        hashHash = hashHash.join('#');
+
+        hashSearch = hashSearch
+          .split('&')
+          .filter((segment) => {
+            const key = segment.split('=')[0];
+            return key !== modalParamName && key !== `${modalParamName}Params`;
+          })
+          .join('&');
+
+        // reconstructing hash
+        url.hash = hashPath;
+        if (hashSearch.length > 0) {
+          url.hash += '?' + hashSearch;
+        }
+        if (hashHash.length > 0) {
+          url.hash += '#' + hashHash;
+        }
       }
     } else {
       let searchParams = new URLSearchParams(url.search.slice(1));
