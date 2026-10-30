@@ -16,10 +16,12 @@
     <script>
       let myUserSettings = {};
       window.LuigiClient.addInitListener((context, origin) => {
+        console.log('Initial context:', context);
         renderData(context);
       });
 
       window.LuigiClient.addContextUpdateListener((context, origin) => {
+        console.log('Context updated:', context);
         renderData(context);
       });
 

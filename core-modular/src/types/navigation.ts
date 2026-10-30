@@ -66,7 +66,7 @@ export interface ProfileSettings {
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
   onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
-  settings: UserSettingsProfileMenuEntry;
+  settings?: UserSettingsProfileMenuEntry;
   itemClick: (item: ProfileItem) => void;
 }
 
@@ -104,7 +104,21 @@ export interface UserSettingsDialogSettings {
   dialogHeader?: string;
   saveBtn?: string;
   dismissBtn?: string;
-  renderMicroFrontendContainer?: (viewUrl: string, groupKey: string) => Promise<any>;
+  /**
+   * Render the micro-frontend container for a user-settings group.
+   *
+   * The head calls this **when a group becomes active** (selected/visible) and
+   * mounts the returned element into the group's content area. Core owns the
+   * per-group cache: a repeated call for the same `groupKey` returns the already
+   * created container instead of building a new one, so the micro-frontend's
+   * init handshake fires once per group on activation (not at dialog-open),
+   * matching legacy Luigi core — and the head needs no cache of its own.
+   *
+   * @param groupConfig the group's configuration (viewUrl, context, webcomponent, …)
+   * @param groupKey the group's key
+   * @returns the `<luigi-container>` element to mount into the group's content area
+   */
+  renderMicroFrontendContainer?: (groupConfig: Record<string, any>, groupKey: string) => Promise<any>;
   onCloseCallback?: (storedUserSettings: any) => void;
 }
 

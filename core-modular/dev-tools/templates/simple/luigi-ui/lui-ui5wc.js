@@ -1382,11 +1382,10 @@ const connector = {
 
       let content;
       if (groupConfig.viewUrl) {
-        const luigiContainer = await settings.renderMicroFrontendContainer(groupConfig, groupKey);
-        luigiContainer.style.width = '100%';
-        luigiContainer.style.height = '100%';
-        luigiContainer.style.minHeight = '300px';
-        content = luigiContainer;
+        content = el('div', { class: 'luigi-usersettings-mf' });
+        content.style.width = '100%';
+        content.style.height = '100%';
+        content.style.minHeight = '300px';
       } else if (groupConfig.settings) {
         content = el('div', { class: 'luigi-usersettings-form' });
         Object.entries(groupConfig.settings).forEach(([settingKey, settingDef]) => {
@@ -1397,7 +1396,25 @@ const connector = {
         content = el('ui5-text', null, 'No settings available.');
       }
 
-      return el('ui5-user-settings-item', attrs, [content]);
+      const item = el('ui5-user-settings-item', attrs, [content]);
+      item._luigiGroupKey = groupKey;
+      item._luigiGroupConfig = groupConfig;
+      item._luigiMountTarget = content;
+      return item;
+    }
+
+    // When a group becomes active, ask core for its MF container and mount it.
+    // Core caches per group, so calling again just returns the same container.
+    async function activateGroup(item) {
+      if (!item || !item._luigiGroupConfig?.viewUrl) return;
+      const lc = await settings.renderMicroFrontendContainer(item._luigiGroupConfig, item._luigiGroupKey);
+      if (lc.parentElement !== item._luigiMountTarget) {
+        lc.style.width = '100%';
+        lc.style.height = '100%';
+        lc.style.minHeight = '300px';
+        item._luigiMountTarget.innerHTML = '';
+        item._luigiMountTarget.appendChild(lc);
+      }
     }
 
     // Build settings items from config
@@ -1448,8 +1465,18 @@ const connector = {
       cleanup();
     });
 
+    // Mount the MF of a group only when it becomes active (fires its init handshake then).
+    dialog.addEventListener('selection-change', (e) => {
+      activateGroup(e.detail && e.detail.item);
+    });
+
     document.body.appendChild(dialog);
     dialog.open = true;
+
+    // selection-change does not fire for the initially selected group, but that
+    // group IS active -> activate it explicitly so its MF (if any) initializes now.
+    const firstSelected = settingsItems.find((it) => it.hasAttribute('selected')) || settingsItems[0];
+    activateGroup(firstSelected);
   },
 
   closeUserSettings: () => {

@@ -230,11 +230,11 @@ describe('UX', () => {
 
     it('uses TOP_NAV_DEFAULTS labels when userSettingsDialog is not configured', async () => {
       luigiMock.getConfigValue.mockImplementation((key: string) => {
-        if (key === 'userSettings') return { userSettingGroups: {} };
+        if (key === 'userSettings') return { userSettingGroups: { profile: { label: 'Profile' } } };
         if (key === 'settings') return undefined;
         return undefined;
       });
-      jest.spyOn(UserSettingsHelper, 'processUserSettingGroups').mockReturnValue([]);
+      jest.spyOn(UserSettingsHelper, 'processUserSettingGroups').mockReturnValue([{ profile: { label: 'Profile' } }]);
       const uiOpen = jest.fn();
       luigiMock.getEngine.mockReturnValue({
         _connector: connectorMock,
@@ -250,6 +250,31 @@ describe('UX', () => {
         saveBtn: 'Save',
         dismissBtn: 'Cancel'
       });
+    });
+
+    it('logs an info message and does not open the dialog when there are no user setting groups', async () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'userSettings') return { userSettingGroups: {} };
+        if (key === 'settings') return undefined;
+        return undefined;
+      });
+      jest.spyOn(UserSettingsHelper, 'processUserSettingGroups').mockReturnValue([]);
+      const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
+      const uiOpen = jest.fn();
+      luigiMock.getEngine.mockReturnValue({
+        _connector: connectorMock,
+        _ux: undefined,
+        _ui: { openUserSettings: uiOpen }
+      });
+
+      await ux.openUserSettings();
+
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        'There are no user setting groups in the settings section of the luigi config defined.'
+      );
+      expect(uiOpen).not.toHaveBeenCalled();
+
+      consoleInfoSpy.mockRestore();
     });
   });
 

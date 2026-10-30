@@ -257,11 +257,20 @@ export interface LuigiConnector {
   /**
    * Open the user-settings dialog.
    *
-   * Core invokes `dialogSettings.renderMicroFrontendContainer(viewUrl, groupKey)`
-   * (which it installs before calling this method) to mount per-group MFEs
-   * inside the dialog, and `dialogSettings.onCloseCallback(stored)` when the
-   * dialog closes — the connector is responsible for calling both at the
-   * appropriate moments.
+   * Core installs two hooks on `dialogSettings` before calling this method:
+   * `dialogSettings.renderMicroFrontendContainer(groupConfig, groupKey)` and
+   * `dialogSettings.onCloseCallback(stored)`. The connector is responsible for
+   * invoking both at the appropriate moments.
+   *
+   * The head calls `renderMicroFrontendContainer(groupConfig, groupKey)` **when a
+   * group becomes active** (selected/visible) and mounts the returned element
+   * into the group's content area. Core owns the per-group cache — a repeated
+   * call for the same group returns the already created container — so the MFE's
+   * init handshake fires once per group on activation (not at dialog-open),
+   * matching legacy core, and the head needs no cache of its own. The head does
+   * the same for the initially selected group right after opening, since no
+   * selection-change fires for it. For a group without a `viewUrl` (native
+   * settings form) the head renders its own controls and does not call this.
    *
    * @param dialogSettings dialog header, save/dismiss button labels, plus the
    *   two core-installed hooks (`renderMicroFrontendContainer`,
