@@ -480,15 +480,10 @@
     padding: 0 0.5rem;
   }
 
-  /*Fix a long list popover body*/
-  .lui-profile-vega-menu {
-    max-height: calc(100vh - 60px);
-    overflow-y: auto !important;
-  }
-
   :global(.lui-handheldMode .lui-profile-vega-menu) {
     flex: 1;
     max-height: calc(100vh - 90px);
+    overflow-y: auto !important;
     padding: 0.5rem;
     width: 100% !important;
 
@@ -540,5 +535,9 @@
       flex: 1;
       height: 0;
     }
+  }
+
+  :global(.lui-handheldMode .lui-profile-sublist) {
+    right: 0;
   }
 </style>
