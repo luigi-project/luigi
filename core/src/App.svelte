@@ -14,6 +14,7 @@
   import { CSS_BREAKPOINTS } from './utilities/constants';
   import { KEYCODE_ESC } from './utilities/keycode.js';
   import {
+    DeviceHelpers,
     EventListenerHelpers,
     GenericHelpers,
     StateHelpers,
@@ -79,6 +80,7 @@
   let isolateView;
   let pageErrorHandler;
   let previousNodeValues;
+  let isDesktop = true;
   let isNavigationSyncEnabled = true;
   let isNavigateBack = false;
   let goBackContext;
@@ -1795,6 +1797,10 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     responsiveNavSetting = LuigiConfig.getConfigValue('settings.responsiveNavigation');
     previousWindowWidth = window.innerWidth;
+    isDesktop = DeviceHelpers.isDesktop();
+    if (!isDesktop) {
+      document.body.classList.add('lui-handheldMode');
+    }
     if (responsiveNavSetting === 'simple') {
       document.body.classList.add('lui-simpleSlideInNav');
       simpleSlideInNav = true;

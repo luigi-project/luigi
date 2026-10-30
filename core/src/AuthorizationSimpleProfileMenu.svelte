@@ -2,7 +2,7 @@
   import { AuthLayerSvc } from './services';
   import { createEventDispatcher, onMount, getContext } from 'svelte';
   import { LuigiAuth, LuigiConfig, LuigiUX } from './core-api';
-  import { AuthHelpers, GenericHelpers, NavigationHelpers, StateHelpers, RoutingHelpers } from './utilities/helpers';
+  import { DeviceHelpers, GenericHelpers, NavigationHelpers, StateHelpers, RoutingHelpers } from './utilities/helpers';
   import { AuthStoreSvc, Routing } from './services';
   import { TOP_NAV_DEFAULTS } from './utilities/luigi-config-defaults';
   import { KEYCODE_ENTER, KEYCODE_SPACE } from './utilities/keycode.js';
@@ -15,6 +15,7 @@
   let idpProviderInstance;
   let userInfo;
   let isLoggedIn;
+  let isDesktop = true;
   let profileNav = { logout: {}, items: [], settings: {} };
   let isAuthorizationEnabled;
   let isProfileLogoutItem;
@@ -28,6 +29,7 @@
   let initialsOfUser;
 
   onMount(async () => {
+    isDesktop = DeviceHelpers.isDesktop();
     if (!LuigiAuth.isAuthorizationEnabled()) {
       isAuthorizationEnabled = false;
       setProfileUserData();
@@ -169,6 +171,17 @@
 </script>
 
 {#if !isHidden}
+  {#if !isDesktop}
+    <header class="lui-profile-simple-header">
+      <button
+        class="fd-button fd-button--transparent fd-button--compact fd-message-strip__close"
+        on:click={() => dispatch('toggleDropdownState')}
+        aria-label="Close"
+      >
+        <i class="sap-icon sap-icon--decline"></i>
+      </button>
+    </header>
+  {/if}
   <nav class="fd-menu lui-profile-simple-menu">
     <ul class="fd-menu__list fd-menu__list--no-shadow">
       {#if showUserInfo}
@@ -241,7 +254,7 @@
           </a>
         </li>
       {/if}
-      {#if isAuthorizationEnabled || isProfileLogoutItem}
+      {#if isDesktop && (isAuthorizationEnabled || isProfileLogoutItem)}
         {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <li
@@ -278,6 +291,36 @@
       {/if}
     </ul>
   </nav>
+  {#if !isDesktop && (isAuthorizationEnabled || isProfileLogoutItem)}
+    <footer class="lui-profile-simple-footer">
+      {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
+        <button
+          title="Logout"
+          on:click={onLogoutClick}
+          data-testid={getTestId(profileNav.logout)}
+          class="fd-menu__link lui-logout-btn"
+        >
+          {#if profileNav.logout.icon}
+            {#if hasOpenUIicon(profileNav.logout)}
+              <i class="fd-top-nav__icon {getSapIconStr(profileNav.logout.icon)}"></i>
+            {:else}
+              <img
+                class="fd-top-nav__icon nav-icon"
+                src={profileNav.logout.icon}
+                alt={profileNav.logout.altText ? profileNav.logout.altText : ''}
+              />
+            {/if}
+          {/if}
+          <span class="fd-menu__title">{$getTranslation(profileNav.logout.label)}</span>
+        </button>
+      {/if}
+      {#if isAuthorizationEnabled && !isLoggedIn}
+        <button title="Login" on:click={startAuthorization} data-testid="login-btn" class="fd-menu__link lui-login-btn">
+          <span class="fd-menu__title">Login</span>
+        </button>
+      {/if}
+    </footer>
+  {/if}
 {/if}
 
 <style lang="scss">
@@ -305,10 +348,40 @@
     font-size: 1.125rem;
   }
 
+  .lui-profile-simple-header,
+  .lui-profile-simple-footer {
+    align-items: center;
+    display: flex;
+    height: 44px;
+    justify-content: flex-end;
+    padding: 0 0.5rem;
+  }
+
+  .lui-profile-simple-header {
+    border-bottom: 1px solid var(--sapGroup_ContentBorderColor, #d9d9d9);
+  }
+
+  .lui-profile-simple-footer {
+    border-top: 1px solid var(--sapGroup_ContentBorderColor, #d9d9d9);
+
+    button {
+      color: var(--sapButton_Lite_Hover_TextColor, #0064d9);
+      padding: 0 0.5rem;
+      width: auto;
+    }
+  }
+
   /*Fix a long list popover body*/
   .lui-profile-simple-menu {
     max-height: calc(100vh - 60px);
-    overflow-y: auto;
+    overflow-y: auto !important;
+  }
+
+  :global(.lui-handheldMode .lui-profile-simple-menu) {
+    flex: 1;
+    max-height: calc(100vh - 90px);
+    padding: 0.5rem;
+    width: 100% !important;
   }
 
   .lui-profile-simple-menu .lui-logout-btn {
