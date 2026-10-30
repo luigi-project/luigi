@@ -1,5 +1,5 @@
 // Helper methods for 'iframe.js' file. They don't require any method from 'iframe.js` but are required by them.
-import { GenericHelpers } from './';
+import { EscapingHelpers, GenericHelpers } from './';
 import { MICROFRONTEND_TYPES } from './../constants';
 import { LuigiConfig, LuigiFeatureToggles, LuigiI18N, LuigiTheming } from '../../core-api';
 import { ViewUrlDecorator } from '../../services';
@@ -207,9 +207,13 @@ class IframeHelpersClass {
       : luigiDefaultSandboxRules;
 
     const iframe = document.createElement('iframe');
-    iframe.src = ViewUrlDecorator.hasDecorators()
+    const iframeSrc = ViewUrlDecorator.hasDecorators()
       ? ViewUrlDecorator.applyDecorators(viewUrl, currentNode ? currentNode.decodeViewUrl : undefined)
       : viewUrl;
+    const safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(iframeSrc);
+    if (safeUrl) {
+      iframe.src = safeUrl;
+    }
     if (allowRules) {
       allowRules.forEach((rule, index) => {
         allowRules[index] = rule + (rule.indexOf(';') != -1 ? '' : ';');

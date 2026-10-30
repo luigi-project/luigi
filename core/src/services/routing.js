@@ -1,7 +1,13 @@
 // Methods related to the routing. They mostly end up changing the iframe view which is handled by `iframe.js` file;
 // Please consider adding any new methods to 'routing-helpers' if they don't require anything from this file.
 import { Navigation } from '../navigation/services/navigation';
-import { GenericHelpers, IframeHelpers, NavigationHelpers, RoutingHelpers } from '../utilities/helpers';
+import {
+  EscapingHelpers,
+  GenericHelpers,
+  IframeHelpers,
+  NavigationHelpers,
+  RoutingHelpers
+} from '../utilities/helpers';
 import { LuigiConfig, LuigiNavigation } from '../core-api';
 import { Iframe } from './';
 import { NAVIGATION_DEFAULTS } from './../utilities/luigi-config-defaults';
@@ -633,15 +639,22 @@ class RoutingClass {
   }
 
   navigateToExternalLink(externalLink, node, pathParams) {
+    let safeUrl;
     if (node) {
       const updatedExternalLink = {
         ...NAVIGATION_DEFAULTS.externalLink,
         ...(node?.externalLink || {})
       };
       updatedExternalLink.url = RoutingHelpers.calculateNodeHref(node, pathParams);
-      window.open(updatedExternalLink.url, updatedExternalLink.sameWindow ? '_self' : '_blank').focus();
+      safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(updatedExternalLink.url);
+      if (safeUrl) {
+        window.open(safeUrl, updatedExternalLink.sameWindow ? '_self' : '_blank').focus();
+      }
     } else if (GenericHelpers.isObject(externalLink)) {
-      window.open(externalLink.url, externalLink.sameWindow ? '_self' : '_blank').focus();
+      safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(externalLink.url);
+      if (safeUrl) {
+        window.open(safeUrl, externalLink.sameWindow ? '_self' : '_blank').focus();
+      }
     }
   }
 
