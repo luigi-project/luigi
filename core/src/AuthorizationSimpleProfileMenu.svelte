@@ -315,12 +315,7 @@
         </button>
       {/if}
       {#if isAuthorizationEnabled && !isLoggedIn}
-        <button
-          title="Login"
-          on:click={startAuthorization}
-          data-testid="login-btn"
-          class="fd-menu__link lui-login-btn"
-        >
+        <button title="Login" on:click={startAuthorization} data-testid="login-btn" class="fd-menu__link lui-login-btn">
           <span class="fd-menu__title">Login</span>
         </button>
       {/if}
