@@ -859,13 +859,14 @@
   }
 
   :global(.lui-handheldMode .fd-user-menu--mobile) {
-    height: calc(100vh - 10px - var(--luigi__shellbar--height));
-    width: calc(100vw - 30px);
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
 
-  @media (min-width: 900px) {
-    :global(.lui-handheldMode .lui-shellbar-wrapper:has(.lui-productSwitcher) .fd-user-menu--mobile) {
-      width: calc(100vw - 80px);
-    }
+  :global(.lui-handheldMode .fd-user-menu--mobile:before),
+  :global(.lui-handheldMode .fd-user-menu--mobile:after) {
+    display: none;
   }
 </style>
