@@ -5,7 +5,7 @@ import {
   resolveRenderer
 } from '../utilities/helpers/web-component-helpers';
 import { LuigiConfig } from '../core-api';
-import { RoutingHelpers, GenericHelpers, NavigationHelpers } from '../utilities/helpers';
+import { EscapingHelpers, RoutingHelpers, GenericHelpers, NavigationHelpers } from '../utilities/helpers';
 
 const DEFAULT_TEMPORARY_HEIGHT = '500px';
 const DEFAULT_INTERSECTION_OBSERVER_ROOTMARGIN = '0px';
@@ -262,7 +262,8 @@ class WebComponentSvcClass {
    * @param {*} onload - callback function executed after script attached and loaded
    */
   includeSelfRegisteredWCFromUrl(node, viewUrl, onload) {
-    if (this.checkWCUrl(viewUrl)) {
+    const safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(viewUrl);
+    if (safeUrl && this.checkWCUrl(viewUrl)) {
       /** Append reg function to luigi object if not present */
       if (!window.Luigi._registerWebcomponent) {
         window.Luigi._registerWebcomponent = (srcString, el) => {
@@ -273,8 +274,8 @@ class WebComponentSvcClass {
         };
       }
 
-      let scriptTag = document.createElement('script');
-      scriptTag.setAttribute('src', viewUrl);
+      const scriptTag = document.createElement('script');
+      scriptTag.setAttribute('src', safeUrl);
       if (node.webcomponent.type === 'module') {
         scriptTag.setAttribute('type', 'module');
       }
