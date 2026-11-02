@@ -97,8 +97,10 @@ export class NavigationService {
   }
 
   private isValidGoBackContext(goBackContext: any): boolean {
-    return typeof goBackContext === 'boolean'
-      || (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object'));
+    return (
+      typeof goBackContext === 'boolean' ||
+      (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object'))
+    );
   }
 
   private prepareGoBackContextForNavigation(goBackContext: any): void {
