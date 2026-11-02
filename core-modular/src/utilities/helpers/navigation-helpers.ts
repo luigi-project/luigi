@@ -3,6 +3,7 @@ import type { FeatureToggles } from '../../core-api/feature-toggles';
 import type { Luigi } from '../../core-api/luigi';
 import type { AppSwitcher, ExternalLink, Node, PathData, TitleResolver } from '../../types/navigation';
 import { AuthHelpers } from './auth-helpers';
+import { EscapingHelpers } from './escaping-helpers';
 import { GenericHelpers } from './generic-helpers';
 import { RoutingHelpers } from './routing-helpers';
 
@@ -340,13 +341,16 @@ export const NavigationHelpers = {
     if (pathParams) {
       url = GenericHelpers.replaceVars(url, pathParams, ':', false);
     }
-    if (externalLink.sameWindow) {
-      window.location.href = url;
-    } else {
-      const newWindow = window.open(url, '_blank', 'noopener noreferrer');
-      if (newWindow) {
-        newWindow.opener = null;
-        newWindow.focus();
+    const safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(url);
+    if (safeUrl) {
+      if (externalLink.sameWindow) {
+        window.location.href = safeUrl;
+      } else {
+        const newWindow = window.open(safeUrl, '_blank', 'noopener noreferrer');
+        if (newWindow) {
+          newWindow.opener = null;
+          newWindow.focus();
+        }
       }
     }
   }
