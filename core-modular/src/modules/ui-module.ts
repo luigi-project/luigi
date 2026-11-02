@@ -51,9 +51,10 @@ const createContainer = async (
     lcc.clientPermissions = node.clientPermissions ?? {};
     lcc.nodeParams = nodeParams;
     lcc.pathParams = pathParams;
-    (lcc as any).userSettingsGroup = node.userSettingsGroup;
-    lcc.userSettings = userSettings;
-    (lcc as any).userSettingsGroups = userSettingGroups;
+    lcc.userSettings = {
+      rootNodeUserSettingsGroup: node.userSettingsGroup,
+      userSettingGroups
+    };
     lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
@@ -468,7 +469,6 @@ export const UIModule = {
           viewGroupContainer.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
           viewGroupContainer.userSettingsGroup = currentNode.userSettingsGroup;
           viewGroupContainer.userSettings = userSettings;
-          viewGroupContainer.userSettingsGroups = userSettingGroups;
 
           setSandboxRules(viewGroupContainer, luigi);
           setAllowRules(viewGroupContainer, luigi);
