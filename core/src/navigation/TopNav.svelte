@@ -682,7 +682,7 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right {!DeviceHelpers.isDesktop()
+                  class="fd-popover__body fd-popover__body--right {DeviceHelpers.isPhone()
                     ? 'fd-user-menu--mobile'
                     : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
@@ -731,7 +731,7 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right {!DeviceHelpers.isDesktop()
+                  class="fd-popover__body fd-popover__body--right {DeviceHelpers.isPhone()
                     ? 'fd-user-menu--mobile'
                     : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}

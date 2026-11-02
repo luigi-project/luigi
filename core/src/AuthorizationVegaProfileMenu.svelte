@@ -15,7 +15,7 @@
   let idpProviderInstance;
   let userInfo;
   let isLoggedIn;
-  let isDesktop = true;
+  let isPhone = false;
   let profileNav = { logout: {}, items: [], settings: {} };
   let isAuthorizationEnabled;
   let isProfileLogoutItem;
@@ -30,7 +30,7 @@
   let setProfileNavDataTimeout;
 
   onMount(async () => {
-    isDesktop = DeviceHelpers.isDesktop();
+    isPhone = DeviceHelpers.isPhone();
     if (!LuigiAuth.isAuthorizationEnabled()) {
       isAuthorizationEnabled = false;
       setProfileUserData();
@@ -218,7 +218,7 @@
 </script>
 
 {#if !isHidden}
-  {#if !isDesktop}
+  {#if isPhone}
     <header class="lui-profile-vega-header">
       <button
         class="fd-button fd-button--transparent fd-button--compact fd-message-strip__close"

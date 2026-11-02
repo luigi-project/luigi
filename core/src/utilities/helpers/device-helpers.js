@@ -25,20 +25,6 @@ class DeviceHelpersClass {
 
       return /(Chrome|CriOS)/.test(this.internals.userAgent());
     },
-    firefox: () => {
-      if (this.isSSR) {
-        return false;
-      }
-
-      return /Firefox/.test(this.internals.userAgent());
-    },
-    safari: () => {
-      if (this.isSSR) {
-        return false;
-      }
-
-      return !this.internals.chrome && /(Version|PhantomJS)\/(\d+\.\d+).*Safari/.test(this.internals.userAgent());
-    },
     webkit: () => {
       if (this.isSSR) {
         return false;
@@ -52,23 +38,6 @@ class DeviceHelpersClass {
       }
 
       return window.navigator.platform.indexOf('Win') !== -1;
-    },
-    macOS: () => {
-      if (this.isSSR) {
-        return false;
-      }
-
-      return !!window.navigator.userAgent.match(/Macintosh|Mac OS X/i);
-    },
-    iOS: () => {
-      if (this.isSSR) {
-        return false;
-      }
-
-      return (
-        !!window.navigator.platform.match(/iPhone|iPad|iPod/) ||
-        !!(this.internals.userAgent().match(/Mac/) && 'ontouchend' in window.document)
-      );
     },
     android: () => {
       if (this.isSSR) {
@@ -181,54 +150,8 @@ class DeviceHelpersClass {
       (this.internals.android() && !this.internals.androidPhone());
   }
 
-  supportsTouch() {
-    return this.internals.touch();
-  }
-
-  isSafari() {
-    return this.internals.safari();
-  }
-
-  isChrome() {
-    return this.internals.chrome();
-  }
-
-  isFirefox() {
-    return this.internals.firefox();
-  }
-
-  isTablet() {
-    this.detectTablet();
-
-    return (this.internals.touch() || this.isWindows8OrAbove()) && this.tablet;
-  }
-
   isPhone() {
     return this.internals._isPhone();
-  }
-
-  isDesktop() {
-    if (this.isSSR) {
-      return false;
-    }
-
-    return (!this.isTablet() && !this.isPhone()) || this.isWindows8OrAbove();
-  }
-
-  isCombi() {
-    return this.isTablet() && this.isDesktop();
-  }
-
-  isIOS() {
-    return this.internals.iOS();
-  }
-
-  isMac() {
-    return this.internals.macOS();
-  }
-
-  isAndroid() {
-    return this.internals.android() || this.internals.androidPhone();
   }
 }
 

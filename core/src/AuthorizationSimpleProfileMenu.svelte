@@ -15,7 +15,7 @@
   let idpProviderInstance;
   let userInfo;
   let isLoggedIn;
-  let isDesktop = true;
+  let isPhone = false;
   let profileNav = { logout: {}, items: [], settings: {} };
   let isAuthorizationEnabled;
   let isProfileLogoutItem;
@@ -29,7 +29,7 @@
   let initialsOfUser;
 
   onMount(async () => {
-    isDesktop = DeviceHelpers.isDesktop();
+    isPhone = DeviceHelpers.isPhone();
     if (!LuigiAuth.isAuthorizationEnabled()) {
       isAuthorizationEnabled = false;
       setProfileUserData();
@@ -171,7 +171,7 @@
 </script>
 
 {#if !isHidden}
-  {#if !isDesktop}
+  {#if isPhone}
     <header class="lui-profile-simple-header">
       <button
         class="fd-button fd-button--transparent fd-button--compact fd-message-strip__close"
@@ -254,7 +254,7 @@
           </a>
         </li>
       {/if}
-      {#if isDesktop && (isAuthorizationEnabled || isProfileLogoutItem)}
+      {#if !isPhone && (isAuthorizationEnabled || isProfileLogoutItem)}
         {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <li
@@ -291,7 +291,7 @@
       {/if}
     </ul>
   </nav>
-  {#if !isDesktop && (isAuthorizationEnabled || isProfileLogoutItem)}
+  {#if isPhone && (isAuthorizationEnabled || isProfileLogoutItem)}
     <footer class="lui-profile-simple-footer">
       {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
         <button
