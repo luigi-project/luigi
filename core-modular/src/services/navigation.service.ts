@@ -105,7 +105,9 @@ export class NavigationService {
   isValidGoBackContext(goBackContext: any): boolean {
     return !!(
       typeof goBackContext === 'boolean' ||
-      (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object') && !Array.isArray(goBackContext))
+      (goBackContext &&
+        (typeof goBackContext === 'string' || typeof goBackContext === 'object') &&
+        !Array.isArray(goBackContext))
     );
   }
 
