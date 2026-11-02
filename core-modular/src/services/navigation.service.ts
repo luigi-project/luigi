@@ -96,17 +96,17 @@ export class NavigationService {
     }
   }
 
-  private isValidGoBackContext(goBackContext: any): boolean {
-    return (
-      typeof goBackContext === 'boolean' ||
-      (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object'))
-    );
-  }
-
   private prepareGoBackContextForNavigation(goBackContext: any): void {
     if (this.isValidGoBackContext(goBackContext)) {
       this.handleDialogContainer(goBackContext);
     }
+  }
+
+  isValidGoBackContext(goBackContext: any): boolean {
+    return !!(
+      typeof goBackContext === 'boolean' ||
+      (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object') && !Array.isArray(goBackContext))
+    );
   }
 
   clearGoBackContext(): void {
