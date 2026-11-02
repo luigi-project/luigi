@@ -187,7 +187,18 @@ myContainer.clientPermissions = {permission: "adminGroup"}
 * **since:** 1.0.0
 ### userSettings&nbsp;  
 <p>The user settings to be passed to the compound micro frontend. <br><br>
-Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
+A plain key-value object is forwarded to all micro frontends as is.<br><br>
+Alternatively, user settings can be grouped so that each micro frontend only
+receives the settings of the group it is assigned to. In that case the object
+has the shape <code>{ rootNodeUserSettingsGroup, userSettingGroups }</code>, where:</p>
+<ul>
+  <li><code>userSettingGroups</code> is an object holding the stored settings keyed by group name.</li>
+  <li><code>rootNodeUserSettingsGroup</code> is the group name whose settings are passed to the root (nesting) compound micro frontend.</li>
+</ul>
+Each compound child then receives only the settings of the group defined via its
+<code>userSettingsGroup</code> property in the <a href="luigi-compound-container-api.md#compoundconfig">compoundConfig</a>.
+A child (or the root node) without a matching group receives an empty object from <code>LuigiClient.getUserSettings()</code>. <br><br>
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
   
 **Example**  
@@ -197,6 +208,10 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 **Example**  
 ```js
 myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
+```
+**Example**  
+```js
+myContainer.userSettings = { rootNodeUserSettingsGroup: 'account', userSettingGroups: { theme: { theme: 'sap_horizon' }, account: { name: 'luigi' } } }
 ```
   
 **Meta**:  

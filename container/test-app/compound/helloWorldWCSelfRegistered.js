@@ -11,6 +11,7 @@ class HelloWorldSelfRegistered extends HTMLElement {
         <button id="showAlert">showAlert</button><br>
         <button id="showAlertWithCallback">showAlert (with callback)</button><br>
         <button id="confirmationModal">showConfirmationModal</button>
+        <button id="getUserSettings">getUserSettings</button>
       </section>
     `;
 
@@ -48,6 +49,11 @@ class HelloWorldSelfRegistered extends HTMLElement {
         .showConfirmationModal(settings)
         .then(() => console.info('Nested WC - modal confirmed'))
         .catch(() => console.info('Nested WC - modal dissmissed'));
+    });
+    this.$button4 = this._shadowRoot.querySelector('#getUserSettings');
+    this.$button4.addEventListener('click', () => {
+      const userSettings = this.LuigiClient.getUserSettings();
+      console.info('Nested WC - user settings:', userSettings);
     });
   }
 }

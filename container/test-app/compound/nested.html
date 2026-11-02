@@ -15,6 +15,10 @@
       context='{"label": "Dashboard2", "title":"Dashboard2"}'
       viewUrl="./compound/nested.js"
       webcomponent="true"
+      user-settings='{
+        "rootNodeUserSettingsGroup": "account",
+        "userSettingGroups": {"theme":{"theme":"red"}, "account": {"name": "luigi"}}
+      }'
       node-params='{"Das ist ein":"compound tets"}'
     ></luigi-compound-container>
 
@@ -54,6 +58,7 @@
           },
           {
             viewUrl: './helloWorldWCSelfRegistered.js',
+            userSettingsGroup: 'theme',
             webcomponent: {
               selfRegistered: true,
             },
@@ -72,7 +77,7 @@
           },
         ],
       };
-      
+
       const INITIALIZED = 'initialized';
       const ALERT_REQUEST = 'show-alert-request';
       const SHOW_CONFIRMATION_MODAL_REQUEST = 'show-confirmation-modal-request';
