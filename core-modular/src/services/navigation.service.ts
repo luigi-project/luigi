@@ -96,8 +96,13 @@ export class NavigationService {
     }
   }
 
+  private isValidGoBackContext(goBackContext: any): boolean {
+    return typeof goBackContext === 'boolean'
+      || (goBackContext && (typeof goBackContext === 'string' || typeof goBackContext === 'object'));
+  }
+
   private prepareGoBackContextForNavigation(goBackContext: any): void {
-    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+    if (this.isValidGoBackContext(goBackContext)) {
       this.handleDialogContainer(goBackContext);
     }
   }
@@ -155,7 +160,7 @@ export class NavigationService {
       }
     };
 
-    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+    if (this.isValidGoBackContext(goBackContext)) {
       const dialogUpdated = this.handleDialogContainer(goBackContext);
 
       if (!dialogUpdated) {
