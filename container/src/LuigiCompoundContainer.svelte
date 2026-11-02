@@ -36,12 +36,7 @@
         attribute: 'user-settings'
       },
       viewurl: { type: 'String', reflect: false, attribute: 'viewurl' },
-      webcomponent: { type: 'String', reflect: false, attribute: 'webcomponent' },
-      userSettingsGroups: {
-        type: 'Object',
-        reflect: false,
-        attribute: 'user-settings-groups'
-      }
+      webcomponent: { type: 'String', reflect: false, attribute: 'webcomponent' }
     },
     extend: (customElementConstructor) => {
       let notInitFn = (name) => {
@@ -98,7 +93,6 @@
   export let theme: string;
   export let userSettings: any;
   export let viewurl: string;
-  export let userSettingsGroups: any;
   export let webcomponent: any;
   /* eslint-enable */
 
@@ -125,8 +119,7 @@
       searchParams &&
       skipInitCheck &&
       theme &&
-      userSettings &&
-      userSettingsGroups
+      userSettings
     );
   };
 

@@ -1267,7 +1267,7 @@ describe('createClientAPI', () => {
       rootNodeUserSettingsGroup: 'theme',
       userSettingGroups: { theme: { theme: 'red' }, account: { name: 'luigi' } }
     };
-    const eventBusElement = document.createElement('div');
+    const eventBusElement = document.createElement('div') as any;
     eventBusElement._luigi_node = { userSettingsGroup: 'theme' };
 
     // act
@@ -1285,7 +1285,7 @@ describe('createClientAPI', () => {
       rootNodeUserSettingsGroup: 'theme',
       userSettingGroups: { theme: { theme: 'red' }, account: { name: 'luigi' } }
     };
-    const eventBusElement = document.createElement('div');
+    const eventBusElement = document.createElement('div') as any;
     eventBusElement._luigi_node = {};
 
     // act
