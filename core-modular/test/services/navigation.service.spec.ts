@@ -3060,15 +3060,18 @@ describe('NavigationService', () => {
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
     });
 
-    it.each([{ foo: 'bar' }, 'test', '', true, false])('should handle dialog container when context is valid', (ctx) => {
-      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
-      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+    it.each([{ foo: 'bar' }, 'test', '', true, false])(
+      'should handle dialog container when context is valid',
+      (ctx) => {
+        const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+        const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
 
-      navigationService.processGoBackContext(ctx);
+        navigationService.processGoBackContext(ctx);
 
-      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
-      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
-    });
+        expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+        expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+      }
+    );
   });
 
   describe('NavigationService._preservedViews', () => {
