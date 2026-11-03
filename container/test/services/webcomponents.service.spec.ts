@@ -1305,8 +1305,8 @@ describe('createClientAPI', () => {
     };
     const eventBusElement = document.createElement('div');
 
-    // act
-    const clientAPI = service.createClientAPI(eventBusElement, '_root', 'wc_id', 'component', true);
+    // act: isCompoundChild = false marks the root (nesting) compound wc
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', false);
     const result = clientAPI.getUserSettings();
 
     // assert
