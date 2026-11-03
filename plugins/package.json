@@ -28,7 +28,7 @@
     "copy-webpack-plugin": "14.0.0",
     "core-js": "3.28.0",
     "diff": "8.0.3",
-    "glob": "7.2.3",
+    "glob": "14.0.2",
     "jest": "30.3.0",
     "lodash": "4.18.1",
     "lodash.merge": "4.6.2",
