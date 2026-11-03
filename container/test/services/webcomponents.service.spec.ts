@@ -1259,6 +1259,59 @@ describe('createClientAPI', () => {
     // assert
     expect(result).toEqual({});
   });
+
+  it('test getUserSettings returns only the group settings for groupedUserSettings shape', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div') as any;
+    eventBusElement._luigi_node = { userSettingsGroup: 'theme' };
+
+    // act
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', true);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({ theme: 'red' });
+  });
+
+  it('test getUserSettings returns {} for groupedUserSettings shape without userSettingsGroup', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div') as any;
+    eventBusElement._luigi_node = {};
+
+    // act
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', true);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({});
+  });
+
+  it('test getUserSettings maps the root compound wc to the rootNodeUserSettingsGroup group', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div');
+
+    // act: isCompoundChild = false marks the root (nesting) compound wc
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', false);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({ theme: 'red' });
+  });
 });
 
 describe('initWC', () => {
