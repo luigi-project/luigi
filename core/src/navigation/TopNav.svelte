@@ -859,6 +859,7 @@
   }
 
   :global(.lui-handheldMode .fd-user-menu--mobile) {
+    border-radius: 0;
     position: fixed;
     inset: 0;
     width: 100%;

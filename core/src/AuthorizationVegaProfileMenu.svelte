@@ -537,7 +537,21 @@
     }
   }
 
+  :global(.lui-handheldMode .fd-menu__link.has-child.is-expanded .fd-menu__addon-after) {
+    transform: rotate(90deg);
+  }
+
   :global(.lui-handheldMode .lui-profile-sublist) {
-    right: 0;
+    display: block;
+    height: auto;
+    max-width: none;
+    position: static;
+    width: 100%;
+
+    .fd-menu__sublist {
+      margin-left: 1px;
+      max-width: none;
+      width: 100%;
+    }
   }
 </style>
