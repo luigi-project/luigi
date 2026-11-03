@@ -811,7 +811,7 @@ export class WebComponentService {
    * Gets the stored user settings for a compound web component.
    *
    * If the user-settings provided to the compound container follow the
-   * `{ rootNodeUserSettingsGroup, userSettingGroups }` shape, only the settings of
+   * `{ rootNodeUserSettingsGroup, groupedUserSettings }` shape, only the settings of
    * the relevant group are returned: the root/nesting web component (`_root`) is
    * mapped to the `rootNodeUserSettingsGroup` group, while every compound child is
    * mapped to the group defined via `userSettingsGroup` on its node. If no group
@@ -828,12 +828,13 @@ export class WebComponentService {
       return {};
     }
 
-    if (Object.prototype.hasOwnProperty.call(userSettings, 'userSettingGroups')) {
-      const userSettingGroups = userSettings.userSettingGroups;
+    if (Object.prototype.hasOwnProperty.call(userSettings, 'groupedUserSettings')) {
+      const groupedUserSettings = userSettings.groupedUserSettings;
       const userSettingsGroup =
         nodeId === '_root' ? userSettings.rootNodeUserSettingsGroup : eventBusElement?._luigi_node?.userSettingsGroup;
-      const hasUserSettings = userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
-      return hasUserSettings ? userSettingGroups[userSettingsGroup] || {} : {};
+      const hasUserSettings =
+        userSettingsGroup && typeof groupedUserSettings === 'object' && groupedUserSettings !== null;
+      return hasUserSettings ? groupedUserSettings[userSettingsGroup] || {} : {};
     }
 
     return userSettings;

@@ -190,9 +190,9 @@ myContainer.clientPermissions = {permission: "adminGroup"}
 A plain key-value object is forwarded to all micro frontends as is.<br><br>
 Alternatively, user settings can be grouped so that each micro frontend only
 receives the settings of the group it is assigned to. In that case the object
-has the shape <code>{ rootNodeUserSettingsGroup, userSettingGroups }</code>, where:</p>
+has the shape <code>{ rootNodeUserSettingsGroup, groupedUserSettings }</code>, where:</p>
 <ul>
-  <li><code>userSettingGroups</code> is an object holding the stored settings keyed by group name.</li>
+  <li><code>groupedUserSettings</code> is an object holding the stored settings keyed by group name.</li>
   <li><code>rootNodeUserSettingsGroup</code> is the group name whose settings are passed to the root (nesting) compound micro frontend.</li>
 </ul>
 Each compound child then receives only the settings of the group defined via its
@@ -211,7 +211,7 @@ myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
 ```
 **Example**  
 ```js
-myContainer.userSettings = { rootNodeUserSettingsGroup: 'account', userSettingGroups: { theme: { theme: 'sap_horizon' }, account: { name: 'luigi' } } }
+myContainer.userSettings = { rootNodeUserSettingsGroup: 'account', groupedUserSettings: { theme: { theme: 'sap_horizon' }, account: { name: 'luigi' } } }
 ```
   
 **Meta**:  

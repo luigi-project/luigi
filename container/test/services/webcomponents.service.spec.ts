@@ -1260,12 +1260,12 @@ describe('createClientAPI', () => {
     expect(result).toEqual({});
   });
 
-  it('test getUserSettings returns only the group settings for userSettingGroups shape', () => {
+  it('test getUserSettings returns only the group settings for groupedUserSettings shape', () => {
     // mock and spy on data/functions
     service.thisComponent = document.createElement('div');
     service.thisComponent.userSettings = {
       rootNodeUserSettingsGroup: 'theme',
-      userSettingGroups: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
     };
     const eventBusElement = document.createElement('div') as any;
     eventBusElement._luigi_node = { userSettingsGroup: 'theme' };
@@ -1278,12 +1278,12 @@ describe('createClientAPI', () => {
     expect(result).toEqual({ theme: 'red' });
   });
 
-  it('test getUserSettings returns {} for userSettingGroups shape without userSettingsGroup', () => {
+  it('test getUserSettings returns {} for groupedUserSettings shape without userSettingsGroup', () => {
     // mock and spy on data/functions
     service.thisComponent = document.createElement('div');
     service.thisComponent.userSettings = {
       rootNodeUserSettingsGroup: 'theme',
-      userSettingGroups: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
     };
     const eventBusElement = document.createElement('div') as any;
     eventBusElement._luigi_node = {};
@@ -1301,7 +1301,7 @@ describe('createClientAPI', () => {
     service.thisComponent = document.createElement('div');
     service.thisComponent.userSettings = {
       rootNodeUserSettingsGroup: 'theme',
-      userSettingGroups: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
     };
     const eventBusElement = document.createElement('div');
 
