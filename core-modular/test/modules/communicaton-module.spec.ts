@@ -30,13 +30,7 @@ jest.mock('@luigi-project/container', () => {
 });
 
 jest.mock('../../src/services/service-registry', () => ({
-  serviceRegistry: {
-    get: jest.fn().mockReturnValue({
-      handleGoBackRequest: jest.fn(),
-      viewGroupLoaded: jest.fn(),
-      preload: jest.fn()
-    })
-  }
+  serviceRegistry: { get: jest.fn() }
 }));
 jest.mock('../../src/modules/ui-module', () => ({
   UIModule: { luigi: { getEngine: () => ({ _connector: {} }) } }
@@ -84,7 +78,11 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
     containerElement.viewGroup = 'testGroup';
     document.body.appendChild(containerElement);
     document.body.classList.add('content');
-    navigationServiceMock = { handleGoBackRequest: jest.fn() };
+    navigationServiceMock = {
+      handleGoBackRequest: jest.fn(),
+      viewGroupLoaded: jest.fn(),
+      preload: jest.fn()
+    };
     jest.spyOn(serviceRegistry, 'get').mockImplementation((service: any) => {
       if (service === NavigationService) return navigationServiceMock;
       return {} as any;

@@ -3060,7 +3060,7 @@ describe('NavigationService', () => {
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
     });
 
-    it.each([{ foo: 'bar' }, {}, true, false])('should handle dialog container when context is valid', (ctx) => {
+    it.each([{ foo: 'bar' }, 'test', '', true, false])('should handle dialog container when context is valid', (ctx) => {
       const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
       const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
 
@@ -3226,7 +3226,7 @@ describe('NavigationService', () => {
       expect(navigationService.isValidGoBackContext(value)).toEqual(false);
     });
 
-    it.each([true, false, 'test', { foo: 'bar' }])('should return true when value is valid', (value: any) => {
+    it.each([true, false, '', 'test', { foo: 'bar' }])('should return true when value is valid', (value: any) => {
       expect(navigationService.isValidGoBackContext(value)).toEqual(true);
     });
   });
