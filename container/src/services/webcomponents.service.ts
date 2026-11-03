@@ -830,8 +830,9 @@ export class WebComponentService {
 
     if (Object.prototype.hasOwnProperty.call(userSettings, 'groupedUserSettings')) {
       const groupedUserSettings = userSettings.groupedUserSettings;
-      const userSettingsGroup =
-        isRootNode ? userSettings.rootNodeUserSettingsGroup : eventBusElement?._luigi_node?.userSettingsGroup;
+      const userSettingsGroup = isRootNode
+        ? userSettings.rootNodeUserSettingsGroup
+        : eventBusElement?._luigi_node?.userSettingsGroup;
       const hasUserSettings =
         userSettingsGroup && typeof groupedUserSettings === 'object' && groupedUserSettings !== null;
       return hasUserSettings ? groupedUserSettings[userSettingsGroup] || {} : {};
