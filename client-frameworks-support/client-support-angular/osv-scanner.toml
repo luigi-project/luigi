@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-gcqx-w48m-w2h4"
+reason = "CVE-2026-93753 is REJECTED in the authoritative CVE record because it does not describe a security vulnerability (https://www.cve.org/CVERecord?id=CVE-2026-93753). Independently, the locked deepmerge 4.3.1 instances are used only by build/test configuration utilities, not Luigi's application runtime. No untrusted application input reaches these merges, and no applicable exploit path was identified in the current dependency chain and configuration. Reassess if usage changes or a revised advisory establishes a relevant vulnerability."
+
+[[IgnoredVulns]]
 id = "GHSA-g3hv-75wg-m249"
 reason = "Reviewed the locked minimatch versions and their usage in development tooling. Legacy minimatch 3.x lacks the vulnerable preprocessing implementation. The minimatch 9.x/10.x consumers in TypeScript-ESLint pass { dot: true }, retaining the default optimizationLevel of 1; this advisory requires optimizationLevel >= 2. No allowDefaultProject configuration is enabled, and TypeScript-ESLint rejects ** in those patterns. No applicable exploit path was identified in the current dependency chain and configuration. Reassess if either changes."
 
