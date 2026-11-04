@@ -124,6 +124,7 @@ export class Navigation {
     if (!settings.title) {
       settings.title = node?.label;
     }
+    settings.title = RoutingHelpers.resolveNodeLabel({...node, ...{label: settings.title}}, this.luigi);
     if (!settings.size) {
       settings.size = 'l';
     }
