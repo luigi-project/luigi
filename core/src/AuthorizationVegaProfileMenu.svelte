@@ -537,6 +537,10 @@
     }
   }
 
+  :global(.lui-handheldMode .fd-menu__link.has-child.is-expanded:after) {
+    display: none;
+  }
+
   :global(.lui-handheldMode .fd-menu__link.has-child.is-expanded .fd-menu__addon-after) {
     transform: rotate(90deg);
   }

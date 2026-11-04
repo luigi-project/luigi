@@ -71,7 +71,7 @@ class DeviceHelpersClass {
   };
 
   constructor() {
-    this.isSSR = typeof window.document === 'undefined';
+    this.isSSR = typeof window === 'undefined' || typeof window.document === 'undefined';
   }
 
   isWindows8OrAbove() {

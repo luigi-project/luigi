@@ -297,7 +297,7 @@
         <button
           title="Logout"
           on:click={onLogoutClick}
-          data-testid={getTestId(profileNav.logout)}
+          data-testid="logout-btn"
           class="fd-menu__link lui-logout-btn"
         >
           {#if profileNav.logout.icon}
