@@ -12,10 +12,10 @@
   export let isHidden = false;
   export let addNavHrefForAnchor;
 
+  const isPhone = DeviceHelpers.isPhone();
   let idpProviderInstance;
   let userInfo;
   let isLoggedIn;
-  let isPhone = false;
   let profileNav = { logout: {}, items: [], settings: {} };
   let isAuthorizationEnabled;
   let isProfileLogoutItem;
@@ -30,7 +30,6 @@
   let setProfileNavDataTimeout;
 
   onMount(async () => {
-    isPhone = DeviceHelpers.isPhone();
     if (!LuigiAuth.isAuthorizationEnabled()) {
       isAuthorizationEnabled = false;
       setProfileUserData();

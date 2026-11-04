@@ -58,6 +58,7 @@
   export let responsiveShellbarPadding;
   export let fastNavGroup = null;
 
+  const isPhone = DeviceHelpers.isPhone();
   let store = getContext('store');
   let contextSwitcherToggle = false;
   let selectedLabel;
@@ -682,7 +683,7 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right {DeviceHelpers.isPhone()
+                  class="fd-popover__body fd-popover__body--right { isPhone
                     ? 'fd-user-menu--mobile'
                     : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
@@ -731,7 +732,7 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right {DeviceHelpers.isPhone()
+                  class="fd-popover__body fd-popover__body--right { isPhone
                     ? 'fd-user-menu--mobile'
                     : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}

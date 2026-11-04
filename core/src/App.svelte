@@ -80,7 +80,6 @@
   let isolateView;
   let pageErrorHandler;
   let previousNodeValues;
-  let isPhone = false;
   let isNavigationSyncEnabled = true;
   let isNavigateBack = false;
   let goBackContext;
@@ -1797,8 +1796,7 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     responsiveNavSetting = LuigiConfig.getConfigValue('settings.responsiveNavigation');
     previousWindowWidth = window.innerWidth;
-    isPhone = DeviceHelpers.isPhone();
-    if (isPhone) {
+    if (DeviceHelpers.isPhone()) {
       document.body.classList.add('lui-handheldMode');
     }
     if (responsiveNavSetting === 'simple') {
