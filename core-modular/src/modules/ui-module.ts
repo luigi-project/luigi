@@ -53,7 +53,7 @@ const createContainer = async (
     lcc.pathParams = pathParams;
     lcc.userSettings = {
       rootNodeUserSettingsGroup: node.userSettingsGroup,
-      userSettingGroups
+      groupedUserSettings: userSettingGroups
     };
     lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
