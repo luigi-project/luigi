@@ -12,6 +12,7 @@ export default class extends LuigiElement {
           <button id="showAlert">showAlert</button>
           <button id="showAlertWithCallback">showAlert (with callback)</button>
           <button id="confirmationModal">showConfirmationModal</button>
+          <button id="getUserSettings">getUserSettings</button>
           <header><slot name="header">header</slot></header>
           <main style="flex: auto; overflow: auto">
             <slot name="content">content</slot>
@@ -58,6 +59,10 @@ export default class extends LuigiElement {
         .showConfirmationModal(settings)
         .then(() => console.info('Direct WC - modal confirmed'))
         .catch(() => console.info('Direct WC - modal dissmissed'));
+    });
+    this.$button6 = this._shadowRoot.querySelector('#getUserSettings');
+    this.$button6.addEventListener('click', () => {
+      console.log('getUserSettings', this.LuigiClient.getUserSettings());
     });
   }
 
