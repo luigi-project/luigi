@@ -122,4 +122,34 @@ describe('Nested Compound Container Tests', () => {
       cy.get('@notifySpy').should('have.been.calledWith', true);
     });
   });
+
+  describe('Luigi Client API - getUserSettings', () => {
+    it('should pass only the rootNodeUserSettingsGroup settings to the direct (root) WC', () => {
+      // the direct WC logs via console.log, so stub it for this test
+      cy.window().then((win) => {
+        cy.stub(win.console, 'log').as('consoleLog');
+      });
+
+      // click getUserSettings on the direct (root) compound WC
+      cy.get(containerSelector).shadow().contains('getUserSettings').click();
+
+      // nested.html maps rootNodeUserSettingsGroup to 'account'
+      cy.get('@consoleLog').should('have.been.calledWith', 'getUserSettings', { name: 'luigi' });
+    });
+
+    it('should pass only the userSettingsGroup settings to the nested WC', () => {
+      // find the nested wc and click its getUserSettings (logs via console.info, stubbed in beforeEach)
+      cy.get(containerSelector)
+        .shadow()
+        .find(
+          'luigi-wc-687474703a2f2f6c6f63616c686f73743a383038302f636f6d706f756e642f68656c6c6f576f726c64574353656c66526567697374657265642e6a73'
+        )
+        .shadow()
+        .contains('getUserSettings')
+        .click();
+
+      // the nested WC's userSettingsGroup is 'theme'
+      cy.get('@consoleInfo').should('have.been.calledWith', 'Nested WC - user settings:', { theme: 'red' });
+    });
+  });
 });
