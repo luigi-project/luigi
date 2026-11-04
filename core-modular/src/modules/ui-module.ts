@@ -280,7 +280,7 @@ export const UIModule = {
         const params = RoutingHelpers.getQueryParams(UIModule.luigi);
         const node = (await UIModule.navService.getCurrentNode(params.modal)) as Node;
         const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
-        UIModule.updateModalSettings({title}, false, UIModule.luigi);
+        UIModule.updateModalSettings({ title }, false, UIModule.luigi);
       }
       const pathData = await UIModule.navService.getPathData(croute.path);
       const connector = UIModule.luigi.getEngine()._connector;
