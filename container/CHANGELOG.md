@@ -4,6 +4,16 @@
 
 
 
+## [v1.8.0] (2026-11-04)
+
+#### :rocket: Added
+
+* [#5550](https://github.com/luigi-project/luigi/pull/5550) Pass user settings to compound container children by group ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
 ## [v1.7.12] (2026-10-27)
 
 #### :bug: Fixed
@@ -228,3 +238,4 @@
 [v1.7.10]: https://github.com/luigi-project/luigi/compare/container/v1.7.9...container/v1.7.10
 [v1.7.11]: https://github.com/luigi-project/luigi/compare/container/v1.7.10...container/v1.7.11
 [v1.7.12]: https://github.com/luigi-project/luigi/compare/container/v1.7.11...container/v1.7.12
+[v1.8.0]: https://github.com/luigi-project/luigi/compare/container/v1.7.12...container/v1.8.0
