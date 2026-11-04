@@ -295,16 +295,18 @@ describe('getContainerManager messageListener', () => {
     expect(dispatchedEvent.type).toEqual(Events.SET_THIRD_PARTY_COOKIES_REQUEST);
   });
 
-  it('test navigation back request', () => {
+  it.each([true, false, '', 'test', {}, { foo: 'bar' }])('test navigation back request', (ctx) => {
     const event = {
       source: cw,
       data: {
         msg: LuigiInternalMessageID.BACK_NAVIGATION_REQUEST,
+        goBackContext: ctx,
         params: 'back-navigation-request'
       }
     };
     cm.messageListener(event);
-    expect(dispatchedEvent.type).toEqual(Events.BACK_NAVIGATION_REQUEST);
+    expect(dispatchedEvent.type).toEqual(Events.GO_BACK_REQUEST);
+    expect(dispatchedEvent.detail).toEqual(ctx);
   });
 
   it('test navigation request', () => {
