@@ -106,6 +106,7 @@ export interface UserSettingsDialogSettings {
   dismissBtn?: string;
   renderMicroFrontendContainer?: (viewUrl: string, groupKey: string) => Promise<any>;
   onCloseCallback?: (storedUserSettings: any) => void;
+  showFullScreenOnMobile?: boolean;
 }
 
 export interface UserInfo {
