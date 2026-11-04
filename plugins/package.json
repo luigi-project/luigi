@@ -44,7 +44,9 @@
   "engines": {
     "node": ">=20.19.0"
   },
+  "overrides_comment": "Jest's glob 10.x is overridden to ^14.0.3 for GHSA-3g3m-2fjr-6pw4; legacy glob 7.x is unaffected and retains its callback API. Remove when Jest depends on a patched glob release.",
   "overrides": {
+    "glob@^10.5.0": "^14.0.3",
     "js-yaml": "^4.2.0"
   }
 }
