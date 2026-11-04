@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = "Reviewed the flagged minimatch 3.1.5 implementation: it does not contain the firstPhasePreProcess/secondPhasePreProcess code described by this advisory. These instances are used by development tooling, not Luigi's application runtime. No applicable exploit path was identified in the current dependency chain and configuration. Reassess if either changes."
+
+[[IgnoredVulns]]
 id = "GHSA-m5mm-p8h7-m29v"
 reason = "False positive: oidc-client uses serialize-javascript for build cache metadata only. Build-time only, never in production. Exploitation requires attacker control over serialized function .toString() which is not possible in this code path."
 

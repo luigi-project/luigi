@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = "Reviewed the flagged minimatch 3.1.5 implementation: it does not contain the firstPhasePreProcess/secondPhasePreProcess code described by this advisory. These instances are used by development tooling, not Luigi's application runtime. No applicable exploit path was identified in the current dependency chain and configuration. Reassess if either changes."
+
+[[IgnoredVulns]]
 id = "GHSA-5c6j-r48x-rmvq"
 reason = "False positive: terser-webpack-plugin uses serialize-javascript only for build cache keys (dev-controlled config). Build-time only, no user input."
 

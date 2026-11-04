@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = "Reviewed the locked minimatch versions and their usage in development tooling. Legacy minimatch 3.x lacks the vulnerable preprocessing implementation. The minimatch 9.x/10.x consumers in TypeScript-ESLint pass { dot: true }, retaining the default optimizationLevel of 1; this advisory requires optimizationLevel >= 2. No allowDefaultProject configuration is enabled, and TypeScript-ESLint rejects ** in those patterns. No applicable exploit path was identified in the current dependency chain and configuration. Reassess if either changes."
+
+[[IgnoredVulns]]
 id = "GHSA-grv7-fg5c-xmjg"
 reason = "Vulnerable code is not actually used"
 

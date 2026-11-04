@@ -1,4 +1,8 @@
 [[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = "Reviewed the flagged minimatch 3.1.5 implementation: it does not contain the firstPhasePreProcess/secondPhasePreProcess code described by this advisory. These instances are used by development tooling, not Luigi's application runtime. No applicable exploit path was identified in the current dependency chain and configuration. Reassess if either changes."
+
+[[IgnoredVulns]]
 id = "GHSA-grv7-fg5c-xmjg"
 reason = "Vulnerable code is not actually used"
 
