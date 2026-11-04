@@ -294,12 +294,7 @@
   {#if isPhone && (isAuthorizationEnabled || isProfileLogoutItem)}
     <footer class="lui-profile-simple-footer">
       {#if isLoggedIn || (!isAuthorizationEnabled && isProfileLogoutItem)}
-        <button
-          title="Logout"
-          on:click={onLogoutClick}
-          data-testid="logout-btn"
-          class="fd-menu__link lui-logout-btn"
-        >
+        <button title="Logout" on:click={onLogoutClick} data-testid="logout-btn" class="fd-menu__link lui-logout-btn">
           {#if profileNav.logout.icon}
             {#if hasOpenUIicon(profileNav.logout)}
               <i class="fd-top-nav__icon {getSapIconStr(profileNav.logout.icon)}"></i>
