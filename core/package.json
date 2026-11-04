@@ -43,8 +43,9 @@
   "engines": {
     "node": ">=20.19.0"
   },
-  "overrides_comment": "postcss-selector-parser forced to ^7.1.6 to fix GHSA-rj75-hqrm-r3gf (CPU exhaustion). The cssnano 5.x chain via the unmaintained rollup-plugin-postcss@4.0.2 pins it at ^6; 7.x is a drop-in (same parser API, same engines). Remove when migrated off rollup-plugin-postcss.",
+  "overrides_comment": "Jest's glob 10.x is overridden to ^14.0.3 for GHSA-3g3m-2fjr-6pw4; legacy glob 7.x is unaffected and retains its callback API. Remove when Jest depends on a patched glob release. postcss-selector-parser forced to ^7.1.6 to fix GHSA-rj75-hqrm-r3gf (CPU exhaustion). The cssnano 5.x chain via the unmaintained rollup-plugin-postcss@4.0.2 pins it at ^6; 7.x is a drop-in (same parser API, same engines). Remove when migrated off rollup-plugin-postcss.",
   "overrides": {
+    "glob@^10.5.0": "^14.0.3",
     "js-yaml": "^4.2.0",
     "postcss-selector-parser": "^7.1.6"
   }
