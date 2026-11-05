@@ -305,8 +305,8 @@ describe('getContainerManager messageListener', () => {
       }
     };
     cm.messageListener(event);
-    expect(dispatchedEvent.type).toEqual(Events.GO_BACK_REQUEST);
-    expect(dispatchedEvent.detail).toEqual(ctx);
+    expect(dispatchedEvent.type).toEqual(Events.BACK_NAVIGATION_REQUEST);
+    expect(dispatchedEvent?.detail?.data?.goBackContext).toEqual(ctx);
   });
 
   it('test navigation request', () => {

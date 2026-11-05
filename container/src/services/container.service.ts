@@ -227,25 +227,22 @@ export class ContainerService {
               case LuigiInternalMessageID.BACK_NAVIGATION_REQUEST:
                 {
                   const isValidGoBackContext = (goBackContext: unknown): boolean => {
-                    return !!(
-                      typeof goBackContext === 'boolean' ||
-                      (typeof goBackContext === 'string' && goBackContext.trim() === '') ||
-                      (goBackContext &&
-                        (typeof goBackContext === 'string' || typeof goBackContext === 'object') &&
-                        !Array.isArray(goBackContext))
-                    );
+                    if (typeof goBackContext === 'boolean' || typeof goBackContext === 'string') {
+                      return true;
+                    }
+                    return !!goBackContext && typeof goBackContext === 'object' && !Array.isArray(goBackContext);
                   };
                   const goBackContext = event.data?.goBackContext;
                   let gbctx = isValidGoBackContext(goBackContext) ? goBackContext : {};
-                  if (typeof gbctx === 'string') {
+                  if (typeof gbctx === 'string' && gbctx.trim() !== '') {
                     try {
                       gbctx = JSON.parse(gbctx);
                     } catch (e) {
                       console.warn(e);
                     }
                   }
-                  this.dispatch(Events.BACK_NAVIGATION_REQUEST, targetCnt, event); // for BW compatibility
                   this.dispatch(Events.GO_BACK_REQUEST, targetCnt, gbctx);
+                  this.dispatch(Events.BACK_NAVIGATION_REQUEST, targetCnt, event); // for BW compatibility
                 }
                 break;
               case LuigiInternalMessageID.GET_CURRENT_ROUTE_REQUEST:
