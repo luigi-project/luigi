@@ -310,8 +310,7 @@ Luigi.elements().getMicrofrontendIframes();
 **Meta**:  
 * **since:** 0.4.12
 ### getCurrentMicrofrontendIframe&nbsp;  
-Returns the active micro frontend iframe.
-If there is a modal, which includes the micro frontend iframe, the function returns this iframe.
+Returns the active micro frontend iframe.If there is a modal, which includes the micro frontend iframe, the function returns this iframe.
 
   
 **Example**  
@@ -636,11 +635,7 @@ Unregisters a listener for locale changes.
 **Meta**:  
 * **since:** 0.5.3
 ### getTranslation&nbsp;  
-Gets translated text for the specified key in the current locale or in the specified one.
-Property values for token replacement in the localization key will be taken from the specified interpolations object.
-
-<!-- add-attribute:class:success -->
-> **TIP**: Be aware that this function is not asynchronous and therefore the translation table must be existing already at initialization. Take a look at our [i18n](i18n.md) section for an implementation suggestion.
+Gets translated text for the specified key in the current locale or in the specified one.Property values for token replacement in the localization key will be taken from the specified interpolations object.<!-- add-attribute:class:success -->> **TIP**: Be aware that this function is not asynchronous and therefore the translation table must be existing already at initialization. Take a look at our [i18n](i18n.md) section for an implementation suggestion.
 
 **Params**
 
@@ -669,18 +664,13 @@ Sends a custom message to all opened micro frontends.
   
 **Example**  
 ```js
-Luigi.customMessages().sendToAll({
-    id: 'myprefix.my-custom-message-for-client',
-    dataField1: 'here goes some data',
-    moreData: 'here goes some more'
-});
+Luigi.customMessages().sendToAll({    id: 'myprefix.my-custom-message-for-client',    dataField1: 'here goes some data',    moreData: 'here goes some more'});
 ```
   
 **Meta**:  
 * **since:** 0.6.2
 ### send&nbsp;  
-Sends a message to specific micro frontend identified with an id.
-Use Luigi.elements().getMicrofrontends() to get the iframe id.
+Sends a message to specific micro frontend identified with an id.Use Luigi.elements().getMicrofrontends() to get the iframe id.
 
 **Params**
 
@@ -692,11 +682,7 @@ Use Luigi.elements().getMicrofrontends() to get the iframe id.
   
 **Example**  
 ```js
-Luigi.customMessages().send(microfrontend.id, {
-    id: 'myprefix.my-custom-message-for-client',
-    dataField1: 'here goes some data',
-    moreData: 'here goes some more'
-});
+Luigi.customMessages().send(microfrontend.id, {    id: 'myprefix.my-custom-message-for-client',    dataField1: 'here goes some data',    moreData: 'here goes some more'});
 ```
   
 **Meta**:  
@@ -731,23 +717,7 @@ Shows an alert.
   
 **Example**  
 ```js
-const settings = {
- text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}",
- type: 'info',
- links: {
-   goToHome: { text: 'homepage', url: '/overview' },
-   goToOtherProject: { text: 'other project', url: '/projects/pr2' },
-   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },
-   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
- },
- closeAfter: 3000
-}
-Luigi
- .ux()
- .showAlert(settings)
- .then(() => {
-    // Logic to execute when the alert is dismissed
- });
+const settings = { text: "Ut enim ad minim veniam, {goToHome} quis nostrud exercitation ullamco {relativePath}. Duis aute irure dolor {goToOtherProject} or {neverShowItAgain}", type: 'info', links: {   goToHome: { text: 'homepage', url: '/overview' },   goToOtherProject: { text: 'other project', url: '/projects/pr2' },   relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },   neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' } }, closeAfter: 3000}Luigi .ux() .showAlert(settings) .then(() => {    // Logic to execute when the alert is dismissed });
 ```
 **Returns**: <code>promise</code> - which is resolved when the alert is dismissed  
   
@@ -768,18 +738,7 @@ Shows a confirmation modal.
   
 **Example**  
 ```js
-const settings = {
- header: "Confirmation",
- body: "Are you sure you want to do this?",
- buttonConfirm: "Yes",
- buttonDismiss: "No"
-}
-Luigi
- .ux()
- .showConfirmationModal(settings)
- .then(() => {
-    // Logic to execute when the confirmation modal is dismissed
- });
+const settings = { header: "Confirmation", body: "Are you sure you want to do this?", buttonConfirm: "Yes", buttonDismiss: "No"}Luigi .ux() .showConfirmationModal(settings) .then(() => {    // Logic to execute when the confirmation modal is dismissed });
 ```
 **Returns**: <code>promise</code> - which is resolved when accepting the confirmation modal and rejected when dismissing it  
   
@@ -904,16 +863,7 @@ Opens the global search result. By standard it is a popover.
   
 **Example**  
 ```js
-let searchResultItem = {
-  pathObject: {
-    link,
-    params: {}
-  },
-  label,
-  description
-}
-
-Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
+let searchResultItem = {  pathObject: {    link,    params: {}  },  label,  description}Luigi.globalSearch().showSearchResult([searchResultItem1, searchResultItem2]);
 ```
   
 **Meta**:  
@@ -981,12 +931,7 @@ Retrieves the available themes
   
 **Example**  
 ```js
-Luigi
- .theming()
- .getAvailableThemes()
- .then((themes) => {
-    // Logic to generate theme selector
- });
+Luigi .theming() .getAvailableThemes() .then((themes) => {    // Logic to generate theme selector });
 ```
 **Returns**: <code>promise</code> - resolves an array of theming objects  
   
@@ -1017,12 +962,7 @@ Retrieves a theme object by name.
   
 **Example**  
 ```js
-Luigi
- .theming()
- .getThemeObject('light')
- .then((id => {
-   // Logic
- }))
+Luigi .theming() .getThemeObject('light') .then((id => {   // Logic }))
 ```
 **Returns**: <code>promise</code> - resolves a theme object  
   
@@ -1053,10 +993,7 @@ Luigi.theming().isThemingAvailable()
 **Meta**:  
 * **since:** 1.4.0
 ### getCSSVariables&nbsp;  
-Returns CSS variables with key value from Luigi if `@luigi-project/core/luigi_theme-vars.js` is included in the `index.html` and `settings.theming.variables==='fiori'` is defined in the [settings](general-settings.md) section.
-It's also possible to define your own variables file which can be declared in `settings.theming.variables.file` in the [settings](general-settings.md) section.
-The variables should be defined in a JSON file which starts with a `root` key.
-When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
+Returns CSS variables with key value from Luigi if `@luigi-project/core/luigi_theme-vars.js` is included in the `index.html` and `settings.theming.variables==='fiori'` is defined in the [settings](general-settings.md) section.It's also possible to define your own variables file which can be declared in `settings.theming.variables.file` in the [settings](general-settings.md) section.The variables should be defined in a JSON file which starts with a `root` key.When you configure you own file, you can also implement exception handling by using the function `settings.theming.variables.errorHandling` which gets the error object as argument.
 
   
 **Example**  
@@ -1127,9 +1064,7 @@ Luigi.routing().getSearchParams();
 **Meta**:  
 * **since:** 1.16.1
 ### addSearchParams&nbsp;  
-Add search parameters to the URL.
-If [hash routing](navigation-parameters-reference.md#usehashrouting) is enabled, the search parameters will be set after the hash.
-In order to delete a search query param you can set the value of the param to undefined.
+Add search parameters to the URL.If [hash routing](navigation-parameters-reference.md#usehashrouting) is enabled, the search parameters will be set after the hash.In order to delete a search query param you can set the value of the param to undefined.
 
 **Params**
 
@@ -1151,8 +1086,7 @@ Authorization helpers.
 
   
 ### isAuthorizationEnabled&nbsp;  
-Detects if authorization is enabled via configuration.
-Read more about [custom authorization providers](authorization-configuration.md).
+Detects if authorization is enabled via configuration.Read more about [custom authorization providers](authorization-configuration.md).
 
   
 **Example**  
@@ -1161,8 +1095,7 @@ Luigi.auth().isAuthorizationEnabled();
 ```
 **Returns**: <code>boolean</code> - `true` if authorization is enabled - otherwise returns `false`  
 ### login&nbsp;  
-Login the user dynamically.
-This will run the same functionality as though the user clicked the login button.
+Login the user dynamically.This will run the same functionality as though the user clicked the login button.
 
   
 **Example**  
@@ -1173,8 +1106,7 @@ Luigi.auth().login();
 **Meta**:  
 * **since:** 1.5.0
 ### logout&nbsp;  
-Logout the user dynamically.
-This will run the same functionality as though the user clicked the logout button.
+Logout the user dynamically.This will run the same functionality as though the user clicked the logout button.
 
   
 **Example**  
@@ -1185,8 +1117,7 @@ Luigi.auth().logout();
 **Meta**:  
 * **since:** 1.5.0
 ### AuthData&nbsp;  
-Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration. <br><br>
-Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Authorization object that is stored in auth store and used within Luigi. It is then available in [LuigiClient.addInitListener](luigi-client-api.md#addInitListener) and can also be used in the Core configuration. <br><br>Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
 **Properties**
 
@@ -1200,8 +1131,7 @@ Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
   
 ## AuthorizationStore&nbsp;  
 ### store&nbsp;  
-Getter for authorization Storage helpers, to be used in your custom authorization provider.
-Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
+Getter for authorization Storage helpers, to be used in your custom authorization provider.Read more about custom authorization providers [here](authorization-configuration.md#implement-a-custom-authorization-provider).
 
   
 **Returns**: <code>Object</code> - authorization storage helpers  
