@@ -897,9 +897,10 @@
     };
     mfModalList = [...mfModalList, newModal];
 
-    // check if modalPath feature enable and set URL accordingly
-    const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
-
+    // check if modalPath feature enable and set URL accordingly.
+    // settings.showModalPathInUrl can override the global config per modal.
+    const showModalPathInUrl =
+      settings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
     //  only show the modal path in the URL when the first modal is opened.
     if (showModalPathInUrl && mfModalList.length === 1) {
       Routing.appendModalDataToUrl(nodepath, settings);
@@ -934,7 +935,9 @@
    */
   const closeModal = (index, isClosedInternal, goBackContext) => {
     const resetModalData = (index, isClosedInternal) => {
-      const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
+      const modalSettings = mfModalList[0]?.mfModal?.settings;
+      const showModalPathInUrl =
+        modalSettings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
       // only remove the modal path in URL when closing the first modal
       if (showModalPathInUrl && mfModalList.length === 1) {
         Routing.removeModalDataFromUrl(isClosedInternal);
