@@ -336,17 +336,22 @@
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <div class="lui-profile-sublist">
                       {#if isPhone}
-                      <div class="lui-profile-sublist__mobile-header">
-                        <div class="fd-bar__element">
-                            <button aria-label="button" class="fd-button fd-button--transparent"
-                              on:click|preventDefault|stopPropagation={toggleGroup(index)}>
-                                <i class="sap-icon--navigation-left-arrow"></i>
+                        <div class="lui-profile-sublist__mobile-header">
+                          <div class="fd-bar__element">
+                            <button
+                              aria-label="button"
+                              class="fd-button fd-button--transparent"
+                              on:click|preventDefault|stopPropagation={toggleGroup(index)}
+                            >
+                              <i class="sap-icon--navigation-left-arrow"></i>
                             </button>
+                          </div>
+                          <div class="fd-bar__element">
+                            <h5 class="fd-title fd-title--h5" aria-label="text">
+                              {$getTranslation(profileItem.label)}
+                            </h5>
+                          </div>
                         </div>
-                        <div class="fd-bar__element">
-                            <h5 class="fd-title fd-title--h5" aria-label="text">{$getTranslation(profileItem.label)}</h5>
-                        </div>
-                      </div>
                       {/if}
                       <div class="lui-profile-sublist__spacer"></div>
                       <ul
@@ -564,7 +569,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #FFF; 
+    background: #fff;
     z-index: 2;
     pointer-events: all;
 
@@ -582,10 +587,9 @@
       height: 44px;
       display: flex;
       pointer-events: auto;
-    }   
+    }
   }
 
-  
   :global(.fd-user-menu--mobile .fd-user-menu__menu-list) {
     max-width: none;
   }
