@@ -161,7 +161,8 @@ export class UX {
     const userSettingsDialogSettings: UserSettingsDialogSettings = {
       dialogHeader: this.luigi.i18n().getTranslation(dialogHeader),
       saveBtn: this.luigi.i18n().getTranslation(saveBtn),
-      dismissBtn: this.luigi.i18n().getTranslation(dismissBtn)
+      dismissBtn: this.luigi.i18n().getTranslation(dismissBtn),
+      showFullScreenOnMobile: userSettingsDialog.showFullScreenOnMobile === true
     };
     this.luigi
       .getEngine()
