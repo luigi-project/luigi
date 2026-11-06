@@ -606,8 +606,7 @@ export const RoutingHelpers = {
    * @param {Number} historyState.modalHistoryLength will be increased when modals will be openend successively like e.g. stepping through a wizard.
    * @param {Number} historyState.historygap is the history.length at the time when the modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
    * @param {String} historyState.pathBeforeHistory path before modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
-   * @param {boolean} hashRoutingActive true if hash routing is active, false if path routing is active
-   * @param {URL} url url object to read hash value or pathname
+   * @param {String} path representing the current path without modal data
    * @returns {Object} history state object
    */
   handleHistoryState(historyState: any, path?: string): any {
