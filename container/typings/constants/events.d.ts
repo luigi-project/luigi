@@ -383,7 +383,7 @@ export class LuigiEvent extends Event {
   constructor(type: string, data: unknown, payload?: unknown, callback?: Function) {
     super(type);
     this.detail = data;
-    this.payload = payload || data || {};
+    this.payload = this.getEventPayload(data, payload);
     this.callbackFn = callback;
   }
 
@@ -392,6 +392,14 @@ export class LuigiEvent extends Event {
       // @ts-ignore
       this.callbackFn(data);
     }
+  }
+
+  private getEventPayload(data: unknown, payload?: unknown): unknown {
+    if (typeof data === 'boolean' || typeof data === 'string') {
+      return data;
+    }
+
+    return payload || data || {};
   }
 }
 
