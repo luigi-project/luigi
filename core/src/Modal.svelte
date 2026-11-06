@@ -257,7 +257,7 @@
         settings.width = e.data.updatedModalSettings.width;
         await setModalSize();
       }
-      if (LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl')) {
+      if (LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl') && settings.showModalPathInUrl !== false) {
         Routing.updateModalDataInUrl(
           RoutingHelpers.getModalPathFromPath(),
           { title: settings.title, size: settings.size, height: settings.height, width: settings.width },
