@@ -235,6 +235,7 @@ export const UIModule = {
   luigi: undefined as unknown as Luigi,
   modalContainer: [] as any,
   drawerContainer: undefined as any,
+  drawerData: undefined as any,
   init: (luigi: Luigi) => {
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.routingService = serviceRegistry.get(RoutingService);
@@ -281,6 +282,13 @@ export const UIModule = {
         const node = (await UIModule.navService.getCurrentNode(params.modal)) as Node;
         const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
         UIModule.updateModalSettings({ title }, false, UIModule.luigi);
+      }
+      if (UIModule.drawerContainer && UIModule.drawerData) {
+        const node = UIModule.drawerData.node;
+        const settings = UIModule.drawerData.settings;
+        const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+        UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
+        UIModule.drawerData.settings.title = title;
       }
       const pathData = await UIModule.navService.getPathData(croute.path);
       const connector = UIModule.luigi.getEngine()._connector;
@@ -671,6 +679,7 @@ export const UIModule = {
 
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
+    UIModule.drawerData = { node, settings: drawerSettings };
 
     let resolved = false;
     let resolveFn: ((goBackValue?: any) => void) | undefined;
@@ -692,6 +701,7 @@ export const UIModule = {
           return;
         }
         UIModule.drawerContainer = undefined;
+        UIModule.drawerData = undefined;
         dirtyStatusService.clearDirtyState(lc);
         resolveFn && resolveFn();
       };
@@ -722,6 +732,7 @@ export const UIModule = {
         }
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
+        UIModule.drawerData = undefined;
         dirtyStatusService.clearDirtyState(lc);
         resolveFn && resolveFn();
       },

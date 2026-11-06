@@ -1087,14 +1087,20 @@ const connector = {
 
   updateModalSettings: (modalSettings) => {
     console.log('modalSettings', modalSettings);
-    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
-    if (!dialogs) return;
-    dialogs.forEach((dialog) => {
+    const updateSettings = (dialog) => {
       if (modalSettings?.title) {
         dialog.querySelector('.lui-modal-title').innerText = modalSettings.title;
       }
       setDialogSize(dialog, modalSettings);
-    });
+    };
+    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
+    if (dialogs.length) {
+      dialogs.forEach((dialog) => updateSettings(dialog));
+    }
+    const drawer = document.querySelector('ui5-dialog.lui-drawer');
+    if (drawer) {
+      updateSettings(drawer);
+    }
   },
 
   renderTabNav: (tabNavData) => {

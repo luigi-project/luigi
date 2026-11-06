@@ -1,7 +1,7 @@
 html,
 body {
     margin: 0;
-    position: relativ;
+    position: relative;
     height: 100%;
     background: var(--sapBackgroundColor);
 }
@@ -65,11 +65,11 @@ ui5-side-navigation {
 }
 
 .lui-drawer {
-  height: calc(100% - var(--_ui5-v2-12-0_shellbar_root_height));
+  height: calc(100% - var(--_ui5-v2-12-0_shellbar_root_height, 52px));
   bottom: 0;
   left: auto !important;
   right: 0;
-  top: var(--_ui5-v2-12-0_shellbar_root_height) !important;
+  top: var(--_ui5-v2-12-0_shellbar_root_height, 52px) !important;
 }
 
 ui5-shellbar::part(root) {
