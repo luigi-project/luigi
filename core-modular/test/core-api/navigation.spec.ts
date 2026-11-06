@@ -268,6 +268,34 @@ describe('Navigation', () => {
         nodeParams: { test: 'true', foo: 'bar' }
       });
     });
+    it('should not append modal data to URL when showModalPathInUrl is false in settings', async () => {
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.showModalPathInUrl') return true;
+        return null;
+      });
+      const appendModalDataToUrlSpy = jest.spyOn(routingServiceMock, 'appendModalDataToUrl');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      navigation.routingService = routingServiceMock;
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title', showModalPathInUrl: false });
+
+      expect(appendModalDataToUrlSpy).not.toHaveBeenCalled();
+    });
+    it('should append modal data to URL when showModalPathInUrl is not overridden in settings', async () => {
+      luigiMock.getConfigValue = jest.fn().mockImplementation((key: string) => {
+        if (key === 'routing.showModalPathInUrl') return true;
+        return null;
+      });
+      const appendModalDataToUrlSpy = jest.spyOn(routingServiceMock, 'appendModalDataToUrl');
+      mockNavService.getCurrentNode.mockReturnValue({ label: 'Node Label', children: [] });
+      navigation.routingService = routingServiceMock;
+      jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+
+      await navigation.openAsModal('/modal/path', { title: 'Modal Title' });
+
+      expect(appendModalDataToUrlSpy).toHaveBeenCalled();
+    });
   });
 
   describe('openAsDrawer', () => {

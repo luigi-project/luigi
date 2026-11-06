@@ -297,6 +297,7 @@ export interface ModalSettings {
   closebtn_data_testid?: string;
   keepPrevious?: boolean;
   nodeParams?: Record<string, any>;
+  showModalPathInUrl?: boolean;
 }
 
 export interface ProductSwitcher {
