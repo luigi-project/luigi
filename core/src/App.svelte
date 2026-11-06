@@ -1593,8 +1593,9 @@
         sendAuthDataToClient(e.data.authData);
       }
 
-      if ('luigi.navigation.updateModalDataPath' === e.data.msg) {
-        if (!LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl')) {
+      if ('luigi.navigation.updateModalDataPath' === e.data.msg) { 
+        if (!LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl')
+        || (mfModalList.length > 0 && mfModalList[0].mfModal?.settings?.showModalPathInUrl === false)) {
           return;
         }
         if (isSpecialIframe) {
