@@ -1,5 +1,6 @@
 export * from './async-helpers';
 export * from './auth-helpers';
+export * from './device-helpers';
 export * from './escaping-helpers';
 export * from './generic-helpers';
 export * from './iframe-helpers';

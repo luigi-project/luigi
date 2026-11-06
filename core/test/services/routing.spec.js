@@ -1481,6 +1481,50 @@ describe('Routing', function () {
       }
       sinon.assert.calledWithExactly(window.history.pushState, {}, '', 'http://some.url.de/#/settings?~luigi=mario');
     });
+
+    it('remove modal data from url with hash routing and preserves encoding of surviving params', () => {
+      sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/#/settings?~luigi=super%20mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D',
+          hash: '#/settings?~luigi=super%20mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
+        };
+      });
+      window.state = {};
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(true);
+      try {
+        Routing.removeModalDataFromUrl();
+      } catch (error) {
+        console.log('error', error);
+      }
+      // surviving param keeps its original %20 encoding (not re-serialized to +)
+      sinon.assert.calledWithExactly(
+        window.history.pushState,
+        {},
+        '',
+        'http://some.url.de/#/settings?~luigi=super%20mario'
+      );
+    });
+
+    it('remove modal data from url with hash routing when modal params are not encoded', () => {
+      // root cause of the fix: an unencoded modal param in the hash was not stripped,
+      // because removal relied on string-matching the encodeParams()-encoded form
+      sinon.stub(RoutingHelpers, 'getQueryParams').returns(params);
+      locationSpy.mockImplementation(() => {
+        return {
+          href: 'http://some.url.de/#/settings?~luigi=mario&mySpecialModal=/project-modal&mySpecialModalParams={"hello":"world"}',
+          hash: '#/settings?~luigi=mario&mySpecialModal=/project-modal&mySpecialModalParams={"hello":"world"}'
+        };
+      });
+      window.state = {};
+      sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(true);
+      try {
+        Routing.removeModalDataFromUrl();
+      } catch (error) {
+        console.log('error', error);
+      }
+      sinon.assert.calledWithExactly(window.history.pushState, {}, '', 'http://some.url.de/#/settings?~luigi=mario');
+    });
   });
 
   describe('normalizePath', () => {
