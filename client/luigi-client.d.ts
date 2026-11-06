@@ -24,6 +24,7 @@ export declare interface ModalSettings {
   height?: string;
   keepPrevious?: boolean;
   closebtn_data_testid?: string;
+  showModalPathInUrl?: boolean;
 }
 
 export declare interface SplitViewSettings {
