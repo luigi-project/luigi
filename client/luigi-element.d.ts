@@ -426,7 +426,7 @@ export declare interface LinkManager {
   /**
    * Gets the luigi route associated with the current micro frontend.
    * @returns {promise} a promise which resolves to a String value specifying the current luigi route
-   * @since NEXTRELEASE
+   * @since 2.19.0
    * @example
    * LuigiClient.linkManager().getCurrentRoute();
    */
@@ -510,7 +510,7 @@ export declare const html: (strings: TemplateStringsArray, ...keys: unknown[]) =
  * and the call is a no-op.
  * @param {string} srcString the URL of the web component bundle, which must resolve to the same URL Luigi uses for the node (the node's `viewUrl`). Luigi hex-encodes the resolved absolute URL to derive the custom element id (`luigi-wc-<encoded-url>`) the component is registered under; if `srcString` resolves to a different URL, Luigi registers and looks the element up under different ids and the component never renders. From the bundle registering itself, pass `import.meta.url` (ES module) or `document.currentScript?.src` (classic script), depending on how the bundle is loaded.
  * @param {HTMLElement} element the web component class (custom element constructor) to register
- * @since NEXTRELEASE
+ * @since 2.33.0
  * @example
  * import { registerWebComponent } from '@luigi-project/client/luigi-element.js';
  *
