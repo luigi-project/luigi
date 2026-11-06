@@ -395,8 +395,8 @@ export class LuigiEvent extends Event {
   }
 
   private getEventPayload(data: unknown, payload?: unknown): unknown {
-    if (typeof payload === 'boolean' || typeof payload === 'string') {
-      return payload;
+    if (typeof data === 'boolean' || typeof data === 'string') {
+      return data;
     }
 
     return payload || data || {};

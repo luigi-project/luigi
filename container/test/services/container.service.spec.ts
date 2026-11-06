@@ -1,5 +1,5 @@
 import { LuigiInternalMessageID } from '../../src/constants/internal-communication';
-import { Events, LuigiEvent } from '../../src/constants/communication';
+import { Events } from '../../src/constants/communication';
 import type { IframeHandle, ContainerElement } from '../../src/constants/container.model';
 import { ContainerService } from '../../src/services/container.service';
 
@@ -295,7 +295,7 @@ describe('getContainerManager messageListener', () => {
     expect(dispatchedEvent.type).toEqual(Events.SET_THIRD_PARTY_COOKIES_REQUEST);
   });
 
-  it.each([true, false, '', 'test', {}, { foo: 'bar' }])('test navigation back request', (ctx) => {
+  it.each([true, false, '', 'test', {}, { foo: 'bar' }])('test navigation back request for BW compatibility', (ctx) => {
     const event = {
       source: cw,
       data: {
@@ -393,6 +393,21 @@ describe('getContainerManager messageListener', () => {
     };
     cm.messageListener(event);
     expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false, '', 'test', {}, { foo: 'bar' }])('test navigation back request', (ctx) => {
+    const event = {
+      source: cw,
+      data: {
+        msg: LuigiInternalMessageID.BACK_NAVIGATION_REQUEST,
+        goBackContext: ctx,
+        params: 'back-navigation-request'
+      }
+    };
+    const dispatchSpy = jest.spyOn(service, 'dispatch');
+    cm.messageListener(event);
+    expect(dispatchSpy).toHaveBeenCalledTimes(2);
+    expect(dispatchSpy).toHaveBeenNthCalledWith(1, Events.GO_BACK_REQUEST, expect.anything(), ctx);
   });
 });
 
