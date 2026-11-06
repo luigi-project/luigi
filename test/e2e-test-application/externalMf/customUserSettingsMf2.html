@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1"
+    />
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' *; img-src https://*; child-src 'none';"> -->
+    <link rel="stylesheet" type="text/css" href="index.css" media="screen" />
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script src="node_modules/@luigi-project/client/luigi-client.js"></script>
+    <script>
+      let myUserSettings = {};
+      window.LuigiClient.addInitListener((context, origin) => {
+        console.log('Initial context:', context);
+        renderData(context);
+      });
+
+      window.LuigiClient.addContextUpdateListener((context, origin) => {
+        console.log('Context updated:', context);
+        renderData(context);
+      });
+
+      function renderData(context) {
+        myUserSettings = context.userSettingsData;
+        if (myUserSettings && myUserSettings.theme) {
+          let button = document.querySelector('.' + myUserSettings.theme);
+          button.classList.add('active');
+        }
+      }
+
+      function changeTheming(theme) {
+        document.querySelectorAll('.btnList button').forEach((button) => {
+          button.classList.remove('active');
+        });
+        document.querySelector('.' + theme).classList.add('active');
+        myUserSettings.theme = theme;
+        window.LuigiClient.sendCustomMessage({
+          id: 'luigi.updateUserSettings',
+          data: myUserSettings,
+        });
+      }
+
+      // just a context update example, has nothing to do with user settings dialog
+      function setYellowTheme(theme) {
+        window.LuigiClient.sendCustomMessage({
+          id: 'my-custom-message.update-user-settings',
+          theme: 'yellow',
+        });
+      }
+    </script>
+    <div>
+      <ul class="btnList">
+        <li>
+          <button class="red" style="color: red" onclick="changeTheming('red')">
+            Red
+          </button>
+        </li>
+        <br /><br />
+        <li>
+          <button class="green" style="color: green" onclick="changeTheming('green')">
+            Green
+          </button>
+        </li>
+        <br /><br />
+        <li>
+          <button
+            class="yellow"
+            data-testid="yellowBtn"
+            onclick="setYellowTheme('yellow')"
+          >
+            Yellow
+          </button>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
