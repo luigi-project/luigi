@@ -14,6 +14,7 @@
   import { CSS_BREAKPOINTS } from './utilities/constants';
   import { KEYCODE_ESC } from './utilities/keycode.js';
   import {
+    DeviceHelpers,
     EventListenerHelpers,
     GenericHelpers,
     StateHelpers,
@@ -897,9 +898,10 @@
     };
     mfModalList = [...mfModalList, newModal];
 
-    // check if modalPath feature enable and set URL accordingly
-    const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
-
+    // check if modalPath feature enable and set URL accordingly.
+    // settings.showModalPathInUrl can override the global config per modal.
+    const showModalPathInUrl =
+      settings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
     //  only show the modal path in the URL when the first modal is opened.
     if (showModalPathInUrl && mfModalList.length === 1) {
       Routing.appendModalDataToUrl(nodepath, settings);
@@ -934,7 +936,9 @@
    */
   const closeModal = (index, isClosedInternal, goBackContext) => {
     const resetModalData = (index, isClosedInternal) => {
-      const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
+      const modalSettings = mfModalList[0]?.mfModal?.settings;
+      const showModalPathInUrl =
+        modalSettings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
       // only remove the modal path in URL when closing the first modal
       if (showModalPathInUrl && mfModalList.length === 1) {
         Routing.removeModalDataFromUrl(isClosedInternal);
@@ -1590,7 +1594,10 @@
       }
 
       if ('luigi.navigation.updateModalDataPath' === e.data.msg) {
-        if (!LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl')) {
+        if (
+          !LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl') ||
+          (mfModalList.length > 0 && mfModalList[0].mfModal?.settings?.showModalPathInUrl === false)
+        ) {
           return;
         }
         if (isSpecialIframe) {
@@ -1795,6 +1802,9 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     responsiveNavSetting = LuigiConfig.getConfigValue('settings.responsiveNavigation');
     previousWindowWidth = window.innerWidth;
+    if (DeviceHelpers.isPhone()) {
+      document.body.classList.add('lui-handheldMode');
+    }
     if (responsiveNavSetting === 'simple') {
       document.body.classList.add('lui-simpleSlideInNav');
       simpleSlideInNav = true;

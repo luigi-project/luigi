@@ -396,6 +396,7 @@ Navigates to the given path in the application hosted by Luigi. It contains eith
     - .height <code>string</code> - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
     - .keepPrevious <code>boolean</code> - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
     - .closebtn_data_testid <code>string</code> - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+    - [.showModalPathInUrl] <code>boolean</code> - overrides `routing.showModalPathInUrl` for this modal. Set to `false` to prevent this modal from adding a browser history entry, regardless of the global config.
 - splitViewSettings <code>Object</code> - opens a view in a split view. Use these settings to configure the split view's behaviour
     - .title <code>string</code> - split view title. By default, it is the node label. If there is no label, it is left empty
     - [.size] <code>number</code> <code> = 40</code> - height of the split view in percent
@@ -453,6 +454,7 @@ Opens a view in a modal. You can specify the modal's title and size. If you don'
     - .height <code>string</code> - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
     - .keepPrevious <code>boolean</code> - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded
     - .closebtn_data_testid <code>string</code> - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal
+    - [.showModalPathInUrl] <code>boolean</code> - overrides `routing.showModalPathInUrl` for this modal. Set to `false` to prevent adding a browser history entry, regardless of the global config
 
   
 **Example**  

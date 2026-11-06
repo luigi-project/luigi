@@ -578,7 +578,9 @@ export const UIModule = {
             return;
           }
           resolveFn && resolveFn();
-          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+          const showModalPathInUrl =
+            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
         };
@@ -592,7 +594,9 @@ export const UIModule = {
           const goBackContext = event?.detail || event?.payload;
           onCloseCallback?.(goBackContext);
           resolveFn && resolveFn(goBackContext);
-          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+          const showModalPathInUrl =
+            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
         };
@@ -632,7 +636,9 @@ export const UIModule = {
         }
         onCloseCallback?.();
         resolveFn && resolveFn();
-        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+        const showModalPathInUrl =
+          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+        if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
           routingService.removeModalDataFromUrl(true);
         }
       },
