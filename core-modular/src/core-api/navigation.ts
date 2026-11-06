@@ -142,7 +142,9 @@ export class Navigation {
     // Append modal data to URL only if configured and if no other modals are open.
     // Non-bookmarkable settings (nodeParams, closebtn_data_testid) are stripped centrally
     // in RoutingService before serialization.
-    if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
+    // settings.showModalPathInUrl can override the global config per modal.
+    const showModalPathInUrl = settings.showModalPathInUrl ?? this.luigi.getConfigValue('routing.showModalPathInUrl');
+    if (showModalPathInUrl && this.modalService.getModalStackLength() === 0) {
       this.routingService.appendModalDataToUrl(modalPathForUrl, settings);
     }
     this.luigi
