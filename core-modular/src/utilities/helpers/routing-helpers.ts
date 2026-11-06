@@ -610,7 +610,7 @@ export const RoutingHelpers = {
    * @param {URL} url url object to read hash value or pathname
    * @returns {Object} history state object
    */
-  handleHistoryState(historyState: any, path: string): any {
+  handleHistoryState(historyState: any, path?: string): any {
     if (historyState && historyState.modalHistoryLength) {
       historyState.modalHistoryLength += 1;
     } else {

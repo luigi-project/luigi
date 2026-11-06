@@ -1361,9 +1361,14 @@ describe('Routing', function () {
           href: 'http://some.url.de/settings'
         };
       });
-      window.state = {};
       const addHistoryEntry = true;
       sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
+      const historyState = {
+        modalHistoryLength: 1,
+        historygap: 1,
+        pathBeforeHistory: '/settings'
+      };
+      sinon.stub(RoutingHelpers, 'handleHistoryState').returns(historyState);
       try {
         modalPath = encodeURIComponent('/modalPath');
         Routing.updateModalDataInUrl(modalPath, modalParams, addHistoryEntry);
@@ -1373,7 +1378,7 @@ describe('Routing', function () {
       // then
       sinon.assert.calledWith(
         history.pushState,
-        window.state,
+        historyState,
         '',
         'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252FmodalPath&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
       );
@@ -1386,7 +1391,6 @@ describe('Routing', function () {
           href: 'http://some.url.de/settings'
         };
       });
-      window.state = {};
       const addHistoryEntry = false;
       sinon.stub(LuigiConfig, 'getConfigBooleanValue').withArgs('routing.useHashRouting').returns(false);
       try {
@@ -1398,7 +1402,7 @@ describe('Routing', function () {
       // then
       sinon.assert.calledWith(
         history.replaceState,
-        window.state,
+        history.state,
         '',
         'http://some.url.de/settings?~luigi=mario&mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22hello%22%3A%22world%22%7D'
       );
