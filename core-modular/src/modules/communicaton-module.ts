@@ -8,6 +8,7 @@ import { UIModule } from './ui-module';
 import { UXModule, type AlertSettings, type ConfirmationModalSettings } from './ux-module';
 import type { NavigationRequestParams, NavigationRequestDetail, ViewGroupSettings } from '../types/navigation';
 import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import type { LuigiEvent } from '@luigi-project/container/constants/events';
 
 function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
@@ -179,6 +180,39 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
       if (containerElement.parentNode?.classList?.contains('content')) {
         serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+      }
+    });
+    containerElement.addEventListener(Events.CUSTOM_MESSAGE, (event: LuigiEvent) => {
+      const payload = event.payload as { id: string; _metaData?: object; data?: Record<string, any> };
+      const customMessagesListeners: Record<string, any> =
+        luigi.getConfigValue('communication.customMessagesListeners') || {};
+      const customMessageListener = customMessagesListeners[payload?.id];
+      const userSettingsCMKey = 'luigi.updateUserSettings';
+
+      if (payload?.id === userSettingsCMKey) {
+        if (customMessageListener) {
+          console.warn(`The key "${userSettingsCMKey}" is not allowed to use for custom messages.`);
+        }
+        return;
+      }
+
+      if (typeof customMessageListener === 'function') {
+        const microfrontend = luigi
+          .elements()
+          .getMicrofrontends()
+          .find((mf) => mf.container === containerElement.iframeHandle?.iframe);
+
+        const message = { id: payload?.id, ...(payload?.data || {}) };
+
+        customMessageListener(
+          message,
+          microfrontend,
+          GenericHelpers.removeInternalProperties(containerElement.currentNode)
+        );
+      } else {
+        console.warn(
+          `Warning: Custom message with id: '${payload?.id}' does not exist. Make sure you provided the same id as in the config file.`
+        );
       }
     });
   }

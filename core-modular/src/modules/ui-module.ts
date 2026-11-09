@@ -101,6 +101,7 @@ const createContainer = async (
     setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lc as any).currentNode = node;
     return lc;
   }
 };
@@ -456,6 +457,7 @@ export const UIModule = {
         const previousViewUrl = viewGroupContainer.viewurl;
 
         viewGroupContainer.viewStackSize = viewStackSize;
+        (viewGroupContainer as any).currentNode = currentNode;
 
         if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
@@ -514,6 +516,7 @@ export const UIModule = {
           const newContext = { ...currentNode.context, ...goBackContext };
 
           currentContainer.viewStackSize = viewStackSize;
+          (currentContainer as any).currentNode = currentNode;
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext, { withoutSync });
