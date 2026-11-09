@@ -550,7 +550,7 @@ Luigi.navigation().withOptions(
 **Returns**: <code>linkManager</code> - link manager instance  
   
 **Meta**:  
-* **since:** NEXTRELEASE
+* **since:** 2.33.0
 ### pathExists&nbsp;  
 Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
 

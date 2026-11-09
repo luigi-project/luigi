@@ -263,8 +263,9 @@ export interface LuigiConnector {
    * dialog closes — the connector is responsible for calling both at the
    * appropriate moments.
    *
-   * @param dialogSettings dialog header, save/dismiss button labels, plus the
-   *   two core-installed hooks (`renderMicroFrontendContainer`,
+   * @param dialogSettings dialog header, save/dismiss button labels, the
+   *   `showFullScreenOnMobile` flag (show the dialog full screen on mobile),
+   *   plus the two core-installed hooks (`renderMicroFrontendContainer`,
    *   `onCloseCallback`) the connector must invoke.
    * @param userSettingData static schema describing the available
    *   user-settings groups (one entry per group).
