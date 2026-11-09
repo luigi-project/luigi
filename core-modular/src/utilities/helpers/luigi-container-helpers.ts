@@ -1,5 +1,6 @@
 import { UIModule } from '../../modules/ui-module';
 import { GenericHelpers } from './generic-helpers';
+import { UserSettingsHelper } from './usersetting-dialog-helpers';
 import type { Luigi } from '../../core-api/luigi';
 import type LuigiContainer from '@luigi-project/container/LuigiContainer.svelte';
 
@@ -12,7 +13,7 @@ export type MicrofrontendEntry = {
 export type MicrofrontendInDom = {
   container: HTMLElement;
   active: boolean;
-  type: 'main' | 'modal' | 'drawer';
+  type: 'main' | 'modal' | 'drawer' | 'user-settings';
   id: string;
 };
 
@@ -35,7 +36,13 @@ export const LuigiContainerHelpers = {
         const drawer = this.getDrawerMicrofrontends();
         if (!drawer.iframe) return [];
         return [{ container: drawer.iframe, active: drawer.active, type: 'drawer' as const, id: drawer.id }];
-      })()
+      })(),
+      ...this.getUserSettingsMicrofrontends().map((mf) => ({
+        container: mf.iframe,
+        active: mf.active,
+        type: 'user-settings' as const,
+        id: mf.id
+      }))
     ];
   },
 
@@ -107,6 +114,29 @@ export const LuigiContainerHelpers = {
       }
     }
     return {} as MicrofrontendEntry;
+  },
+
+  getUserSettingsMicrofrontends(): MicrofrontendEntry[] {
+    const results: MicrofrontendEntry[] = [];
+    for (const element of UserSettingsHelper.getUserSettingsIframesInDom() as any) {
+      if (element.iframeHandle?.iframe) {
+        results.push({
+          iframe: element.iframeHandle.iframe,
+          id: element.luigiMfId,
+          active: GenericHelpers.isElementVisible(element)
+        });
+      } else {
+        const webcomponent = element.shadowRoot?.firstElementChild?.firstElementChild ?? null;
+        if (webcomponent) {
+          results.push({
+            iframe: webcomponent,
+            id: element.luigiMfId,
+            active: GenericHelpers.isElementVisible(element)
+          });
+        }
+      }
+    }
+    return results;
   },
 
   getAllLuigiContainerIframe(luigi: Luigi): LuigiContainer[] | undefined {
