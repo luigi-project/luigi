@@ -272,8 +272,9 @@ export interface LuigiConnector {
    * selection-change fires for it. For a group without a `viewUrl` (native
    * settings form) the head renders its own controls and does not call this.
    *
-   * @param dialogSettings dialog header, save/dismiss button labels, plus the
-   *   two core-installed hooks (`renderMicroFrontendContainer`,
+   * @param dialogSettings dialog header, save/dismiss button labels, the
+   *   `showFullScreenOnMobile` flag (show the dialog full screen on mobile),
+   *   plus the two core-installed hooks (`renderMicroFrontendContainer`,
    *   `onCloseCallback`) the connector must invoke.
    * @param userSettingData static schema describing the available
    *   user-settings groups (one entry per group).

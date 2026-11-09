@@ -56,7 +56,7 @@ If you don't want Luigi to handle the page not found error, because you've imple
 - **attributes**:
   - **wrongPath** (string): the path that the user tried navigating to.
   - **wasAnyPathFitted** (bool): it is true if Luigi managed to fit a valid path which means **wrongPath** was only partially wrong. Otherwise it is false.
-  - **mode** (string): the special view mode the navigation was requested in. One of `'modal'`, `'splitView'` or `'drawer'`, or `undefined` for a regular navigation. This lets the handler react differently to a `404` depending on how the view was opened (for example, when the **ignoreLuigiErrorHandling** option is returned, Luigi removes the modal data from the URL unless **keepURL** is set). ( **since**: NEXTRELEASE )
+  - **mode** (string): the special view mode the navigation was requested in. One of `'modal'`, `'splitView'` or `'drawer'`, or `undefined` for a regular navigation. This lets the handler react differently to a `404` depending on how the view was opened (for example, when the **ignoreLuigiErrorHandling** option is returned, Luigi removes the modal data from the URL unless **keepURL** is set). ( **since**: 2.33.0 )
 
 ### preserveQueryParams
 - **type**: boolean

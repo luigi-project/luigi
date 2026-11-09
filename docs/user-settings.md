@@ -200,6 +200,7 @@ These parameters can be used to configure the appearance of the user settings me
 - **userSettingsDialog.dialogHeader** defines user settings dialog header. By default it is `User Settings`.
 - **userSettingsDialog.saveBtn** defines user settings dialog save button. By default it is `Save`.
 - **userSettingsDialog.dismissBtn** defines user settings dialog dismiss button. By default it is `Dismiss`.
+- **userSettingsDialog.showFullScreenOnMobile** if set to `true`, the user settings dialog takes up the entire screen on mobile devices. By default it is `false`.
 
 ## Override default read and store functionality
 

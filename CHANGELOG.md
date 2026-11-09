@@ -6,6 +6,25 @@
 
 
 
+## [v2.33.0] (2026-11-06)
+
+#### :rocket: Added
+
+* [#5561](https://github.com/luigi-project/luigi/pull/5561) Optionally skip adding modal data to url ([@pvlieres](https://github.com/pvlieres))
+* [#5560](https://github.com/luigi-project/luigi/pull/5560) Fullscreen mode for usersettings dialog ([@VincentUllal](https://github.com/VincentUllal))
+* [#5543](https://github.com/luigi-project/luigi/pull/5543) Fullscreen mode for user menu ([@walmazacn](https://github.com/walmazacn))
+* [#5562](https://github.com/luigi-project/luigi/pull/5562) Adjust profile menu fullscreen categories ([@hardl](https://github.com/hardl))
+* [#5523](https://github.com/luigi-project/luigi/pull/5523) Add withOptions support for core-api ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+#### :bug: Fixed
+
+* [#5563](https://github.com/luigi-project/luigi/pull/5563) Fix history state in updateModalSettings ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5528](https://github.com/luigi-project/luigi/pull/5528) Fix PagenotfoundHandler ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.32.0] (2026-10-05)
 
 #### :rocket: Added
@@ -2174,3 +2193,4 @@
 [v2.30.0]: https://github.com/luigi-project/luigi/compare/v2.29.0...v2.30.0
 [v2.31.0]: https://github.com/luigi-project/luigi/compare/v2.30.0...v2.31.0
 [v2.32.0]: https://github.com/luigi-project/luigi/compare/v2.31.0...v2.32.0
+[v2.33.0]: https://github.com/luigi-project/luigi/compare/v2.32.0...v2.33.0

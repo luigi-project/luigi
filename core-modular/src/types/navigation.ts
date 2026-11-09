@@ -120,6 +120,7 @@ export interface UserSettingsDialogSettings {
    */
   renderMicroFrontendContainer?: (groupConfig: Record<string, any>, groupKey: string) => Promise<any>;
   onCloseCallback?: (storedUserSettings: any) => void;
+  showFullScreenOnMobile?: boolean;
 }
 
 export interface UserInfo {
@@ -311,6 +312,7 @@ export interface ModalSettings {
   closebtn_data_testid?: string;
   keepPrevious?: boolean;
   nodeParams?: Record<string, any>;
+  showModalPathInUrl?: boolean;
 }
 
 export interface ProductSwitcher {

@@ -218,7 +218,8 @@ describe('UX', () => {
       expect(dialogSettings).toEqual({
         dialogHeader: 'Custom Header',
         saveBtn: 'Save',
-        dismissBtn: 'Cancel'
+        dismissBtn: 'Cancel',
+        showFullScreenOnMobile: false
       });
       expect(data).toBe(groups);
       expect(prev).toBe(previous);
@@ -248,7 +249,8 @@ describe('UX', () => {
       expect(dialogSettings).toEqual({
         dialogHeader: 'User Settings',
         saveBtn: 'Save',
-        dismissBtn: 'Cancel'
+        dismissBtn: 'Cancel',
+        showFullScreenOnMobile: false
       });
     });
 
@@ -275,6 +277,27 @@ describe('UX', () => {
       expect(uiOpen).not.toHaveBeenCalled();
 
       consoleInfoSpy.mockRestore();
+    });
+
+    it('passes showFullScreenOnMobile to engine._ui.openUserSettings when it is set to true', async () => {
+      luigiMock.getConfigValue.mockImplementation((key: string) => {
+        if (key === 'userSettings')
+          return { userSettingGroups: { profile: { label: 'Profile' } }, userSettingsDialog: { showFullScreenOnMobile: true } };
+        if (key === 'settings') return undefined;
+        return undefined;
+      });
+      jest.spyOn(UserSettingsHelper, 'processUserSettingGroups').mockReturnValue([{ profile: { label: 'Profile' } }]);
+      const uiOpen = jest.fn();
+      luigiMock.getEngine.mockReturnValue({
+        _connector: connectorMock,
+        _ux: undefined,
+        _ui: { openUserSettings: uiOpen }
+      });
+
+      await ux.openUserSettings();
+
+      const [dialogSettings] = uiOpen.mock.calls[0];
+      expect(dialogSettings.showFullScreenOnMobile).toBe(true);
     });
   });
 

@@ -752,9 +752,11 @@ class RoutingClass {
     }
 
     if (!addHistoryEntry) {
-      history.replaceState(window.state, '', url.href);
+      history.replaceState(history.state, '', url.href);
     } else {
-      history.pushState(window.state, '', url.href);
+      let historyState = history.state;
+      historyState = RoutingHelpers.handleHistoryState(historyState);
+      history.pushState(historyState, '', url.href);
     }
   }
 

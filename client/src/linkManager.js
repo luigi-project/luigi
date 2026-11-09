@@ -50,6 +50,7 @@ export class linkManager extends LuigiClientBase {
    * @param {string} modalSettings.height - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'.
    * @param {boolean} modalSettings.keepPrevious - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded.
    * @param {string} modalSettings.closebtn_data_testid - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal.
+   * @param {boolean} [modalSettings.showModalPathInUrl] - overrides `routing.showModalPathInUrl` for this modal. Set to `false` to prevent this modal from adding a browser history entry, regardless of the global config.
    * @param {Object} splitViewSettings - opens a view in a split view. Use these settings to configure the split view's behaviour
    * @param {string} splitViewSettings.title - split view title. By default, it is the node label. If there is no label, it is left empty
    * @param {number} [splitViewSettings.size=40] - height of the split view in percent
@@ -167,6 +168,7 @@ export class linkManager extends LuigiClientBase {
    * @param {string} modalSettings.height - updates the `height` of the modal. Allowed units are 'px', '%', 'rem', 'em', 'vh' and 'vw'
    * @param {boolean} modalSettings.keepPrevious - lets you open multiple modals. Keeps the previously opened modal and allows to open another modal on top of the previous one. By default the previous modals are discarded
    * @param {string} modalSettings.closebtn_data_testid - lets you specify a `data_testid` for the close button. Default value is `lui-modal-index-0`. If multiple modals are opened the index will be increased per modal
+   * @param {boolean} [modalSettings.showModalPathInUrl] - overrides `routing.showModalPathInUrl` for this modal. Set to `false` to prevent adding a browser history entry, regardless of the global config
    * @returns {promise} which is resolved when closing the modal. By using LuigiClient.linkManager().goBack({ foo: 'bar' }) to close the modal you have access to the `goBackContext` when the promise will be resolved.
    * @example
    * LuigiClient.linkManager().openAsModal('projects/pr1/users', {title:'Users', size:'m'}).then((res) => {
