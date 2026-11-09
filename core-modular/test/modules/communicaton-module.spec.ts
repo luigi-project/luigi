@@ -143,12 +143,15 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
     expect(vgSettings['testGroup'].customData).toEqual({ keep: 'this' });
   });
 
-  it.each([true, false, '', 'test', {}, { foo: 'bar' }])('should handle goBack request with correct value', (value: any) => {
-    const event = new CustomEvent('navigate-back-request', {
-      detail: value
-    });
-    containerElement.dispatchEvent(event);
+  it.each([true, false, '', 'test', {}, { foo: 'bar' }])(
+    'should handle goBack request with correct value',
+    (value: any) => {
+      const event = new CustomEvent('navigate-back-request', {
+        detail: value
+      });
+      containerElement.dispatchEvent(event);
 
-    expect(navigationServiceMock.handleGoBackRequest).toHaveBeenCalledWith(JSON.stringify(value));
-  });
+      expect(navigationServiceMock.handleGoBackRequest).toHaveBeenCalledWith(JSON.stringify(value));
+    }
+  );
 });
