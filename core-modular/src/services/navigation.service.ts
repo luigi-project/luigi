@@ -97,10 +97,6 @@ export class NavigationService {
   }
 
   private prepareGoBackContextForNavigation(goBackContext: any): void {
-    if (goBackContext && typeof goBackContext === 'object' && !Object.keys(goBackContext).length) {
-      goBackContext = '';
-    }
-
     if (this.isValidGoBackContext(goBackContext)) {
       this.handleDialogContainer(goBackContext);
     }
@@ -168,10 +164,6 @@ export class NavigationService {
         activeContainer.updateContext({ ...activeContainer.context, ...context }, { withoutSync: false });
       }
     };
-
-    if (goBackContext && typeof goBackContext === 'object' && !Object.keys(goBackContext).length) {
-      goBackContext = '';
-    }
 
     if (this.isValidGoBackContext(goBackContext)) {
       const dialogUpdated = this.handleDialogContainer(goBackContext);
