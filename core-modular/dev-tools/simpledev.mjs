@@ -64,8 +64,14 @@ try {
   console.error(err);
 }
 
+// Opt the vite.config into resolving @luigi-project/container to its sources
+// (not the pre-minified public/bundle.js), so the container is debuggable in
+// the browser with sourcemaps pointing at the real .svelte/.ts files.
+process.env.LUIGI_DEV_CONTAINER_SRC = '1';
+
 build({
   build: {
+   minify: false,
    watch: {}
  }
  });
