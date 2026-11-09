@@ -741,7 +741,7 @@ describe('Routing Service', () => {
           hash: '#/settings?mySpecialModal=%252Fproject-modal'
         } as any;
       });
-      window.state = {};
+      Object.defineProperty(window.history, 'state', { value: { foo: 'bar' }, configurable: true });
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return true;
         return null;
@@ -750,7 +750,7 @@ describe('Routing Service', () => {
       routingService.updateModalDataInUrl(modalPath, modalParams, false);
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
-        {},
+        { foo: 'bar' },
         '',
         'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
@@ -763,7 +763,7 @@ describe('Routing Service', () => {
           hash: '#/settings?mySpecialModal=%252Fproject-modal'
         } as any;
       });
-      window.state = {};
+      Object.defineProperty(window.history, 'state', { value: { foo: 'bar' }, configurable: true });
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return true;
         return null;
@@ -777,7 +777,7 @@ describe('Routing Service', () => {
 
       // the serialized modalParams must contain only the bookmarkable 'title', not closebtn_data_testid
       expect(window.history.replaceState).toHaveBeenCalledWith(
-        {},
+        { foo: 'bar' },
         '',
         'http://some.url.de/#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
@@ -790,7 +790,7 @@ describe('Routing Service', () => {
           hash: '#/settings?mySpecialModal=%252Fproject-modal'
         } as any;
       });
-      window.state = {};
+      Object.defineProperty(window.history, 'state', { value: { foo: 'bar' }, configurable: true });
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
         return null;
@@ -799,7 +799,7 @@ describe('Routing Service', () => {
       routingService.updateModalDataInUrl(modalPath, modalParams, false);
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
-        {},
+        { foo: 'bar' },
         '',
         'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
       );
@@ -812,7 +812,7 @@ describe('Routing Service', () => {
           hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
         } as any;
       });
-      window.state = {};
+      Object.defineProperty(window.history, 'state', { value: { foo: 'bar' }, configurable: true });
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
         return null;
@@ -822,7 +822,7 @@ describe('Routing Service', () => {
       routingService.updateModalDataInUrl(modalPath, newModalParams, false);
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
-        {},
+        { foo: 'bar' },
         '',
         'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22universe%22%7D'
       );
@@ -837,7 +837,7 @@ describe('Routing Service', () => {
           hash: '#/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22title%22%3A%22world%22%7D'
         } as any;
       });
-      window.state = {};
+      Object.defineProperty(window.history, 'state', { value: { foo: 'bar' }, configurable: true });
       mockLuigi.getConfigValue = jest.fn().mockImplementation((key: string) => {
         if (key === 'routing.useHashRouting') return false;
         return null;
@@ -847,7 +847,7 @@ describe('Routing Service', () => {
       routingService.updateModalDataInUrl(modalPath, newModalParams, false);
 
       expect(window.history.replaceState).toHaveBeenCalledWith(
-        {},
+        { foo: 'bar' },
         '',
         'http://some.url.de/settings?mySpecialModal=%252Fproject-modal&mySpecialModalParams=%7B%22size%22%3A%22s%22%7D'
       );
