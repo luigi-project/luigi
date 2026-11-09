@@ -103,13 +103,11 @@ export class NavigationService {
   }
 
   isValidGoBackContext(goBackContext: any): boolean {
-    return !!(
-      typeof goBackContext === 'boolean' ||
-      (typeof goBackContext === 'string' && goBackContext.trim() === '') ||
-      (goBackContext &&
-        (typeof goBackContext === 'string' || typeof goBackContext === 'object') &&
-        !Array.isArray(goBackContext))
-    );
+    if (typeof goBackContext === 'boolean' || typeof goBackContext === 'string') {
+      return true;
+    }
+
+    return !!goBackContext && typeof goBackContext === 'object' && !Array.isArray(goBackContext);
   }
 
   clearGoBackContext(): void {
