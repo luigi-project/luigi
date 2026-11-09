@@ -3060,15 +3060,18 @@ describe('NavigationService', () => {
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
     });
 
-    it.each([{ foo: 'bar' }, {}, true, false])('should handle dialog container when context is valid', (ctx) => {
-      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
-      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+    it.each([{ foo: 'bar' }, 'test', '', true, false])(
+      'should handle dialog container when context is valid',
+      (ctx) => {
+        const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+        const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
 
-      navigationService.processGoBackContext(ctx);
+        navigationService.processGoBackContext(ctx);
 
-      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
-      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
-    });
+        expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+        expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+      }
+    );
   });
 
   describe('NavigationService._preservedViews', () => {
@@ -3218,6 +3221,16 @@ describe('NavigationService', () => {
 
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
       expect((navigationService as any).goBackContext).toEqual(null);
+    });
+  });
+
+  describe('NavigationService.isValidGoBackContext', () => {
+    it.each([undefined, null, []])('should return false when value is invalid', (value: any) => {
+      expect(navigationService.isValidGoBackContext(value)).toEqual(false);
+    });
+
+    it.each([true, false, '', 'test', { foo: 'bar' }])('should return true when value is valid', (value: any) => {
+      expect(navigationService.isValidGoBackContext(value)).toEqual(true);
     });
   });
 });

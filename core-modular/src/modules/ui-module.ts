@@ -550,7 +550,7 @@ export const UIModule = {
           resolved = true;
           resolve();
           modalService.removeLastModalFromStack();
-          if (typeof goBackValue === 'boolean' || (goBackValue && typeof goBackValue === 'object')) {
+          if (UIModule.navService.isValidGoBackContext(goBackValue)) {
             UIModule.navService.removeLastPreservedView();
             setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
           }
@@ -678,7 +678,7 @@ export const UIModule = {
         if (resolved) return;
         resolved = true;
         resolve();
-        if (typeof goBackValue === 'boolean' || (goBackValue && typeof goBackValue === 'object')) {
+        if (UIModule.navService.isValidGoBackContext(goBackValue)) {
           UIModule.navService.removeLastPreservedView();
           setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
         }
