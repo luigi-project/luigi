@@ -5,7 +5,8 @@
     GenericHelpers,
     EventListenerHelpers,
     IframeHelpers,
-    UserSettingsHelper
+    UserSettingsHelper,
+    DeviceHelpers
   } from './utilities/helpers';
   import { MessagesListeners } from './services/messages-listeners';
   import { ViewUrlDecorator } from './services/viewurl-decorator';
@@ -33,6 +34,7 @@
   let userSettingsGroupTitle;
   let isComboOpen;
   let closeDropDown;
+  let fullScreen = false;
 
   onDestroy(() => {
     // Enable keyboard accessibility to the rest of the elements after dialog is closed
@@ -48,6 +50,9 @@
       dialogHeader = usLocalization.dialogHeader ? usLocalization.dialogHeader : dialogHeader;
       saveBtn = usLocalization.saveBtn ? usLocalization.saveBtn : saveBtn;
       dismissBtn = usLocalization.dismissBtn ? usLocalization.dismissBtn : dismissBtn;
+      if (DeviceHelpers.isPhone()) {
+        fullScreen = usLocalization.showFullScreenOnMobile === true;
+      }
     }
 
     key = Object.keys(userSettingGroups[0]).length > 0 ? Object.keys(userSettingGroups[0])[0] : undefined;
@@ -344,6 +349,7 @@
 <section class="fd-dialog fd-settings fd-dialog--active lui-usersettings-dialog" tabindex="0">
   <div
     class="fd-dialog__content fd-settings__dialog-content lui-usersettings-dialog-size"
+    class:lui-usersettings-dialog--fullscreen={fullScreen}
     role="dialog"
     aria-modal="true"
     aria-labelledby="dialog-title-2"
@@ -509,6 +515,22 @@
     max-width: calc(100vw - 10%);
     min-width: 20rem;
     position: relative;
+  }
+
+  /* full screen dialog on mobile devices (userSettings.userSettingsDialog.showFullScreenOnMobile) */
+  .fd-settings .lui-usersettings-dialog-size.lui-usersettings-dialog--fullscreen {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .lui-usersettings-dialog--fullscreen .fd-dialog__body,
+  .lui-usersettings-dialog--fullscreen .fd-dialog__footer {
+    border-radius: 0;
   }
 
   .lui-usersettings-body {

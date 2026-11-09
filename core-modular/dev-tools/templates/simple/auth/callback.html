@@ -73,15 +73,6 @@
         const { exp } = parseJwt(hashParams['id_token']);
         const expires_in = hashParams['expires_in'] || exp;
         if (!error) {
-          const data = {
-            accessToken: token,
-            accessTokenExpirationDate: processExpDate(expires_in),
-            scope: hashParams['scope'],
-            idToken: hashParams['id_token'],
-          };
-
-          setAuthData(data);
-
           const decodedState = atob(decodeURIComponent(hashParams['state'])).split(
             '_luigiNonce=',
           );
@@ -95,6 +86,15 @@
               'State parameter returned from the authorization endpoint does not match locally stored state. Aborting login process.',
             );
           }
+
+          const data = {
+            accessToken: token,
+            accessTokenExpirationDate: processExpDate(expires_in),
+            scope: hashParams['scope'],
+            idToken: hashParams['id_token'],
+          };
+
+          setAuthData(data);
 
           const appStateUrl = new URL(appState);
           if (appStateUrl.origin === window.location.origin) {

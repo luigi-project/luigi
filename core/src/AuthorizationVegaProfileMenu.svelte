@@ -2,7 +2,7 @@
   import { AuthLayerSvc } from './services';
   import { createEventDispatcher, onMount, getContext } from 'svelte';
   import { LuigiAuth, LuigiConfig, LuigiUX } from './core-api';
-  import { AuthHelpers, GenericHelpers, NavigationHelpers, StateHelpers, RoutingHelpers } from './utilities/helpers';
+  import { DeviceHelpers, GenericHelpers, NavigationHelpers, StateHelpers, RoutingHelpers } from './utilities/helpers';
   import { AuthStoreSvc, Routing } from './services';
   import { TOP_NAV_DEFAULTS } from './utilities/luigi-config-defaults';
   import { KEYCODE_ENTER, KEYCODE_SPACE } from './utilities/keycode.js';
@@ -12,6 +12,7 @@
   export let isHidden = false;
   export let addNavHrefForAnchor;
 
+  const isPhone = DeviceHelpers.isPhone();
   let idpProviderInstance;
   let userInfo;
   let isLoggedIn;
@@ -216,10 +217,21 @@
 </script>
 
 {#if !isHidden}
+  {#if isPhone}
+    <header class="lui-profile-vega-header">
+      <button
+        class="fd-button fd-button--transparent fd-button--compact fd-message-strip__close"
+        on:click={() => dispatch('toggleDropdownState')}
+        aria-label="Close"
+      >
+        <i class="sap-icon sap-icon--decline"></i>
+      </button>
+    </header>
+  {/if}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="fd-popover__wrapper fd-user-menu__popover-wrapper"
+    class="fd-popover__wrapper fd-user-menu__popover-wrapper lui-profile-vega-menu"
     on:click={() => {
       expandedGroupIndex = null;
     }}
@@ -323,6 +335,24 @@
                   {#if expandedGroupIndex === index}
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <div class="lui-profile-sublist">
+                      {#if isPhone}
+                        <div class="lui-profile-sublist__mobile-header">
+                          <div class="fd-bar__element">
+                            <button
+                              aria-label="button"
+                              class="fd-button fd-button--transparent"
+                              on:click|preventDefault|stopPropagation={toggleGroup(index)}
+                            >
+                              <i class="sap-icon--navigation-left-arrow"></i>
+                            </button>
+                          </div>
+                          <div class="fd-bar__element">
+                            <h5 class="fd-title fd-title--h5" aria-label="text">
+                              {$getTranslation(profileItem.label)}
+                            </h5>
+                          </div>
+                        </div>
+                      {/if}
                       <div class="lui-profile-sublist__spacer"></div>
                       <ul
                         class="fd-menu__sublist {getIconsClassForSublist(profileItem.children)}"
@@ -458,14 +488,25 @@
     font-size: 1.125rem;
   }
 
-  /*Fix a long list popover body*/
-  .lui-profile-simple-menu {
-    max-height: calc(100vh - 60px);
-    overflow-y: auto;
+  .lui-profile-vega-header {
+    align-items: center;
+    border-bottom: 1px solid var(--sapGroup_ContentBorderColor, #d9d9d9);
+    display: flex;
+    height: 44px;
+    justify-content: flex-end;
+    padding: 0 0.5rem;
   }
 
-  .lui-profile-simple-menu .lui-logout-btn {
-    text-align: left;
+  :global(.lui-handheldMode .lui-profile-vega-menu) {
+    flex: 1;
+    max-height: calc(100vh - 90px);
+    overflow-y: auto !important;
+    padding: 0.5rem;
+    width: 100% !important;
+
+    .fd-user-menu__body {
+      max-width: 100%;
+    }
   }
 
   li > button.fd-menu__link {
@@ -511,5 +552,45 @@
       flex: 1;
       height: 0;
     }
+  }
+
+  :global(.lui-handheldMode .fd-menu__link.has-child.is-expanded:after) {
+    display: none;
+  }
+
+  :global(.lui-handheldMode .fd-menu__link.has-child.is-expanded .fd-menu__addon-after) {
+    transform: rotate(90deg);
+  }
+
+  :global(.lui-handheldMode .lui-profile-sublist) {
+    max-width: none;
+    position: fixed;
+    top: 44px;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 2;
+    pointer-events: all;
+
+    .fd-menu__sublist {
+      margin-left: 1px;
+      max-width: none;
+      width: 100%;
+      box-shadow: none;
+    }
+
+    .lui-profile-sublist__mobile-header {
+      position: absolute;
+      top: -44px;
+      left: 0;
+      height: 44px;
+      display: flex;
+      pointer-events: auto;
+    }
+  }
+
+  :global(.fd-user-menu--mobile .fd-user-menu__menu-list) {
+    max-width: none;
   }
 </style>

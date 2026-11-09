@@ -204,7 +204,7 @@ class LuigiNavigationManager {
    * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
    * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
    * @returns {linkManager} link manager instance
-   * @since NEXTRELEASE
+   * @since 2.33.0
    * @example
    * Luigi.navigation().withOptions(
    *   { preventContextUpdate: true, preventHistoryEntry: true }
