@@ -3229,8 +3229,11 @@ describe('NavigationService', () => {
       expect(navigationService.isValidGoBackContext(value)).toEqual(false);
     });
 
-    it.each([true, false, '', 'test', {}, { foo: 'bar' }, [], ['test']])('should return true when value is valid', (value: any) => {
-      expect(navigationService.isValidGoBackContext(value)).toEqual(true);
-    });
+    it.each([true, false, '', 'test', {}, { foo: 'bar' }, [], ['test']])(
+      'should return true when value is valid',
+      (value: any) => {
+        expect(navigationService.isValidGoBackContext(value)).toEqual(true);
+      }
+    );
   });
 });
