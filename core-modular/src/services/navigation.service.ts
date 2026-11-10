@@ -107,7 +107,7 @@ export class NavigationService {
       return true;
     }
 
-    return !!goBackContext && typeof goBackContext === 'object' && !Array.isArray(goBackContext);
+    return !!goBackContext && typeof goBackContext === 'object';
   }
 
   clearGoBackContext(): void {
