@@ -177,9 +177,9 @@ export class Navigation {
         settings.header.title = title;
       } else {
         settings.header = { title };
-        settings.title = title;
-        settings._liveLabel = true;
       }
+      settings.title = title;
+      settings._liveLabel = true;
     }
     if (settings.overlap === undefined) {
       settings.overlap = true;

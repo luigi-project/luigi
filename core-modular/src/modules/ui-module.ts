@@ -293,9 +293,13 @@ export const UIModule = {
       }
       if (UIModule.drawerContainer && UIModule.drawerData) {
         const node = UIModule.drawerData.node;
-        const settings = UIModule.drawerData.settings as DrawerSettings;
+        const settings = {...UIModule.drawerData.settings as DrawerSettings};
         if (settings._liveLabel) {
           const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+          if (settings.header) {
+            settings.header.title = title;
+            UIModule.drawerData.settings.header.title = title;
+          }
           UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
           UIModule.drawerData.settings.title = title;
         }

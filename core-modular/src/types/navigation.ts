@@ -302,6 +302,7 @@ export interface DrawerSettings {
   nodeParams?: Record<string, any>;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
+  title?: string;
   _liveLabel?: boolean;
 }
 
