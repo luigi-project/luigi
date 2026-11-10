@@ -285,15 +285,20 @@ export const UIModule = {
       if (modalService.getModalStackLength()) {
         const params = RoutingHelpers.getQueryParams(UIModule.luigi);
         const node = (await UIModule.navService.getCurrentNode(params.modal)) as Node;
-        const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
-        UIModule.updateModalSettings({ title }, false, UIModule.luigi);
+        const settings = modalService.getModalSettings() as ModalSettings;
+        if (settings._liveLabel) {
+          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+          UIModule.updateModalSettings({ title }, false, UIModule.luigi);
+        }
       }
       if (UIModule.drawerContainer && UIModule.drawerData) {
         const node = UIModule.drawerData.node;
-        const settings = UIModule.drawerData.settings;
-        const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
-        UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
-        UIModule.drawerData.settings.title = title;
+        const settings = UIModule.drawerData.settings as DrawerSettings;
+        if (settings._liveLabel) {
+          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+          UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
+          UIModule.drawerData.settings.title = title;
+        }
       }
       const pathData = await UIModule.navService.getPathData(croute.path);
       const connector = UIModule.luigi.getEngine()._connector;

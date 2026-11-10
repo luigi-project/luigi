@@ -299,20 +299,22 @@ export interface DrawerHeader {
 export interface DrawerSettings {
   backdrop?: boolean;
   header?: DrawerHeader;
+  nodeParams?: Record<string, any>;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
-  nodeParams?: Record<string, any>;
+  _liveLabel?: boolean;
 }
 
 export interface ModalSettings {
-  size?: 'fullscreen' | 'l' | 'm' | 's';
-  width?: string;
-  height?: string;
-  title?: string;
   closebtn_data_testid?: string;
+  height?: string;
   keepPrevious?: boolean;
   nodeParams?: Record<string, any>;
   showModalPathInUrl?: boolean;
+  size?: 'fullscreen' | 'l' | 'm' | 's';
+  title?: string;
+  width?: string;
+  _liveLabel?: boolean;
 }
 
 export interface ProductSwitcher {
