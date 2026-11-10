@@ -409,7 +409,19 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            if (preserveView || ((element as any)._luigiPreserved && viewStackSize)) {
+            if (hasBackContext && !preserveView && !withoutSync) {
+              // Back navigation (goBack) within the same viewGroup: reactivate the PRESERVED target
+              // container and drop the non-preserved, currently visible one. Otherwise the visible
+              // (non-preserved) container would win the selection by DOM order and receive the
+              // goBackContext, while the preserved target stays hidden and never gets it.
+              if ((element as any)._luigiPreserved) {
+                (element as any)._luigiPreserved = false;
+                element.style.display = 'block';
+                viewGroupContainer = element;
+              } else {
+                element.remove();
+              }
+            } else if (preserveView || ((element as any)._luigiPreserved && viewStackSize)) {
               (element as any)._luigiPreserved = !hasBackContext;
               element.style.display = 'none';
             } else {
