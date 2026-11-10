@@ -21,7 +21,10 @@ jest.mock('@luigi-project/container', () => {
     ADD_SEARCH_PARAMS_REQUEST: 'add-search-params-request',
     UPDATE_MODAL_SETTINGS_REQUEST: 'update-modal-settings-request',
     SET_CURRENT_LOCALE_REQUEST: 'set-current-locale-request',
-    SET_VIEW_GROUP_DATA_REQUEST: 'set-viewgroup-data-request'
+    SET_VIEW_GROUP_DATA_REQUEST: 'set-viewgroup-data-request',
+    SET_ANCHOR_LINK_REQUEST: 'set-anchor-request',
+    GO_BACK_REQUEST: 'go-back-request',
+    CUSTOM_MESSAGE: 'custom-message'
   };
   return { __esModule: true, default: Events, ...Events };
 });
@@ -126,5 +129,93 @@ describe('CommunicationModule - SET_VIEW_GROUP_DATA_REQUEST', () => {
 
     expect(vgSettings['testGroup']._liveCustomData).toEqual({ new: 'data' });
     expect(vgSettings['testGroup'].customData).toEqual({ keep: 'this' });
+  });
+});
+
+describe('CommunicationModule - skipEventsWhenInactive', () => {
+  let luigiMock: any;
+  let containerElement: HTMLElement & { viewGroup?: string };
+  let navigationSpy: jest.Mock;
+
+  const setConfig = (values: Record<string, any>) => {
+    luigiMock.getConfigValue.mockImplementation((key: string) => values[key]);
+  };
+
+  beforeEach(() => {
+    navigationSpy = jest.fn();
+    luigiMock = {
+      getConfigValue: jest.fn().mockReturnValue(undefined),
+      configChanged: jest.fn(),
+      i18n: jest.fn().mockReturnValue({ setCurrentLocale: jest.fn() }),
+      routing: jest.fn().mockReturnValue({ addNodeParams: jest.fn(), setAnchor: jest.fn() }),
+      ux: jest.fn().mockReturnValue({ collapseLeftSideNav: jest.fn(), openUserSettings: jest.fn() }),
+      navigation: jest.fn().mockReturnValue({ runTimeErrorHandler: navigationSpy }),
+      getEngine: jest.fn().mockReturnValue({ _connector: {} })
+    };
+    containerElement = document.createElement('div') as any;
+    document.body.appendChild(containerElement);
+    CommunicationModule.init(luigiMock);
+    CommunicationModule.addListeners(containerElement, luigiMock);
+  });
+
+  afterEach(() => {
+    containerElement.remove();
+    jest.clearAllMocks();
+  });
+
+  it('should skip a configured event when the container is inactive (display:none)', () => {
+    setConfig({ 'communication.skipEventsWhenInactive': ['luigi-runtime-error-handling'] });
+    containerElement.style.display = 'none';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).not.toHaveBeenCalled();
+  });
+
+  it('should NOT skip a configured event when the container is active (visible)', () => {
+    setConfig({ 'communication.skipEventsWhenInactive': ['luigi-runtime-error-handling'] });
+    containerElement.style.display = 'block';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT skip an event that is not listed in the config, even when inactive', () => {
+    setConfig({ 'communication.skipEventsWhenInactive': ['luigi.ux.alert.show'] });
+    containerElement.style.display = 'none';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT skip any event when skipEventsWhenInactive is not configured', () => {
+    setConfig({});
+    containerElement.style.display = 'none';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT skip when the config is an empty array', () => {
+    setConfig({ 'communication.skipEventsWhenInactive': [] });
+    containerElement.style.display = 'none';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should match against the internal client message id, not the container event name', () => {
+    // The container event name is "runtime-error-handling-request"; configuring that must NOT skip
+    // anything - only the internal id "luigi-runtime-error-handling" is honoured.
+    setConfig({ 'communication.skipEventsWhenInactive': ['runtime-error-handling-request'] });
+    containerElement.style.display = 'none';
+
+    containerElement.dispatchEvent(new CustomEvent('runtime-error-handling-request', { detail: {} }));
+
+    expect(navigationSpy).toHaveBeenCalledTimes(1);
   });
 });

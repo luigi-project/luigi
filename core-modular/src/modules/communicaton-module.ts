@@ -20,12 +20,64 @@ function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi)
   luigi.configChanged('navigation.viewgroupdata');
 }
 
+/**
+ * Maps a container event (as dispatched by @luigi-project/container on the container element)
+ * to the internal Luigi Client message id (the value microfrontends actually post, e.g.
+ * `luigi.navigation.open`). `communication.skipEventsWhenInactive` is configured with these
+ * internal ids (see docs/communication.md), so matching has to happen against them, not against
+ * the container event names.
+ */
+const CONTAINER_EVENT_TO_CLIENT_MSG: Record<string, string> = {
+  [Events.CUSTOM_MESSAGE]: 'custom',
+  [Events.NAVIGATION_REQUEST]: 'luigi.navigation.open',
+  [Events.ALERT_REQUEST]: 'luigi.ux.alert.show',
+  [Events.SHOW_CONFIRMATION_MODAL_REQUEST]: 'luigi.ux.confirmationModal.show',
+  [Events.ADD_SEARCH_PARAMS_REQUEST]: 'luigi.addSearchParams',
+  [Events.ADD_NODE_PARAMS_REQUEST]: 'luigi.addNodeParams',
+  [Events.SET_CURRENT_LOCALE_REQUEST]: 'luigi.ux.set-current-locale',
+  [Events.SET_ANCHOR_LINK_REQUEST]: 'luigi.setAnchor',
+  [Events.SET_DIRTY_STATUS_REQUEST]: 'luigi.set-page-dirty',
+  [Events.RUNTIME_ERROR_HANDLING_REQUEST]: 'luigi-runtime-error-handling',
+  [Events.SHOW_LOADING_INDICATOR_REQUEST]: 'luigi.show-loading-indicator',
+  [Events.HIDE_LOADING_INDICATOR_REQUEST]: 'luigi.hide-loading-indicator',
+  [Events.GO_BACK_REQUEST]: 'luigi.navigation.back'
+};
+
+/**
+ * Mirrors the legacy core `skipEventsWhenInactive` behaviour: when the microfrontend's container
+ * is currently inactive (not visible), events whose internal message id is listed in
+ * `communication.skipEventsWhenInactive` are ignored. Returns true if the event should be skipped.
+ */
+function shouldSkipInactiveEvent(containerElement: any, containerEventName: string, luigi: Luigi): boolean {
+  const skipInactiveConfig: string[] = luigi.getConfigValue('communication.skipEventsWhenInactive');
+  if (!skipInactiveConfig?.length) {
+    return false;
+  }
+  const clientMsgId = CONTAINER_EVENT_TO_CLIENT_MSG[containerEventName];
+  if (!clientMsgId || !skipInactiveConfig.includes(clientMsgId)) {
+    return false;
+  }
+  if (GenericHelpers.isElementVisible(containerElement)) {
+    return false;
+  }
+  console.debug(`EVENT '${clientMsgId}' from inactive microfrontend -> SKIPPED`);
+  return true;
+}
+
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
+    const addListener = (eventName: string, handler: (event: LuigiEvent) => void): void => {
+      containerElement.addEventListener(eventName, (event: LuigiEvent) => {
+        if (shouldSkipInactiveEvent(containerElement, eventName, luigi)) {
+          return;
+        }
+        handler(event);
+      });
+    };
     containerElement.addEventListener(Events.INITIALIZED, (event: LuigiEvent) => {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
       const preloadingService = serviceRegistry.get(PreloadingService);
@@ -37,7 +89,7 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
       serviceRegistry.get(PreloadingService).preload();
     });
-    containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.NAVIGATION_REQUEST, (event: LuigiEvent) => {
       const detail = event.detail as NavigationRequestDetail;
       const {
         drawer,
@@ -79,24 +131,24 @@ export const CommunicationModule = {
         .get(NavigationService)
         .handleNavigationRequest(navRequestParams, (data: unknown) => event.callback(data));
     });
-    containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { data?: { errorObj?: object } };
       luigi.navigation().runTimeErrorHandler(payload?.data?.errorObj || {});
     });
-    containerElement.addEventListener(Events.ALERT_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.ALERT_REQUEST, (event: LuigiEvent) => {
       UXModule.processAlert(event.payload as AlertSettings, true, containerElement);
     });
-    containerElement.addEventListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: LuigiEvent) => {
       UXModule.handleConfirmationModalRequest(event.payload as ConfirmationModalSettings, containerElement);
     });
     containerElement.addEventListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: LuigiEvent) => {
       const detail = event.detail as { title: string };
       CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(detail.title);
     });
-    containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, () => {
+    addListener(Events.SHOW_LOADING_INDICATOR_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator(containerElement.parentNode);
     });
-    containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, () => {
+    addListener(Events.HIDE_LOADING_INDICATOR_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator(containerElement.parentNode);
     });
     containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, () => {
@@ -105,17 +157,17 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
-    containerElement.addEventListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
       const anchor = (event?.payload as string) || '';
       containerElement.anchor = anchor;
       containerElement.updateContext(containerElement.context || {});
       luigi.routing().setAnchor(anchor);
     });
-    containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { dirty?: boolean };
       UXModule.handleDirtyStatusRequest(payload?.dirty ?? false, containerElement);
     });
-    containerElement.addEventListener(Events.ADD_NODE_PARAMS_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.ADD_NODE_PARAMS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { data: Record<string, string>; keepBrowserHistory: boolean };
       luigi.routing().addNodeParams(payload.data, payload.keepBrowserHistory);
     });
@@ -129,7 +181,7 @@ export const CommunicationModule = {
     containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
     });
-    containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: LuigiEvent) => {
       const detail = event.detail as {
         data: Record<string, string>;
         keepBrowserHistory: boolean;
@@ -146,7 +198,7 @@ export const CommunicationModule = {
       const payload = event.payload as { updatedModalSettings: object; addHistoryEntry: boolean };
       UIModule.updateModalSettings(payload.updatedModalSettings, payload.addHistoryEntry, luigi);
     });
-    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: LuigiEvent) => {
       if (!I18nHelpers.hasLocaleChangePermission(containerElement)) {
         return;
       }
@@ -177,12 +229,12 @@ export const CommunicationModule = {
         applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
       }
     });
-    containerElement.addEventListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
       if (containerElement.parentNode?.classList?.contains('content')) {
         serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
       }
     });
-    containerElement.addEventListener(Events.CUSTOM_MESSAGE, (event: LuigiEvent) => {
+    addListener(Events.CUSTOM_MESSAGE, (event: LuigiEvent) => {
       const payload = event.payload as { id: string; _metaData?: object; data?: Record<string, any> };
       const customMessagesListeners: Record<string, any> =
         luigi.getConfigValue('communication.customMessagesListeners') || {};
