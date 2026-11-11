@@ -7,20 +7,17 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// When LUIGI_DEV_CONTAINER_SRC is set (by `npm run simpledev`), resolve
-// @luigi-project/container to the container's TypeScript/Svelte sources
-// instead of its pre-minified public/bundle.js. Vite then transpiles the
-// container itself, so its sourcemaps point at the real .svelte/.ts files
-// and the container is debuggable in the browser alongside core-modular.
-// The release build (`npm run build`) leaves this unset and keeps importing
-// the published bundle.
-const devContainerSrc = !!process.env.LUIGI_DEV_CONTAINER_SRC;
-const containerSrcAlias = devContainerSrc
-  ? {
-      '@luigi-project/container/LuigiContainer.svelte': resolve(__dirname, '../container/src/LuigiContainer.svelte'),
-      '@luigi-project/container': resolve(__dirname, '../container/src/main.ts')
-    }
-  : {};
+// Resolve @luigi-project/container to the container's TypeScript/Svelte
+// sources instead of its pre-minified public/bundle.js. Vite then compiles
+// the container itself, so the generated sourcemaps point at the real
+// .svelte/.ts files and the container is debuggable in the browser - in the
+// production build too, not just under simpledev. The resulting luigi.js is
+// still minified (minification is only turned off for the dev server), it is
+// just built from source rather than re-bundling the published bundle.
+const containerSrcAlias = {
+  '@luigi-project/container/LuigiContainer.svelte': resolve(__dirname, '../container/src/LuigiContainer.svelte'),
+  '@luigi-project/container': resolve(__dirname, '../container/src/main.ts')
+};
 
 const luigiPlugin = () => {
   return {
@@ -51,24 +48,17 @@ export default defineConfig({
   resolve: {
     alias: containerSrcAlias
   },
-  // Skip .d.ts generation in dev: it would try to emit types for the aliased
-  // container sources and isn't needed for the simpledev server anyway.
-  // In dev, compile the aliased container .svelte files (which live outside
-  // this project root) from source, mirroring the container's own rollup
-  // build (see container/rollup.config.js): svelte-preprocess with sourcemaps
-  // strips their <script lang="ts">, customElement:true keeps the
-  // <svelte:options customElement=...> web-component definitions working, and
-  // dev:true enables the same runtime checks the container's dev build has.
+  // Compile the aliased container .svelte files (which live outside this
+  // project root) from source, mirroring the container's own rollup build
+  // (see container/rollup.config.js): svelte-preprocess with sourcemaps strips
+  // their <script lang="ts"> and customElement:true keeps the
+  // <svelte:options customElement=...> web-component definitions working.
   plugins: [
     luigiPlugin(),
-    svelte(
-      devContainerSrc
-        ? {
-            preprocess: sveltePreprocess({ sourceMap: true }),
-            compilerOptions: { customElement: true, dev: true }
-          }
-        : {}
-    ),
-    ...(devContainerSrc ? [] : [dts()])
+    svelte({
+      preprocess: sveltePreprocess({ sourceMap: true }),
+      compilerOptions: { customElement: true }
+    }),
+    dts()
   ]
 });
