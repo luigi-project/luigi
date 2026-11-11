@@ -64,12 +64,9 @@ try {
   console.error(err);
 }
 
-// Disable minification for the local dev server so the bundled output stays
-// readable in the browser. The production build (vite.config.mjs) keeps
-// minification on.
 build({
   build: {
-  watch: {}
+    watch: {}
  }
  });
 
