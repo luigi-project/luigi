@@ -69,8 +69,7 @@ try {
 // minification on.
 build({
   build: {
-   minify: false,
-   watch: {}
+  watch: {}
  }
  });
 
