@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import * as ClientModule from '../src/esm-exports.js';
 
 describe('ES Module export tests', () => {

@@ -6,6 +6,6 @@
   "license": "MIT",
   "dependencies": {
     "@luigi-project/client": "^1.1.0",
-    "fundamental-styles": "^0.17.0"
+    "fundamental-styles": "0.17.0"
   }
 }

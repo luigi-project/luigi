@@ -6,5 +6,6 @@
     "module": "es2015",
     "types": ["node"]
   },
-  "exclude": []
+  "exclude": [],
+  "angularCompilerOptions": {}
 }

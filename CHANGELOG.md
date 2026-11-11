@@ -6,6 +6,63 @@
 
 
 
+## [v2.33.0] (2026-11-06)
+
+#### :rocket: Added
+
+* [#5561](https://github.com/luigi-project/luigi/pull/5561) Optionally skip adding modal data to url ([@pvlieres](https://github.com/pvlieres))
+* [#5560](https://github.com/luigi-project/luigi/pull/5560) Fullscreen mode for usersettings dialog ([@VincentUllal](https://github.com/VincentUllal))
+* [#5543](https://github.com/luigi-project/luigi/pull/5543) Fullscreen mode for user menu ([@walmazacn](https://github.com/walmazacn))
+* [#5562](https://github.com/luigi-project/luigi/pull/5562) Adjust profile menu fullscreen categories ([@hardl](https://github.com/hardl))
+* [#5523](https://github.com/luigi-project/luigi/pull/5523) Add withOptions support for core-api ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+#### :bug: Fixed
+
+* [#5563](https://github.com/luigi-project/luigi/pull/5563) Fix history state in updateModalSettings ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5528](https://github.com/luigi-project/luigi/pull/5528) Fix PagenotfoundHandler ([@hardl](https://github.com/hardl))
+
+
+
+
+## [v2.32.0] (2026-10-05)
+
+#### :rocket: Added
+
+* [#5480](https://github.com/luigi-project/luigi/pull/5480) feat(a11y): keyboard navigation for context switcher dropdown ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5472](https://github.com/luigi-project/luigi/pull/5472) feat(core): add ARIA landmark roles for accessibility (#5470) ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5471](https://github.com/luigi-project/luigi/pull/5471) F6 navigation ([@hardl](https://github.com/hardl))
+
+#### :bug: Fixed
+
+* [#5287](https://github.com/luigi-project/luigi/pull/5287) Missing preventLuigiConfigUpdate param ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+## [v2.31.0] (2026-06-12)
+
+#### :rocket: Added
+
+* [#5175](https://github.com/luigi-project/luigi/pull/5175) category selection indicator ([@hardl](https://github.com/hardl))
+* [#5166](https://github.com/luigi-project/luigi/pull/5166) setDirtyStatus for webcomponent client api ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+
+* [#5176](https://github.com/luigi-project/luigi/pull/5176) topnav dropdown blur handling ([@hardl](https://github.com/hardl))
+* [#5173](https://github.com/luigi-project/luigi/pull/5173) Profile item groups small fix ([@hardl](https://github.com/hardl))
+* [#5169](https://github.com/luigi-project/luigi/pull/5169) Statusbadge alignment ([@hardl](https://github.com/hardl))
+
+
+
+
+## [v2.30.0] (2026-06-01)
+
+#### :rocket: Added
+
+* [#4747](https://github.com/luigi-project/luigi/pull/9094) Support for groups/categories for profile items (vega-only) ([@hardl](https://github.com/hardl))
+
+
+
+
 ## [v2.29.0] (2026-03-19)
 
 #### :rocket: Added
@@ -2133,3 +2190,7 @@
 [v2.27.0]: https://github.com/luigi-project/luigi/compare/v2.26.0...v2.27.0
 [v2.28.0]: https://github.com/luigi-project/luigi/compare/v2.27.0...v2.28.0
 [v2.29.0]: https://github.com/luigi-project/luigi/compare/v2.28.0...v2.29.0
+[v2.30.0]: https://github.com/luigi-project/luigi/compare/v2.29.0...v2.30.0
+[v2.31.0]: https://github.com/luigi-project/luigi/compare/v2.30.0...v2.31.0
+[v2.32.0]: https://github.com/luigi-project/luigi/compare/v2.31.0...v2.32.0
+[v2.33.0]: https://github.com/luigi-project/luigi/compare/v2.32.0...v2.33.0

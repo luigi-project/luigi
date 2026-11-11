@@ -11,6 +11,9 @@
   ],
   "compilerOptions": {
     "module": "ESNext",
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "preserveSymlinks": true,
     "forceConsistentCasingInFileNames": true,
   },
 }

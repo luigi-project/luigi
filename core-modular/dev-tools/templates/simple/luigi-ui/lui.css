@@ -27,6 +27,14 @@ ui5-side-navigation {
     display: none;
 }
 
+.lui-tab-header {
+    display: none;
+}
+
+.lui-tab-header--active {
+    display: block;
+}
+
 .lui-dialog::part(header),
 .lui-dialog::part(footer) {
   padding-inline: 0;
@@ -56,6 +64,14 @@ ui5-side-navigation {
   max-height: none;
 }
 
+.lui-drawer {
+  height: calc(100% - var(--_ui5-v2-12-0_shellbar_root_height));
+  bottom: 0;
+  left: auto !important;
+  right: 0;
+  top: var(--_ui5-v2-12-0_shellbar_root_height) !important;
+}
+
 ui5-shellbar::part(root) {
     padding-inline-start: 0.75rem;
     padding-inline-end: 1.25rem;
@@ -64,6 +80,37 @@ ui5-shellbar::part(root) {
 ui5-shellbar {
     grid-column: 1 / span 2;
     grid-row: 1 / 2;
+}
+
+#searchresult-popover ol > li,
+.lui-search-results ui5-li {
+    position: relative;
+}
+
+#searchresult-popover ol > li.is-focused:after,
+.lui-search-results ui5-li.is-focused::part(native-li):after {
+    border: 1.6px solid var(--sapContent_FocusColor, #0032a5);
+    content: '';
+    inset: .125rem;
+    pointer-events: none;
+    position: absolute;
+}
+
+.lui-switcher-item--top-separator {
+    border-bottom: 1px solid var(--sapList_BorderColor, #e5e5e5);
+}
+
+.lui-switcher-item--bottom-separator {
+    border-top: 1px solid var(--sapList_BorderColor, #e5e5e5);
+}
+
+.breadcrumb-wrapper {
+    clear: both;
+    padding: 1rem 1.5rem 0;
+}
+
+.breadcrumb-wrapper:empty {
+    display: none;
 }
 
 .content {
@@ -87,10 +134,11 @@ ui5-shellbar {
 }
 
 .luigi-alert--overlay{
+    background-color: transparent;
+    overflow: visible;
+    border: none;
     position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 28px;
 }
 
 .luigi-alert--overlay ui5-message-strip{
@@ -113,6 +161,7 @@ ui5-shellbar {
     z-index: 11;
 }
 
+.lui-dialog-busy-indicator,
 .luigi-busy-indicator {
     height: 100%;
     width: 100%;
@@ -121,6 +170,14 @@ ui5-shellbar {
     z-index: 999;
 }
 
+.lui-dialog-busy-indicator {
+    background: transparent;
+    pointer-events: none;
+    inset: 0;
+}
+
+.lui-dialog-busy-indicator:not([active]),
+.lui-dialog-busy-indicator[active] + *,
 .luigi-busy-indicator:not([active]) {
     display: none;
 }

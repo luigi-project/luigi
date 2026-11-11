@@ -1,30 +1,22 @@
-import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot } from '@angular/router';
 import { LuigiActivatedRouteSnapshotHelper } from './luigi-activated-route-snapshot-helper';
 
 describe('NgLuigiActivatedRouteSnapshotService', () => {
-  const mockedSnapshot: ActivatedRouteSnapshot = { data: {} } as ActivatedRouteSnapshot;
-  let helper: LuigiActivatedRouteSnapshotHelper;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-
-    helper = new LuigiActivatedRouteSnapshotHelper();
-  });
-
   it('should be created', () => {
+    const helper = new LuigiActivatedRouteSnapshotHelper();
     expect(helper).toBeTruthy();
   });
 
   it('should get current snapshot when empty value is set', () => {
-    LuigiActivatedRouteSnapshotHelper.setCurrent(null as unknown as ActivatedRouteSnapshot);
-    expect(LuigiActivatedRouteSnapshotHelper.getCurrent()).toEqual(null as unknown as ActivatedRouteSnapshot);
+    LuigiActivatedRouteSnapshotHelper.setCurrent(null as any);
+    expect(LuigiActivatedRouteSnapshotHelper.getCurrent()).toEqual(null);
   });
 
   it('should set current snapshot when no-empty value is set', () => {
-    spyOn(LuigiActivatedRouteSnapshotHelper, 'setCurrent').and.callThrough();
+    const mockedSnapshot = { data: {} } as any;
+    const spy = jest.spyOn(LuigiActivatedRouteSnapshotHelper, 'setCurrent');
     LuigiActivatedRouteSnapshotHelper.setCurrent(mockedSnapshot);
     expect(LuigiActivatedRouteSnapshotHelper.getCurrent()).toEqual(mockedSnapshot);
-    expect(LuigiActivatedRouteSnapshotHelper.setCurrent).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
   });
 });

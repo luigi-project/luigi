@@ -3,13 +3,16 @@ import { NavigationService } from '../services/navigation.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
 import type {
+  DrawerSettings,
   ModalSettings,
   NavigationOptions,
   NavigationRequestParams,
   Node,
   RunTimeErrorHandler
 } from '../types/navigation';
+import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import type { Luigi } from './luigi';
 
@@ -26,6 +29,8 @@ export class Navigation {
     fromParent: false,
     nodeParams: {}
   };
+  preventHistoryEntry: boolean = false;
+  preventContextUpdate: boolean = false;
 
   constructor(luigi: Luigi) {
     this.luigi = luigi;
@@ -37,11 +42,16 @@ export class Navigation {
 
   navigate = async (
     path: string,
-    preserveView?: string,
+    preserveView?: boolean,
     modalSettings?: ModalSettings,
     splitViewSettings?: any,
     drawerSettings?: any
-  ) => {
+  ): Promise<void> => {
+    if (path === '/' && (modalSettings || drawerSettings)) {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
     const relativePath = path[0] !== '/';
     this.options.relative = relativePath;
     const navRequestParams: NavigationRequestParams = {
@@ -50,44 +60,137 @@ export class Navigation {
       options: this.options,
       path,
       preserveView,
-      preventContextUpdate: false,
-      preventHistoryEntry: false,
+      preventContextUpdate: this.preventContextUpdate,
+      preventHistoryEntry: this.preventHistoryEntry,
       withoutSync: false
     };
 
-    this.navService.handleNavigationRequest(navRequestParams, undefined);
+    return this.navService.handleNavigationRequest(navRequestParams, undefined);
   };
 
-  openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
+  /**
+   * Offers an alternative way of navigating with intents. This involves specifying a semanticSlug and an object containing parameters.
+   * @param {string} semanticSlug - concatenation of semantic object and action connected with a dash (-), i.e.: `<semanticObject>-<action>`
+   * @param {Object} params - an object representing all the parameters passed, i.e.: `{param1: '1', param2: 2, param3: 'value3'}`
+   * @example
+   * LuigiClient.linkManager().navigateToIntent('Sales-settings', {project: 'pr2', user: 'john'})
+   * LuigiClient.linkManager().navigateToIntent('Sales-settings')
+   */
+  navigateToIntent = (semanticSlug: string, params = {}) => {
+    let newPath = '#?intent=';
+
+    newPath += semanticSlug;
+
+    if (params && Object.keys(params)?.length) {
+      const paramList = Object.entries(params);
+
+      // append parameters to the path if any
+      if (paramList.length > 0) {
+        newPath += '?';
+
+        for (const [key, value] of paramList) {
+          newPath += key + '=' + value + '&';
+        }
+
+        // trim potential excessive ampersand & at the end
+        newPath = newPath.slice(0, -1);
+      }
+    }
+
+    this.navigate(newPath);
+  };
+
+  openAsModal = async (path: string, modalSettings: ModalSettings, onCloseCallback?: (goBackValue?: any) => void) => {
+    if (path === '/') {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
+    }
+
+    if (await this.navService.shouldPreventNavigationForPath(path)) {
+      return;
+    }
+
     if (!modalSettings?.keepPrevious) {
-      await this.modalService.closeModals();
+      const closed = await this.modalService.closeModalsWithDirtyCheck();
+      if (!closed) return;
     }
     const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath);
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+
+    if (!redirectPath) return;
+
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = modalSettings || {};
     if (!settings.title) {
-      settings.title = node.label;
+      settings.title = node?.label;
     }
-    // Append modal data to URL only if configured and if no other modals are open
-    if (this.luigi.getConfigValue('routing.showModalPathInUrl') && this.modalService.getModalStackLength() === 0) {
-      this.routingService.appendModalDataToUrl(normalizedPath, settings);
+    if (!settings.size) {
+      settings.size = 'l';
     }
-    this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback);
+    if (!settings.closebtn_data_testid) {
+      settings.closebtn_data_testid = `lui-modal-index-${this.modalService.getModalStackLength()}`;
+    }
+    const nodeParams = settings.nodeParams || this.options.nodeParams || {};
+    let modalPathForUrl = normalizedPath;
+    if (nodeParams && Object.keys(nodeParams).length > 0) {
+      const prefix = RoutingHelpers.getContentViewParamPrefix(this.luigi);
+      const paramStr = Object.entries(nodeParams)
+        .map(([key, value]) => prefix + encodeURIComponent(key) + '=' + encodeURIComponent(value))
+        .join('&');
+      modalPathForUrl += (modalPathForUrl.includes('?') ? '&' : '?') + paramStr;
+    }
+    // Append modal data to URL only if configured and if no other modals are open.
+    // Non-bookmarkable settings (nodeParams, closebtn_data_testid) are stripped centrally
+    // in RoutingService before serialization.
+    // settings.showModalPathInUrl can override the global config per modal.
+    const showModalPathInUrl = settings.showModalPathInUrl ?? this.luigi.getConfigValue('routing.showModalPathInUrl');
+    if (showModalPathInUrl && this.modalService.getModalStackLength() === 0) {
+      this.routingService.appendModalDataToUrl(modalPathForUrl, settings);
+    }
+    this.luigi
+      .getEngine()
+      ._ui.openModal(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
   };
 
-  openAsDrawer = async (path: string, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    const normalizedPath = path.replace(/\/\/+/g, '/');
-    const node = await this.navService.getCurrentNode(normalizedPath);
-    const settings = modalSettings || {};
-    if (!settings.title) {
-      settings.title = node.label;
+  openAsDrawer = async (path: string, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
+    if (path === '/') {
+      console.warn('Navigation with an absolute path prevented.');
+      return Promise.reject(new Error('Navigation with an absolute path prevented.'));
     }
-    this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback);
+
+    if (await this.navService.shouldPreventNavigationForPath(path)) {
+      return;
+    }
+
+    const normalizedPath = path.replace(/\/\/+/g, '/');
+    const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
+    if (!redirectPath) return;
+    const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
+    const settings = drawerSettings || {};
+    if (!settings.header?.title) {
+      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      const title = label || '';
+      if (settings.header && Object.keys(settings.header).length) {
+        settings.header.title = title;
+      } else {
+        settings.header = { title };
+      }
+    }
+    if (settings.overlap === undefined) {
+      settings.overlap = true;
+    }
+    if (!settings.size) {
+      settings.size = 's';
+    }
+    const nodeParams = settings.nodeParams || this.options.nodeParams || {};
+    this.luigi
+      .getEngine()
+      ._ui.openDrawer(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
-    const { path } = RoutingHelpers.getCurrentPath(this.luigi.getConfig().routing?.useHashRouting);
-    const currentNode: Node = await this.navService.getCurrentNode(path);
+    const { path } = RoutingHelpers.getCurrentPath(this.luigi, this.luigi.getConfig().routing?.useHashRouting);
+    const currentNode: Node | undefined = await this.navService.getCurrentNode(path);
     const defaultRunTimeErrorHandler: RunTimeErrorHandler = this.luigi.getConfigValue(
       'navigation.defaults.runTimeErrorHandler'
     );
@@ -103,8 +206,44 @@ export class Navigation {
   };
 
   /**
+   * Checks if the path you can navigate to exists in the main application. For example, you can use this helper method conditionally to display a DOM element like a button.
+   * @param {string} path - path which existence you want to check
+   * @returns {Promise<boolean>} A promise which resolves to a boolean variable specifying whether the path exists or not
+   * @example
+   *  let pathExists;
+   *  Luigi
+   *  .navigation()
+   *  .pathExists('projects/pr2')
+   *  .then(
+   *    (pathExists) => {  }
+   *  );
+   */
+  pathExists = async (path: string): Promise<boolean> => {
+    return await RoutingHelpers.pathExists(path, this.luigi);
+  };
+
+  /**
+   * Checks if there is one or more preserved views. You can use it to show a **back** button.
+   * @returns {boolean} indicating if there is a preserved view you can return to
+   */
+  hasBack = (): boolean => {
+    return this.modalService.getModalStackLength() > 0 || this.navService.getPreservedViewsLength() > 0;
+  };
+
+  /**
+   * Discards the active view and navigates back to the last visited view. Works with preserved views, and also acts as the substitute of the browser **back** button. **goBackContext** is only available when using preserved views.
+   * @param {any} goBackValue - data that is passed in the **goBackContext** field to the last visited view when using preserved views
+   * @example
+   * Luigi.navigation().goBack({ foo: 'bar' });
+   * Luigi.navigation().goBack(true);
+   */
+  goBack = (goBackValue?: any): void => {
+    this.navService.handleGoBackRequest(goBackValue && JSON.stringify(goBackValue));
+  };
+
+  /**
    * Sets the current navigation base to the parent node that is defined as virtualTree. This method works only when the currently active micro frontend is inside a virtualTree.
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    * @example
    * Luigi.navigation().fromVirtualTreeRoot().navigate('/users/groups/stakeholders')
    */
@@ -119,7 +258,7 @@ export class Navigation {
   /**
    * Allows navigation from the node which has the navigation context set.
    * @param navigationContext
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    */
   fromContext(navigationContext: string): Navigation {
     this.options.fromContext = navigationContext;
@@ -128,7 +267,7 @@ export class Navigation {
 
   /**
    * Allows navigation from the closest node which has the navigation context set. If there are multiple nodes with the same navigation context, the closest one will be used as the navigation base.
-   * @returns {navigation} navigation instance
+   * @returns {Navigation} navigation instance
    */
   fromClosestContext(): Navigation {
     this.options.fromContext = null;
@@ -149,10 +288,45 @@ export class Navigation {
     return this;
   }
 
+  /**
+   * Sets options to customise route-changing behaviour. The options are used by the `navigate` function. Use it optionally in combination with any of the navigation functions.
+   * @param {Object} options - navigation options
+   * @param {boolean} options.preventHistoryEntry - by default, it is set to `false`. If it is set to `true`, there is no browser history being kept.
+   * @param {boolean} options.preventContextUpdate - by default, it is set to `false`. If it is set to `true`, there is no context update being triggered.
+   * @returns {Navigation} navigation instance
+   * @since NEXTRELEASE
+   * @example
+   * Luigi.navigation().withOptions(
+   *   { preventContextUpdate: true, preventHistoryEntry: true }
+   * ).navigate('/overview')
+   */
+  withOptions(options: { preventHistoryEntry?: boolean; preventContextUpdate?: boolean }): Navigation {
+    if (!GenericHelpers.isObject(options)) return this;
+
+    if (options['preventHistoryEntry'] !== undefined) {
+      this.preventHistoryEntry = options['preventHistoryEntry'];
+    }
+
+    if (options['preventContextUpdate'] !== undefined) {
+      this.preventContextUpdate = options['preventContextUpdate'];
+    }
+
+    return this;
+  }
+
   withParams(nodeParams: Record<string, any>): Navigation {
     if (nodeParams) {
       Object.assign(this.options.nodeParams ?? {}, nodeParams);
     }
     return this;
+  }
+
+  /**
+   * Refreshes top navigation badge counters by rendering the navigation again.
+   * @example
+   * Luigi.navigation().updateTopNavigation();
+   */
+  async updateTopNavigation(): Promise<void> {
+    this.luigi.configChanged('navigation');
   }
 }

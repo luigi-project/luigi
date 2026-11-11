@@ -1,4 +1,3 @@
-import set from 'set-value';
 import { LuigiConfig } from '../../src/core-api';
 import { AsyncHelpers, GenericHelpers } from './../../src/utilities/helpers';
 

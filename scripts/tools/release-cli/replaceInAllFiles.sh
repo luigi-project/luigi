@@ -19,11 +19,11 @@ SEARCH=$1
 REPLACE=$2
 
 SOURCES=(
-  "blog"
   "docs"
   "core/src"
   "client/src"
   "client/luigi-client.d.ts"
+  "client/luigi-element.d.ts"
   "plugins/auth/src"
 )
 

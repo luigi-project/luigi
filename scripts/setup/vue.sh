@@ -15,13 +15,14 @@ else
   folder=$1
   echo "Luigi project folder name: $folder"
 fi
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
 
 # create sample vue app
 vue create -d $folder && cd $folder
 
 # install dependencies
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-vue/package.json > package.json
-npm i
+$PKG_MGR i
 
 mkdir -p src/views src/router 
 
@@ -44,5 +45,5 @@ curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/lu
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-vue/src/views/sample1.vue > src/views/sample1.vue
 curl https://raw.githubusercontent.com/luigi-project/luigi/main/core/examples/luigi-example-vue/src/views/sample2.vue > src/views/sample2.vue
 
-npm run build
-npm run serve
+$PKG_MGR run build
+$PKG_MGR run serve

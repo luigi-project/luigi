@@ -339,6 +339,46 @@ containerElement.sandboxRules = ['allow-modals', 'allow-popups']
   
 **Meta**:  
 * **since:** 1.2.0
+### webcomponentCreationInterceptor&nbsp;  
+<p>A function called after the web component for the microfrontend is created.
+It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.</p>
+
+**Params**
+
+- wc <code>HTMLElement</code> - <p>the web component element</p>
+- currentNode <code>Object</code> - <p>the current navigation node</p>
+- context <code>Object</code> - <p>the context object passed to the web component</p>
+- nodeId <code>string</code> - <p>the node identifier</p>
+- isSpecialMf <code>boolean</code> - <p>indicates whether the web component is rendered in a modal, splitView or drawer (false for main)</p>
+
+  
+**Example**  
+```js
+containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+```
+  
+**Meta**:  
+* **since:** 1.7.10
+### iframeCreationInterceptor&nbsp;  
+<p>A function called after the iframe for the microfrontend is created.
+It allows modifying the iframe element before it is used, e.g. setting attributes.
+The iframe is already rendered in the DOM when the interceptor fires.</p>
+
+**Params**
+
+- iframe <code>HTMLIFrameElement</code> - <p>the iframe element</p>
+- viewGroup <code>string</code> - <p>the view group name</p>
+- currentNode <code>Object</code> - <p>the current navigation node</p>
+- microFrontendType <code>string</code> - <p>type of micro frontend ('main', 'modal', 'drawer', 'usersettings')</p>
+
+  
+**Example**  
+```js
+containerElement.iframeCreationInterceptor = (iframe, viewGroup, navigationNode, microFrontendType) => { iframe.name = 'my-mfe'; }
+```
+  
+**Meta**:  
+* **since:** 1.7.9
 ### documentTitle&nbsp;  
 <p>The document title value to be passed to the web-component-based micro frontend. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></p>

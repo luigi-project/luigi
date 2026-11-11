@@ -15,7 +15,7 @@ class Helpers {
       if (evt.data.msg === 'custom') {
         const message = this.convertCustomMessageInternalToUser(evt.data);
         this.listeners
-          .filter((listener) => listener.name === message.id)
+          .filter((listener) => listener.name === message.id && listener.isCustomMessage)
           .map((listener) => listener.eventFn(message, listener.listenerId));
       } else {
         this.listeners
@@ -52,14 +52,16 @@ class Helpers {
    * @private
    * @param {string} name - event name
    * @param {function} eventFn - callback function
+   * @param {boolean} isCustomMessage - flag indicating if the listener is for custom messages
    * @returns {string} listener id
    */
-  addEventListener(name, eventFn) {
+  addEventListener(name, eventFn, isCustomMessage = false) {
     const listenerId = this.getRandomId();
     this.listeners.push({
       name,
       eventFn,
-      listenerId
+      listenerId,
+      isCustomMessage
     });
     return listenerId;
   }

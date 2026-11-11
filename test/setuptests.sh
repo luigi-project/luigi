@@ -4,6 +4,7 @@ CLI=$1
 PORT=$2
 TESTURL=$3
 URL=$4
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
 
 killWebserver() {
   PORT=$1
@@ -43,7 +44,7 @@ cd ..
 mkdir setupTestFolder && cd setupTestFolder
 
 # Install necessary dependencies
-npm install -g $CLI cypress@5.3.0 tar@latest
+$PKG_MGR install -g $CLI cypress@5.3.0 tar@latest
 
 # Create Cypress Config
 echo "{}" > cypress.json

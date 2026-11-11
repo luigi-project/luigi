@@ -1,5 +1,6 @@
 [![Build Status](https://github.com/luigi-project/luigi/actions/workflows/test.yml/badge.svg)](https://github.com/luigi-project/luigi/actions/workflows/test.yml)
-[![REUSE status](https://api.reuse.software/badge/github.com/luigi-project/luigi)](https://api.reuse.software/info/github.com/SAP/luigi)
+[![REUSE status](https://api.reuse.software/badge/github.com/luigi-project/luigi)](https://api.reuse.software/info/github.com/luigi-project/luigi)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/luigi-project/luigi/badge)](https://scorecard.dev/viewer/?uri=github.com/luigi-project/luigi)
 # Luigi
 <p align="center">
  <img src="https://raw.githubusercontent.com/luigi-project/luigi/main/logo.png" alt="Luigi logo" width="235">

@@ -224,7 +224,7 @@ class RoutingHelpersClass {
     }
 
     const route = RoutingHelpers.buildRoute(node, `/${node.pathSegment}`);
-    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false);
+    return pp + GenericHelpers.replaceVars(route, pathParams, ':', false, true);
   }
 
   calculateNodeHref(node, pathParams) {
@@ -335,6 +335,9 @@ class RoutingHelpersClass {
     const nodeParamsVarPrefix = 'nodeParams.';
     const searchQuery = 'routing.queryParams';
 
+    if (componentData?.currentNode?.virtualTree) {
+      viewUrl = viewUrl.replace('{virtualTreePath}', '');
+    }
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.pathParams, ':', false);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.context, contextVarPrefix);
     viewUrl = GenericHelpers.replaceVars(viewUrl, componentData.nodeParams, nodeParamsVarPrefix);
@@ -568,13 +571,15 @@ class RoutingHelpersClass {
    * Queries the pageNotFoundHandler configuration and returns redirect path if it exists
    * If the there is no `pageNotFoundHandler` defined we return undefined.
    * @param {*} notFoundPath - the path to check
+   * @param {boolean} [isAnyPathMatched=false] - whether any path was matched before falling back to the not-found handler
+   * @param {('modal'|'splitView'|'drawer')} [mode] - the special view mode the navigation was requested in, forwarded to the custom `pageNotFoundHandler` as its third argument
    * @returns an object optionally containing the path to redirect, the keepURL option or an empty object if handler is undefined
    */
-  getPageNotFoundRedirectResult(notFoundPath, isAnyPathMatched = false) {
+  getPageNotFoundRedirectResult(notFoundPath, isAnyPathMatched = false, mode) {
     const pageNotFoundHandler = LuigiConfig.getConfigValue('routing.pageNotFoundHandler');
     if (typeof pageNotFoundHandler === 'function') {
       // custom 404 handler is provided, use it
-      const result = pageNotFoundHandler(notFoundPath, isAnyPathMatched);
+      const result = pageNotFoundHandler(notFoundPath, isAnyPathMatched, mode);
       if (result && (result.redirectTo || result.ignoreLuigiErrorHandling)) {
         return {
           path: result.redirectTo,
@@ -593,15 +598,22 @@ class RoutingHelpersClass {
    * @param {any} component - the component to show the alert on
    * @param {string} path - the path to check for
    * @param {boolean} pathExists - defines if path exists or not
+   * @param {('modal'|'splitView'|'drawer')} [mode] - the special view mode the navigation was requested in, forwarded to the custom `pageNotFoundHandler`
    * @returns the path to redirect to or undefined if path doesn't exist and no redirect path is defined
    */
-  async handlePageNotFoundAndRetrieveRedirectPath(component, path, pathExists) {
+  async handlePageNotFoundAndRetrieveRedirectPath(component, path, pathExists, mode) {
     if (pathExists) {
       return path;
     }
-    const redirectPath = this.getPageNotFoundRedirectResult(path).path;
-    if (redirectPath !== undefined) {
-      return redirectPath;
+    const redirectResult = this.getPageNotFoundRedirectResult(path, false, mode);
+    if (redirectResult.ignoreLuigiErrorHandling) {
+      if (!redirectResult.keepURL) {
+        Routing.removeModalDataFromUrl(true);
+      }
+      return undefined;
+    }
+    if (redirectResult.path !== undefined) {
+      return redirectResult.path;
     } else {
       // default behavior if `pageNotFoundHandler` did not produce a redirect path
       this.showRouteNotFoundAlert(component, path);
@@ -670,8 +682,7 @@ class RoutingHelpersClass {
    * @param {Number} historyState.modalHistoryLength - will be increased when modals will be openend successively like e.g. stepping through a wizard
    * @param {Number} historyState.historygap - is the history.length at the time when the modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
    * @param {String} historyState.pathBeforeHistory - path before modal will be opened. It's needed for calculating how much we have to go back in the browser history when the modal will be closed.
-   * @param {boolean} hashRoutingActive - true if hash routing is active, false if path routing is active
-   * @param {URL} url - url object to read hash value or pathname
+   * @param {String} path representing the current path without modal data
    * @returns {Object} history state object
    */
   handleHistoryState(historyState, path) {

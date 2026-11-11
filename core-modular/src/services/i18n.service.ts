@@ -40,20 +40,8 @@ export class i18nService {
    * Sets current locale to the specified one.
    * @param {string} locale locale to be set as the current locale
    */
-  setCurrentLocale(locale: string, containerElement?: LuigiContainer | LuigiCompoundContainer): void {
-    if (!(containerElement?.clientPermissions as any)?.changeCurrentLocale) {
-      console.error(
-        'Current locale change declined from client, as client permission "changeCurrentLocale" is not set for this view.'
-      );
-
-      return;
-    }
-
+  setCurrentLocale(locale: string): void {
     if (locale) {
-      if (containerElement) {
-        containerElement.locale = locale;
-      }
-
       sessionStorage.setItem(this.currentLocaleStorageKey, locale);
       this._notifyLocaleChange(locale);
     }

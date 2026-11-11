@@ -14,6 +14,7 @@
   import { CSS_BREAKPOINTS } from './utilities/constants';
   import { KEYCODE_ESC } from './utilities/keycode.js';
   import {
+    DeviceHelpers,
     EventListenerHelpers,
     GenericHelpers,
     StateHelpers,
@@ -22,7 +23,8 @@
     AuthHelpers,
     StorageHelper,
     UserSettingsHelper,
-    NavigationHelpers
+    NavigationHelpers,
+    FastNavHelpers
   } from './utilities/helpers';
   import {
     LuigiI18N,
@@ -122,6 +124,7 @@
       viewStackSize: preservedViews.length,
       clientPermissions: iframeConf.nextViewUrl ? iframeConf.nextClientPermissions : iframeConf.clientPermissions,
       thirdPartyCookieCheck: await LuigiConfig.getConfigValue('settings.thirdPartyCookieCheck'),
+      fastNavigation: !!LuigiConfig.getConfigValue('settings.F6Navigation'),
       userSettings: hasUserSettings ? userSettingGroups[userSettingsGroupName] : null,
       anchor: LuigiRouting.getAnchor(),
       cssVariables: await LuigiTheming.getCSSVariables()
@@ -662,6 +665,7 @@
   let previousWindowWidth;
   let configTag;
   let isHeaderDisabled;
+  let f6NavigationEnabled;
 
   const closeLeftNav = () => {
     document.body.classList.remove('lui-leftNavToggle');
@@ -894,9 +898,10 @@
     };
     mfModalList = [...mfModalList, newModal];
 
-    // check if modalPath feature enable and set URL accordingly
-    const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
-
+    // check if modalPath feature enable and set URL accordingly.
+    // settings.showModalPathInUrl can override the global config per modal.
+    const showModalPathInUrl =
+      settings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
     //  only show the modal path in the URL when the first modal is opened.
     if (showModalPathInUrl && mfModalList.length === 1) {
       Routing.appendModalDataToUrl(nodepath, settings);
@@ -931,7 +936,9 @@
    */
   const closeModal = (index, isClosedInternal, goBackContext) => {
     const resetModalData = (index, isClosedInternal) => {
-      const showModalPathInUrl = LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
+      const modalSettings = mfModalList[0]?.mfModal?.settings;
+      const showModalPathInUrl =
+        modalSettings.showModalPathInUrl ?? LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl');
       // only remove the modal path in URL when closing the first modal
       if (showModalPathInUrl && mfModalList.length === 1) {
         Routing.removeModalDataFromUrl(isClosedInternal);
@@ -1282,6 +1289,23 @@
         iframe.luigi.initOk = true;
       }
 
+      if ('luigi.fast-nav' === e.data.msg) {
+        // Ignore forwarded F6 while a backdrop-bearing overlay is open: the
+        // regions behind the backdrop are inert, so focus must stay trapped.
+        if (f6NavigationEnabled && !isFastNavBlockedByBackdrop()) {
+          FastNavHelpers.handleF6(
+            {
+              key: 'F6',
+              shiftKey: !!e.data.shiftKey,
+              preventDefault: () => {},
+              stopPropagation: () => {}
+            },
+            document
+          );
+        }
+        return;
+      }
+
       if ('luigi.navigate.ok' === e.data.msg) {
         iframe.luigi.viewUrl = iframe.luigi.nextViewUrl;
         iframe.luigi.nextViewUrl = '';
@@ -1376,6 +1400,7 @@
         const params = e.data.params;
         const { intent, newTab, modal, splitView, drawer, withoutSync } = params;
         let isSpecial = newTab || modal || splitView || drawer;
+        const specialMode = modal ? 'modal' : splitView ? 'splitView' : drawer ? 'drawer' : undefined;
 
         const resolveRemotePromise = () => {
           const remotePromise = GenericHelpers.getRemotePromise(e.data.remotePromiseId);
@@ -1448,7 +1473,12 @@
           }
 
           const pathExist = await pathExists(path);
-          path = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(getComponentWrapper(), path, pathExist);
+          path = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
+            getComponentWrapper(),
+            path,
+            pathExist,
+            specialMode
+          );
 
           if (!path) {
             rejectRemotePromise();
@@ -1564,7 +1594,10 @@
       }
 
       if ('luigi.navigation.updateModalDataPath' === e.data.msg) {
-        if (!LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl')) {
+        if (
+          !LuigiConfig.getConfigBooleanValue('routing.showModalPathInUrl') ||
+          (mfModalList.length > 0 && mfModalList[0].mfModal?.settings?.showModalPathInUrl === false)
+        ) {
           return;
         }
         if (isSpecialIframe) {
@@ -1769,6 +1802,9 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     responsiveNavSetting = LuigiConfig.getConfigValue('settings.responsiveNavigation');
     previousWindowWidth = window.innerWidth;
+    if (DeviceHelpers.isPhone()) {
+      document.body.classList.add('lui-handheldMode');
+    }
     if (responsiveNavSetting === 'simple') {
       document.body.classList.add('lui-simpleSlideInNav');
       simpleSlideInNav = true;
@@ -1820,9 +1856,35 @@
     searchProvider = LuigiConfig.getConfigValue('globalSearch.searchProvider');
     configTag = LuigiConfig.getConfigValue('tag');
     isHeaderDisabled = LuigiConfig.getConfigValue('settings.header.disabled');
+    f6NavigationEnabled = LuigiConfig.getConfigValue('settings.F6Navigation');
   });
 
+  // Returns whether an overlay with an active backdrop is currently open. Luigi
+  // makes the regions behind a backdrop inert (see IframeHelpers.disableA11Y*),
+  // which covers modals, confirmation modals, drawers with backdrop and the
+  // client-driven `luigi.add-backdrop`. FastNavHelpers detects that inert state
+  // from the DOM markers those helpers leave behind, so F6 fast navigation stays
+  // suppressed for every backdrop type. A drawer without a backdrop leaves the
+  // background interactive and therefore does NOT block fast navigation.
+  const isFastNavBlockedByBackdrop = () => {
+    return FastNavHelpers.isBackgroundInert(document);
+  };
+
   const handleKeyDown = (event) => {
+    if (f6NavigationEnabled && event.key === 'F6') {
+      // While a backdrop-bearing overlay (modal, confirmation modal, or drawer
+      // with backdrop) is open, the regions behind it are made inert, so F6 must
+      // not move focus out of the overlay. Suppress fast navigation (and the
+      // browser default) to keep focus trapped. A backdrop-less drawer keeps the
+      // background interactive, so F6 stays enabled there.
+      if (isFastNavBlockedByBackdrop()) {
+        event.preventDefault();
+        return;
+      }
+      FastNavHelpers.handleF6(event, document);
+      event.preventDefault();
+      return;
+    }
     if (event.keyCode === KEYCODE_ESC && mfModalList && mfModalList.length > 0) {
       closeModal(mfModalList.length - 1);
     }
@@ -1906,6 +1968,7 @@
                 bind:inputElem
                 bind:customSearchItemRendererSlot
                 {burgerTooltip}
+                fastNavGroup={f6NavigationEnabled ? 'banner' : null}
               />
             {/if}
           </div>
@@ -1920,6 +1983,7 @@
                   on:handleClick={handleNavClick}
                   on:resizeTabNav={onResizeTabNav}
                   {burgerTooltip}
+                  fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
                 />
               </div>
             </div>
@@ -1935,6 +1999,8 @@
                   class="fd-page iframeContainer"
                   class:lui-split-view={mfSplitView.displayed}
                   class:lui-collapsed={mfSplitView.collapsed}
+                  data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
+                  role="main"
                   tabindex="0"
                   use:init
                 >
@@ -1992,6 +2058,7 @@
         bind:inputElem
         bind:customSearchItemRendererSlot
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'banner' : null}
       />
     {/if}
     {#if !(hideNav || hideSideNav)}
@@ -2001,6 +2068,7 @@
         on:handleClick={handleNavClick}
         on:resizeTabNav={onResizeTabNav}
         {burgerTooltip}
+        fastNavGroup={f6NavigationEnabled ? 'navigation' : null}
       />
     {/if}
     <Backdrop disable={disableBackdrop}>
@@ -2009,6 +2077,8 @@
         class="fd-page iframeContainer"
         class:lui-split-view={mfSplitView.displayed}
         class:lui-collapsed={mfSplitView.collapsed}
+        data-luigi-fast-nav-group={f6NavigationEnabled ? 'main' : null}
+        role="main"
         tabindex="0"
         use:init
       >
@@ -2620,10 +2690,6 @@
   //avatar clipping
   :global(.fd-avatar--circle) {
     background-clip: padding-box;
-  }
-
-  :global(.fd-shellbar__logo) {
-    margin-right: 0px;
   }
 
   :global(.fd-menu__link) {

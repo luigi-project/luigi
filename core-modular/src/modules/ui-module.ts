@@ -1,17 +1,26 @@
 import Events, { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingService } from '../services/routing.service';
 import { serviceRegistry } from '../services/service-registry';
+import { DirtyStatusService } from '../services/dirty-status.service';
 import { ViewUrlDecoratorSvc } from '../services/viewurl-decorator';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { ModalService, type ModalPromiseObject } from '../services/modal.service';
 import { NodeDataManagementService } from '../services/node-data-management.service';
-import type { ModalSettings, Node } from '../types/navigation';
+import type { DrawerSettings, ModalSettings, Node, UserSettingsDialogSettings, MFType } from '../types/navigation';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import type { LuigiParams } from '../types/routing';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { AuthHelpers } from '../utilities/helpers/auth-helpers';
 
-const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiParams): Promise<HTMLElement> => {
+const createContainer = async (
+  node: Node,
+  luigi: Luigi,
+  luigiParams?: LuigiParams,
+  microFrontendType?: MFType
+): Promise<HTMLElement> => {
   const userSettingGroups = await luigi.readUserSettings();
   const hasUserSettings = node.userSettingsGroup && typeof userSettingGroups === 'object' && userSettingGroups !== null;
   const userSettings = hasUserSettings && node.userSettingsGroup ? userSettingGroups[node.userSettingsGroup] : null;
@@ -32,7 +41,7 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
           .applyDecorators(
-            RoutingHelpers.substituteViewUrl(node.viewUrl, pathParams, luigi),
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
             node.decodeViewUrl ?? false
           )
       : '';
@@ -42,8 +51,10 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     lcc.clientPermissions = node.clientPermissions ?? {};
     lcc.nodeParams = nodeParams;
     lcc.pathParams = pathParams;
-    (lcc as any).userSettingsGroup = node.userSettingsGroup;
-    lcc.userSettings = userSettings;
+    lcc.userSettings = {
+      rootNodeUserSettingsGroup: node.userSettingsGroup,
+      groupedUserSettings: userSettingGroups
+    };
     lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
@@ -57,16 +68,20 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
 
     lc.setAttribute('lui_container', 'true');
+    if (microFrontendType === 'usersettings') {
+      lc.classList.add('iframeUserSettingsCtn');
+    }
     lc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
           .applyDecorators(
-            RoutingHelpers.substituteViewUrl(node.viewUrl, pathParams, luigi),
+            RoutingHelpers.substituteViewUrl(node, pathParams, nodeParams, luigi),
             node.decodeViewUrl ?? false
           )
       : '';
     lc.webcomponent = node.webcomponent ?? false;
     (lc as any).context = node.context;
+    lc.authData = AuthHelpers.getStoredAuthData();
     lc.clientPermissions = node.clientPermissions ?? {};
     (lc as any).cssVariables = await luigi.theming().getCSSVariables();
     lc.nodeParams = nodeParams;
@@ -82,7 +97,10 @@ const createContainer = async (node: Node, luigi: Luigi, luigiParams?: LuigiPara
     (lc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
     setSandboxRules(lc, luigi);
     setAllowRules(lc, luigi);
+    setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
+    setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     luigi.getEngine()._comm.addListeners(lc, luigi);
+    (lc as any).luigiMfId = GenericHelpers.getRandomId();
     return lc;
   }
 };
@@ -130,16 +148,107 @@ const setAllowRules = (container: LuigiContainer, luigi: Luigi): void => {
   container.allowRules = allowRules;
 };
 
+const setIframeCreationInterceptor = (
+  container: LuigiContainer,
+  luigi: Luigi,
+  currentNode: Node,
+  microFrontendType: string
+): void => {
+  const interceptor = luigi.getConfigValue('settings.iframeCreationInterceptor');
+  if (GenericHelpers.isFunction(interceptor)) {
+    (container as any).iframeCreationInterceptor = interceptor;
+    (container as any)._luigiCurrentNode = currentNode;
+    (container as any)._luigiMicroFrontendType = microFrontendType;
+  }
+};
+
+const setWebcomponentCreationInterceptor = (
+  container: LuigiContainer,
+  luigi: Luigi,
+  currentNode: Node,
+  microFrontendType: string
+): void => {
+  const interceptor = luigi.getConfigValue('settings.webcomponentCreationInterceptor');
+  if (GenericHelpers.isFunction(interceptor)) {
+    (container as any).webcomponentCreationInterceptor = interceptor;
+    (container as any).currentNode = currentNode;
+    (container as any)._luigiMicroFrontendType = microFrontendType !== 'main';
+  }
+};
+
+const handleDialogContainers = async (
+  context: Record<string, any>,
+  withoutSync: boolean,
+  luigi: Luigi
+): Promise<void> => {
+  const showModalPathInUrl = luigi.getConfigValue('routing.showModalPathInUrl');
+  const modalService = serviceRegistry.get(ModalService);
+
+  if (showModalPathInUrl) {
+    const routingService = serviceRegistry.get(RoutingService);
+    const hashRouting = !!luigi.getConfigValue('routing.useHashRouting');
+    const routeInfo = RoutingHelpers.getCurrentPath(luigi, hashRouting, true);
+    const closed = await modalService.closeModalsWithDirtyCheck();
+
+    if (closed) {
+      await routingService.handleBookmarkableModalPath(routeInfo, false);
+
+      if (UIModule.drawerContainer && UIModule.drawerContainer?.updateContext) {
+        UIModule.drawerContainer.updateContext(context || {}, { withoutSync });
+      }
+    }
+  } else {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    const checkContainer = async (container: any): Promise<void> => {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(container)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(container);
+        } catch (e) {
+          return;
+        }
+      }
+    };
+
+    if (UIModule.modalContainer.length) {
+      for (const container of UIModule.modalContainer) {
+        await checkContainer(container);
+      }
+    }
+
+    if (UIModule.drawerContainer) {
+      await checkContainer(UIModule.drawerContainer);
+    }
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+
+      dialogContainers.forEach((container: any) => {
+        if (container?.updateContext) {
+          container.updateContext(context || {}, { withoutSync });
+        }
+      });
+    }
+  }
+};
+
 export const UIModule = {
   navService: undefined as unknown as NavigationService,
   routingService: undefined as unknown as RoutingService,
   luigi: undefined as unknown as Luigi,
+  modalContainer: [] as any,
+  drawerContainer: undefined as any,
   init: (luigi: Luigi) => {
-    console.log('Init UI...');
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.routingService = serviceRegistry.get(RoutingService);
     UIModule.luigi = luigi;
     luigi.getEngine()._connector?.renderMainLayout();
+    const preloadingService = serviceRegistry.get(PreloadingService);
+    preloadingService.shouldPreload = true;
+    preloadingService.preload(true);
+    preloadingService.shouldPreload = false;
   },
   update: async (scopes?: string[]) => {
     const croute = UIModule.routingService.getCurrentRoute();
@@ -152,6 +261,7 @@ export const UIModule = {
       Available scopes:
 
         navigation
+        navigation.badges
         navigation.nodes
         navigation.profile
         navigation.contextSwitcher
@@ -163,14 +273,40 @@ export const UIModule = {
         settings.header
     */
 
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes')) {
+      serviceRegistry.get(NodeDataManagementService).deleteCache();
+    }
+
+    const isViewGroupDataOnly = scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+
+    if (isViewGroupDataOnly) {
+      const pathData = await UIModule.navService.getPathData(croute.path);
+      const connector = UIModule.luigi.getEngine()._connector;
+      const [topNavData, leftNavData, tabNavData, breadcrumbData] = await Promise.all([
+        UIModule.navService.getTopNavData(croute.path, pathData),
+        UIModule.navService.getLeftNavData(croute.path, pathData),
+        UIModule.navService.getTabNavData(croute.path, pathData),
+        UIModule.navService.getBreadcrumbData(croute.path, pathData, (resolved) => {
+          connector?.renderBreadcrumbs(resolved);
+        })
+      ]);
+      connector?.renderTopNav(topNavData);
+      connector?.renderLeftNav(leftNavData);
+      connector?.renderTabNav(tabNavData);
+      connector?.renderBreadcrumbs(breadcrumbData);
+      return;
+    }
+
     if (
       noScopes ||
       scopes.includes('settings.header') ||
       scopes.includes('settings') ||
       scopes.includes('navigation') ||
+      scopes.includes('navigation.badges') ||
       scopes.includes('navigation.profile') ||
       scopes.includes('navigation.contextSwitcher') ||
-      scopes.includes('navigation.productSwitcher')
+      scopes.includes('navigation.productSwitcher') ||
+      scopes.includes('navigation.viewgroupdata')
     ) {
       UIModule.luigi.getEngine()._connector?.renderTopNav(await UIModule.navService.getTopNavData(croute.path));
     }
@@ -182,18 +318,34 @@ export const UIModule = {
       scopes.includes('settings') ||
       scopes.includes('settings.footer')
     ) {
-      serviceRegistry.get(NodeDataManagementService).deleteCache();
       UIModule.luigi.getEngine()._connector?.renderLeftNav(await UIModule.navService.getLeftNavData(croute.path));
-      UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
     }
     if (
       noScopes ||
       scopes.includes('navigation') ||
       scopes.includes('navigation.nodes') ||
       scopes.includes('navigation.viewgroupdata') ||
-      scopes.includes('settings.theming')
+      scopes.includes('settings') ||
+      scopes.includes('settings.footer')
     ) {
-      serviceRegistry.get(NodeDataManagementService).deleteCache();
+      UIModule.luigi.getEngine()._connector?.renderTabNav(await UIModule.navService.getTabNavData(croute.path));
+      const uiConnector = UIModule.luigi.getEngine()._connector;
+      uiConnector?.renderBreadcrumbs(
+        await UIModule.navService.getBreadcrumbData(croute.path, undefined, (resolved) => {
+          uiConnector?.renderBreadcrumbs(resolved);
+        })
+      );
+    }
+    if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes')) {
+      if (croute.path) {
+        const pathData = await UIModule.navService.getPathData(croute.path);
+        const currentNode = pathData?.selectedNode ?? croute.node;
+        if (currentNode) {
+          croute.node = currentNode;
+          UIModule.updateMainContent(currentNode, UIModule.luigi);
+        }
+      }
+    } else if (scopes.includes('settings.theming')) {
       if (croute.node) {
         UIModule.updateMainContent(croute.node, UIModule.luigi);
       }
@@ -204,7 +356,8 @@ export const UIModule = {
     luigi: Luigi,
     luigiParams?: LuigiParams,
     withoutSync?: boolean,
-    preventContextUpdate?: boolean
+    preventContextUpdate?: boolean,
+    preserveView?: boolean
   ) => {
     const userSettingGroups = await luigi.readUserSettings();
     const hasUserSettings =
@@ -218,6 +371,7 @@ export const UIModule = {
     const searchParams = luigiParams?.searchParams || {};
 
     if (currentNode && containerWrapper) {
+      let currentContainer: any;
       let viewGroupContainer: any;
       let currentVirtualTreeRootNode: any;
 
@@ -225,33 +379,87 @@ export const UIModule = {
         currentVirtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(currentNode);
       }
 
+      const hasBackContext = !!UIModule.navService.getGoBackContext();
+      const viewStackSize = UIModule.navService.getPreservedViewsLength();
+      const resolvedViewUrl = currentNode.viewUrl
+        ? serviceRegistry
+            .get(ViewUrlDecoratorSvc)
+            .applyDecorators(
+              RoutingHelpers.substituteViewUrl(currentNode, pathParams, nodeParams, luigi),
+              currentNode.decodeViewUrl ?? false
+            )
+        : '';
+
       [...containerWrapper.childNodes].forEach((element: any) => {
         if (element.tagName?.indexOf('LUIGI-') !== 0) return;
 
+        if (withoutSync) {
+          currentContainer = element;
+        }
+
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
-          element.style.display = 'none';
+          if (!withoutSync) {
+            element.style.display = 'none';
+            const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+            if (vgSettings?.preloadUrl) {
+              element.viewurl = vgSettings.preloadUrl;
+              element.context = {};
+              element.nodeParams = {};
+              element.pathParams = {};
+            }
+          }
+        } else if (element.webcomponent) {
+          if (!withoutSync && !(element as any)._luigiPreserved) {
+            element.remove();
+          }
         } else {
           if (
+            withoutSync ||
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
+            if (preserveView || ((element as any)._luigiPreserved && viewStackSize)) {
+              (element as any)._luigiPreserved = !hasBackContext;
+              element.style.display = 'none';
+            } else {
+              (element as any)._luigiPreserved = hasBackContext;
+              element.style.display = 'block';
+              viewGroupContainer = element;
+            }
+          } else if (
+            !currentNode.viewGroup &&
+            !currentNode.isolateView &&
+            !currentNode.webcomponent &&
+            element.viewurl &&
+            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+          ) {
+            (element as any)._luigiPreserved = false;
+            element.style.display = 'block';
             viewGroupContainer = element;
           } else {
-            element.remove();
+            if (preserveView) {
+              (element as any)._luigiPreserved = true;
+              element.style.display = 'none';
+            } else if (!withoutSync && !(element as any)._luigiPreserved) {
+              element.remove();
+            }
           }
         }
       });
+
+      if (viewGroupContainer && viewGroupContainer._luigiPreloading) {
+        viewGroupContainer._luigiPreloading = false;
+        serviceRegistry.get(PreloadingService).viewGroupLoaded(viewGroupContainer);
+      }
+
       if (viewGroupContainer) {
-        if (!withoutSync) {
+        const previousViewUrl = viewGroupContainer.viewurl;
+
+        viewGroupContainer.viewStackSize = viewStackSize;
+
+        if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
-          viewGroupContainer.viewurl = currentNode.viewUrl
-            ? serviceRegistry
-                .get(ViewUrlDecoratorSvc)
-                .applyDecorators(
-                  RoutingHelpers.substituteViewUrl(currentNode.viewUrl, pathParams, luigi),
-                  currentNode.decodeViewUrl ?? false
-                )
-            : '';
+          viewGroupContainer.viewurl = resolvedViewUrl;
           viewGroupContainer.nodeParams = nodeParams;
           viewGroupContainer.pathParams = pathParams;
           viewGroupContainer.clientPermissions = currentNode.clientPermissions;
@@ -266,46 +474,129 @@ export const UIModule = {
           setAllowRules(viewGroupContainer, luigi);
         }
 
+        if (withoutSync && !preventContextUpdate) {
+          // withoutSync: forward the fresh params to the client so navigations that change
+          // node/path/search params don't leave the client with stale params (parity with core).
+          // Deliberately does NOT touch viewurl/display, preserving the no-reload guarantee.
+          viewGroupContainer.nodeParams = nodeParams;
+          viewGroupContainer.pathParams = pathParams;
+          viewGroupContainer.searchParams = searchParams;
+        }
+
         if (!preventContextUpdate) {
           //IMPORTANT!!! This needs to be at the end
-          viewGroupContainer.updateContext(currentNode.context || {});
+          const hashChanged =
+            GenericHelpers.isSameUrl(previousViewUrl, resolvedViewUrl) && previousViewUrl !== resolvedViewUrl;
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = { ...currentNode.context, ...goBackContext };
+
+          if (hashChanged && !viewGroupContainer.virtualTree && !withoutSync) {
+            viewGroupContainer.context = newContext;
+            viewGroupContainer.updateViewUrl(resolvedViewUrl);
+          } else {
+            viewGroupContainer.updateContext(newContext, { withoutSync: !!withoutSync });
+            await handleDialogContainers(newContext, !!withoutSync, luigi);
+          }
         }
       } else {
-        const container = await createContainer(currentNode, luigi, luigiParams);
-        containerWrapper?.appendChild(container);
-        const connector = luigi.getEngine()._connector;
-        if (currentNode.loadingIndicator?.enabled !== false) {
-          connector?.showLoadingIndicator(containerWrapper);
+        if (!withoutSync) {
+          const container = await createContainer(currentNode, luigi, luigiParams, 'main');
+          const connector = luigi.getEngine()._connector;
+
+          (container as any).viewStackSize = viewStackSize;
+          containerWrapper?.appendChild(container);
+
+          if (currentNode.loadingIndicator?.enabled !== false) {
+            connector?.showLoadingIndicator(containerWrapper);
+          }
+        } else {
+          const goBackContext = UIModule.navService.getGoBackContext() || {};
+          const newContext = { ...currentNode.context, ...goBackContext };
+
+          currentContainer.viewStackSize = viewStackSize;
+
+          if (!preventContextUpdate && currentContainer) {
+            currentContainer.updateContext(newContext, { withoutSync });
+            await handleDialogContainers(newContext, !!withoutSync, luigi);
+          }
         }
       }
+
+      const allChildNodes = [...containerWrapper.childNodes];
+
+      if (hasBackContext && !viewStackSize && allChildNodes.length > 1) {
+        const lastItem: any = allChildNodes.at(-1);
+
+        if (lastItem && lastItem.style.display === 'none') {
+          lastItem.remove();
+        }
+      }
+
+      UIModule.navService.clearGoBackContext();
     }
   },
-  openModal: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    const lc = await createContainer(node, luigi);
+  openModal: async (
+    luigi: Luigi,
+    node: Node,
+    modalSettings: ModalSettings,
+    onCloseCallback?: (goBackValue?: any) => void,
+    luigiParams?: LuigiParams
+  ) => {
+    const lc = await createContainer(node, luigi, luigiParams, 'modal');
+    UIModule.modalContainer.push(lc);
     const routingService = serviceRegistry.get(RoutingService);
     const modalService = serviceRegistry.get(ModalService);
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
 
     let resolved = false;
-    let resolveFn: (() => void) | undefined;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
     let onCloseRequestHandler: (() => void) | undefined;
 
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
-        resolveFn = () => {
+        resolveFn = (goBackValue?: any) => {
           if (resolved) return;
           resolved = true;
           resolve();
           modalService.removeLastModalFromStack();
+          if (typeof goBackValue === 'boolean' || (goBackValue && typeof goBackValue === 'object')) {
+            UIModule.navService.removeLastPreservedView();
+            setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+          }
         };
 
-        onCloseRequestHandler = () => {
+        onCloseRequestHandler = async () => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
           resolveFn && resolveFn();
-          if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+          const showModalPathInUrl =
+            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
+            routingService.removeModalDataFromUrl(true);
+          }
+        };
+
+        const onGoBackRequestHandler = async (event: any) => {
+          try {
+            await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+          } catch (e) {
+            return;
+          }
+          const goBackContext = event?.detail || event?.payload;
+          onCloseCallback?.(goBackContext);
+          resolveFn && resolveFn(goBackContext);
+          const showModalPathInUrl =
+            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
             routingService.removeModalDataFromUrl(true);
           }
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+        lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
       });
     };
 
@@ -317,6 +608,7 @@ export const UIModule = {
       onCloseRequestHandler,
       onInternalClose: () => {
         try {
+          dirtyStatusService.clearDirtyState(lc);
           modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
         } catch (e) {
           console.warn('onInternalClose failed', e);
@@ -330,10 +622,17 @@ export const UIModule = {
     luigi.getEngine()._connector?.renderModal(
       lc,
       modalSettings,
-      () => {
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
         onCloseCallback?.();
-        modalService.removeLastModalFromStack();
-        if (luigi.getConfigValue('routing.showModalPathInUrl') && modalService.getModalStackLength() === 0) {
+        resolveFn && resolveFn();
+        const showModalPathInUrl =
+          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+        if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
           routingService.removeModalDataFromUrl(true);
         }
       },
@@ -359,12 +658,136 @@ export const UIModule = {
     }
     luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings());
   },
-  openDrawer: async (luigi: Luigi, node: Node, modalSettings: ModalSettings, onCloseCallback?: () => void) => {
-    const lc = await createContainer(node, luigi);
-    luigi.getEngine()._connector?.renderDrawer(lc, modalSettings, onCloseCallback);
+  openDrawer: async (
+    luigi: Luigi,
+    node: Node,
+    drawerSettings: DrawerSettings,
+    onCloseCallback?: (goBackValue?: any) => void,
+    luigiParams?: LuigiParams
+  ) => {
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+    if (UIModule.drawerContainer) {
+      if (dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+    }
+
+    const lc = await createContainer(node, luigi, luigiParams, 'drawer');
+    UIModule.drawerContainer = lc;
+
+    let resolved = false;
+    let resolveFn: ((goBackValue?: any) => void) | undefined;
+    const closePromise = new Promise<void>((resolve) => {
+      resolveFn = (goBackValue?: any) => {
+        if (resolved) return;
+        resolved = true;
+        resolve();
+        if (typeof goBackValue === 'boolean' || (goBackValue && typeof goBackValue === 'object')) {
+          UIModule.navService.removeLastPreservedView();
+          setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
+        }
+      };
+
+      const onCloseRequestHandler = async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
+      };
+
+      const onGoBackRequestHandler = async (event: any) => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        const goBackContext = event?.detail || event?.payload;
+        onCloseCallback?.(goBackContext);
+        resolveFn && resolveFn(goBackContext);
+      };
+
+      lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
+      lc.addEventListener(Events.GO_BACK_REQUEST, onGoBackRequestHandler);
+    });
+
+    luigi.getEngine()._connector?.renderDrawer(
+      lc,
+      drawerSettings,
+      async () => {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(lc);
+        } catch (e) {
+          return;
+        }
+        onCloseCallback?.();
+        UIModule.drawerContainer = undefined;
+        dirtyStatusService.clearDirtyState(lc);
+        resolveFn && resolveFn();
+      },
+      () => closePromise
+    );
+
     const connector = luigi.getEngine()._connector;
     if (node.loadingIndicator?.enabled !== false) {
       connector?.showLoadingIndicator(lc.parentElement as HTMLElement);
     }
+  },
+
+  openUserSettings: async (
+    userSettingsDialogSettings: UserSettingsDialogSettings,
+    userSettingData: any,
+    previousUserSettings: any,
+    initialUserSettings: any,
+    luigi: Luigi
+  ) => {
+    const mfeStoredSettings: Record<string, any> = {};
+    const userSettingsContainers: Record<string, LuigiContainer> = {};
+
+    const renderMicroFrontendContainer = async (groupConfig: any, groupKey: string): Promise<LuigiContainer> => {
+      if (userSettingsContainers[groupKey]) {
+        return userSettingsContainers[groupKey];
+      }
+      const viewUrl = groupConfig.viewUrl;
+      const isWebComponent = groupConfig.webcomponent ?? false;
+      const userSettingsData = previousUserSettings?.[groupKey] || {};
+      const context = { ...groupConfig.context, userSettingsData: userSettingsData };
+      const lc = (await createContainer(
+        { viewUrl, userSettingsGroup: groupKey, webcomponent: isWebComponent, context } as Node,
+        luigi,
+        undefined,
+        'usersettings'
+      )) as LuigiContainer;
+      userSettingsContainers[groupKey] = lc;
+      lc.addEventListener(Events.CUSTOM_MESSAGE, (event: any) => {
+        const message = event.detail;
+        if (message?.id === 'luigi.updateUserSettings') {
+          const data = message.data?.data ?? message.data;
+          mfeStoredSettings[groupKey] = data;
+
+          const target = userSettingsContainers[groupKey];
+          if (target?.updateContext) {
+            target.updateContext({ userSettingsData: data }, { withoutSync: false });
+          }
+        }
+      });
+
+      return lc;
+    };
+    const onCloseCallback = async (storedUserSettings: any) => {
+      const merged = { ...storedUserSettings, ...mfeStoredSettings };
+      await luigi.storeUserSettings(merged, previousUserSettings);
+    };
+    userSettingsDialogSettings.renderMicroFrontendContainer = renderMicroFrontendContainer;
+    userSettingsDialogSettings.onCloseCallback = onCloseCallback;
+    luigi.getEngine()._connector?.openUserSettings(userSettingsDialogSettings, userSettingData, initialUserSettings);
   }
 };

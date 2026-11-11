@@ -19,13 +19,11 @@ export default defineConfig({
   build: {
     sourcemap: true,
     chunkSizeWarningLimit: 650,
-    rollupOptions: {
-      input: ['src/main.ts'],
-      output: {
-        entryFileNames: 'luigi.js',
-        format: 'es'
-      },
-      plugins: []
+    lib: {
+      entry: 'src/main.ts',
+      name: 'Luigi',
+      formats: ['es'],
+      fileName: () => 'luigi.js'
     },
     outDir: 'public'
   },

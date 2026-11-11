@@ -9,9 +9,13 @@ import { NavigationService } from './navigation.service';
 import { NodeDataManagementService } from './node-data-management.service';
 import { serviceRegistry } from './service-registry';
 import { ModalService } from './modal.service';
+import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { DirtyStatusService } from './dirty-status.service';
+import { EventListenerHelpers } from '../utilities/helpers/event-listener-helpers';
 
 export class RoutingService {
   navigationService?: NavigationService;
+  dirtyStatusService?: DirtyStatusService;
   previousNode: Node | undefined;
   currentRoute?: Route;
   modalSettings?: ModalSettings;
@@ -22,6 +26,7 @@ export class RoutingService {
   private getNavigationService(): NavigationService {
     if (!this.navigationService) {
       this.navigationService = serviceRegistry.get(NavigationService);
+      this.dirtyStatusService = serviceRegistry.get(DirtyStatusService);
     }
 
     return this.navigationService;
@@ -54,24 +59,35 @@ export class RoutingService {
    */
   enableRouting(): void {
     const luigiConfig = this.luigi.getConfig();
-    console.log('Init Routing...', luigiConfig.routing);
 
     if (luigiConfig.routing?.useHashRouting) {
-      window.addEventListener('hashchange', (ev) => {
+      EventListenerHelpers.addEventListener('hashchange', (ev: HashChangeEvent) => {
+        const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(true), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, true, true),
+          withoutSync,
+          preventContextUpdate,
+          preserveView
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath(true));
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
-      window.addEventListener('popstate', (ev) => {
+      EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
+        const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        this.handleRouteChange(RoutingHelpers.getCurrentPath(), withoutSync, preventContextUpdate);
+        this.handleRouteChange(
+          RoutingHelpers.getCurrentPath(this.luigi, false, true),
+          withoutSync,
+          preventContextUpdate,
+          preserveView
+        );
       });
-      this.handleRouteChange(RoutingHelpers.getCurrentPath());
+      this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }
   }
 
@@ -80,12 +96,14 @@ export class RoutingService {
    * @param {Object} routeInfo - the information about path and query
    * @param {boolean} withoutSync - disables the navigation handling for a single navigation request
    * @param {boolean} preventContextUpdate - make no context update being triggered
+   * @param {boolean} preserveView - preserve a view by setting it to true
    * @returns {Promise<void>} A promise that resolves when route change is complete.
    */
   async handleRouteChange(
     routeInfo: { path: string; query: string },
     withoutSync = false,
-    preventContextUpdate = false
+    preventContextUpdate = false,
+    preserveView = false
   ): Promise<void> {
     const path = routeInfo.path;
     const query = routeInfo.query;
@@ -93,8 +111,24 @@ export class RoutingService {
     const urlSearchParams = new URLSearchParams(query);
     const paramsObj: Record<string, string> = Object.create(null);
 
+    try {
+      if (this.dirtyStatusService?.shouldShowUnsavedChangesModal()) {
+        const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
+        if (oldUrl) {
+          history.pushState((window as any).state, '', oldUrl);
+        }
+        return;
+      }
+    } catch (e) {
+      return;
+    }
+
     if (this.shouldSkipRoutingForUrlPatterns()) {
       return;
+    }
+
+    if (!this.getNavigationService().isValidBackRoute(path)) {
+      this.getNavigationService().clearPreservedViews();
     }
 
     this.setFeatureToggle(fullPath);
@@ -105,14 +139,8 @@ export class RoutingService {
     });
     this.checkInvalidateCache(this.previousPathData, path);
     const pathData = await this.getNavigationService().getPathData(path);
-    this.previousPathData = pathData;
     const nodeParams = RoutingHelpers.filterNodeParams(paramsObj, this.luigi);
-    const redirect = await this.getNavigationService().shouldRedirect(path, pathData);
-
-    if (redirect) {
-      this.luigi.navigation().navigate(redirect);
-      return;
-    }
+    const pathUrlRaw = GenericHelpers.getPathWithoutHash(path) || '';
 
     this.currentRoute = {
       raw: window.location.href,
@@ -120,22 +148,51 @@ export class RoutingService {
       nodeParams
     };
 
-    this.luigi.getEngine()._connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
-    this.luigi.getEngine()._connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
-
     const currentNode = pathData?.selectedNode ?? (await this.getNavigationService().getCurrentNode(path));
+    const viewUrl = currentNode?.viewUrl || '';
+
+    if (
+      (currentNode &&
+        (await this.handleViewUrlMisconfigured(currentNode, viewUrl, this.previousPathData, pathUrlRaw))) ||
+      (await this.handlePageNotFound(currentNode, viewUrl, pathData, path, pathUrlRaw))
+    ) {
+      // Re-render navigation so the selected state reflects the current URL
+      const connector = this.luigi.getEngine()._connector;
+      connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+      connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
+      return;
+    }
+
+    // render top nav even if requested route cannot be found or/and `ignoreLuigiErrorHandling` is set
+    const connector = this.luigi.getEngine()._connector;
+    connector?.renderTopNav(await this.getNavigationService().getTopNavData(path, pathData));
+    connector?.renderLeftNav(await this.getNavigationService().getLeftNavData(path, pathData));
+    connector?.renderTabNav(await this.getNavigationService().getTabNavData(path, pathData));
+    connector?.renderBreadcrumbs(
+      await this.getNavigationService().getBreadcrumbData(path, pathData, (resolved) => {
+        connector?.renderBreadcrumbs(resolved);
+      })
+    );
+
     if (currentNode) {
       const luigiParams: LuigiParams = {
         nodeParams: nodeParams || {},
         pathParams: pathData?.pathParams || {},
         searchParams: RoutingHelpers.prepareSearchParamsForClient(currentNode, this.luigi)
       };
-      this.currentRoute.node = currentNode;
 
+      this.currentRoute.node = currentNode;
       this.getNavigationService().onNodeChange(this.previousNode, currentNode);
       this.previousNode = currentNode;
-      UIModule.updateMainContent(currentNode, this.luigi, luigiParams, withoutSync, preventContextUpdate);
+      await UIModule.updateMainContent(
+        currentNode,
+        this.luigi,
+        luigiParams,
+        withoutSync,
+        preventContextUpdate,
+        preserveView
+      );
+      this.previousPathData = pathData;
     }
   }
 
@@ -161,7 +218,7 @@ export class RoutingService {
    *
    * @returns {Promise<void>} A promise that resolves when the modal handling is complete.
    */
-  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }): Promise<void> {
+  async handleBookmarkableModalPath(routeInfo: { path: string; query: string }, checkModals = true): Promise<void> {
     const navService = serviceRegistry.get(NavigationService);
     const modalService = serviceRegistry.get(ModalService);
     const urlSearchParams = new URLSearchParams(routeInfo?.query || '');
@@ -169,7 +226,10 @@ export class RoutingService {
     const modalPath = urlSearchParams.get(modalViewParamName);
 
     if (!modalPath) {
-      modalService.closeModals();
+      if (checkModals) {
+        const closed = await modalService.closeModalsWithDirtyCheck();
+        if (!closed) return;
+      }
       return;
     } else {
       const modalSettings = urlSearchParams.get(`${modalViewParamName}Params`);
@@ -222,8 +282,9 @@ export class RoutingService {
     historyState = RoutingHelpers.handleHistoryState(historyState, pathWithoutModalData);
     if (prevModalPath !== modalPath) {
       params[modalParamName] = modalPath;
-      if (modalParams && Object.keys(modalParams).length) {
-        params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+      const bookmarkableParams = RoutingHelpers.getBookmarkableModalParams(modalParams);
+      if (bookmarkableParams && Object.keys(bookmarkableParams).length) {
+        params[`${modalParamName}Params`] = JSON.stringify(bookmarkableParams);
       }
       if (hashRoutingActive) {
         const queryParamIndex = location.hash.indexOf(queryParamSeparator);
@@ -291,7 +352,7 @@ export class RoutingService {
       let isModalHistoryHigherThanHistoryLength = false;
       window.addEventListener(
         'popstate',
-        (e) => {
+        (e: PopStateEvent) => {
           if (isModalHistoryHigherThanHistoryLength) {
             //replace the url with saved path and get rid of modal data in url
             history.replaceState({}, '', path);
@@ -370,8 +431,9 @@ export class RoutingService {
     const modalParamName = RoutingHelpers.getModalViewParamName(this.luigi);
 
     params[modalParamName] = modalPath;
-    if (modalParams && Object.keys(modalParams).length) {
-      params[`${modalParamName}Params`] = JSON.stringify(modalParams);
+    const bookmarkableParams = RoutingHelpers.getBookmarkableModalParams(modalParams);
+    if (bookmarkableParams && Object.keys(bookmarkableParams).length) {
+      params[`${modalParamName}Params`] = JSON.stringify(bookmarkableParams);
     }
     const url = new URL(location.href);
     const hashRoutingActive = this.luigi.getConfigValue('routing.useHashRouting');
@@ -386,9 +448,11 @@ export class RoutingService {
     }
 
     if (!addHistoryEntry) {
-      history.replaceState((window as any).state, '', url.href);
+      history.replaceState(history.state, '', url.href);
     } else {
-      history.pushState((window as any).state, '', url.href);
+      let historyState = history.state;
+      historyState = RoutingHelpers.handleHistoryState(historyState);
+      history.pushState(historyState, '', url.href);
     }
   }
 
@@ -422,5 +486,154 @@ export class RoutingService {
       // If previous component data can't be determined, clear cache to avoid conflicts with dynamic nodes
       nodeDataManagementService.deleteCache();
     }
+  }
+
+  /**
+   * Deal with page not found scenario.
+   * @param {Object} nodeObject - the data of node
+   * @param {string} viewUrl - the url of the current mf view
+   * @param {Object} pathData - the information of current path
+   * @param {string} path - the path of the view to open
+   * @param {string} pathUrlRaw - path url without hash
+   * @returns {Promise<boolean>} A promise that resolves when page not found handling is complete.
+   */
+  async handlePageNotFound(
+    nodeObject: any,
+    viewUrl: string,
+    pathData: PathData,
+    path: string,
+    pathUrlRaw: string
+  ): Promise<boolean> {
+    const activePath: string = GenericHelpers.getTrimmedUrl(path);
+    const isExistingRoute: boolean = RoutingHelpers.isExistingRoute(activePath, pathData);
+
+    if ((!viewUrl && !nodeObject?.compound) || nodeObject?.tabNav?.showAsTabHeader) {
+      const defaultChildNode = await RoutingHelpers.getDefaultChildNode(pathData, async (node, ctx) => {
+        return await this.getNavigationService().getChildren(node, ctx);
+      });
+
+      if (isExistingRoute) {
+        // normal navigation can be performed
+        const trimmedPathUrl = GenericHelpers.getTrimmedUrl(path);
+
+        this.getNavigationService().handleNavigationRequest({
+          path: `${trimmedPathUrl ? `/${trimmedPathUrl}` : ''}/${defaultChildNode}`,
+          preserveView: undefined,
+          modalSettings: undefined,
+          newTab: false,
+          withoutSync: false,
+          preventContextUpdate: false,
+          preventHistoryEntry: true
+        });
+
+        return false;
+      } else {
+        if (defaultChildNode && pathData?.nodesInPath && pathData.nodesInPath.length > 1) {
+          // last path segment was invalid but a default node could be in its place
+          this.showPageNotFoundError(
+            GenericHelpers.trimTrailingSlash(activePath || '') + '/' + defaultChildNode,
+            pathUrlRaw,
+            true
+          );
+
+          return true;
+        }
+
+        // ERROR 404
+        // the path is unrecognized at all and cannot be fitted to any known one
+        const rootPath = await RoutingHelpers.getDefaultChildNode(pathData);
+
+        this.showPageNotFoundError(rootPath, pathUrlRaw, false);
+      }
+
+      return true;
+    }
+
+    if (!isExistingRoute) {
+      this.showPageNotFoundError(pathData.matchedPath, pathUrlRaw, true);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Handle error for page not found scenario.
+   * @param {string} pathToRedirect - fallback path for redirection
+   * @param {string} notFoundPath - the path which cannot be found
+   * @param {boolean} isAnyPathMatched - is any path matched or not
+   * @returns {Promise<void>} A promise that resolves when error handling is complete.
+   */
+  async showPageNotFoundError(pathToRedirect: string, notFoundPath: string, isAnyPathMatched = false): Promise<void> {
+    const redirectResult: any = RoutingHelpers.getPageNotFoundRedirectResult(
+      notFoundPath,
+      isAnyPathMatched,
+      this.luigi
+    );
+
+    if (redirectResult.ignoreLuigiErrorHandling) {
+      return;
+    }
+
+    const redirectPathFromNotFoundHandler = redirectResult.path;
+
+    if (redirectPathFromNotFoundHandler) {
+      if (redirectResult.keepURL) {
+        const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+        const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+
+        currentPath.path = redirectPathFromNotFoundHandler;
+
+        this.handleRouteChange(currentPath);
+      } else {
+        this.getNavigationService().handleNavigationRequest({ path: redirectPathFromNotFoundHandler });
+      }
+
+      return;
+    }
+
+    RoutingHelpers.showRouteNotFoundAlert(notFoundPath, isAnyPathMatched, this.luigi);
+    this.getNavigationService().handleNavigationRequest({ path: GenericHelpers.addLeadingSlash(pathToRedirect) });
+  }
+
+  /**
+   * Handles viewUrl misconfiguration scenario. If a node has no viewUrl, no children,
+   * and is not a compound node, it redirects to the root default child node.
+   * @param node - active node data
+   * @param viewUrl - the url of the current mf view
+   * @param previousPathData - previous path data
+   * @param pathUrlRaw - path url without hash
+   * @returns true if misconfiguration was detected and handled
+   */
+  async handleViewUrlMisconfigured(
+    node: Node,
+    viewUrl: string,
+    previousPathData: PathData | undefined,
+    pathUrlRaw: string
+  ): Promise<boolean> {
+    const { children, intendToHaveEmptyViewUrl, compound } = node;
+
+    const hasChildrenNode = !!children?.length;
+
+    if (!compound && viewUrl.trim() === '' && !hasChildrenNode && !intendToHaveEmptyViewUrl) {
+      console.warn(
+        "The intended target route can't be accessed since it has neither a viewUrl nor children. This is most likely a misconfiguration."
+      );
+
+      if (
+        !(
+          previousPathData &&
+          (previousPathData.selectedNode?.viewUrl ||
+            (previousPathData.selectedNode && previousPathData.selectedNode.compound))
+        )
+      ) {
+        const rootPathData = await this.getNavigationService().getPathData('/');
+        const rootPath = await RoutingHelpers.getDefaultChildNode(rootPathData);
+        this.showPageNotFoundError(rootPath, pathUrlRaw, false);
+      }
+      return true;
+    }
+    return false;
   }
 }

@@ -1,11 +1,18 @@
+import type { GlobalSearch } from './global-search';
+
 export interface TopNavData {
+  appSwitcher?: AppSwitcher;
   appTitle: string;
+  contextSwitcher?: ContextSwitcher;
+  favicon?: string;
+  isHeaderDisabled: boolean;
+  globalSearch?: GlobalSearch;
   logo: string;
-  topNodes: NavItem[];
+  logoAltText: string;
+  navClick?: (item: NavItem) => Promise<void>;
   productSwitcher?: ProductSwitcher;
   profile?: ProfileSettings;
-  appSwitcher?: AppSwitcher;
-  navClick?: (item: NavItem) => void;
+  topNodes: NavItem[];
 }
 
 export interface AppSwitcher {
@@ -19,6 +26,27 @@ export interface AppSwitcherItem {
   subtitle?: string;
   link?: string;
   selectionConditions?: selectionConditions;
+}
+
+export interface ContextSwitcher {
+  actions?: any[];
+  config?: any;
+  options?: ContextSwitcherItem[];
+  selectedLabel?: string;
+  selectedNodePath?: any;
+  selectedOption?: ContextSwitcherItem;
+  switcherChange?: (selectedValue: string, selectedType?: string | undefined) => void;
+}
+
+export interface ContextSwitcherItem {
+  clickHandler?: any;
+  customRendererCategory?: any;
+  id?: string;
+  label?: string;
+  link?: string;
+  linkFromPath?: null | string;
+  position?: 'bottom' | 'top';
+  testId?: string;
 }
 
 export interface selectionConditions {
@@ -38,7 +66,14 @@ export interface ProfileSettings {
   items?: ProfileItem[];
   staticUserInfoFn?: () => Promise<UserInfo>;
   onUserInfoUpdate: (fn: (uInfo: UserInfo) => void) => void;
+  settings?: UserSettingsProfileMenuEntry;
   itemClick: (item: ProfileItem) => void;
+}
+
+export interface UserSettingsProfileMenuEntry {
+  label?: string;
+  link?: string;
+  openUserSettings?: () => void;
 }
 
 export interface ProfileLogout {
@@ -50,13 +85,42 @@ export interface ProfileLogout {
 }
 
 export interface ProfileItem {
-  label?: string;
-  link?: string;
+  altText?: string;
+  children?: ProfileItem[];
   externalLink?: ExternalLink;
   icon?: string;
-  testId?: string;
-  altText?: string;
+  label?: string;
+  link?: string;
   openNodeInModal?: boolean | ModalSettings;
+  statusBadge?: {
+    align: 'left' | 'right';
+    label: string;
+    type: StatusBadgeType;
+  };
+  testId?: string;
+}
+
+export interface UserSettingsDialogSettings {
+  dialogHeader?: string;
+  saveBtn?: string;
+  dismissBtn?: string;
+  /**
+   * Render the micro-frontend container for a user-settings group.
+   *
+   * The head calls this **when a group becomes active** (selected/visible) and
+   * mounts the returned element into the group's content area. Core owns the
+   * per-group cache: a repeated call for the same `groupKey` returns the already
+   * created container instead of building a new one, so the micro-frontend's
+   * init handshake fires once per group on activation (not at dialog-open),
+   * matching legacy Luigi core — and the head needs no cache of its own.
+   *
+   * @param groupConfig the group's configuration (viewUrl, context, webcomponent, …)
+   * @param groupKey the group's key
+   * @returns the `<luigi-container>` element to mount into the group's content area
+   */
+  renderMicroFrontendContainer?: (groupConfig: Record<string, any>, groupKey: string) => Promise<any>;
+  onCloseCallback?: (storedUserSettings: any) => void;
+  showFullScreenOnMobile?: boolean;
 }
 
 export interface UserInfo {
@@ -72,28 +136,34 @@ export interface LeftNavData {
   items: NavItem[];
   basePath: string;
   sideNavFooterText?: string;
-  navClick?: (item: NavItem) => void;
+  navClick?: (item: NavItem) => Promise<void>;
 }
 
 export interface PathData {
+  context?: Record<string, any>;
   selectedNode?: Node;
   selectedNodeChildren?: Node[];
   nodesInPath?: Node[];
   rootNodes: Node[];
   pathParams: Record<string, any>;
+  matchedPath: string;
 }
 
 export interface RootNode {
   node: Node;
 }
 
+export interface BadgeCounter {
+  count?: () => number | Promise<number>;
+  label?: string;
+}
+
+export type StatusBadgeType = 'critical' | 'informative' | 'negative' | 'neutral' | 'positive';
+
 export interface Node {
   altText?: string;
   anonymousAccess?: any;
-  badgeCounter?: {
-    count?: () => number | Promise<number>;
-    label?: string;
-  };
+  badgeCounter?: BadgeCounter;
   category?: any;
   children?: Node[];
   clientPermissions?: {
@@ -102,28 +172,38 @@ export interface Node {
   };
   compound?: CompoundConfig;
   context?: Record<string, any>;
-  drawer?: ModalSettings;
+  drawer?: DrawerSettings;
   decodeViewUrl?: boolean;
   externalLink?: ExternalLink;
   hideFromNav?: boolean;
   hideSideNav?: boolean;
   icon?: string;
+  intendToHaveEmptyViewUrl?: boolean;
   isRootNode?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  link?: string;
   loadingIndicator?: {
     enabled: boolean;
   };
   navigationContext?: string;
   onNodeActivation?: (node: Node) => boolean | void;
-  openNodeInModal?: boolean;
+  openNodeInModal?: boolean | ModalSettings;
   pageErrorHandler?: PageErrorHandler;
   parent?: Node;
   pathSegment?: string;
   runTimeErrorHandler?: RunTimeErrorHandler;
-  tabNav?: boolean;
+  showBreadcrumbs?: boolean;
+  statusBadge?: {
+    align: 'left' | 'right';
+    label: string;
+    type: StatusBadgeType;
+  };
+  tabNav?: boolean | TabNavConfig;
+  titleResolver?: TitleResolver;
   tooltipText?: string;
   userSettingsGroup?: string;
+  isolateView?: boolean;
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
   virtualTree?: boolean;
@@ -138,6 +218,7 @@ export interface Node {
   _virtualTree?: Node;
   _virtualPathIndex?: number;
   _virtualViewUrl?: string;
+  _rawContext?: Record<string, any>;
 }
 
 export interface PageErrorHandler {
@@ -160,23 +241,67 @@ export interface Category {
   label?: string;
   nodes?: NavItem[];
   tooltip?: string;
+  navigateOnClick?: boolean | string;
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  last?: boolean;
+  node: Node;
+  pending?: boolean;
+  route: string | undefined;
 }
 
 export interface NavItem {
   altText?: string;
+  badgeCounter?: BadgeCounter;
   category?: Category;
+  externalLink?: ExternalLink;
+  href?: string;
   icon?: string;
   node?: Node;
   label?: string;
   selected?: boolean;
   tooltip?: string;
+  navigateOnClick?: boolean;
+}
+
+export interface TabNavConfig {
+  showAsTabHeader?: boolean;
+  hideTabNavAutomatically?: boolean;
 }
 
 export interface TabNavData {
-  selectedNode?: any;
-  items?: NavItem[];
   basePath?: string;
-  navClick?: (item: NavItem) => void;
+  headerNode?: {
+    viewUrl: string;
+    context?: Record<string, any>;
+    webcomponent?: boolean | { type?: string; selfRegistered?: boolean; tagName?: string };
+  };
+  items?: NavItem[];
+  navClick?: (item: NavItem) => Promise<void>;
+  overflowLabel?: string;
+  selectedNode?: any;
+}
+
+export interface BreadcrumbData {
+  basePath?: string;
+  clearBeforeRender?: boolean;
+  items?: BreadcrumbItem[];
+  renderer?: any;
+  selectedNode?: Node;
+}
+
+export interface DrawerHeader {
+  title: string;
+}
+
+export interface DrawerSettings {
+  backdrop?: boolean;
+  header?: DrawerHeader;
+  overlap?: boolean;
+  size?: 'l' | 'm' | 's' | 'xs';
+  nodeParams?: Record<string, any>;
 }
 
 export interface ModalSettings {
@@ -186,6 +311,8 @@ export interface ModalSettings {
   title?: string;
   closebtn_data_testid?: string;
   keepPrevious?: boolean;
+  nodeParams?: Record<string, any>;
+  showModalPathInUrl?: boolean;
 }
 
 export interface ProductSwitcher {
@@ -195,6 +322,7 @@ export interface ProductSwitcher {
   items?: [ProductSwitcherItem];
   label?: string;
   testId?: string;
+  productSwitcherItemClick?: (item: ProductSwitcherItem) => void;
 }
 
 export interface ProductSwitcherItem {
@@ -214,15 +342,16 @@ export interface ExternalLink {
 }
 
 export interface NavigationOptions {
-  fromContext?: any;
+  fromContext?: string | null;
   fromClosestContext?: boolean;
   fromVirtualTreeRoot?: boolean;
   fromParent?: boolean;
-  relative?: any;
+  relative?: boolean;
   nodeParams?: Record<string, any>;
 }
 
 export interface NavigationRequestBase {
+  preserveView?: boolean;
   preventContextUpdate?: boolean;
   preventHistoryEntry?: boolean;
   withoutSync?: boolean;
@@ -230,230 +359,75 @@ export interface NavigationRequestBase {
 }
 
 export interface NavigationRequestParams extends NavigationRequestBase {
+  drawerSettings?: any;
+  intent?: boolean;
   modalSettings?: any;
   newTab?: boolean;
   path: string;
-  preserveView?: string;
 }
 
 export interface NavigationRequestEvent {
   detail: NavigationRequestBase;
 }
 
+export interface NavigationRequestDetail {
+  drawer: unknown;
+  fromClosestContext: boolean;
+  fromContext: string | null;
+  fromParent: boolean;
+  fromVirtualTreeRoot: boolean;
+  intent: boolean;
+  link: string;
+  modal: unknown;
+  newTab: boolean;
+  nodeParams: Record<string, string>;
+  preserveView: boolean;
+  preventContextUpdate: boolean;
+  preventHistoryEntry: boolean;
+  relative: boolean;
+  withoutSync: boolean;
+}
+
 /**
  * Configuration for compound web components in Luigi.
  * Compound allows you to layout multiple web components in one micro frontend.
  */
-export interface CompoundConfig {
-  /**
-   * Renderer configuration for the compound layout
-   */
-  renderer?: {
-    /**
-     * The renderer to use - can be 'grid', a custom renderer object, or undefined for default
-     */
-    use?:
-      | 'grid'
-      | string
-      | {
-          /**
-           * Base renderer to extend (e.g., 'grid')
-           */
-          extends?: string;
-          /**
-           * Custom function to create the compound container
-           * @param config - The renderer configuration
-           * @param renderer - The parent/super renderer (if extending)
-           */
-          createCompoundContainer?: (config: RendererConfig, renderer?: any) => HTMLDivElement;
-          /**
-           * Custom function to create individual compound item containers
-           * @param layoutConfig - Layout configuration for the item
-           * @param config - The overall renderer configuration
-           * @param renderer - The parent/super renderer (if extending)
-           */
-          createCompoundItemContainer?: (
-            layoutConfig?: LayoutConfig,
-            config?: RendererConfig,
-            renderer?: any
-          ) => HTMLDivElement;
-          /**
-           * Custom function to attach an item to the compound container
-           * @param compoundCnt - The compound container element
-           * @param compoundItemCnt - The item container to attach
-           * @param renderer - The parent/super renderer (if extending)
-           */
-          attachCompoundItem?: (compoundCnt: HTMLElement, compoundItemCnt: HTMLElement, renderer?: any) => void;
-        };
-    /**
-     * Configuration for the grid layout
-     */
-    config?: {
-      /**
-       * CSS grid-template-columns value (e.g., '1fr 2fr')
-       */
-      columns?: string;
-      /**
-       * CSS grid-template-rows value (e.g., '150px 150px')
-       */
-      rows?: string;
-      /**
-       * CSS grid-gap value (e.g., 'auto', '10px')
-       */
-      gap?: string;
-      /**
-       * Minimum height for the grid container
-       */
-      minHeight?: string;
-      /**
-       * Responsive layout configurations for different viewport sizes
-       */
-      layouts?: Array<{
-        /**
-         * CSS grid-template-columns for this breakpoint
-         */
-        columns?: string | number;
-        /**
-         * CSS grid-template-rows for this breakpoint
-         */
-        rows?: string | number;
-        /**
-         * CSS grid-gap for this breakpoint
-         */
-        gap?: string | number;
-        /**
-         * Minimum viewport width for this layout (in pixels)
-         */
-        minWidth?: number;
-        /**
-         * Maximum viewport width for this layout (in pixels)
-         */
-        maxWidth?: number;
-      }>;
-    };
-  };
+import type { CompoundConfig } from './compound-config';
+export type { CompoundConfig, LayoutConfig, RendererConfig } from './compound-config';
 
-  /**
-   * Lazy loading configuration for compound children
-   */
-  lazyLoadingOptions?: {
-    /**
-     * Enable lazy loading using IntersectionObserver
-     * @default false
-     */
-    enabled?: boolean;
-    /**
-     * IntersectionObserver rootMargin option
-     * Controls when children are loaded relative to viewport visibility
-     * @default "0px"
-     */
-    intersectionRootMargin?: string;
-    /**
-     * Default temporary height for child containers before they load
-     * @default "500px"
-     */
-    temporaryContainerHeight?: string;
-    /**
-     * Disable automatic temporary container heights
-     * Useful for custom renderers that manage heights themselves
-     * @default false
-     */
-    noTemporaryContainerHeight?: boolean;
+export interface TitleResolverCache {
+  key: string;
+  value: {
+    label: string;
+    icon?: string;
   };
-
-  /**
-   * Array of child web component configurations
-   */
-  children?: Array<{
-    /**
-     * Unique identifier for this child web component
-     */
-    id: string;
-    /**
-     * URL pointing to the web component JavaScript file
-     * Supports {i18n.currentLocale} placeholder for localization
-     */
-    viewUrl: string;
-    /**
-     * Context object passed to the web component
-     */
-    context?: Record<string, any>;
-    /**
-     * Layout configuration for positioning this child
-     */
-    layoutConfig?: {
-      /**
-       * CSS grid-row value (e.g., '1 / 3', 'auto')
-       * @default "auto"
-       */
-      row?: string;
-      /**
-       * CSS grid-column value (e.g., '1 / -1', 'auto')
-       * @default "auto"
-       */
-      column?: string;
-      /**
-       * Slot name for nested web components
-       * Use this instead of row/column to plug into a parent's slot
-       */
-      slot?: string;
-      /**
-       * Override the default temporary container height for this specific child
-       * Only used when lazy loading is enabled
-       * * @default undefined
-       */
-      temporaryContainerHeight?: string;
-    };
-    /**
-     * Event listeners for cross-component communication via event bus
-     */
-    eventListeners?: Array<{
-      /**
-       * ID of the source web component (use '*' for any source)
-       */
-      source: string;
-      /**
-       * Name of the event to listen for
-       */
-      name: string;
-      /**
-       * Type of action to perform (e.g., 'update')
-       */
-      action: string;
-      /**
-       * Optional function to convert event data before passing to listener
-       * @param data - The event data
-       */
-      dataConverter?: (data: any) => any;
-    }>;
-  }>;
 }
 
-/**
- * Supporting type for layout configuration
- */
-export interface LayoutConfig {
-  column?: string;
-  row?: string;
-  slot?: string;
-  temporaryContainerHeight?: string;
+export interface TitleResolver {
+  request: {
+    method: string;
+    url: string;
+    headers?: Record<string, string>;
+    body?: any;
+  };
+  titlePropertyChain: string;
+  titleDecorator?: string;
+  iconPropertyChain?: string;
+  prerenderFallback?: boolean;
+  responsePath?: string;
+  fallbackTitle?: string;
+  fallbackIcon?: string;
+  /** @internal runtime cache – not user-configured */
+  _cache?: TitleResolverCache;
 }
 
-/**
- * Supporting type for renderer configuration
- */
-export interface RendererConfig {
-  columns?: string;
-  rows?: string;
-  gap?: string;
-  minHeight?: string;
-  layouts?: Array<{
-    columns?: string;
-    rows?: string;
-    gap?: string | number;
-    minWidth?: number;
-    maxWidth?: number;
-  }>;
+export interface ViewGroupSettings {
+  preloadUrl?: string;
+  loadOnStartup?: boolean;
+  customData?: Record<string, any>;
+  _liveCustomData?: Record<string, any>;
 }
 
 export type HistoryMethod = 'pushState' | 'replaceState';
+
+export type MFType = 'main' | 'modal' | 'drawer' | 'usersettings';

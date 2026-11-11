@@ -21,14 +21,6 @@
             }
           }
         },
-        "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "main": "projects/client-support-angular/src/test.ts",
-            "tsConfig": "projects/client-support-angular/tsconfig.spec.json",
-            "karmaConfig": "projects/client-support-angular/karma.conf.js"
-          }
-        },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {

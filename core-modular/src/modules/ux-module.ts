@@ -2,49 +2,26 @@ import type { LuigiCompoundContainer, LuigiContainer } from '@luigi-project/cont
 import type { Luigi } from '../core-api/luigi';
 import { serviceRegistry } from '../services/service-registry';
 import { DirtyStatusService } from '../services/dirty-status.service';
+import type { AlertSettings, ConfirmationModalSettings, Link } from '../types/ux';
+import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { writable } from '../utilities/store';
 
-export interface AlertSettings {
-  text?: string;
-  type?: string;
-  links?: Record<string, Link>;
-  closeAfter?: number;
-  id?: string;
-}
-
-export interface AlertHandler {
-  openFromClient: boolean;
-  close(): void;
-  link(linkKey: string): boolean;
-}
+// Re-exported for backwards-compatibility with consumers that imported these from this module.
+export type {
+  AlertHandler,
+  AlertSettings,
+  ConfirmationModalHandler,
+  ConfirmationModalSettings,
+  Link
+} from '../types/ux';
 
 export interface ProcessedAlertSettings {
   settings: AlertSettings;
 }
 
-export interface Link {
-  elemId: string;
-  url?: string;
-  dismissKey?: string;
-}
-
 export interface ProcessedTextAndLinks {
   sanitizedText: string;
   links: Link[];
-}
-
-export interface ConfirmationModalSettings {
-  icon?: string;
-  type?: string;
-  header?: string;
-  body?: string;
-  buttonConfirm?: string;
-  buttonDismiss?: string;
-}
-
-export interface ConfirmationModalHandler {
-  confirm(): void;
-  dismiss(): void;
 }
 
 export interface UserSettings {
@@ -57,7 +34,6 @@ export const UXModule = {
   luigi: undefined as Luigi | undefined,
   documentTitle: undefined as any,
   init: (luigi: Luigi) => {
-    console.log('ux init...');
     UXModule.luigi = luigi;
     UXModule.documentTitle = writable(undefined);
     dirtyStatusService = serviceRegistry.get(DirtyStatusService);
@@ -104,19 +80,24 @@ export const UXModule = {
     }
 
     if (confirmationModalSettings) {
+      const modalBody = confirmationModalSettings.body
+        ? confirmationModalSettings.body
+        : UXModule.luigi.i18n().getTranslation('luigi.confirmationModal.body');
+
       confirmationModalSettings = {
         ...confirmationModalSettings,
         ...{
           header: UXModule.luigi
             .i18n()
             .getTranslation(confirmationModalSettings.header || 'luigi.confirmationModal.header'),
-          body: UXModule.luigi.i18n().getTranslation(confirmationModalSettings.body || 'luigi.confirmationModal.body'),
+          body: EscapingHelpers.sanatizeHtmlExceptTextFormatting(modalBody),
           buttonDismiss: UXModule.luigi
             .i18n()
             .getTranslation(confirmationModalSettings.buttonDismiss || 'luigi.button.dismiss'),
-          buttonConfirm: UXModule.luigi
-            .i18n()
-            .getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
+          buttonConfirm:
+            confirmationModalSettings.buttonConfirm === false
+              ? false
+              : UXModule.luigi.i18n().getTranslation(confirmationModalSettings.buttonConfirm || 'luigi.button.confirm')
         }
       };
     }

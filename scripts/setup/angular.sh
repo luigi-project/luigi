@@ -12,14 +12,15 @@ else
 fi
 # steps to execute line by line
 echo ""
-npm i @angular/cli@latest -g
+PKG_MGR="${LUIGI_PKG_MGR:-npm}"
+$PKG_MGR i @angular/cli@latest -g
 ng new $folder --defaults --minimal --routing --skip-tests --skip-git && cd $folder # skip interactive prompts
 ng generate c home -s -t
 ng generate c sample1 -s -t
 ng generate c sample2 -s -t
 ng generate app mfe --defaults --routing=false --skip-tests
 
-npm i -P @luigi-project/core @luigi-project/client fundamental-styles @sap-theming/theming-base-content webpack@5.74.0 webpack-cli@4.10.0 concurrently
+$PKG_MGR i -P @luigi-project/core @luigi-project/client fundamental-styles @sap-theming/theming-base-content webpack@5.74.0 webpack-cli@4.10.0 concurrently
 sed 's/"scripts": {/"scripts": {\
 \    "serveApps":"concurrently -k \\\'\"'ng serve mfe --live-reload=false --port=4300 --watch=false\\\'\"' \\\'\"'ng serve\\\'\"'",\
 \    "buildConfig":"webpack --entry .\/public\/assets\/luigi-config.es6.js --output-path .\/public\/assets --output-filename luigi-config.js --mode production",/1' package.json > p.tmp.json && mv p.tmp.json package.json
@@ -63,7 +64,7 @@ sed 's#"src/assets"#"src/assets",\
           {"glob": "luigi-client.js","input": "node_modules/@luigi-project/client","output": "/luigi-client"}#g' angular.json > tmp.json && mv tmp.json angular.json
 
 # build Luigi configuration
-npm run buildConfig
+$PKG_MGR run buildConfig
 rm public/assets/luigi-config.es6.js
 
 # match basic folder structure of an angular project
@@ -72,4 +73,4 @@ cp -r node_modules/@luigi-project/client public/luigi-client
 cp -r node_modules/fundamental-styles public/fundamental-styles
 
 # run Angular apps
-npm run serveApps
+$PKG_MGR run serveApps

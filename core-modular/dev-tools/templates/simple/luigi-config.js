@@ -1,6 +1,7 @@
 window.onload = () => {
   window.Luigi.setConfig({
     navigation: {
+      validWebcomponentUrls: ['.*?'],
       defaults: {
         runTimeErrorHandler: {
           errorFn: (obj, node) => {
@@ -8,6 +9,98 @@ window.onload = () => {
             console.log(obj?.message);
             return { obj, node };
           }
+        }
+      },
+      contextSwitcher: {
+        defaultLabel: 'Select Environment',
+        parentNodePath: '/environments',
+        lazyloadOptions: true,
+        options: () =>
+          [...Array(10).keys()]
+            .filter((n) => n !== 0)
+            .map((n) => ({
+              label: 'Environment ' + n,
+              pathValue: 'env' + n
+            })),
+        actions: [
+          {
+            label: '+ New Environment (top)',
+            link: '/create-environment'
+          },
+          {
+            label: '+ New Environment (bottom)',
+            link: '/create-environment',
+            position: 'bottom',
+            clickHandler: (node) => {
+              return true; // route change will be done using link value (if defined)
+              // return false // route change will not be done even if link attribute is defined
+            }
+          },
+          {
+            label: '+ New Project',
+            link: '/projects',
+            position: 'bottom',
+            clickHandler: (node) => {
+              Luigi.ux().showAlert({
+                text: `Project created.`,
+                type: 'info',
+                closeAfter: 3000
+              });
+              return true;
+            }
+          }
+        ],
+        customOptionsRenderer: (item, selected) => {
+          const option = document.createElement('option');
+
+          option.setAttribute('value', item.link);
+          option.textContent = item.label;
+
+          if (selected) {
+            option.selected = true;
+            option.classList.add('is-selected');
+          }
+
+          return option;
+        },
+        customSelectedOptionRenderer: (item) => {
+          const option = document.createElement('option');
+
+          option.setAttribute('value', item.link);
+          option.textContent = item.label;
+          option.selected = true;
+          option.classList.add('is-selected');
+
+          return option;
+        },
+        fallbackLabelResolver: (id) => (id ? id.replace(/\b\w/g, (l) => l.toUpperCase()) : 'Environment')
+      },
+      breadcrumbs: {
+        clearBeforeRender: true, // if set to true, the containerElement will be cleared first before being rendered
+        pendingItemLabel: 'not loaded yet', // string used as fallback if node label is not yet resolved
+        omitRoot: false, // if set to true, the root node in breadcrumb hierarchy is omitted
+        autoHide: false, // hide breadcrumbs when navigating to root node
+        renderer: (containerElement, nodeItems, clickHandler) => {
+          const ui5breadcrumbs = document.createElement('ui5-breadcrumbs');
+
+          nodeItems.forEach((item) => {
+            if (item.label) {
+              const itemCmp = document.createElement('ui5-breadcrumbs-item');
+
+              itemCmp.textContent = `${item.label}`;
+              itemCmp._item = item;
+              ui5breadcrumbs.appendChild(itemCmp);
+            }
+          });
+
+          ui5breadcrumbs.addEventListener('item-click', (event) => {
+            event.preventDefault();
+            clickHandler(event.detail.item._item);
+          });
+
+          containerElement.appendChild(ui5breadcrumbs);
+
+          return ui5breadcrumbs;
         }
       },
       appSwitcher: {
@@ -50,10 +143,40 @@ window.onload = () => {
           slot.appendChild(a);
         }
       },
+      productSwitcher: {
+        label: 'My Products',
+        icon: 'grid',
+        items: [
+          {
+            icon: 'business-suite-in-app-symbols',
+            label: 'Application One',
+            subTitle: 'Subtitle',
+            link: '/home'
+          },
+          {
+            icon: 'visits',
+            label: 'Luigi Project',
+            subTitle: 'External',
+            externalLink: {
+              url: 'https://luigi-project.io/',
+              sameWindow: false
+            }
+          }
+        ]
+      },
       nodes: [
+        {
+          pathSegment: '404',
+          label: '404',
+          viewUrl: '/404.html',
+          anonymousAccess: true,
+          loadingIndicator: { enabled: false },
+          hideFromNav: true
+        },
         {
           pathSegment: 'home',
           icon: 'home',
+          showBreadcrumbs: false,
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           anonymousAccess: 'exclusive',
           context: {
@@ -65,14 +188,83 @@ window.onload = () => {
         {
           pathSegment: 'home2',
           icon: 'home',
+          showBreadcrumbs: false,
+          navigationContext: 'home',
           viewUrl: 'https://fiddle.luigi-project.io/examples/microfrontends/multipurpose.html',
           children: [
+            {
+              pathSegment: 'compound',
+              label: 'Compound',
+              icon: 'product',
+              context: {
+                content: 'Global Data'
+              },
+              nodeParams: {
+                foo: 'bar'
+              },
+              webcomponent: true,
+              compound: {
+                renderer: {
+                  use: 'grid',
+                  config: {
+                    columns: '1fr 1fr',
+                    layouts: [
+                      {
+                        minWidth: 0,
+                        maxWidth: 600,
+                        columns: '1fr',
+                        gap: 0
+                      },
+                      {
+                        minWidth: 600,
+                        maxWidth: 1024,
+                        columns: '1fr 1fr',
+                        gap: '30px'
+                      }
+                    ]
+                  }
+                },
+                children: [
+                  {
+                    id: 'one',
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent1.js'
+                  },
+                  {
+                    id: 'two',
+                    context: {
+                      content: 'Local Data'
+                    },
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent2.js'
+                  },
+                  {
+                    id: 'three',
+                    layoutConfig: {
+                      row: '1',
+                      column: '1 / -1'
+                    },
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent3.js'
+                  },
+                  {
+                    id: 'four',
+                    viewUrl: 'http://localhost:4400/compound/myCompoundWebComponent4.js',
+                    eventListeners: [
+                      {
+                        source: 'one',
+                        name: 'sendBtn',
+                        action: 'update',
+                        dataConverter: (data) => data
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
             {
               pathSegment: 'c1',
               label: 'MFE1',
               icon: 'group',
               viewUrl: '/microfrontend.html#child1',
-              userSettingsGroup: 'mfeOne',
+              userSettingsGroup: 'account',
               viewGroup: 'vg1',
               clientPermissions: {
                 changeCurrentLocale: true
@@ -99,8 +291,34 @@ window.onload = () => {
               label: 'MFE2',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child2',
-              userSettingsGroup: 'mfeTwo',
+              userSettingsGroup: 'theme',
               viewGroup: 'vg1'
+            },
+            {
+              pathSegment: 'wc',
+              label: 'wc',
+              viewUrl: '/helloWorldWC.js',
+              webcomponent: true
+            },
+            {
+              pathSegment: 'wctabs',
+              label: 'WC Tabs',
+              viewUrl: '/helloWorldWC.js',
+              tabNav: { showAsTabHeader: true },
+              webcomponent: true,
+              children: [
+                {
+                  pathSegment: 'wctabschild1',
+                  label: 'WC Tab Child 1',
+                  viewUrl: '/helloWorldWC.js',
+                  webcomponent: true
+                },
+                {
+                  pathSegment: 'wctabschild2',
+                  label: 'WC Tab Child 2',
+                  viewUrl: '/microfrontend.html#wctabchild2'
+                }
+              ]
             },
             {
               pathSegment: 'c3',
@@ -125,7 +343,41 @@ window.onload = () => {
               label: 'MFE4',
               icon: 'calendar',
               viewUrl: '/microfrontend.html#child4',
-              category: 'cat'
+              category: 'cat',
+              children: [
+                {
+                  pathSegment: 'detail',
+                  label: 'Detail',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#detail',
+                  icon: 'product',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    prerenderFallback: true,
+                    fallbackTitle: 'Loading... fallbacktitle',
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name',
+                    iconPropertyChain: 'data.product.icon',
+                    titleDecorator: 'Product: %s'
+                  }
+                },
+                {
+                  pathSegment: 'info',
+                  label: 'Info',
+                  viewUrl: 'http://localhost:4400/microfrontend.html#info',
+                  icon: 'hint',
+                  showBreadcrumbs: true,
+                  titleResolver: {
+                    request: {
+                      method: 'GET',
+                      url: 'http://localhost:4400/mock/product.json'
+                    },
+                    titlePropertyChain: 'data.product.name'
+                  }
+                }
+              ]
             },
             {
               pathSegment: 'c3s',
@@ -137,6 +389,50 @@ window.onload = () => {
                 label: 'SubCat',
                 icon: 'group'
               }
+            }
+          ]
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'projects',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/projects',
+          context: {
+            label: 'Project List'
+          }
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'create-environment',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/create/environment',
+          context: {
+            label: 'Create Environment'
+          }
+        },
+        {
+          hideFromNav: true,
+          pathSegment: 'environments',
+          showBreadcrumbs: false,
+          viewUrl: '/microfrontend.html#/environments',
+          children: [
+            {
+              pathSegment: ':environmentId',
+              viewUrl: '/microfrontend.html#/environments/:environmentId',
+              children: [
+                {
+                  label: 'Overview',
+                  icon: 'group',
+                  pathSegment: 'overview',
+                  viewUrl: '/microfrontend.html#/environments/:environmentId/overview'
+                },
+                {
+                  label: 'Settings',
+                  icon: 'group',
+                  pathSegment: 'settings',
+                  viewUrl: '/microfrontend.html#/environments/:environmentId/settings'
+                }
+              ]
             }
           ]
         },
@@ -201,6 +497,24 @@ window.onload = () => {
               label: 'Child 2',
               viewUrl: '/microfrontend.html#child2',
               icon: 'calendar'
+            }
+          ]
+        },
+        {
+          pathSegment: 'withoptionstest',
+          label: 'WithOptions Test',
+          icon: 'lab',
+          viewUrl: '/microfrontend.html',
+          children: [
+            {
+              pathSegment: 'child1',
+              label: 'Child 1',
+              viewUrl: '/microfrontend.html'
+            },
+            {
+              pathSegment: 'child2',
+              label: 'Child 2',
+              viewUrl: '/withoptions-test.html'
             }
           ]
         },
@@ -275,27 +589,58 @@ window.onload = () => {
               url: 'https://github.com/luigi-project/luigi',
               sameWindow: false
             }
+          },
+          {
+            label: 'Resources',
+            children: [
+              {
+                icon: 'product',
+                label: 'Blog',
+                externalLink: {
+                  url: 'https://luigi-project.io/blog/overview',
+                  sameWindow: false
+                }
+              },
+              {
+                icon: 'product',
+                label: 'Docs',
+                externalLink: {
+                  url: 'https://docs.luigi-project.io/docs/getting-started',
+                  sameWindow: false
+                }
+              }
+            ]
           }
-        ]
-        // staticUserInfoFn: () => {
-        //   return new Promise((resolve) => {
-        //     resolve({
-        //       name: 'Static User',
-        //       initials: 'LU',
-        //       email: 'other.luigi.user@example.com',
-        //       description: 'Luigi Developer',
-        //       picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
-        //     });
-        //   });
-        // }
+        ],
+        staticUserInfoFn: () => {
+          return new Promise((resolve) => {
+            resolve({
+              name: 'Static User',
+              initials: 'LU',
+              email: 'other.luigi.user@example.com',
+              description: 'Luigi Developer',
+              picture: 'https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png'
+            });
+          });
+        }
       }
     },
     routing: {
+      pageNotFoundHandler: function (notFoundPath, isAnyPathMatched) {
+        return {
+          redirectTo: '/404',
+          keepURL: false,
+          ignoreLuigiErrorHandling: false
+        };
+      },
       useHashRouting: true
       //showModalPathInUrl: true
     },
     settings: {
       responsiveNavigation: 'Fiori3',
+      experimental: {
+        globalSearchCentered: false
+      },
       header: {
         title: 'Luigi Headless POC',
         subTitle: 'luigi headless poc',
@@ -321,43 +666,198 @@ window.onload = () => {
         dismissBtn: 'Cancel'
       },
       userSettingGroups: {
-        mfeOne: {
-          label: 'Privacy One',
-          title: 'Privacy',
-          icon: 'private',
+        account: {
+          label: 'User Account',
+          title: 'User Account',
+          icon: 'user',
           iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
           settings: {
-            policy: {
+            name: {
               type: 'string',
-              label: 'Privacy One policy has not been defined.',
-              placeholder: '...'
+              label: 'Name',
+              placeholder: 'Luigi'
             },
-            time: {
-              type: 'enum',
-              style: 'button',
-              label: 'Time Format',
-              options: ['12 h', '24 h']
+            email: {
+              type: 'string',
+              label: 'Email',
+              placeholder: 'luigi@example.com'
             }
           }
         },
-        mfeTwo: {
-          label: 'Privacy Two',
-          title: 'Privacy',
-          icon: 'private',
-          iconClassAttribute: 'SAP-icon-iconClassAttribute-Test',
+        theme: {
+          label: 'Theme',
+          title: 'Theme',
+          icon: 'palette',
           settings: {
-            policy: {
-              type: 'string',
-              label: 'Privacy Two policy has not been defined.',
-              placeholder: '...'
-            },
-            time: {
+            theme: {
               type: 'enum',
-              style: 'button',
-              label: 'Time Format',
-              options: ['12 h', '24 h']
+              label: 'theme',
+              options: ['red', 'green']
             }
           }
+        },
+        custom: {
+          label: 'Custom',
+          title: 'Custom',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsMf.html'
+        },
+        custom3: {
+          label: 'Custom3',
+          title: 'Custom3',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsMf2.html'
+        },
+        custom2: {
+          label: 'Custom 2',
+          title: 'Custom 2',
+          icon: 'private',
+          viewUrl: 'https://luigiwebcomponents.gitlab.io/helloworld.js',
+          context: {
+            title: 'WC says hello world!'
+          },
+          webcomponent: {
+            selfRegistered: false
+          }
+        },
+        wc2: {
+          label: 'wc2',
+          title: 'wc 2',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsWC.js',
+          webcomponent: true
+        }
+      }
+    },
+
+    globalSearch: {
+      disableInputHandlers: false,
+      searchFieldCentered: false,
+      searchProvider: {
+        /*
+        customSearchResultItemRenderer: (itemData, searchApiObj) => {
+          const searchItem = document.createElement('li');
+
+          searchItem.innerHTML = `
+            <b>${itemData.label}</b><br>
+            ${itemData.description}
+          `;
+
+          if (searchApiObj?.fireItemSelected) {
+            searchItem.addEventListener('click', (event) => {
+              searchApiObj.fireItemSelected(itemData?.pathObject);
+            });
+          }
+
+          return searchItem;
+        },
+        customSearchResultRenderer: (searchResultItems, rendererSlot, searchApiObj) => {
+          console.log('searchProvider - customSearchResultRenderer');
+          if (!rendererSlot) {
+            console.warn('There is no renderer slot for search results')
+            return;
+          }
+
+          const searchList = document.createElement('ol');
+
+          if (searchResultItems?.length) {
+            searchResultItems.forEach((itemData) => {
+              let searchItem;
+
+              if (searchApiObj.customSearchResultItemRenderer) {
+                searchItem = searchApiObj.customSearchResultItemRenderer(itemData, searchApiObj);
+              } else {
+                searchItem = document.createElement('li');
+                searchItem.innerText = `${itemData.label}`;
+              }
+
+              searchItem.setAttribute('tabindex', '0');
+              searchList.appendChild(searchItem);
+            });
+          } else {
+            const searchItem = document.createElement('li');
+
+            searchItem.innerText = `No results found for search query`;
+            searchList.appendChild(searchItem);
+          }
+
+          rendererSlot.appendChild(searchList);
+        },
+        */
+        inputPlaceholder: 'Type some text to search...',
+        onEnter: () => {
+          console.log('searchProvider - onEnter');
+        },
+        onEscape: () => {
+          console.log('searchProvider - onEscape');
+          Luigi.globalSearch().closeSearchResult();
+        },
+        onInput: () => {
+          console.log('searchProvider - onInput');
+          let searchResult;
+
+          if (Luigi.globalSearch().getSearchString() === '') {
+            searchResult = [];
+            Luigi.globalSearch().closeSearchResult();
+          } else {
+            searchResult = [
+              {
+                pathObject: {
+                  link: '/home2/c1',
+                  params: {}
+                },
+                label: 'Search item A',
+                description: 'Some AAA description'
+                // onActivate() {
+                //   Luigi.globalSearch().closeSearchResult();
+                // }
+              },
+              {
+                pathObject: {
+                  link: '/home2/c2',
+                  params: {}
+                },
+                label: 'Search item B',
+                description: 'Some BBB description'
+                // onActivate() {
+                //   Luigi.globalSearch().closeSearchResult();
+                // }
+              },
+              {
+                pathObject: {
+                  externalLink: {
+                    url: 'https://docs.luigi-project.io/docs/getting-started',
+                    sameWindow: false
+                  }
+                },
+                label: 'Search item C',
+                description: 'Some CCC description'
+              }
+            ];
+
+            Luigi.globalSearch().showSearchResult(searchResult?.length ? searchResult : []);
+          }
+        },
+        onSearchBtnClick: () => {
+          console.log('searchProvider - onSearchBtnClick');
+        },
+        onSearchResultItemSelected: (pathData) => {
+          console.log('searchProvider - onSearchResultItemSelected');
+          console.log(pathData);
+          if (pathData?.externalLink) {
+            window.open(pathData.externalLink.url, '_blank', 'noopener,noreferrer');
+          } else if (pathData?.link && !pathData?.params) {
+            Luigi.navigation().navigate(pathData.link);
+          } else if (pathData?.link && pathData?.params) {
+            Luigi.navigation().withParams(pathData.params).navigate(pathData.link);
+          }
+          Luigi.globalSearch().closeSearchResult();
+          Luigi.globalSearch().clearSearchField();
+        },
+        toggleSearch: (element, visible) => {
+          console.log('searchProvider - toggleSearch');
+          console.log(element);
+          console.log(visible);
         }
       }
     },

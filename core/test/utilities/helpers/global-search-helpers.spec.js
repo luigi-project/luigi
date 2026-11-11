@@ -304,4 +304,107 @@ describe('Global-search-helpers', () => {
       assert.isTrue(search.searchProvider.toggleSearch.calledWith(inputElem, !isSearchFieldVisible));
     });
   });
+
+  describe('clearSearchField', () => {
+    it('should clear the input value and focus the element', () => {
+      inputElement.value = 'some query';
+      const focusSpy = sinon.spy(inputElement, 'focus');
+
+      globalSearchHelpers.clearSearchField(inputElement);
+
+      assert.strictEqual(inputElement.value, '');
+      assert.isTrue(focusSpy.calledOnce);
+    });
+
+    it('should dispatch closeSearchResult', () => {
+      globalSearchHelpers.clearSearchField(inputElement);
+
+      assert.isTrue(dispatch.calledWith('closeSearchResult'));
+    });
+
+    it('should call searchProvider.onInput if defined so the result list refreshes', () => {
+      const onInputSpy = sinon.spy();
+      search = { searchProvider: { onInput: onInputSpy } };
+      globalSearchHelpers = new GlobalSearchHelperClass(search, dispatch);
+
+      globalSearchHelpers.clearSearchField(inputElement);
+
+      assert.isTrue(onInputSpy.calledOnce);
+    });
+
+    it('should not throw when searchProvider is not defined', () => {
+      assert.doesNotThrow(() => globalSearchHelpers.clearSearchField(inputElement));
+      assert.isTrue(dispatch.calledWith('closeSearchResult'));
+    });
+
+    it('should not throw when inputElement is missing', () => {
+      assert.doesNotThrow(() => globalSearchHelpers.clearSearchField(null));
+      assert.isTrue(dispatch.calledWith('closeSearchResult'));
+    });
+  });
+
+  describe('onSearchBtnClick', () => {
+    it('should collapse the search field by calling toggleSearch when the input is empty', () => {
+      const toggleSearchSpy = sinon.spy(globalSearchHelpers, 'toggleSearch');
+      inputElement.value = '';
+
+      globalSearchHelpers.onSearchBtnClick(inputElement, true);
+
+      assert.isTrue(toggleSearchSpy.calledOnce);
+      assert.isTrue(toggleSearchSpy.calledWith(true, true, inputElement, undefined));
+      toggleSearchSpy.restore();
+    });
+
+    it('should collapse the search field when inputElement is missing', () => {
+      const toggleSearchSpy = sinon.spy(globalSearchHelpers, 'toggleSearch');
+
+      globalSearchHelpers.onSearchBtnClick(null, false);
+
+      assert.isTrue(toggleSearchSpy.calledOnce);
+      toggleSearchSpy.restore();
+    });
+
+    it('should call searchProvider.onSearchBtnClick when input has a value', () => {
+      const onSearchBtnClickSpy = sinon.spy();
+      const onEnterSpy = sinon.spy();
+      search = { searchProvider: { onSearchBtnClick: onSearchBtnClickSpy, onEnter: onEnterSpy } };
+      globalSearchHelpers = new GlobalSearchHelperClass(search, dispatch);
+      inputElement.value = 'hello';
+
+      globalSearchHelpers.onSearchBtnClick(inputElement, false);
+
+      assert.isTrue(onSearchBtnClickSpy.calledOnce);
+      assert.isTrue(onEnterSpy.notCalled, 'onEnter should not be called when onSearchBtnClick is defined');
+    });
+
+    it('should fall back to searchProvider.onEnter when onSearchBtnClick is not defined', () => {
+      const onEnterSpy = sinon.spy();
+      search = { searchProvider: { onEnter: onEnterSpy } };
+      globalSearchHelpers = new GlobalSearchHelperClass(search, dispatch);
+      inputElement.value = 'hello';
+
+      globalSearchHelpers.onSearchBtnClick(inputElement, false);
+
+      assert.isTrue(onEnterSpy.calledOnce);
+    });
+
+    it('should not call toggleSearch when input has a value', () => {
+      const onEnterSpy = sinon.spy();
+      search = { searchProvider: { onEnter: onEnterSpy } };
+      globalSearchHelpers = new GlobalSearchHelperClass(search, dispatch);
+      inputElement.value = 'hello';
+      const toggleSearchSpy = sinon.spy(globalSearchHelpers, 'toggleSearch');
+
+      globalSearchHelpers.onSearchBtnClick(inputElement, false);
+
+      assert.isTrue(toggleSearchSpy.notCalled);
+      toggleSearchSpy.restore();
+    });
+
+    it('should not throw when searchProvider is not defined and input has a value', () => {
+      inputElement.value = 'hello';
+
+      assert.doesNotThrow(() => globalSearchHelpers.onSearchBtnClick(inputElement, false));
+    });
+  });
 });

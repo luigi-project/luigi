@@ -304,7 +304,8 @@ body {
         position: relative;
     }
 
-    .copyCode {
+    .copyCode,
+    .openInFiddle {
         position: absolute;
         right: -10px;
         top: -10px;
@@ -392,6 +393,29 @@ body {
             .popoverCopy {
                 display: block;
             }
+        }
+    }
+
+    // "Open in Fiddle" button: same size, position and tooltip as .copyCode,
+    // placed to its left and with inverted colors (white button, green on hover)
+    .openInFiddle {
+        right: 40px;
+        background-color: white;
+        color: $secondary-color;
+        text-decoration: none;
+
+        .fiddleIcon {
+            font-family: monospace;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+
+
+        &:hover {
+            background-color: $primary-color;
+            color: $secondary-color;
         }
     }
 

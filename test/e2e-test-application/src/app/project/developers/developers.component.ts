@@ -6,9 +6,9 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  Signal,
   signal,
-  computed
+  computed,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addInitListener, Context, removeInitListener } from '@luigi-project/client';
@@ -19,6 +19,7 @@ import { first } from 'rxjs/operators';
   selector: 'app-developers',
   templateUrl: './developers.component.html',
   styleUrls: ['./developers.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DevelopersComponent implements OnInit, OnDestroy {
@@ -36,7 +37,7 @@ export class DevelopersComponent implements OnInit, OnDestroy {
     private luigiContextService: LuigiContextService
   ) {
     effect(() => {
-      const data: IContextMessage = luigiContextService.contextSignal()();
+      const data: IContextMessage = luigiContextService.contextSignal();
 
       if (data) {
         this.currentProject.set(data.context.currentProject + '1');
@@ -73,8 +74,7 @@ export class DevelopersComponent implements OnInit, OnDestroy {
   }
 
   getContextSignal() {
-    const source: Signal<IContextMessage> = this.luigiContextService.contextSignal();
-    const data: IContextMessage = source();
+    const data = this.luigiContextService.contextSignal() as IContextMessage;
     const ctx: Context = data.context;
 
     this.contextSignal = ctx.currentProject;

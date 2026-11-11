@@ -1,6 +1,31 @@
 import { UserManager, WebStorageStateStore, InMemoryWebStorage } from 'oidc-client-ts';
 import { Helpers } from '../helpers';
 
+const DEPRECATED_KEYS = {
+  accessTokenExpiringNotificationTime: 'accessTokenExpiringNotificationTimeInSeconds',
+  silentRequestTimeout: 'silentRequestTimeoutInSeconds',
+  checkSessionInterval: 'checkSessionIntervalInSeconds',
+  revokeAccessTokenOnSignout: 'revokeTokensOnSignout',
+  clockSkew: 'clockSkewInSeconds',
+  staleStateAge: 'staleStateAgeInSeconds'
+};
+
+function applyDeprecationShim(settings) {
+  const patched = { ...settings };
+  for (const [oldKey, newKey] of Object.entries(DEPRECATED_KEYS)) {
+    if (oldKey in patched) {
+      if (!(newKey in patched)) {
+        patched[newKey] = patched[oldKey];
+        console.warn(
+          `[OIDC] Setting "${oldKey}" is deprecated. Please use "${newKey}" instead. The old key might be removed in a future release.`
+        );
+      }
+      delete patched[oldKey];
+    }
+  }
+  return patched;
+}
+
 export default class openIdConnect {
   constructor(settings = {}) {
     const defaultSettings = {
@@ -14,10 +39,25 @@ export default class openIdConnect {
       silent_redirect_uri: window.location.origin + '/assets/auth-oidc-pkce/silent-callback.html'
     };
 
-    const mergedSettings = Helpers.deepMerge(defaultSettings, settings);
+    const patchedSettings = applyDeprecationShim(settings);
 
-    // Prepend current url to redirect_uri, if it is a relative path
-    ['redirect_uri', 'post_logout_redirect_uri'].forEach(key => {
+    // `logoutUrl` is Luigi's internal error-redirect target (used by handleAuthEvent
+    // for onAuthExpired / onAuthError / login-callback failures). It is distinct
+    // from `post_logout_redirect_uri`, which is the OIDC-spec callback the IdP
+    // redirects back to after ending its session. When callers do not set
+    // `logoutUrl` explicitly, we fall back to `post_logout_redirect_uri` so that
+    // callers who only ever set one URL still get their error redirects routed
+    // there. Note this differs from the legacy `auth-oidc` plugin, which used a
+    // literal `${origin}/logout.html` default and did not inherit from
+    // `post_logout_redirect_uri` — set both explicitly for full parity.
+    if (patchedSettings.logoutUrl === undefined) {
+      defaultSettings.logoutUrl = patchedSettings.post_logout_redirect_uri || defaultSettings.post_logout_redirect_uri;
+    }
+
+    const mergedSettings = Helpers.deepMerge(defaultSettings, patchedSettings);
+
+    // Prepend current url to relative path settings
+    ['redirect_uri', 'post_logout_redirect_uri', 'logoutUrl'].forEach((key) => {
       mergedSettings[key] = Helpers.prependOrigin(mergedSettings[key]);
     });
 
@@ -41,7 +81,7 @@ export default class openIdConnect {
 
     this.client = new UserManager(this.settings);
 
-    this.client.events.addUserLoaded(async payload => {
+    this.client.events.addUserLoaded(async (payload) => {
       let profile = payload.profile;
       if (payload.profile && Luigi.getConfigValue('auth.openIdConnect.profileStorageInterceptorFn')) {
         profile = await Luigi.executeConfigFnAsync(
@@ -79,7 +119,7 @@ export default class openIdConnect {
   }
 
   login() {
-    return this.client.signinRedirect({ state: window.location.href }).catch(err => {
+    return this.client.signinRedirect({ state: window.location.href }).catch((err) => {
       console.error('[OIDC] login() Error', err);
       return err;
     });
@@ -88,18 +128,14 @@ export default class openIdConnect {
   logout(authData, authOnLogoutFn) {
     const signoutData = {
       id_token_hint: authData && authData.idToken,
-      state: encodeURI(window.location.href)
+      url_state: window.location.href
     };
 
-    return this.client._client.createSignoutRequest(signoutData)
-      .then(req => {
-        authOnLogoutFn();
-        window.location = req.url;
-      })
-      .catch(function(err) {
-        console.error('[OIDC] logout() Error', err);
-        authOnLogoutFn();
-      });
+    authOnLogoutFn();
+
+    return this.client.signoutRedirect(signoutData).catch(function (err) {
+      console.error('[OIDC] logout() Error', err);
+    });
   }
 
   setTokenExpirationAction() {
@@ -109,26 +145,29 @@ export default class openIdConnect {
           'onAuthExpired',
           this.settings,
           undefined,
-          this.settings.post_logout_redirect_uri + '?error=tokenExpired'
+          this.settings.logoutUrl + '?error=tokenExpired'
         );
       });
     }
 
-    this.client.events.addSilentRenewError(e => {
+    this.client.events.addSilentRenewError((e) => {
       let redirectUrl;
+      // Encode e.message when interpolating into the redirect URL: the message
+      // originates from oidc-client-ts (or an underlying network/IdP error) and
+      // is not guaranteed to be a bare token — it may contain `&`, `#`, or
+      // other characters that would corrupt the query string or inject extra
+      // parameters. See CLAUDE.md "URL construction with user-controlled values".
+      const errorDescription = encodeURIComponent(e.message);
       switch (e.message) {
         case 'interaction_required':
         case 'login_required':
         case 'account_selection_required':
         case 'consent_required':
-          redirectUrl =
-            this.settings.post_logout_redirect_uri +
-            '?error=tokenExpired&errorDescription=' +
-            e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + errorDescription;
           break;
         default:
           console.error('[OIDC] addSilentRenewError Error', e);
-          redirectUrl = this.settings.post_logout_redirect_uri + '?error=tokenExpired&errorDescription=' + e.message;
+          redirectUrl = this.settings.logoutUrl + '?error=tokenExpired&errorDescription=' + errorDescription;
       }
       Luigi.auth().handleAuthEvent('onAuthError', this.settings, e, redirectUrl);
     });
@@ -142,17 +181,22 @@ export default class openIdConnect {
 
   _processLogoutResponse() {
     return new Promise((resolve, reject) => {
-      // TODO: dex logout does not yet support proper logout
+      // We detect return-from-end-session by looking for `?logout` on the
+      // current URL. This is a Luigi convention (set via post_logout_redirect_uri
+      // pointing at a page carrying `?logout`), not an OIDC spec requirement,
+      // so we cannot rely on `state` alone here.
       if (window.location.href.indexOf('?logout') >= 0) {
-        this.client._client.processSignoutResponse()
-          .then(response => {
+        this.client
+          .signoutRedirectCallback()
+          .then((response) => {
             Luigi.auth().store.removeAuthData();
             resolve(response);
           })
-          .catch(function(err) {
-            reject(response);
+          .catch(function (err) {
+            reject(err);
             console.error('[OIDC] Logout Error', err);
           });
+        return;
       }
       resolve(true);
     });
@@ -187,19 +231,37 @@ export default class openIdConnect {
       this.tryToSignIn()
         .then((authenticatedUser = {}) => {
           if (authenticatedUser.error) {
-            return console.error(
+            console.error(
               '[OIDC] Error',
               authenticatedUser.error,
               authenticatedUser.error_description,
               authenticatedUser
             );
+            return resolve(false);
           }
 
           // since auth storages have no callback we need to wait couple of ms before proceeding
           // else persistence might fail.
           setTimeout(() => {
             if (authenticatedUser.state) {
-              history.pushState('', document.title, decodeURIComponent(authenticatedUser.state));
+              // `state` is the value we set to `window.location.href` at login time
+              // and that the IdP round-trips back. Even though `pushState` itself
+              // rejects cross-origin URLs, resolve the value against the current
+              // origin and confirm it stayed same-origin before applying — this
+              // rejects a crafted `state` (e.g. `javascript:`, `//attacker.tld/...`)
+              // early with an explicit fallback. See CLAUDE.md "URL construction
+              // with user-controlled values".
+              const decoded = decodeURIComponent(authenticatedUser.state);
+              let target;
+              try {
+                const resolved = new URL(decoded, window.location.origin);
+                if (resolved.origin === window.location.origin) {
+                  target = resolved.pathname + resolved.search + resolved.hash;
+                }
+              } catch (e) {
+                // fall through to default target below
+              }
+              history.pushState('', document.title, target || window.location.pathname);
             } else {
               let url;
               if (fromWhere === 'search') {
@@ -212,15 +274,16 @@ export default class openIdConnect {
             resolve(true);
           }, 50);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error('[OIDC] tryToSignIn Error', err);
           Luigi.auth().store.removeAuthData();
           Luigi.auth().handleAuthEvent(
             'onAuthExpired',
             this.settings,
             err,
-            this.settings.post_logout_redirect_uri + '?error=loginError'
+            this.settings.logoutUrl + '?error=loginError'
           );
+          reject(err);
         });
     });
   }
@@ -228,15 +291,17 @@ export default class openIdConnect {
   async tryToSignIn() {
     try {
       // If the user was just redirected here from the sign in page, sign them in.
+      const user = await this.client.signinRedirectCallback();
       console.debug('[OIDC] User was redirected via the sign-in page. Now signed in.');
-      return await this.client.signinRedirectCallback();
+      return user;
     } catch (error) {
       console.debug("[OIDC] Error. Sign-in redirect callback doesn't work. Let's try a silent sign-in.", error);
       // Barring that, if the user chose to have the Identity Server remember their
       // credentials and permission decisions, we may be able to silently sign them
       // back in via a background iframe.
+      const user = await this.client.signinSilent();
       console.debug('[OIDC] Silent sign-in completed.');
-      return await this.client.signinSilent();
+      return user;
     }
   }
 }

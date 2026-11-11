@@ -136,6 +136,17 @@ export default class LuigiCompoundContainer extends HTMLElement {
 
   /**
    * The user settings to be passed to the compound micro frontend. <br><br>
+   * A plain key-value object is forwarded to all micro frontends as is.<br><br>
+   * Alternatively, user settings can be grouped so that each micro frontend only
+   * receives the settings of the group it is assigned to. In that case the object
+   * has the shape <code>{ rootNodeUserSettingsGroup, groupedUserSettings }</code>, where:
+   * <ul>
+   *   <li><code>groupedUserSettings</code> is an object holding the stored settings keyed by group name.</li>
+   *   <li><code>rootNodeUserSettingsGroup</code> is the group name whose settings are passed to the root (nesting) compound micro frontend.</li>
+   * </ul>
+   * Each compound child then receives only the settings of the group defined via its
+   * <code>userSettingsGroup</code> property in the <a href="luigi-compound-container-api.md#compoundconfig">compoundConfig</a>.
+   * A child (or the root node) without a matching group receives an empty object from <code>LuigiClient.getUserSettings()</code>. <br><br>
    * Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
    * @since 1.0.0
    * @type {Object}
@@ -143,6 +154,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @memberof LuigiCompoundContainer
    * @example <luigi-compound-container viewurl="/index.html" user-settings='{"language": "de", "theme":"sap_horizon"}'></luigi-compound-container>
    * @example myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
+   * @example myContainer.userSettings = { rootNodeUserSettingsGroup: 'account', groupedUserSettings: { theme: { theme: 'sap_horizon' }, account: { name: 'luigi' } } }
    */
   userSettings: object;
 
@@ -213,6 +225,22 @@ export default class LuigiCompoundContainer extends HTMLElement {
   webcomponent: boolean | WebComponentSettings | string;
 
   /**
+   * A function called after the web component for the microfrontend is created.
+   * It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.
+   * @param {HTMLElement} wc - the web component element
+   * @param {Object} currentNode - the current navigation node
+   * @param {Object} context - the context object passed to the web component
+   * @param {string} nodeId - the node identifier
+   * @param {boolean} isSpecialMf - indicates whether the web component is rendered in a modal, splitView or drawer (false for main)
+   * @since 1.7.10
+   * @type {Function}
+   * @kind member
+   * @memberof LuigiCompoundContainer
+   * @example containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+   */
+  webcomponentCreationInterceptor: Function;
+
+  /**
    * If set to true, skips handshake and ready event is fired immediately. <br><br>
    * Type: [Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
    * @since 1.4.0
@@ -256,7 +284,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.updateContext({newContextData: 'some data'})
    * @returns {void} no explicit return type
    */
-  updateContext(contextObj: Object): void {};
+  updateContext(contextObj: Object): void;
 
   /**
    * A function that notifies the microfrontend that the opened alert has been closed.
@@ -267,7 +295,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed('my-alert-id', 'my-dismiss-key')
    * @returns {void} no explicit return type
    */
-  notifyAlertClosed(id: string, dismissKey?: string): void {};
+  notifyAlertClosed(id: string, dismissKey?: string): void;
 
   /**
    * A function that notifies the microfrontend if the confirmation modal was confirmed or declined.
@@ -277,7 +305,7 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.notifyAlertClosed(true)
    * @returns {void} no explicit return type
    */
-  notifyConfirmationModalClosed(confirmed: boolean): void {};
+  notifyConfirmationModalClosed(confirmed: boolean): void;
 
   /**
    * Manually triggers the micro frontend rendering process when using the defer-init attribute.
@@ -286,5 +314,5 @@ export default class LuigiCompoundContainer extends HTMLElement {
    * @example containerElement.init()
    * @returns {void} no explicit return type
    */
-  init(): void {};
+  init(): void;
 }

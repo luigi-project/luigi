@@ -24,10 +24,42 @@ class UserSettingsHelperClass {
     return userSettingGroups;
   }
 
-  getUserSettingsIframesInDom(): HTMLElement[] {
-    const iframeCtn = document.querySelector('.iframeUserSettingsCtn');
+  /**
+   * Builds the complete user-settings object that should be stored.
+   *
+   * Every setting defined in the configuration is prefilled with a default
+   * (empty string), then overlaid with the persisted values. This guarantees
+   * that the stored object always contains the full set of properties, not
+   * only the ones that were changed in the dialog (mirrors Luigi core).
+   *
+   * @param userSettingData schema as returned by `processUserSettingGroups`
+   * @param previousUserSettings persisted user-settings state, or `null`/`{}`
+   * @returns a settings object keyed by group, each group prefilled with defaults
+   */
+  prepareUserSettingsObj(
+    userSettingData: any[],
+    previousUserSettings: Record<string, any> | null
+  ): Record<string, any> {
+    const result: Record<string, any> = {};
+    const stored = previousUserSettings || {};
+    (Array.isArray(userSettingData) ? userSettingData : []).forEach((groupObj: any) => {
+      Object.keys(groupObj || {}).forEach((groupKey) => {
+        const groupConfig = groupObj[groupKey] || {};
+        const defaults: Record<string, any> = {};
+        if (groupConfig.settings) {
+          Object.keys(groupConfig.settings).forEach((settingKey) => {
+            defaults[settingKey] = '';
+          });
+        }
+        result[groupKey] = { ...defaults, ...(stored[groupKey] || {}) };
+      });
+    });
 
-    return (iframeCtn ? [...iframeCtn.children] : []) as HTMLElement[]; // convert htmlcollection to array because of foreach issue
+    return result;
+  }
+
+  getUserSettingsIframesInDom(): HTMLElement[] {
+    return [...document.querySelectorAll('.iframeUserSettingsCtn')] as HTMLElement[];
   }
 
   hideUserSettingsIframe(): void {

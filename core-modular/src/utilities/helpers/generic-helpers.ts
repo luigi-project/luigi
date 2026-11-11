@@ -55,8 +55,77 @@ export const GenericHelpers = {
   },
 
   /**
+   * Checks if a given input string begins a hash with slash
+   * @param {string} path
+   * @returns {boolean}
+   */
+  hasHash: (path: string): boolean => {
+    return !!(path && path.search(/^[#\/].*$/) === 0);
+  },
+
+  /**
+   * Returns the URL without the hash fragment, normalized to an absolute URL.
+   * Relative URLs are prepended with window.location.origin.
+   * @param {string} url
+   * @returns {string}
+   */
+  getUrlWithoutHash: (url: string): string => {
+    if (!url) return '';
+    const urlWithoutHash = url.split('#')[0];
+    if (!urlWithoutHash.startsWith('http')) {
+      return window.location.origin + (urlWithoutHash.startsWith('/') ? '' : '/') + urlWithoutHash;
+    }
+    return urlWithoutHash;
+  },
+
+  /**
+   * Checks if two URLs are the same when ignoring the hash fragment.
+   * Used to determine if a container/iframe can be reused.
+   * @param {string} url1
+   * @param {string} url2
+   * @returns {boolean}
+   */
+  isSameUrl: (url1: string, url2: string): boolean => {
+    if (!url1 || !url2) return false;
+    return GenericHelpers.getUrlWithoutHash(url1) === GenericHelpers.getUrlWithoutHash(url2);
+  },
+
+  /**
+   * Removes leading hash of a string
+   * @param {string} path
+   * @returns {string}
+   */
+  getPathWithoutHash: (path: string): string => {
+    while (GenericHelpers.hasHash(path)) {
+      path = path.substring(1, path.length);
+    }
+
+    return path;
+  },
+
+  /**
+   * Removes any trailing slash of a string
+   * @param {string} path
+   * @returns {string}
+   */
+  getTrimmedUrl: (path: string): string => {
+    const pathUrl = path.length > 0 ? GenericHelpers.getPathWithoutHash(path) : path;
+
+    return GenericHelpers.trimTrailingSlash(pathUrl.split('?')[0]);
+  },
+
+  /**
+   * Adds a leading slash to a string if it has none
+   * @param {string} str string to be checked
+   * @returns {string} string with a leading slash
+   */
+  addLeadingSlash: (str: string): string => {
+    return (!str.startsWith('/') ? '/' : '') + str;
+  },
+
+  /**
    * Removes leading slash of a string
-   * @param {str} string
+   * @param {string} str string to be checked
    * @returns {string} string without leading slash
    */
   trimLeadingSlash: (str: string): string => {
@@ -64,12 +133,35 @@ export const GenericHelpers = {
   },
 
   /**
+   * Adds a trailing slash to a string if it has none
+   * @param {string} str string to be checked
+   * @returns {string} string with a trailing slash
+   */
+  addTrailingSlash: (str: string): string => {
+    return GenericHelpers.isString(str) ? str.replace(/\/?$/, '/') : '';
+  },
+
+  /**
    * Prepend current url to redirect_uri, if it is a relative path
-   * @param {str} string from which any number of trailing slashes should be removed
+   * @param {string} str string from which any number of trailing slashes should be removed
    * @returns {string} string without any trailing slash
    */
   trimTrailingSlash: (str: string): string => {
     return GenericHelpers.isString(str) ? str.replace(/\/+$/, '') : '';
+  },
+
+  /**
+   * Returns a path that starts and end with one (and only one) slash, regardless of the slashes being already present in the path given as input
+   * @param {string} str path to normalize
+   * @returns {string} path that starts and ends with a slash
+   */
+
+  normalizePath: (str: string): string => {
+    if (typeof str !== 'string') {
+      return str;
+    }
+
+    return GenericHelpers.addLeadingSlash(GenericHelpers.addTrailingSlash(str));
   },
 
   /**
@@ -212,7 +304,13 @@ export const GenericHelpers = {
    * @param parenthesis
    * @returns
    */
-  replaceVars(inputString: string, params: Record<string, any>, prefix: string, parenthesis = true): string {
+  replaceVars(
+    inputString: string,
+    params: Record<string, any> | undefined,
+    prefix: string,
+    parenthesis = true,
+    slashStop = false
+  ): string {
     let processedString = inputString;
     if (params) {
       if (parenthesis) {
@@ -224,12 +322,17 @@ export const GenericHelpers = {
           return get(params, repl, val);
         });
       } else {
-        Object.entries(params).forEach((entry) => {
-          processedString = processedString.replace(
-            new RegExp(this.escapeRegExp(prefix + entry[0]), 'g'),
-            encodeURIComponent(entry[1])
-          );
-        });
+        const delim = slashStop ? ' ' : '';
+        processedString = processedString.replace(/\//g, delim + '/') + delim;
+        Array.from(Object.entries(params))
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach((entry) => {
+            processedString = processedString.replace(
+              new RegExp(this.escapeRegExp(prefix + entry[0] + delim), 'g'),
+              encodeURIComponent(entry[1])
+            );
+          });
+        processedString = processedString.replace(new RegExp(this.escapeRegExp(delim), 'g'), '');
       }
     }
     if (parenthesis) {

@@ -3,6 +3,18 @@ const readline = require('readline');
 const packageJson = require('./public/package.json');
 const color = require('cli-color');
 
+function compareVersions(a, b) {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na > nb) return 1;
+    if (na < nb) return -1;
+  }
+  return 0;
+}
+
 const GITHUB_API_URL = 'https://api.github.com';
 const GITHUB_OWNER = 'luigi-project';
 const GITHUB_REPO = 'luigi';
@@ -176,7 +188,7 @@ async function prepareRelease() {
     `Version you want to release (current version ${lastContainerRelease.tag_name.replace('container/v', '')})? `
   );
   rl.question(question, async (version) => {
-    if (packageJson.version >= version) {
+    if (compareVersions(packageJson.version, version) >= 0) {
       logWarning('Version already exists. Please check.');
       rl.close();
       return;

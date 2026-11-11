@@ -597,6 +597,7 @@
                     {#each nodes as node, index2}
                       <li class="fd-nested-list__item" uid="{index}-{index2}">
                         <!-- svelte-ignore a11y-role-supports-aria-props -->
+                        <!-- svelte-ignore a11y_role_supports_aria_props_implicit -->
                         <a
                           href={getRouteLink(node)}
                           class="fd-nested-list__link"
@@ -636,7 +637,7 @@
                         >
                           <span class="fd-nested-list__title">{$getTranslation(key)}</span>
                         </a>
-                        <button class="fd-button fd-nested-list__button" tabindex="-1">
+                        <button class="fd-button fd-nested-list__button" aria-label="Toggle submenu" tabindex="-1">
                           <i
                             class={dropDownStates[key + index]
                               ? 'sap-icon--navigation-down-arrow'
@@ -650,6 +651,7 @@
                           {#if node.label}
                             <li class="fd-nested-list__item" aria-labelledby="tabnav_list_level1_{index}">
                               <!-- svelte-ignore a11y-role-supports-aria-props -->
+                              <!-- svelte-ignore a11y_role_supports_aria_props_implicit -->
                               <a
                                 class="fd-nested-list__link"
                                 href={getRouteLink(node)}

@@ -12,7 +12,7 @@ module.exports = {
     app: ['./src/main.js']
   },
   resolve: {
-    conditionNames: ['svelte', 'browser'],
+    conditionNames: ['require', 'module', 'svelte', 'browser'],
     extensions: ['.mjs', '.js', '.svelte'],
     mainFields: ['svelte', 'browser', 'module', 'main']
   },

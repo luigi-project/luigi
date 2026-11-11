@@ -1,25 +1,47 @@
 import Events from '@luigi-project/container';
 import type { Luigi } from '../core-api/luigi';
 import { NavigationService } from '../services/navigation.service';
+import { PreloadingService } from '../services/preloading.service';
 import { RoutingModule } from './routing-module';
 import { serviceRegistry } from '../services/service-registry';
 import { UIModule } from './ui-module';
-import { UXModule } from './ux-module';
-import type { NavigationRequestParams } from '../types/navigation';
+import { UXModule, type AlertSettings, type ConfirmationModalSettings } from './ux-module';
+import type { NavigationRequestParams, NavigationRequestDetail, ViewGroupSettings } from '../types/navigation';
+import { I18nHelpers } from '../utilities/helpers/i18n-helpers';
+import type { LuigiEvent } from '@luigi-project/container/constants/events';
+
+function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi): void {
+  const allVgSettings: Record<string, ViewGroupSettings> = luigi.getConfigValue('navigation.viewGroupSettings') || {};
+  if (!allVgSettings[vg]) {
+    allVgSettings[vg] = {};
+  }
+  allVgSettings[vg]._liveCustomData = data;
+  luigi.configChanged('navigation.viewgroupdata');
+}
 
 export const CommunicationModule = {
   luigi: {} as Luigi,
   init: (luigi: Luigi) => {
-    console.log('Init communication...');
     CommunicationModule.luigi = luigi;
   },
   addListeners: (containerElement: any, luigi: Luigi) => {
-    containerElement.addEventListener(Events.INITIALIZED, (event: any) => {
+    containerElement.addEventListener(Events.INITIALIZED, (event: LuigiEvent) => {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
+      const preloadingService = serviceRegistry.get(PreloadingService);
+      preloadingService.viewGroupLoaded(containerElement);
+      if (!containerElement._luigiPreloading && containerElement.style.display !== 'none') {
+        preloadingService.preload();
+      }
     });
-    containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
+      serviceRegistry.get(PreloadingService).preload();
+    });
+    containerElement.addEventListener(Events.NAVIGATION_REQUEST, (event: LuigiEvent) => {
+      const detail = event.detail as NavigationRequestDetail;
       const {
+        drawer,
         link,
+        intent,
         preserveView,
         modal,
         newTab,
@@ -32,8 +54,10 @@ export const CommunicationModule = {
         fromParent,
         relative,
         nodeParams
-      } = event.detail;
+      } = detail;
       const navRequestParams: NavigationRequestParams = {
+        drawerSettings: drawer,
+        intent,
         modalSettings: modal,
         newTab,
         path: link,
@@ -50,52 +74,112 @@ export const CommunicationModule = {
         preventHistoryEntry,
         withoutSync
       };
-      serviceRegistry.get(NavigationService).handleNavigationRequest(navRequestParams, event.callbackFn);
+      serviceRegistry
+        .get(NavigationService)
+        .handleNavigationRequest(navRequestParams, (data: unknown) => event.callback(data));
     });
-    containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: any) => {
-      luigi.navigation().runTimeErrorHandler(event.payload?.data?.errorObj || {});
+    containerElement.addEventListener(Events.RUNTIME_ERROR_HANDLING_REQUEST, (event: LuigiEvent) => {
+      const payload = event.payload as { data?: { errorObj?: object } };
+      luigi.navigation().runTimeErrorHandler(payload?.data?.errorObj || {});
     });
-    containerElement.addEventListener(Events.ALERT_REQUEST, (event: any) => {
-      UXModule.processAlert(event.payload, true, containerElement);
+    containerElement.addEventListener(Events.ALERT_REQUEST, (event: LuigiEvent) => {
+      UXModule.processAlert(event.payload as AlertSettings, true, containerElement);
     });
-    containerElement.addEventListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: any) => {
-      UXModule.handleConfirmationModalRequest(event.payload, containerElement);
+    containerElement.addEventListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: LuigiEvent) => {
+      UXModule.handleConfirmationModalRequest(event.payload as ConfirmationModalSettings, containerElement);
     });
-    containerElement.addEventListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(event.detail.title);
+    containerElement.addEventListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: LuigiEvent) => {
+      const detail = event.detail as { title: string };
+      CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(detail.title);
     });
-    containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.SHOW_LOADING_INDICATOR_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.showLoadingIndicator(containerElement.parentNode);
     });
-    containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.HIDE_LOADING_INDICATOR_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator(containerElement.parentNode);
     });
-    containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.addBackdrop();
     });
-    containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
-    containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: any) => {
-      UXModule.handleDirtyStatusRequest(event.detail?.data?.dirty, event.detail?.source);
+    containerElement.addEventListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
+      const anchor = (event?.payload as string) || '';
+      containerElement.anchor = anchor;
+      containerElement.updateContext(containerElement.context || {});
+      luigi.routing().setAnchor(anchor);
     });
-    containerElement.addEventListener(Events.ADD_NODE_PARAMS_REQUEST, (event: any) => {
-      luigi.routing().addNodeParams(event.payload.data, event.payload.keepBrowserHistory);
+    containerElement.addEventListener(Events.SET_DIRTY_STATUS_REQUEST, (event: LuigiEvent) => {
+      const payload = event.payload as { dirty?: boolean };
+      UXModule.handleDirtyStatusRequest(payload?.dirty ?? false, containerElement);
     });
-    containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, (event: any) => {
-      CommunicationModule.luigi.getEngine()._connector?.openUserSettings(event.detail);
+    containerElement.addEventListener(Events.ADD_NODE_PARAMS_REQUEST, (event: LuigiEvent) => {
+      const payload = event.payload as { data: Record<string, string>; keepBrowserHistory: boolean };
+      luigi.routing().addNodeParams(payload.data, payload.keepBrowserHistory);
     });
-    containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, (event: any) => {
+    containerElement.addEventListener(Events.COLLAPSE_LEFT_NAV_REQUEST, (event: LuigiEvent) => {
+      const payload = event.payload as { state: boolean };
+      luigi.ux().collapseLeftSideNav(payload.state);
+    });
+    containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, () => {
+      luigi.ux().openUserSettings();
+    });
+    containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
     });
-    containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: any) => {
-      RoutingModule.addSearchParamsFromClient(event.detail.data, event.detail.keepBrowserHistory, luigi);
+    containerElement.addEventListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: LuigiEvent) => {
+      const detail = event.detail as {
+        data: Record<string, string>;
+        keepBrowserHistory: boolean;
+        preventLuigiConfigUpdate: boolean;
+      };
+      RoutingModule.addSearchParamsFromClient(
+        detail.data,
+        detail.keepBrowserHistory,
+        detail.preventLuigiConfigUpdate,
+        luigi
+      );
     });
-    containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: any) => {
-      UIModule.updateModalSettings(event.payload.updatedModalSettings, event.payload.addHistoryEntry, luigi);
+    containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: LuigiEvent) => {
+      const payload = event.payload as { updatedModalSettings: object; addHistoryEntry: boolean };
+      UIModule.updateModalSettings(payload.updatedModalSettings, payload.addHistoryEntry, luigi);
     });
-    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: any) => {
-      luigi.i18n().setCurrentLocale(event.detail?.data?.data?.currentLocale, containerElement);
+    containerElement.addEventListener(Events.SET_CURRENT_LOCALE_REQUEST, (event: LuigiEvent) => {
+      if (!I18nHelpers.hasLocaleChangePermission(containerElement)) {
+        return;
+      }
+      const detail = event.detail as { data?: { data?: { currentLocale?: string } } };
+      const locale = detail?.data?.data?.currentLocale;
+      if (locale) {
+        luigi.i18n().setCurrentLocale(locale);
+      }
+    });
+    containerElement.addEventListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
+      const options = event.payload as {
+        fromClosestContext?: boolean;
+        fromContext?: string | null;
+        fromParent?: boolean;
+        fromVirtualTreeRoot?: boolean;
+      };
+      serviceRegistry
+        .get(NavigationService)
+        .getCurrentRoutePath(options)
+        .then((route) => {
+          event.callback(route);
+        })
+        .catch(() => event.callback(''));
+    });
+    containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
+      const vg = containerElement.viewGroup;
+      if (vg) {
+        applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
+      }
+    });
+    containerElement.addEventListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
+      if (containerElement.parentNode?.classList?.contains('content')) {
+        serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+      }
     });
   }
 };

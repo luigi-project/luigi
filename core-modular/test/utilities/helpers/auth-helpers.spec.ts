@@ -42,10 +42,10 @@ describe('AuthHelpers', () => {
 
   it('parseUrlAuthErrors', () => {
     const location = { search: '' };
-    jest.spyOn(window, 'window', 'get').mockImplementation(() => {
-      return {
-        location
-      } as Window & typeof globalThis;
+    Object.defineProperty(window, 'location', {
+      value: location,
+      writable: true,
+      configurable: true
     });
 
     expect(AuthHelpers.parseUrlAuthErrors()).toBeUndefined();

@@ -1,5 +1,6 @@
 export * from './async-helpers';
 export * from './auth-helpers';
+export * from './device-helpers';
 export * from './escaping-helpers';
 export * from './generic-helpers';
 export * from './iframe-helpers';
@@ -10,3 +11,5 @@ export * from './event-listener-helpers';
 export * from './storage-helper';
 export * from './usersetting-dialog-helpers';
 export * from './global-search-helpers';
+export * from './dropdown-keyboard-helpers';
+export * from './fast-nav-helpers';

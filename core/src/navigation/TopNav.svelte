@@ -14,6 +14,7 @@
   import { LuigiAuth, LuigiConfig, LuigiI18N } from '../core-api';
   import {
     AuthHelpers,
+    DeviceHelpers,
     NavigationHelpers,
     RoutingHelpers,
     StateHelpers,
@@ -55,7 +56,9 @@
   export let searchResult;
   export let burgerTooltip;
   export let responsiveShellbarPadding;
+  export let fastNavGroup = null;
 
+  const isPhone = DeviceHelpers.isPhone();
   let store = getContext('store');
   let contextSwitcherToggle = false;
   let selectedLabel;
@@ -217,6 +220,10 @@
     }
   }
 
+  function onWindowBlur() {
+    closeAllDropdowns();
+  }
+
   function burgerClickHandler() {
     if (responsiveNavSetting === 'simple' || responsiveNavSetting === 'simpleMobileOnly') {
       simpleNav();
@@ -267,13 +274,15 @@
   }
 </script>
 
-<svelte:window on:click={closeAllDropdowns} on:blur={closeAllDropdowns} />
+<svelte:window on:click={closeAllDropdowns} on:blur={onWindowBlur} />
 {#if showTopNav}
   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div
     class="fd-shellbar {responsiveShellbarPadding
       ? 'fd-shellbar--responsive-paddings'
       : ''} lui-shellbar-wrapper {hideNavComponent ? 'hideNavComponent' : ''}"
+    data-luigi-fast-nav-group={fastNavGroup}
+    role="banner"
     tabindex="0"
   >
     <div class="fd-shellbar__group fd-shellbar__group--product" role="heading" aria-level="1">
@@ -613,12 +622,12 @@
                 <div
                   class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
                   aria-controls="profilePopover"
-                  aria-expanded="true"
+                  aria-expanded={dropDownStates.profilePopover || false}
                   aria-haspopup="true"
                   title={userInfo.name || undefined}
                   role="button"
                   tabindex="0"
-                  on:click={() => toggleDropdownState('profilePopover')}
+                  on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                   on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                   data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                 >
@@ -654,12 +663,12 @@
                   <div
                     class="fd-button fd-button--transparent fd-shellbar__button fd-user-menu__control"
                     aria-controls="profilePopover"
-                    aria-expanded="true"
+                    aria-expanded={dropDownStates.profilePopover || false}
                     aria-haspopup="true"
                     title={userInfo.name || undefined}
                     role="button"
                     tabindex="0"
-                    on:click={() => toggleDropdownState('profilePopover')}
+                    on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                     on:keydown={(event) => handleToggleDropdownStateKeyEvent(event)}
                     data-testid={userInfo.picture ? 'luigi-topnav-profile-btn' : 'luigi-topnav-profile-initials'}
                   >
@@ -674,7 +683,9 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right"
+                  class="fd-popover__body fd-popover__body--right { isPhone
+                    ? 'fd-user-menu--mobile'
+                    : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
                   id="profilePopover"
                   on:click|stopPropagation
@@ -683,6 +694,7 @@
                     on:toggleDropdownState={() => toggleDropdownState('profilePopover')}
                     on:userInfoUpdated={userInfoUpdate}
                     {addNavHrefForAnchor}
+                    isHidden={!(dropDownStates.profilePopover || false)}
                   />
                 </div>
               </div>
@@ -699,7 +711,7 @@
                       aria-expanded={dropDownStates.profilePopover || false}
                       aria-haspopup="true"
                       aria-controls="profilePopover"
-                      on:click={() => toggleDropdownState('profilePopover')}
+                      on:click|stopPropagation={() => toggleDropdownState('profilePopover')}
                       title={userInfo.name ? userInfo.name : undefined}
                       tabindex="0"
                       data-testid="luigi-topnav-profile-btn"
@@ -720,7 +732,9 @@
                   </div>
                 </div>
                 <div
-                  class="fd-popover__body fd-popover__body--right"
+                  class="fd-popover__body fd-popover__body--right { isPhone
+                    ? 'fd-user-menu--mobile'
+                    : ''}"
                   aria-hidden={!(dropDownStates.profilePopover || false)}
                   id="profilePopover"
                   on:click|stopPropagation
@@ -758,10 +772,6 @@
   /*Remove Safari bug with blue outlines of dropdowns in the shellbar*/
   .fd-shellbar:focus {
     outline: none;
-  }
-
-  #app:not(.vega) .fd-shellbar:not(.fd-shellbar--responsive-paddings) {
-    padding: 0 0.5rem;
   }
 
   .fd-shellbar {
@@ -847,5 +857,18 @@
 
   .lui-shellbar-wrapper {
     column-gap: 2rem;
+  }
+
+  :global(.lui-handheldMode .fd-user-menu--mobile) {
+    border-radius: 0;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.lui-handheldMode .fd-user-menu--mobile:before),
+  :global(.lui-handheldMode .fd-user-menu--mobile:after) {
+    display: none;
   }
 </style>

@@ -59,6 +59,8 @@ Luigi.setConfig({
 
 > **NOTE:** With Luigi version 1.21.0, we removed the experimental flag for web components. 
 
+> **NOTE:** Unlike Luigi's default iframe-based micro frontends, web components are not sandboxed in an iframe — they run in the host page's context with full access to it and to the Luigi Core APIs. `validWebcomponentUrls` is the allow-list that controls which origins web components may be loaded from, so only add origins you trust. The `['.*?']` example above allows any origin and is intended for local development, not production.
+
 ### Write a Web Component
 
 There are a couple of differences between Luigi web components and standard ones:
@@ -103,6 +105,24 @@ export default class ExampleWC extends HTMLElement {
 
 As shown in the example, you can use a LuigiClient instance inside your web component class.
 It is really important to note that this Luigi Client instance is different from the one than you can find in our [Client library](https://docs.luigi-project.io/docs/luigi-client-setup).
+
+### Registering a self-defined Web Component
+
+In the examples above, Luigi Core defines the custom element for you — you don't call `customElements.define()` yourself. Some setups, however, produce a custom element class that is already built and owned by the bundle (for example [Angular Elements](https://angular.dev/guide/elements)). For these cases, the `luigi-element` module exposes the `registerWebComponent` function so you can register such a component with Luigi through an officially supported API instead of relying on internals.
+
+```javascript
+import { registerWebComponent } from '@luigi-project/client/luigi-element.js';
+
+export class MyComponent extends LuigiElement { /* ... */ }
+
+// ES module bundle:
+registerWebComponent(import.meta.url, MyComponent);
+
+// Classic script bundle:
+// registerWebComponent(document.currentScript?.src, MyComponent);
+```
+
+`registerWebComponent(srcString, element)` takes the URL of the bundle and the custom element class to register. The `srcString` must resolve to the same URL Luigi uses for the node (the node's `viewUrl`): Luigi hex-encodes the resolved absolute URL to derive the custom element id (`luigi-wc-<encoded-url>`) the component is registered under, so if `srcString` resolves to a different URL, the component is registered and looked up under mismatching ids and never renders. From the bundle registering itself, pass `import.meta.url` (ES module) or `document.currentScript?.src` (classic script), depending on how the bundle is loaded. The Luigi Core application must be present on the page; if it is not, an error is logged and the call is a no-op.
 
 Normal micro frontends are embedded inside iframe: Luigi offers a library to allow the frontend to communicate with Luigi Core.
 In a web component the situation is quite different: they are not encapsulated into an iframe, they are just loaded inside a shadow element. When Luigi Core loads a web component, it injects a Luigi Client instance.

@@ -12,6 +12,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import luigiLinkParser from '../unified-plugins/rehype-luigi-linkparser.js';
 import addCopyToClipboard from '../unified-plugins/rehype-copy-to-clipboard.js';
 import addCustomAttributes from '../unified-plugins/rehype-add-custom-attributes.js';
+import addFiddlePreset from '../unified-plugins/rehype-fiddle-preset.js';
 import wrapAccordion from '../unified-plugins/rehype-accordion.js';
 import luigiNavigationBuilder from '../unified-plugins/remark-generate-luigi-navigation.js';
 import addKeyWords from '../unified-plugins/rehype-add-keywords.js';
@@ -35,6 +36,7 @@ class MarkdownService {
         .use(remarkRehype, { allowDangerousHtml: true })
         .use(rehypeRaw)
         .use(addCustomAttributes)
+        .use(addFiddlePreset)
         .use(wrapAccordion, { questionTagName: 'h3' })
         .use(addIdsToHeadings)
         .use(rehypeAutolinkHeadings, { behavior: 'append' })

@@ -33,6 +33,9 @@ export const staticRoutes: Routes = [
   }
 ];
 
+/**
+ * @deprecated use provideLuigiAngular instead
+ */
 @NgModule({
   imports: [RouterModule.forChild(staticRoutes)],
   providers: [

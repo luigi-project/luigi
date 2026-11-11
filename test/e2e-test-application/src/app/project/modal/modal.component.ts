@@ -1,4 +1,12 @@
-import { Component, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  OnChanges,
+  Input,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+  ChangeDetectionStrategy
+} from '@angular/core';
 
 import { uxManager } from '@luigi-project/client';
 
@@ -6,6 +14,7 @@ import { uxManager } from '@luigi-project/client';
   selector: 'app-modal',
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ModalComponent implements OnChanges {

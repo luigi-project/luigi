@@ -18,8 +18,13 @@ export class Routing {
    *
    * @param params - An object containing key-value pairs to be added as search parameters.
    * @param keepBrowserHistory - If `true`, a new entry is added to the browser's history; otherwise, the current entry is replaced. Defaults to `false`.
+   * @param preventLuigiConfigUpdate - If `true`, prevents updating the Luigi configuration when adding search parameters. Defaults to `false`.
    */
-  addSearchParams(params: object, keepBrowserHistory: boolean = false): void {
+  addSearchParams(
+    params: object,
+    keepBrowserHistory: boolean = false,
+    preventLuigiConfigUpdate: boolean = false
+  ): void {
     if (!GenericHelpers.isObject(params)) {
       console.log('Params argument must be an object');
       return;
@@ -32,7 +37,9 @@ export class Routing {
     }
 
     this.handleBrowserHistory(keepBrowserHistory, url);
-    this.luigi.configChanged();
+    if (!preventLuigiConfigUpdate) {
+      this.luigi.configChanged();
+    }
   }
 
   /**
@@ -118,6 +125,33 @@ export class Routing {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     } else {
       this.luigi.configChanged();
+    }
+  }
+
+  getAnchor(): string {
+    const { hash } = new URL(window.location.href);
+    const useHashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+
+    if (useHashRouting && hash.split('#').length === 2) {
+      return '';
+    }
+
+    return hash.split('#').pop() || '';
+  }
+
+  setAnchor(value: string): void {
+    if (!value || value === '') return;
+
+    if (this.luigi.getConfigValue('routing.useHashRouting')) {
+      const { hash } = new URL(window.location.href);
+      const hashArray = hash.split('#');
+      const hasExistingHash = hashArray.length > 2;
+      const newHashArray = hasExistingHash ? hashArray.slice(0, -1) : hashArray;
+
+      value = [...newHashArray, value].join('#');
+      window.history.pushState(null, '', value);
+    } else {
+      window.location.hash = value;
     }
   }
 }

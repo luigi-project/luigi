@@ -4,6 +4,74 @@
 
 
 
+## [v1.8.0] (2026-11-04)
+
+#### :rocket: Added
+
+* [#5550](https://github.com/luigi-project/luigi/pull/5550) Pass user settings to compound container children by group ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.12] (2026-10-27)
+
+#### :bug: Fixed
+
+* [#5535](https://github.com/luigi-project/luigi/pull/5535) Container - refactor internal Data ([@JohannesDoberer](https://github.com/JohannesDoberer))
+* [#5436](https://github.com/luigi-project/luigi/pull/5436) null check against mainComponent ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+## [v1.7.11] (2026-08-11)
+
+#### :bug: Fixed
+
+* [#5378](https://github.com/luigi-project/luigi/pull/5378) Race condition in container ([@walmazacn](https://github.com/walmazacn))
+
+
+
+
+## [v1.7.10] (2026-07-31)
+
+#### :rocket: Added
+
+* [#5377](https://github.com/luigi-project/luigi/pull/5377) Container webcomponent creation interceptor ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.9] (2026-07-29)
+
+#### :rocket: Added
+
+* [#5354](https://github.com/luigi-project/luigi/pull/5354) Feature/iframe creation interceptor container ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+#### :bug: Fixed
+
+* [#5356](https://github.com/luigi-project/luigi/pull/5356) fix: resolve getCurrentRoute promise for empty route paths in web components ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+
+
+## [v1.7.8] (2026-07-08)
+
+#### :bug: Fixed
+
+* [5288](https://github.com/luigi-project/luigi/pull/5288) Fix: added missing argument for collapseLeftNavNav ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
+
+## [v1.7.7] (2026-05-18)
+
+#### :rocket: Added
+
+* [#5114](https://github.com/luigi-project/luigi/pull/5114) Allow configuring withoutSync for updateContext ([@JohannesDoberer](https://github.com/JohannesDoberer))
+
+
 ## [v1.7.6] (2025-12-18)
 
 #### :bug: Fixed
@@ -164,3 +232,10 @@
 [v1.7.4]: https://github.com/luigi-project/luigi/compare/container/v1.7.3...container/v1.7.4
 [v1.7.5]: https://github.com/luigi-project/luigi/compare/container/v1.7.4...container/v1.7.5
 [v1.7.6]: https://github.com/luigi-project/luigi/compare/container/v1.7.5...container/v1.7.6
+[v1.7.7]: https://github.com/luigi-project/luigi/compare/container/v1.7.6...container/v1.7.7
+[v1.7.8]: https://github.com/luigi-project/luigi/compare/container/v1.7.7...container/v1.7.8
+[v1.7.9]: https://github.com/luigi-project/luigi/compare/container/v1.7.8...container/v1.7.9
+[v1.7.10]: https://github.com/luigi-project/luigi/compare/container/v1.7.9...container/v1.7.10
+[v1.7.11]: https://github.com/luigi-project/luigi/compare/container/v1.7.10...container/v1.7.11
+[v1.7.12]: https://github.com/luigi-project/luigi/compare/container/v1.7.11...container/v1.7.12
+[v1.8.0]: https://github.com/luigi-project/luigi/compare/container/v1.7.12...container/v1.8.0

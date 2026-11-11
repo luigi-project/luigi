@@ -33,6 +33,7 @@ describe('attachWC', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {
@@ -57,7 +58,8 @@ describe('attachWC', () => {
     expect(service.initWC).toHaveBeenCalled();
     expect(createElementSpy).toHaveBeenCalledWith(wc_id);
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 
   it('wc_container does NOT contain wcItemPlaceholder', () => {
@@ -90,7 +92,8 @@ describe('attachWC', () => {
 
     // Assert
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 
   it('_luigi_node provided', () => {
@@ -109,7 +112,8 @@ describe('attachWC', () => {
     expect(wc_container.replaceChild).toHaveBeenCalledWith(innerWCElement, wcItemPlaceholder);
     expect((wc_container as any)._luigi_mfe_webcomponent).toEqual(innerWCElement);
 
-    expect(dispatchEventSpy).toHaveBeenCalledWith(new Event('wc_ready'));
+    expect(dispatchEventSpy).toHaveBeenCalled();
+    expect(dispatchEventSpy.mock.calls[0][0].type).toBe('wc_ready');
   });
 });
 
@@ -715,10 +719,10 @@ describe('createClientAPI', () => {
 
       // act
       const clientAPI = service.createClientAPI(undefined, 'nodeId', 'wc_id', 'component');
-      clientAPI.uxManager().collapseLeftSideNav();
+      clientAPI.uxManager().collapseLeftSideNav(true);
 
       // assert
-      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+      expect(dispatchEventSpy).toHaveBeenCalledWith(Events.COLLAPSE_LEFT_NAV_REQUEST, { state: true });
     });
 
     it('test uxManager setDocumentTitle', () => {
@@ -1155,7 +1159,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: params,
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 
@@ -1172,7 +1177,8 @@ describe('createClientAPI', () => {
     // assert
     expect(dispatchEventSpy).toHaveBeenCalledWith(Events.ADD_SEARCH_PARAMS_REQUEST, {
       data: {},
-      keepBrowserHistory
+      keepBrowserHistory,
+      preventLuigiConfigUpdate: false
     });
   });
 
@@ -1253,6 +1259,59 @@ describe('createClientAPI', () => {
     // assert
     expect(result).toEqual({});
   });
+
+  it('test getUserSettings returns only the group settings for groupedUserSettings shape', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div') as any;
+    eventBusElement._luigi_node = { userSettingsGroup: 'theme' };
+
+    // act
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', true);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({ theme: 'red' });
+  });
+
+  it('test getUserSettings returns {} for groupedUserSettings shape without userSettingsGroup', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div') as any;
+    eventBusElement._luigi_node = {};
+
+    // act
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', true);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({});
+  });
+
+  it('test getUserSettings maps the root compound wc to the rootNodeUserSettingsGroup group', () => {
+    // mock and spy on data/functions
+    service.thisComponent = document.createElement('div');
+    service.thisComponent.userSettings = {
+      rootNodeUserSettingsGroup: 'theme',
+      groupedUserSettings: { theme: { theme: 'red' }, account: { name: 'luigi' } }
+    };
+    const eventBusElement = document.createElement('div');
+
+    // act: isCompoundChild = false marks the root (nesting) compound wc
+    const clientAPI = service.createClientAPI(eventBusElement, 'nodeId', 'wc_id', 'component', false);
+    const result = clientAPI.getUserSettings();
+
+    // assert
+    expect(result).toEqual({ theme: 'red' });
+  });
 });
 
 describe('initWC', () => {
@@ -1266,6 +1325,7 @@ describe('initWC', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -1314,6 +1374,54 @@ describe('initWC', () => {
     expect(urlSpy).toHaveBeenNthCalledWith(2, documentOrigin, baseURIMocked);
     expect(urlSpy).toHaveBeenNthCalledWith(3, documentOrigin, baseURIMocked);
     expect(urlSpy).toHaveBeenNthCalledWith(4, './', urlSpyMockData);
+  });
+
+  it('should call webcomponentCreationInterceptor if defined on thisComponent', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const interceptorFn = jest.fn();
+    const currentNode = { label: 'Test Node' };
+    const mfeType = 'main';
+    service.thisComponent = {
+      webcomponentCreationInterceptor: interceptorFn,
+      currentNode,
+      _luigiMicroFrontendType: mfeType
+    };
+    const evtBusEl = {};
+
+    // Act
+    service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+
+    // Assert
+    expect(interceptorFn).toHaveBeenCalledWith(wc, currentNode, ctx, nodeId, false);
+  });
+
+  it('should not throw if webcomponentCreationInterceptor is not defined', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const evtBusEl = {};
+    service.thisComponent = {};
+
+    // Act & Assert
+    expect(() => {
+      service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+    }).not.toThrow();
+  });
+
+  it('should not call webcomponentCreationInterceptor if it is not a function', () => {
+    // Arrange
+    const wc = { context: null, LuigiClient: null };
+    const evtBusEl = {};
+    service.thisComponent = {
+      webcomponentCreationInterceptor: 'not-a-function',
+      currentNode: { label: 'Node' },
+      _luigiMicroFrontendType: 'main'
+    };
+
+    // Act & Assert
+    expect(() => {
+      service.initWC(wc, wc_id, evtBusEl, viewUrl, ctx, nodeId, isCompoundChild);
+    }).not.toThrow();
   });
 });
 
@@ -1478,6 +1586,7 @@ describe('createCompoundContainerAsync', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {
@@ -1566,6 +1675,7 @@ describe('registerWCFromUrl', () => {
 
   beforeEach(() => {
     service = new WebComponentService();
+    service.thisComponent = {};
   });
 
   afterEach(() => {

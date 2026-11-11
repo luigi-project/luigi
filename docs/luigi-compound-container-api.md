@@ -187,7 +187,18 @@ myContainer.clientPermissions = {permission: "adminGroup"}
 * **since:** 1.0.0
 ### userSettings&nbsp;  
 <p>The user settings to be passed to the compound micro frontend. <br><br>
-Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></p>
+A plain key-value object is forwarded to all micro frontends as is.<br><br>
+Alternatively, user settings can be grouped so that each micro frontend only
+receives the settings of the group it is assigned to. In that case the object
+has the shape <code>{ rootNodeUserSettingsGroup, groupedUserSettings }</code>, where:</p>
+<ul>
+  <li><code>groupedUserSettings</code> is an object holding the stored settings keyed by group name.</li>
+  <li><code>rootNodeUserSettingsGroup</code> is the group name whose settings are passed to the root (nesting) compound micro frontend.</li>
+</ul>
+Each compound child then receives only the settings of the group defined via its
+<code>userSettingsGroup</code> property in the <a href="luigi-compound-container-api.md#compoundconfig">compoundConfig</a>.
+A child (or the root node) without a matching group receives an empty object from <code>LuigiClient.getUserSettings()</code>. <br><br>
+Type: [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 
   
 **Example**  
@@ -197,6 +208,10 @@ Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 **Example**  
 ```js
 myContainer.userSettings = {language: 'de', theme: 'sap_horizon'}
+```
+**Example**  
+```js
+myContainer.userSettings = { rootNodeUserSettingsGroup: 'account', groupedUserSettings: { theme: { theme: 'sap_horizon' }, account: { name: 'luigi' } } }
 ```
   
 **Meta**:  
@@ -290,6 +305,26 @@ myContainer.webcomponent = { type: 'module', selfRegistered: true, tagName: 'my-
   
 **Meta**:  
 * **since:** 1.0.0
+### webcomponentCreationInterceptor&nbsp;  
+<p>A function called after the web component for the microfrontend is created.
+It allows modifying the web component element before it is attached to the DOM, e.g. setting attributes.</p>
+
+**Params**
+
+- wc <code>HTMLElement</code> - <p>the web component element</p>
+- currentNode <code>Object</code> - <p>the current navigation node</p>
+- context <code>Object</code> - <p>the context object passed to the web component</p>
+- nodeId <code>string</code> - <p>the node identifier</p>
+- isSpecialMf <code>boolean</code> - <p>indicates whether the web component is rendered in a modal, splitView or drawer (false for main)</p>
+
+  
+**Example**  
+```js
+containerElement.webcomponentCreationInterceptor = (wc, currentNode, ctx, nodeId, isSpecialMf) => { wc.setAttribute('data-custom', 'value'); }
+```
+  
+**Meta**:  
+* **since:** 1.7.10
 ### skipInitCheck&nbsp;  
 <p>If set to true, skips handshake and ready event is fired immediately. <br><br>
 Type: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></p>

@@ -107,12 +107,10 @@ const FILES_CHANGED = execTrim(`git diff --name-only HEAD ${LATEST_TAG}`);
       const publicPath = `${base}/${publishPaths[pkg].join('/')}`;
       const pkgJson = require(publicPath + '/package.json');
       logStep(`Publishing ${pkgJson.name}@${pkgJson.version}`);
-      const resultPublish = execTrim(`npm publish ${publicPath} --access public`);
+      const resultPublish = execTrim(`npm publish ${publicPath} --access public --tag next`);
       logStep(resultPublish);
       logStep('\n');
-      const resultTagNext = execTrim(`npm dist-tag add ${pkgJson.name}@${pkgJson.version} next`);
-      logStep(resultTagNext);
-      logStep(`Tagged ${pkgJson.name}@${pkgJson.version} with next on npm`);
+      logStep(`Published ${pkgJson.name}@${pkgJson.version} with dist-tag next`);
     });
   }
 })();

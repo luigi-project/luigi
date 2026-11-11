@@ -39,7 +39,6 @@ paths-ignore:
 
   # Documentation and website (not shipped in packages)
   - 'docs/**'
-  - 'blog/**'
   - '**/doc/**'
   - '**/documentation/**'
 
@@ -65,7 +64,6 @@ paths-ignore:
   - '**/.idea/**'
 
   # Config files (not source code)
-  - '**/wss-generated-file.config'
   - '**/.eslintrc*'
   - '**/tsconfig.json'
   - '**/rollup.config.*'

@@ -1,7 +1,14 @@
 import type { Luigi } from '../core-api/luigi';
+import type { GlobalSearch } from '../types/global-search';
+import { UIModule } from '../modules/ui-module';
 import type {
   AppSwitcher,
   AppSwitcherItem,
+  BreadcrumbData,
+  BreadcrumbItem,
+  ContextSwitcher,
+  ContextSwitcherItem,
+  ExternalLink,
   HistoryMethod,
   LeftNavData,
   NavigationOptions,
@@ -11,27 +18,46 @@ import type {
   NavItem,
   Node,
   PathData,
+  ProductSwitcher,
+  ProductSwitcherItem,
   ProfileItem,
   ProfileSettings,
+  StatusBadgeType,
+  TabNavConfig,
   TabNavData,
   TopNavData,
-  UserInfo
+  UserInfo,
+  UserSettingsProfileMenuEntry
 } from '../types/navigation';
 import { AsyncHelpers } from '../utilities/helpers/async-helpers';
 import { AuthHelpers } from '../utilities/helpers/auth-helpers';
+import { ContextSwitcherHelpers } from '../utilities/helpers/context-switcher-helpers';
 import { EscapingHelpers } from '../utilities/helpers/escaping-helpers';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
+import { GlobalSearchHelpers } from '../utilities/helpers/global-search-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
-import { NodeDataManagementService } from './node-data-management.service';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
 import { TOP_NAV_DEFAULTS } from '../utilities/luigi-config-defaults';
 import { AuthLayerSvc } from './auth-layer.service';
-import { serviceRegistry } from './service-registry';
+import { DirtyStatusService } from './dirty-status.service';
 import { ModalService } from './modal.service';
+import { NodeDataManagementService } from './node-data-management.service';
+import { serviceRegistry } from './service-registry';
+
+const statusBadgeTypes: Record<StatusBadgeType, string> = {
+  critical: 'Critical',
+  informative: 'Information',
+  negative: 'Negative',
+  neutral: 'Neutral',
+  positive: 'Positive'
+};
 
 export class NavigationService {
+  _preservedViews: any[] = [];
   modalService?: ModalService;
   nodeDataManagementService?: NodeDataManagementService;
+  private goBackContext: Record<string, any> | null = null;
+  private previousBreadcrumbs: Record<string, BreadcrumbItem> = {};
 
   constructor(private luigi: Luigi) {}
 
@@ -49,23 +75,154 @@ export class NavigationService {
     return this.nodeDataManagementService;
   }
 
+  private handleDialogContainer(goBackContext: any): boolean {
+    const allContainers = GenericHelpers.getNodeList('luigi-container[lui_container]', true);
+
+    this.goBackContext = { goBackContext };
+
+    if (allContainers?.length > 1) {
+      const dialogContainers = allContainers.filter(
+        (container: any) => !container.parentNode.classList.contains('content')
+      );
+      const activeContainer: any = dialogContainers.at(-1);
+
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ ...activeContainer.context, goBackContext }, { withoutSync: false });
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private prepareGoBackContextForNavigation(goBackContext: any): void {
+    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+      this.handleDialogContainer(goBackContext);
+    }
+  }
+
+  clearGoBackContext(): void {
+    this.goBackContext = null;
+  }
+
+  getGoBackContext(): Record<string, any> | null {
+    return this.goBackContext;
+  }
+
+  clearPreservedViews(): void {
+    this._preservedViews.length = 0;
+  }
+
+  removeLastPreservedView(): void {
+    if (this._preservedViews.length) {
+      this._preservedViews.pop();
+    }
+  }
+
+  getPreservedViewsLength(): number {
+    return this._preservedViews.length;
+  }
+
+  isValidBackRoute(route: string): boolean {
+    if (this._preservedViews.length === 0) {
+      return false;
+    }
+
+    const routePath = route.startsWith('/') ? route : `/${route}`;
+    const lastPreservedView = [...this._preservedViews].pop();
+    const removeQueryParams = (path: string) => path.split('?')[0];
+    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+
+    return paths.includes(removeQueryParams(routePath));
+  }
+
+  processGoBackContext(goBackContext: any): void {
+    const updateContext = (context: any) => {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+
+      if (!containerWrapper) {
+        return;
+      }
+
+      const allContainers = [...containerWrapper.childNodes].filter(
+        (element: any) => element.tagName?.indexOf('LUIGI-') === 0
+      ) as any;
+      const activeContainer = allContainers.find((element: any) => element.style?.display !== 'none') as any;
+
+      if (activeContainer?.updateContext) {
+        activeContainer.updateContext({ ...activeContainer.context, ...context }, { withoutSync: false });
+      }
+    };
+
+    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+      const dialogUpdated = this.handleDialogContainer(goBackContext);
+
+      if (!dialogUpdated) {
+        updateContext({ goBackContext });
+      }
+    } else {
+      this.clearGoBackContext();
+
+      if (!this.luigi.getConfigValue('routing.showModalPathInUrl')) {
+        updateContext({});
+      }
+    }
+  }
+
+  handleGoBackRequest(goBackContext?: any): void {
+    const backContext = goBackContext && typeof goBackContext === 'string' ? JSON.parse(goBackContext) : goBackContext;
+
+    this.clearGoBackContext();
+
+    if (this.getPreservedViewsLength() > 0) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      dirtyStatusService.getUnsavedChangesModalPromise().then(
+        () => {
+          const previousActiveViewData = this._preservedViews.pop();
+
+          this.prepareGoBackContextForNavigation(backContext);
+
+          if (previousActiveViewData?.path) {
+            this.handleNavigationRequest({
+              path: previousActiveViewData.path,
+              withoutSync: false
+            });
+          }
+        },
+        () => {}
+      );
+    } else {
+      if (goBackContext) {
+        console.warn(
+          `Warning: goBack() does not support goBackContext value. This is available only when using the Luigi preserveView feature.`
+        );
+      }
+      history.back();
+    }
+  }
+
   async getPathData(path: string): Promise<PathData> {
     const cfg = this.luigi.getConfig();
-    let pathSegments = path.split('/');
+    let pathSegments = path?.split('/');
+
     if (pathSegments?.length > 0 && pathSegments[0] === '') {
       pathSegments = pathSegments.slice(1);
     }
 
-    let globalContext = cfg.navigation?.globalContext || {};
+    const globalContext = cfg.navigation?.globalContext || {};
     let currentContext = globalContext;
     let rootNode;
 
     if (this.getNodeDataManagementService().hasRootNode()) {
       rootNode = this.getNodeDataManagementService().getRootNode().node;
     } else {
-      let nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+      const nodesFromConfig = await this.luigi.getConfigValueAsync('navigation.nodes');
+
       if (typeof nodesFromConfig === 'object' && !Array.isArray(nodesFromConfig)) {
         rootNode = nodesFromConfig;
+
         if (rootNode.pathSegment) {
           rootNode.pathSegment = '';
           console.warn('Root node must have an empty path segment. Provided path segment will be ignored.');
@@ -73,17 +230,25 @@ export class NavigationService {
       } else {
         rootNode = { children: nodesFromConfig } as Node;
       }
+
       rootNode.children = await this.getChildren(rootNode, currentContext);
       rootNode.children = this.prepareRootNodes(rootNode.children || [], currentContext);
       this.getNodeDataManagementService().setRootNode(rootNode);
     }
 
-    let pathParams: Record<string, any> = {};
+    const rootContext = {
+      parentNavigationContexts: [] as string[],
+      ...(currentContext || {}),
+      ...(rootNode.context || {})
+    };
+    const pathParams: Record<string, any> = {};
     const pathData: PathData = {
+      context: rootContext,
       selectedNodeChildren: rootNode.children,
       nodesInPath: [rootNode],
       rootNodes: rootNode.children,
-      pathParams
+      pathParams,
+      matchedPath: ''
     };
 
     if (rootNode.viewUrl && pathSegments.length === 0) {
@@ -97,8 +262,14 @@ export class NavigationService {
             console.warn('No matching node found for segment:', segment);
             break;
           }
-          const nodeContext = node.context || {};
-          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext);
+          // node.context gets overwritten with the merged result (globalContext + nodeContext) below.
+          // We preserve the originally declared context so that subsequent calls (e.g. after setGlobalContext)
+          // merge against the raw value instead of the previously accumulated one.
+          if (!('_rawContext' in node)) {
+            node._rawContext = node.context;
+          }
+          const nodeContext = node._rawContext ?? {};
+          const mergedContext = NavigationHelpers.mergeContext(currentContext, nodeContext, node.navigationContext);
           let substitutedContext = mergedContext;
           if (node.pathSegment?.startsWith(':')) {
             pathParams[node.pathSegment.replace(':', '')] = EscapingHelpers.sanitizeParam(segment);
@@ -122,6 +293,17 @@ export class NavigationService {
         }
       }
     }
+
+    const navPathSegments = pathData.nodesInPath?.filter((n) => n.pathSegment).map((n) => n.pathSegment) || [];
+    pathData.matchedPath =
+      pathSegments
+        .filter((segment, index) => {
+          return (
+            (navPathSegments[index] && navPathSegments[index].startsWith(':')) || navPathSegments[index] === segment
+          );
+        })
+        .join('/') || '';
+
     return pathData;
   }
 
@@ -163,11 +345,21 @@ export class NavigationService {
     return result;
   }
 
-  buildNavItems(nodes: Node[], selectedNode: Node | undefined, pathData: PathData): NavItem[] {
+  async buildNavItems(
+    nodes: Node[],
+    selectedNode: Node | undefined,
+    pathData: PathData
+  ): Promise<{
+    items: NavItem[];
+  }> {
     const catMap: Record<string, NavItem> = {};
     const items: NavItem[] = [];
+    const orphanItems: NavItem[] = [];
+    // Consumer badge counters are never invoked here — a slow/hanging count() must not block
+    // the nav build. The engine passes counters through structurally and heads resolve them
+    // (and aggregate category/overflow totals) when they render.
 
-    nodes?.forEach((node) => {
+    for (const node of nodes) {
       if (
         !NavigationHelpers.isNodeAccessPermitted(
           node,
@@ -176,23 +368,50 @@ export class NavigationService {
           this.luigi
         )
       ) {
-        return;
+        continue;
       }
 
-      if (node.category) {
+      const externalLink = node.externalLink ? { ...node.externalLink } : undefined;
+      let nodeHref = RoutingHelpers.getNodeHref(node, pathData?.pathParams, this.luigi);
+
+      if (externalLink?.url) {
+        const currentNode: Node = { ...node };
+
+        if (selectedNode?.context) {
+          currentNode.context = { ...currentNode.context, ...selectedNode.context };
+        }
+
+        const nodeData = { ...currentNode, viewUrl: externalLink.url };
+        const pathParams = pathData?.pathParams ? pathData.pathParams : {};
+
+        externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+        nodeHref = externalLink.url;
+      }
+
+      if (node.statusBadge) {
+        node.statusBadge.type = (statusBadgeTypes[node.statusBadge.type] || 'Neutral') as any;
+      }
+
+      const isCategoryValid =
+        node.category && (typeof node.category === 'string' || node.category.id || node.category.label);
+
+      if (isCategoryValid) {
         const catId = node.category.id || node.category.label || node.category;
         const catLabel = this.luigi.i18n().getTranslation(node.category.label || node.category.id || node.category);
         let catNode: NavItem = catMap[catId];
 
         if (!catNode) {
           catNode = {
+            // Badge counters are never invoked or aggregated by the engine. Heads that render a
+            // category badge sum the counters of catNode.category.nodes themselves.
             category: {
               altText: node.category.altText || '',
               icon: node.category.icon,
               id: catId,
               label: catLabel,
               nodes: [],
-              tooltip: this.resolveTooltipText(node.category, catLabel)
+              tooltip: this.resolveTooltipText(node.category, catLabel),
+              navigateOnClick: node.category.navigateOnClick ?? false
             }
           };
           catMap[catId] = catNode;
@@ -200,45 +419,63 @@ export class NavigationService {
         }
 
         catNode.category?.nodes?.push({
+          altText: node.altText,
+          externalLink,
+          href: nodeHref,
+          icon: node.icon,
+          label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
           selected: node === selectedNode,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
-          altText: node.altText,
-          icon: node.icon
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
         });
       } else {
-        items.push({
+        const navItem = {
           altText: node.altText,
+          badgeCounter: node.badgeCounter,
+          externalLink,
+          href: nodeHref,
           icon: node.icon,
-          label: node.label ? this.luigi.i18n().getTranslation(node.label) : undefined,
-          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined,
+          label: node.label ? RoutingHelpers.resolveNodeLabel(node, this.luigi) : undefined,
           node,
-          selected: node === selectedNode
-        });
+          selected: node === selectedNode,
+          tooltip: node.label ? this.resolveTooltipText(node, node.label) : undefined
+        };
+
+        if (node.category && !isCategoryValid) {
+          orphanItems.push(navItem);
+        } else {
+          items.push(navItem);
+        }
+      }
+    }
+
+    items.unshift(...orphanItems);
+
+    items.forEach((item) => {
+      if (!item.category?.navigateOnClick || !item.category.nodes?.length) {
+        return;
+      }
+      const navigateOnClick = item.category.navigateOnClick;
+      const targetNode =
+        navigateOnClick === true
+          ? item.category.nodes.find((subItem) => subItem.node?.category?.navigateOnClick)
+          : item.category.nodes.find((subItem) => subItem.node?.pathSegment === navigateOnClick);
+      if (targetNode) {
+        targetNode.navigateOnClick = true;
       }
     });
 
-    return items;
+    return { items };
   }
 
-  async shouldRedirect(path: string, pData?: PathData): Promise<string | undefined> {
-    const pathData = pData ?? (await this.getPathData(path));
-    if (path == '') {
-      if (pathData?.nodesInPath?.[0].viewUrl) {
-        return undefined;
-      }
-      // poor mans implementation, full path resolution TBD
-      return pathData?.rootNodes?.[0]?.pathSegment;
-    } else if (pathData?.selectedNode && !pathData.selectedNode.viewUrl && pathData.selectedNode.children?.length) {
-      return path + '/' + pathData.selectedNode.children[0].pathSegment;
+  async getCurrentNode(path: string): Promise<Node | undefined> {
+    const pathData: PathData = await this.getPathData(path);
+    let node: Node | undefined = pathData.selectedNode;
+
+    if (!node && pathData.nodesInPath?.length === 1) {
+      node = pathData.nodesInPath[0];
     }
-    return undefined;
-  }
 
-  async getCurrentNode(path: string): Promise<any> {
-    const pathData = await this.getPathData(path);
-    const node = pathData.selectedNode;
     if (
       !node ||
       !NavigationHelpers.isNodeAccessPermitted(
@@ -250,6 +487,7 @@ export class NavigationService {
     ) {
       return undefined;
     }
+
     return node;
   }
 
@@ -393,32 +631,75 @@ export class NavigationService {
       parentNode = [...pathToLeftNavParent].pop();
     }
 
-    let children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
-    navItems = this.buildNavItems(children, activeNode, pathData);
+    const children = (await this.getChildren(parentNode, parentNode?.context || {})) || [];
+    const navData = await this.buildNavItems(children, activeNode, pathData);
+
+    navItems = navData.items;
 
     // convert
     navItems = this.applyNavGroups(navItems);
+
     return {
       selectedNode: selectedNode || ({} as Node),
       items: navItems,
       basePath: basePath.replace(/\/\/+/g, '/'),
       sideNavFooterText: this.luigi.getConfig().settings?.sideNavFooterText,
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
-  navItemClick(node: Node, pathData?: PathData): void {
-    let fullPath = RoutingHelpers.getNodePath(node);
-    let pathParams = pathData?.pathParams;
+  async navItemClick(node: Node, pathData?: PathData): Promise<void> {
+    if (node.openNodeInModal) {
+      const fullPath = GenericHelpers.replaceVars(
+        RoutingHelpers.getNodePath(node),
+        pathData?.pathParams || {},
+        ':',
+        false
+      );
+      this.luigi.navigation().openAsModal(fullPath, node.openNodeInModal === true ? {} : node.openNodeInModal);
+      return;
+    }
 
-    fullPath = GenericHelpers.replaceVars(fullPath, pathParams ? pathParams : {}, ':', false);
+    const pathParams = pathData?.pathParams ? pathData.pathParams : {};
+    const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+    await dirtyStatusService.getUnsavedChangesModalPromise();
+
+    if (node.externalLink?.url) {
+      const currentNode: Node = { ...node };
+
+      if (pathData?.selectedNode?.context) {
+        currentNode.context = { ...currentNode.context, ...pathData.selectedNode.context };
+      }
+
+      const externalLink: ExternalLink = { ...currentNode.externalLink };
+      const nodeData = { ...currentNode, viewUrl: externalLink.url };
+
+      externalLink.url = RoutingHelpers.substituteViewUrl(nodeData, pathParams, undefined, this.luigi);
+      NavigationHelpers.openExternalLink(externalLink, pathParams);
+      return;
+    }
+
+    if (node.link) {
+      const isAbsolute = node.link.startsWith('/');
+      if (isAbsolute) {
+        return this.luigi.navigation().navigate(node.link);
+      }
+      const parentPath = node.parent ? RoutingHelpers.getNodePath(node.parent) : '';
+      const resolvedPath = `${parentPath}/${node.link}`.replace(/\/\/+/g, '/');
+      return this.luigi.navigation().navigate(resolvedPath);
+    }
+
+    let fullPath = RoutingHelpers.getNodePath(node);
+
+    fullPath = GenericHelpers.replaceVars(fullPath, pathParams, ':', false);
     if (!fullPath && fullPath !== '') {
       console.error(
         'Navigation error: could not build path for the node. Check if pathSegment is defined for all nodes in the path and if there are no duplicate pathSegments on the same level.'
       );
       return;
     }
-    this.luigi.navigation().navigate(fullPath);
+
+    return this.luigi.navigation().navigate(fullPath);
   }
 
   async getTopNavData(path: string, pData?: PathData): Promise<TopNavData> {
@@ -432,10 +713,17 @@ export class NavigationService {
     const headerTitle = NavigationHelpers.updateHeaderTitle(appSwitcher, pathData);
 
     if (profileItems?.length) {
-      profileItems.map((item: ProfileItem) => ({
-        ...item,
-        label: this.luigi.i18n().getTranslation(item.label || '')
-      }));
+      profileItems.forEach((item: ProfileItem) => {
+        item.label = this.luigi.i18n().getTranslation(item.label || '');
+        if (item.children?.length) {
+          item.children.forEach((child: ProfileItem) => {
+            child.label = this.luigi.i18n().getTranslation(child.label || '');
+          });
+        }
+        if (item.statusBadge) {
+          item.statusBadge.type = (statusBadgeTypes[item.statusBadge.type] || 'Neutral') as any;
+        }
+      });
     }
 
     const logoutLabel =
@@ -446,17 +734,17 @@ export class NavigationService {
       } else if (item.link) {
         this.luigi.navigation().navigate(item.link);
       } else if (item.externalLink?.url) {
-        if (item.externalLink.sameWindow) {
-          window.location.href = item.externalLink.url;
-        } else {
-          const newWindow = window.open(item.externalLink.url, '_blank', 'noopener noreferrer');
-          if (newWindow) {
-            newWindow.opener = null;
-            newWindow.focus();
-          }
-        }
+        NavigationHelpers.openExternalLink(item.externalLink);
       }
     };
+    const userSettingsEnabled = cfg.userSettings;
+    let userSettingsProfileMenuEntry: UserSettingsProfileMenuEntry = {};
+    if (userSettingsEnabled) {
+      userSettingsProfileMenuEntry = {
+        ...TOP_NAV_DEFAULTS.userSettingsProfileMenuEntry,
+        ...cfg.userSettings?.userSettingsProfileMenuEntry
+      };
+    }
     const profileSettings: ProfileSettings = {
       authEnabled: this.luigi.auth().isAuthorizationEnabled(),
       signedIn: this.luigi.auth().isAuthorizationEnabled() && AuthHelpers.isLoggedIn(),
@@ -472,6 +760,14 @@ export class NavigationService {
           AuthLayerSvc.logout();
         }
       },
+      settings: userSettingsEnabled
+        ? {
+            ...userSettingsProfileMenuEntry,
+            openUserSettings: () => {
+              this.luigi.ux().openUserSettings();
+            }
+          }
+        : undefined,
       onUserInfoUpdate: (fn) => {
         this.luigi.getConfigValueAsync('navigation.profile.staticUserInfoFn').then((userInfo) => {
           if (userInfo) {
@@ -485,19 +781,62 @@ export class NavigationService {
       }
     };
 
+    const userGlobalSearch: GlobalSearch | undefined = cfg?.globalSearch;
     const selectedNode: Node | undefined = pathData.selectedNode;
     const activeNode: Node | undefined =
       selectedNode && pathData.rootNodes.includes(selectedNode) ? selectedNode : undefined;
+    const contextSwitcher = await this.buildContextSwitcher();
+    const productSwitcher: ProductSwitcher = {
+      ...cfg.navigation?.productSwitcher,
+      productSwitcherItemClick: (item: ProductSwitcherItem) => {
+        if (item.externalLink?.url) {
+          NavigationHelpers.openExternalLink(item.externalLink);
+        } else if (item.link) {
+          this.luigi.navigation().navigate(item.link);
+        }
+      }
+    };
+    const navData = await this.buildNavItems(pathData.rootNodes, activeNode, pathData);
+
+    let globalSearch: GlobalSearch | undefined = userGlobalSearch;
+
+    if (userGlobalSearch?.searchProvider?.inputPlaceholder) {
+      globalSearch = {
+        ...globalSearch,
+        searchProvider: {
+          ...globalSearch?.searchProvider,
+          inputPlaceholder: GlobalSearchHelpers.getSearchPlaceholder(this.luigi)
+        }
+      };
+    }
+
+    if (userGlobalSearch?.searchFieldCentered) {
+      globalSearch = {
+        ...globalSearch,
+        searchFieldCentered: !!this.luigi.getConfigValue('settings.experimental.globalSearchCentered')
+      };
+    }
+
+    let logoAltText = '';
+
+    if (typeof cfg.settings?.header?.altText === 'string') {
+      logoAltText = this.luigi.i18n().getTranslation(cfg.settings.header.altText);
+    }
 
     return {
       appTitle: headerTitle || cfg.settings?.header?.title,
+      favicon: cfg.settings?.header?.favicon,
+      globalSearch,
+      isHeaderDisabled: !!cfg.settings?.header?.disabled,
       logo: cfg.settings?.header?.logo,
-      topNodes: this.buildNavItems(pathData.rootNodes, activeNode, pathData) as [any],
-      productSwitcher: cfg.navigation?.productSwitcher,
+      logoAltText,
+      topNodes: navData.items,
+      contextSwitcher,
+      productSwitcher,
       profile: this.luigi.auth().isAuthorizationEnabled() || cfg.navigation?.profile ? profileSettings : undefined,
       appSwitcher:
         cfg.navigation?.appSwitcher && this.getAppSwitcherData(cfg.navigation?.appSwitcher, cfg.settings?.header),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
   }
 
@@ -547,6 +886,14 @@ export class NavigationService {
       parentNode = this.getParentNode(selectedNode, pathData) as Node;
       if (parentNode && !parentNode.tabNav) return {};
     }
+
+    const tabNavNode = parentNode || selectedNode;
+    const tabNavConfig = this.getTabNavConfig(tabNavNode);
+
+    if (tabNavConfig && !('hideTabNavAutomatically' in tabNavConfig) && !tabNavConfig.showAsTabHeader) {
+      console.warn('tabNav:{hideTabNavAutomatically:true|false} is not configured correctly.');
+    }
+
     let basePath = '';
     pathData.nodesInPath?.forEach((nip) => {
       if (nip.children) {
@@ -554,17 +901,205 @@ export class NavigationService {
       }
     });
 
-    const pathDataTruncatedChildren = parentNode
+    const children = parentNode
       ? this.getTruncatedChildren(parentNode.children ?? [])
       : this.getTruncatedChildren(selectedNode.children ?? []);
 
-    const navItems = this.buildNavItems(pathDataTruncatedChildren, selectedNode, pathData);
-    return {
+    if (tabNavConfig?.hideTabNavAutomatically && children.length <= 1) {
+      return {};
+    }
+
+    const navData = await this.buildNavItems(children, selectedNode, pathData);
+
+    const result: TabNavData = {
       selectedNode,
-      items: navItems,
+      items: navData.items,
       basePath: basePath.replace(/\/\/+/g, '/'),
-      navClick: (item: NavItem) => item.node && this.navItemClick(item.node, pathData)
+      overflowLabel: this.luigi.i18n().getTranslation('luigi.navigation.tabNav.more'),
+      navClick: (item: NavItem) => (item.node ? this.navItemClick(item.node, pathData) : Promise.resolve())
     };
+
+    if (tabNavConfig?.showAsTabHeader && tabNavNode.webcomponent && tabNavNode.viewUrl) {
+      result.headerNode = {
+        viewUrl: tabNavNode.viewUrl,
+        context: pathData.context || tabNavNode.context,
+        webcomponent: tabNavNode.webcomponent
+      };
+    }
+
+    return result;
+  }
+
+  private getTabNavConfig(node: Node): TabNavConfig | undefined {
+    if (!node.tabNav) return undefined;
+    if (typeof node.tabNav === 'object') return node.tabNav as TabNavConfig;
+    return undefined;
+  }
+
+  async getBreadcrumbData(
+    path: string,
+    pData?: PathData,
+    onResolve?: (data: BreadcrumbData) => void
+  ): Promise<BreadcrumbData> {
+    const breadcrumbConfig = this.luigi.getConfigValue('navigation.breadcrumbs');
+    const pathData = pData ?? (await this.getPathData(path));
+    const nodesInPath = pathData?.nodesInPath || [];
+    const navItems: BreadcrumbItem[] = [];
+    let showBreadcrumb = !!breadcrumbConfig;
+    let basePath = '';
+
+    if (!breadcrumbConfig || (path === '' && nodesInPath?.[0].viewUrl)) {
+      this.previousBreadcrumbs = {};
+      return {};
+    }
+
+    // if enabled in general, check node scope
+    nodesInPath.forEach((node: Node) => {
+      if (node.children) {
+        basePath += '/' + (node.pathSegment || '');
+      }
+
+      if (node.showBreadcrumbs === false) {
+        showBreadcrumb = false;
+      } else if (node.showBreadcrumbs === true) {
+        showBreadcrumb = true;
+      }
+    });
+
+    if (!showBreadcrumb) {
+      return {
+        clearBeforeRender: true
+      };
+    }
+
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const start = breadcrumbConfig.omitRoot ? 2 : 1;
+
+    for (let i = start; i < nodesInPath.length; i++) {
+      const node = nodesInPath[i];
+      const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
+
+      if (route && this.previousBreadcrumbs[route]) {
+        navItems.push(this.previousBreadcrumbs[route]);
+      } else if (node.label || node.pathSegment || node.titleResolver) {
+        if (node.titleResolver) {
+          navItems.push({
+            label:
+              node.titleResolver.prerenderFallback && node.titleResolver.fallbackTitle
+                ? this.luigi.i18n().getTranslation(node.titleResolver.fallbackTitle)
+                : breadcrumbConfig.pendingItemLabel || '',
+            node: node,
+            route: route,
+            pending: true
+          });
+        } else {
+          const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+          if (label) {
+            navItems.push({ label: label, node: node, route: route });
+          }
+        }
+      }
+    }
+
+    const hasPendingItems = navItems.some((item) => item.pending);
+    const buildResult = (items: BreadcrumbItem[]): BreadcrumbData => ({
+      basePath: basePath.replace(/\/\/+/g, '/'),
+      clearBeforeRender: breadcrumbConfig.clearBeforeRender,
+      items,
+      renderer: breadcrumbConfig.renderer,
+      selectedNode: pathData?.selectedNode || ({} as Node)
+    });
+
+    if (hasPendingItems && onResolve) {
+      this.resolveBreadcrumbTitles(
+        nodesInPath,
+        start,
+        currentPath,
+        hashRouting,
+        breadcrumbConfig,
+        buildResult,
+        onResolve
+      );
+      return buildResult(navItems);
+    }
+
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
+      const breadcrumbCache: Record<string, BreadcrumbItem> = {};
+
+      if (navItems.length > 1) {
+        navItems[navItems.length - 1].last = true;
+      } else if (breadcrumbConfig.autoHide) {
+        navItems.length = 0;
+      }
+
+      navItems.map((item: BreadcrumbItem) => {
+        if (item.route) {
+          breadcrumbCache[item.route] = item;
+        }
+      });
+
+      this.previousBreadcrumbs = breadcrumbCache;
+    }
+
+    return buildResult(navItems);
+  }
+
+  private async resolveBreadcrumbTitles(
+    nodesInPath: Node[],
+    start: number,
+    currentPath: { path: string },
+    hashRouting: boolean,
+    breadcrumbConfig: any,
+    buildResult: (items: BreadcrumbItem[]) => BreadcrumbData,
+    onResolve: (data: BreadcrumbData) => void
+  ): Promise<void> {
+    const resolvedItems: BreadcrumbItem[] = [];
+
+    for (let i = start; i < nodesInPath.length; i++) {
+      const node = nodesInPath[i];
+      const route = RoutingHelpers.mapPathToNode(currentPath.path, node);
+
+      if (node.titleResolver) {
+        try {
+          const data = await this.extractDataFromPath(route || '');
+          const ctx = RoutingHelpers.substituteDynamicParamsInObject(
+            Object.assign({}, data.pathData.context, node.context),
+            data.pathData.pathParams || {}
+          );
+          const nodeTitleData = await NavigationHelpers.fetchNodeTitleData(node, ctx);
+          resolvedItems.push({ label: nodeTitleData.label, node, route });
+          continue;
+        } catch (e) {
+          // fallback to label resolution below
+        }
+      }
+
+      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      if (label) {
+        resolvedItems.push({ label, node, route });
+      }
+    }
+
+    if (currentPath.path === RoutingHelpers.getCurrentPath(this.luigi, hashRouting).path) {
+      const breadcrumbCache: Record<string, BreadcrumbItem> = {};
+
+      if (resolvedItems.length > 1) {
+        resolvedItems[resolvedItems.length - 1].last = true;
+      } else if (breadcrumbConfig.autoHide) {
+        resolvedItems.length = 0;
+      }
+
+      resolvedItems.map((item: BreadcrumbItem) => {
+        if (item.route) {
+          breadcrumbCache[item.route] = item;
+        }
+      });
+
+      this.previousBreadcrumbs = breadcrumbCache;
+    }
+
+    onResolve(buildResult(resolvedItems));
   }
 
   /**
@@ -680,7 +1215,7 @@ export class NavigationService {
    * Deal with route changing scenario.
    * @param {NavigationRequestParams} params - the params to configure navigation request
    * @param {string} params.path - the path of the view to open
-   * @param {string} params.preserveView - preserve a view by setting it to specific value (optional)
+   * @param {boolean} params.preserveView - preserve a view by setting it to specific value (optional)
    * @param {any} params.modalSettings - settings to configure the modal's title and size (optional)
    * @param {boolean} params.newTab - open a view in new tab by setting it to `true` (optional)
    * @param {boolean} params.withoutSync - disables the navigation handling for a single navigation request (optional)
@@ -691,7 +1226,9 @@ export class NavigationService {
   async handleNavigationRequest(params: NavigationRequestParams, callbackFn?: any): Promise<void> {
     const {
       path,
+      intent,
       preserveView,
+      drawerSettings,
       modalSettings,
       newTab,
       withoutSync,
@@ -699,43 +1236,146 @@ export class NavigationService {
       preventHistoryEntry,
       options
     }: NavigationRequestParams = params;
-    let computedPath = await this.buildPath(path, options || {});
-    const normalizedPath = computedPath.replace(/\/\/+/g, '/');
-    const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    const isSpecial = !!(drawerSettings || modalSettings);
+    const nodeParams = options?.nodeParams;
+    const buildOptions = isSpecial ? { ...options, nodeParams: {} } : options;
+    let computedPath = await this.buildPath(path, buildOptions || {});
 
-    if (modalSettings) {
-      if (!modalSettings.keepPrevious) {
-        this.getModalService().closeModals();
+    if (await this.shouldPreventNavigationForPath(path)) {
+      return;
+    }
+
+    if (!isSpecial) {
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      try {
+        await dirtyStatusService.getUnsavedChangesModalPromise();
+      } catch (e) {
+        return;
+      }
+    }
+
+    if (intent) {
+      const intentPath = RoutingHelpers.getIntentPath(path.replace('#', ''), this.luigi);
+
+      if (!intentPath) {
+        return;
       }
 
-      this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+      if (typeof intentPath === 'string') {
+        computedPath = intentPath;
+      } else if (GenericHelpers.isObject(intentPath)) {
+        RoutingHelpers.handleExternalIntentPath(intentPath as Record<string, any>);
+        return;
+      }
+    }
+
+    const normalizedPath = computedPath.replace(/\/\/+/g, '/');
+    const chosenHistoryMethod: HistoryMethod = !preventHistoryEntry ? 'pushState' : 'replaceState';
+    const { path: currentPath, query: currentQuery } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const currentFullPath = currentPath + (currentQuery ? '?' + currentQuery : '');
+
+    if (preserveView) {
+      const pathData: PathData = await this.getPathData(currentPath);
+
+      this._preservedViews.push({
+        context: pathData.context,
+        nextPath: computedPath.startsWith('/') ? computedPath : '/' + computedPath,
+        path: pathData?.pathParams
+          ? GenericHelpers.replaceVars(currentPath, pathData.pathParams, ':', false)
+          : currentPath
+      });
+    }
+
+    const isOverlayRequest = Boolean(drawerSettings || modalSettings);
+    if (
+      !isOverlayRequest &&
+      GenericHelpers.trimLeadingSlash(currentFullPath) === GenericHelpers.trimLeadingSlash(normalizedPath)
+    ) {
+      const containerWrapper = this.luigi.getEngine()._connector?.getContainerWrapper();
+      if (containerWrapper?.childNodes) {
+        const activeContainer = [...containerWrapper.childNodes].find(
+          (element: any) => element.tagName?.indexOf('LUIGI-') === 0 && element.style?.display !== 'none'
+        ) as HTMLElement | undefined;
+        if (activeContainer) {
+          activeContainer.remove();
+          UIModule.routingService.handleRouteChange({ path: currentPath, query: currentQuery });
+        }
+      }
+      return;
+    }
+
+    if (drawerSettings || modalSettings) {
+      if (drawerSettings) {
+        // Pass nodeParams via settings so openAsDrawer can forward them to createContainer.
+        // Drawers don't persist data to the URL (no appendModalDataToUrl), but nodeParams
+        // still need to reach the MFE.
+        if (nodeParams && Object.keys(nodeParams).length > 0) {
+          drawerSettings.nodeParams = nodeParams;
+        }
+        this.luigi.navigation().openAsDrawer(normalizedPath, drawerSettings, callbackFn);
+      } else {
+        if (!modalSettings.keepPrevious) {
+          const closed = await this.getModalService().closeModalsWithDirtyCheck();
+          if (!closed) return;
+        }
+        if (nodeParams && Object.keys(nodeParams).length > 0) {
+          modalSettings.nodeParams = nodeParams;
+        }
+        this.luigi.navigation().openAsModal(normalizedPath, modalSettings, callbackFn);
+      }
     } else {
       const eventDetail: NavigationRequestEvent = {
         detail: {
+          preserveView: !!preserveView,
           preventContextUpdate: !!preventContextUpdate,
           preventHistoryEntry: !!preventHistoryEntry,
           withoutSync: !!withoutSync
         }
       };
 
-      await serviceRegistry.get(ModalService).closeModals();
+      const dirtyStatusService = serviceRegistry.get(DirtyStatusService);
+
+      if (UIModule.drawerContainer && dirtyStatusService.shouldShowUnsavedChangesModal(UIModule.drawerContainer)) {
+        try {
+          await dirtyStatusService.getUnsavedChangesModalPromise(UIModule.drawerContainer);
+        } catch (e) {
+          return;
+        }
+      }
+
+      const modalsClosed = await serviceRegistry.get(ModalService).closeModalsWithDirtyCheck();
+      if (!modalsClosed) return;
 
       if (newTab) {
-        await this.openViewInNewTab(computedPath);
+        await this.openViewInNewTab(normalizedPath);
         return;
       }
+
+      //TODO still an issue with reload
+      // const pathExist = await RoutingHelpers.pathExists(normalizedPath, this.luigi);
+      // const redirectPath = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(
+      //   normalizedPath,
+      //   pathExist,
+      //   this.luigi
+      // );
+      // if (!redirectPath) {
+      //   return;
+      // }
 
       const method: HistoryMethod = this.luigi.getConfigValue('routing.disableBrowserHistory')
         ? 'replaceState'
         : chosenHistoryMethod;
 
-      if (this.luigi.getConfig().routing?.useHashRouting) {
-        if (!withoutSync && method !== 'replaceState') {
-          location.hash = normalizedPath;
+      if (hashRouting) {
+        const hashPath = GenericHelpers.addLeadingSlash(normalizedPath);
+        if (!withoutSync && !preserveView && !preventContextUpdate && method !== 'replaceState') {
+          location.hash = hashPath;
         } else {
           const event = new CustomEvent<NavigationRequestBase>('hashchange', eventDetail);
 
-          window.history[method]({ path: '/#' + normalizedPath }, '', '/#' + normalizedPath);
+          window.history[method]({ path: '/#' + hashPath }, '', '/#' + hashPath);
           window.dispatchEvent(event);
         }
       } else {
@@ -881,20 +1521,33 @@ export class NavigationService {
       return str;
     }
     newStr += ':virtualSegment_' + _virtualPathIndex + '/';
-    return str + '/' + newStr;
+    let vViewUrl = str;
+    if (str.includes('{virtualTreePath}')) {
+      vViewUrl = str.replace('{virtualTreePath}', newStr);
+    } else {
+      vViewUrl = str + '/' + newStr;
+    }
+    try {
+      if (new URL(vViewUrl, 'http://dummy-base').origin === new URL(str, 'http://dummy-base').origin) {
+        return vViewUrl;
+      }
+    } catch (err) {
+      console.error('Error building virtual view URL -- make sure virtualTreePath is not part of origin.', err);
+    }
+    return str;
   }
 
   /**
    * Builds a path string by concatenating path segments from the virtual tree root or the incoming path.
    *
    * @param incomingPath - The incoming path segment to be appended.
-   * @param fromVirtualTreeRoot - A boolean indicating whether to build the path from the virtual tree root.
+   * @param options - The set of params related to navigation.
    * @returns The constructed path string.
    */
   async buildPath(incomingPath: string, options: NavigationOptions): Promise<string> {
     const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent, relative, nodeParams } = options;
     const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
-    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(hashRouting);
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
     const fullPath = currentPath + (query ? '?' + query : '');
     const pathData = await this.getPathData(fullPath);
     const nodes = pathData.nodesInPath;
@@ -947,5 +1600,136 @@ export class NavigationService {
       });
     }
     return path;
+  }
+
+  /**
+   * Computes the current route path relative to a context node, based on the provided navigation options.
+   * Unlike {@link buildPath}, which concatenates an incoming path onto a context node for navigation,
+   * this method subtracts the context node's path from the current node's path to return the relative remainder.
+   *
+   * @param options - Navigation options determining the reference point for the relative path.
+   * @param options.fromVirtualTreeRoot - If true, returns the path relative to the nearest ancestor with `virtualTree: true`.
+   * @param options.fromParent - If true, returns the path relative to the current node's parent.
+   * @param options.fromClosestContext - If true, returns the path relative to the nearest ancestor with a `navigationContext`.
+   * @param options.fromContext - If set, returns the path relative to the ancestor whose `navigationContext` matches this value.
+   * @returns The current route path relative to the resolved context node, or the full sub-path if no option is set.
+   */
+  async getCurrentRoutePath(options: NavigationOptions): Promise<string | undefined> {
+    const { fromVirtualTreeRoot, fromContext, fromClosestContext, fromParent } = options;
+    const hashRouting = this.luigi.getConfigValue('routing.useHashRouting');
+    const { path: currentPath, query } = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const fullPath = currentPath + (query ? '?' + query : '');
+    const pathData = await this.getPathData(fullPath);
+    const nodes = pathData.nodesInPath;
+    if (!nodes || !pathData.selectedNode) {
+      return '';
+    }
+    const currentNodeSubPath = RoutingHelpers.getSubPath(pathData.selectedNode, pathData.pathParams);
+
+    if (fromVirtualTreeRoot) {
+      const virtualTreeNode = [...nodes].reverse().find((n) => n.virtualTree);
+      if (!virtualTreeNode) {
+        console.error(
+          'LuigiClient Error: fromVirtualTreeRoot() is not possible because you are not inside a Luigi virtualTree navigation node.'
+        );
+        return;
+      }
+      const virtualTreeNodeSubPath = RoutingHelpers.getSubPath(virtualTreeNode, pathData.pathParams);
+      return currentNodeSubPath.split(virtualTreeNodeSubPath).join('');
+    } else if (fromParent) {
+      const parentSubPath = RoutingHelpers.getSubPath(pathData.selectedNode.parent, pathData.pathParams);
+      return currentNodeSubPath.split(parentSubPath).join('');
+    } else if (fromClosestContext) {
+      const node = [...nodes].reverse().find((n) => n.navigationContext && n.navigationContext.length > 0);
+      const contextSubPath = RoutingHelpers.getSubPath(node, pathData.pathParams);
+      return currentNodeSubPath.split(contextSubPath).join('');
+    } else if (fromContext) {
+      const node = [...nodes].reverse().find((n) => fromContext === n.navigationContext);
+      const contextSubPath = RoutingHelpers.getSubPath(node, pathData.pathParams);
+      return currentNodeSubPath.split(contextSubPath).join('');
+    }
+    return currentNodeSubPath;
+  }
+
+  private async buildContextSwitcher(): Promise<ContextSwitcher | undefined> {
+    const config = this.luigi.getConfigValue('navigation.contextSwitcher');
+
+    if (!config) {
+      return undefined;
+    }
+
+    ContextSwitcherHelpers.resetFallbackLabelCache();
+
+    const actions: ContextSwitcherItem[] = await this.luigi.getConfigValueAsync('navigation.contextSwitcher.actions');
+    const options: ContextSwitcherItem[] = await ContextSwitcherHelpers.fetchOptions(this.luigi);
+    const hashRouting = this.luigi.getConfig().routing?.useHashRouting;
+    const currentPath = RoutingHelpers.getCurrentPath(this.luigi, hashRouting);
+    const parentNodePath = config.parentNodePath;
+    const fallbackLabelResolver = config.fallbackLabelResolver;
+    let selectedLabel = await ContextSwitcherHelpers.getSelectedLabel(
+      currentPath?.path,
+      options,
+      parentNodePath,
+      fallbackLabelResolver,
+      this.luigi
+    );
+    let selectedNodePath = ContextSwitcherHelpers.getSelectedNode(currentPath?.path, options, parentNodePath);
+    let selectedOption: ContextSwitcherItem = ContextSwitcherHelpers.getSelectedOption(
+      currentPath?.path,
+      options,
+      parentNodePath
+    );
+    const handleChangeEvent = (selectedValue: string, selectedType?: string | undefined) => {
+      if (!selectedValue || typeof selectedValue !== 'string') {
+        return;
+      }
+
+      if (selectedType === 'action') {
+        const node = actions.find((action) => action.link === selectedValue);
+
+        if (node?.clickHandler) {
+          const result = node.clickHandler(node);
+
+          if (!result) {
+            return;
+          }
+        }
+
+        this.luigi.navigation().navigate(selectedValue);
+      } else {
+        this.luigi.navigation().navigate(selectedValue);
+      }
+    };
+
+    if (config?.preserveSubPathOnSwitch && options?.length && selectedOption) {
+      options.forEach((option) => {
+        option.linkFromPath = ContextSwitcherHelpers.getNodePathFromCurrentPath(option, selectedOption, this.luigi);
+
+        if (option.link === selectedOption.link) {
+          selectedOption.linkFromPath = option.linkFromPath;
+        }
+      });
+    }
+
+    if (!selectedOption && actions?.length) {
+      const activeAction = actions?.find((action) => action.link === `/${currentPath?.path}`);
+
+      if (activeAction) {
+        selectedLabel = activeAction.label;
+        selectedNodePath = activeAction.link;
+        selectedOption = activeAction;
+      }
+    }
+
+    return {
+      actions,
+      config,
+      options,
+      selectedLabel,
+      selectedNodePath,
+      selectedOption,
+      switcherChange: (selectedValue: string, selectedType?: string | undefined) =>
+        handleChangeEvent(selectedValue, selectedType)
+    };
   }
 }

@@ -141,6 +141,10 @@ export default [
     output: {
       file: 'public/constants/events.js'
     },
-    plugins: [typescript({})]
+    plugins: [
+      typescript({
+        sourceMap: false
+      })
+    ]
   }
 ];

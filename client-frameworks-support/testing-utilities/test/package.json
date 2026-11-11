@@ -6,13 +6,18 @@
   "scripts": {
     "test": "cypress open --env configFile=e2emockengine",
     "e2e:run": "cypress run --env configFile=e2emockengine --browser chrome -c video=false",
-    "start": "live-server --port=8181 --entry-file=index.html  --mount=./node_modules:/node_modules"
+    "start": "node ./dev-server.mjs"
   },
   "dependencies": {
     "@luigi-project/client": "^2.27.0",
     "@luigi-project/testing-utilities": "^2.27.0",
-    "cross-spawn": "^7.0.6",
-    "cypress": "^15.10.0",
-    "fundamental-styles": "^0.26.5"
+    "fundamental-styles": "0.26.5"
+  },
+  "devDependencies": {
+    "cross-spawn": "7.0.6",
+    "cypress": "15.17.0"
+  },
+  "overrides": {
+    "qs": "^6.15.2"
   }
 }

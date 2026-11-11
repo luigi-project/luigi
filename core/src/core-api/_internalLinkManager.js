@@ -18,7 +18,9 @@ export class linkManager extends LuigiCoreAPIBase {
       fromParent: false,
       fromClosestContext: false,
       relative: false,
-      link: ''
+      link: '',
+      preventHistoryEntry: false,
+      preventContextUpdate: false
     };
   }
 
@@ -153,6 +155,20 @@ export class linkManager extends LuigiCoreAPIBase {
     return this;
   }
 
+  withOptions(options) {
+    if (!GenericHelpers.isObject(options)) return this;
+
+    if (options['preventHistoryEntry'] !== undefined) {
+      this.options.preventHistoryEntry = options['preventHistoryEntry'];
+    }
+
+    if (options['preventContextUpdate'] !== undefined) {
+      this.options.preventContextUpdate = options['preventContextUpdate'];
+    }
+
+    return this;
+  }
+
   pathExists(path) {
     if (GenericHelpers.isFunction(Luigi.pathExists)) {
       return Luigi.pathExists(path);
@@ -179,7 +195,7 @@ export class linkManager extends LuigiCoreAPIBase {
    * @returns The current route by invoking the buildPathForGetCurrentRoute method from App.svelte, which is assigned to the _app property of the Luigi object.
    */
   getCurrentRoute() {
-    return Luigi._app.ctx[Luigi._app.props.buildPathForGetCurrentRoute](this.options);
+    return Luigi._app.buildPathForGetCurrentRoute(this.options);
   }
 
   sendPostMessageToLuigiCore(msg) {

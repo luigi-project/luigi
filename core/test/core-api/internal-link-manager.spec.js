@@ -4,7 +4,7 @@ import { GenericHelpers } from '../../src/utilities/helpers';
 const sinon = require('sinon');
 let lm;
 
-describe('linkManager', function() {
+describe('linkManager', function () {
   beforeEach(() => {
     lm = new linkManager();
   });
@@ -21,13 +21,13 @@ describe('linkManager', function() {
     });
 
     it('should not open a drawer if path is absolute', () => {
-      lm.openAsDrawer('/').catch(e => {});
+      lm.openAsDrawer('/').catch((e) => {});
 
       sinon.assert.notCalled(lm.sendPostMessageToLuigiCore);
       sinon.assert.calledOnce(console.warn);
     });
     it('should not open a modal if path is absolute', () => {
-      lm.openAsModal('/').catch(e => {});
+      lm.openAsModal('/').catch((e) => {});
 
       sinon.assert.notCalled(lm.sendPostMessageToLuigiCore);
       sinon.assert.calledOnce(console.warn);
@@ -41,7 +41,7 @@ describe('linkManager', function() {
 
     it('should not navigate if errorSkipNavigation is true', () => {
       lm.options.errorSkipNavigation = true;
-      lm.navigate('http://google.co').catch(e => {});
+      lm.navigate('http://google.co').catch((e) => {});
 
       sinon.assert.notCalled(lm.sendPostMessageToLuigiCore);
       sinon.assert.match(lm.options.errorSkipNavigation, false);
@@ -179,7 +179,7 @@ describe('linkManager', function() {
     });
 
     it('calls openAsModal with callback', () => {
-      const prom = new Promise(resolve => {
+      const prom = new Promise((resolve) => {
         resolve();
       });
       prom.id = 1;
@@ -264,6 +264,91 @@ describe('linkManager', function() {
       lm.withParams({ param: 'value' });
 
       sinon.assert.match(lm.options.nodeParams, { param: 'value' });
+    });
+  });
+
+  describe('withOptions', () => {
+    it('should set preventHistoryEntry option', () => {
+      const result = lm.withOptions({ preventHistoryEntry: true });
+
+      sinon.assert.match(result, lm);
+      sinon.assert.match(lm.options.preventHistoryEntry, true);
+    });
+
+    it('should set preventContextUpdate option', () => {
+      const result = lm.withOptions({ preventContextUpdate: true });
+
+      sinon.assert.match(result, lm);
+      sinon.assert.match(lm.options.preventContextUpdate, true);
+    });
+
+    it('should set both options together', () => {
+      lm.withOptions({ preventHistoryEntry: true, preventContextUpdate: true });
+
+      sinon.assert.match(lm.options.preventHistoryEntry, true);
+      sinon.assert.match(lm.options.preventContextUpdate, true);
+    });
+
+    it('should keep default values when options are not provided', () => {
+      lm.withOptions({});
+
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+    });
+
+    it('should ignore unknown options', () => {
+      lm.withOptions({ foo: 'bar' });
+
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+      sinon.assert.match(lm.options.foo, undefined);
+    });
+
+    it('should allow explicitly setting options to false', () => {
+      lm.options.preventHistoryEntry = true;
+      lm.options.preventContextUpdate = true;
+
+      lm.withOptions({ preventHistoryEntry: false, preventContextUpdate: false });
+
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+    });
+
+    it('should return instance without modifying when a non-object is passed', () => {
+      const result = lm.withOptions('invalid');
+
+      sinon.assert.match(result, lm);
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+    });
+
+    it('should return instance without modifying when null is passed', () => {
+      const result = lm.withOptions(null);
+
+      sinon.assert.match(result, lm);
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+    });
+
+    it('should return instance without modifying when undefined is passed', () => {
+      const result = lm.withOptions();
+
+      sinon.assert.match(result, lm);
+      sinon.assert.match(lm.options.preventHistoryEntry, false);
+      sinon.assert.match(lm.options.preventContextUpdate, false);
+    });
+
+    it('should pass options to sendPostMessageToLuigiCore when chained with navigate', () => {
+      sinon.stub(lm, 'sendPostMessageToLuigiCore');
+
+      lm.withOptions({ preventHistoryEntry: true, preventContextUpdate: true }).navigate('/overview');
+
+      sinon.assert.calledOnce(lm.sendPostMessageToLuigiCore);
+      const sentMsg = lm.sendPostMessageToLuigiCore.getCall(0).args[0];
+      sinon.assert.match(sentMsg.msg, 'luigi.navigation.open');
+      sinon.assert.match(sentMsg.params.preventHistoryEntry, true);
+      sinon.assert.match(sentMsg.params.preventContextUpdate, true);
+      sinon.assert.match(sentMsg.params.link, '/overview');
     });
   });
 

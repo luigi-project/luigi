@@ -21,7 +21,7 @@ The global search element can be used to trigger a search. In your configuration
 By default, the search result will be rendered in a popup.
 
 Example:
-
+<!-- fiddle-preset:globalSearch -->
 ```javascript
 searchProvider = {
   onInput: () => {

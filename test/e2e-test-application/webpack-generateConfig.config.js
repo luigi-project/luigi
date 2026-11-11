@@ -29,13 +29,19 @@ module.exports = {
           from: 'node_modules/@luigi-project/plugin-auth-oauth2/callback.html',
           to: path.resolve(__dirname, 'src/assets') + '/auth-oauth2/'
         },
-        // idpProvider OIDC assets
-        /*
+        // idpProvider OIDC-PKCE assets. The oidc-client-ts runtime is a peer
+        // dependency of @luigi-project/plugin-auth-oidc-pkce and must be
+        // copied alongside the plugin bundle so silent-callback.html can
+        // load it at runtime.
         {
           from: 'node_modules/@luigi-project/plugin-auth-oidc-pkce',
           to: path.resolve(__dirname, 'src/assets') + '/auth-oidc-pkce/'
         },
-        */
+        {
+          from: 'node_modules/oidc-client-ts/dist/browser/oidc-client-ts.min.js',
+          to: path.resolve(__dirname, 'src/assets') + '/auth-oidc-pkce/'
+        },
+        // idpProvider OIDC (legacy implicit-flow) assets
         {
           from: 'node_modules/@luigi-project/plugin-auth-oidc',
           to: path.resolve(__dirname, 'src/assets') + '/auth-oidc/'

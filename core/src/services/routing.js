@@ -1,7 +1,13 @@
 // Methods related to the routing. They mostly end up changing the iframe view which is handled by `iframe.js` file;
 // Please consider adding any new methods to 'routing-helpers' if they don't require anything from this file.
 import { Navigation } from '../navigation/services/navigation';
-import { GenericHelpers, IframeHelpers, NavigationHelpers, RoutingHelpers } from '../utilities/helpers';
+import {
+  EscapingHelpers,
+  GenericHelpers,
+  IframeHelpers,
+  NavigationHelpers,
+  RoutingHelpers
+} from '../utilities/helpers';
 import { LuigiConfig, LuigiNavigation } from '../core-api';
 import { Iframe } from './';
 import { NAVIGATION_DEFAULTS } from './../utilities/luigi-config-defaults';
@@ -648,15 +654,22 @@ class RoutingClass {
   }
 
   navigateToExternalLink(externalLink, node, pathParams) {
+    let safeUrl;
     if (node) {
       const updatedExternalLink = {
         ...NAVIGATION_DEFAULTS.externalLink,
         ...(node?.externalLink || {})
       };
       updatedExternalLink.url = RoutingHelpers.calculateNodeHref(node, pathParams);
-      window.open(updatedExternalLink.url, updatedExternalLink.sameWindow ? '_self' : '_blank').focus();
+      safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(updatedExternalLink.url);
+      if (safeUrl) {
+        window.open(safeUrl, updatedExternalLink.sameWindow ? '_self' : '_blank').focus();
+      }
     } else if (GenericHelpers.isObject(externalLink)) {
-      window.open(externalLink.url, externalLink.sameWindow ? '_self' : '_blank').focus();
+      safeUrl = EscapingHelpers.sanitizeExternalNavigationUrl(externalLink.url);
+      if (safeUrl) {
+        window.open(safeUrl, externalLink.sameWindow ? '_self' : '_blank').focus();
+      }
     }
   }
 
@@ -754,9 +767,11 @@ class RoutingClass {
     }
 
     if (!addHistoryEntry) {
-      history.replaceState(window.state, '', url.href);
+      history.replaceState(history.state, '', url.href);
     } else {
-      history.pushState(window.state, '', url.href);
+      let historyState = history.state;
+      historyState = RoutingHelpers.handleHistoryState(historyState);
+      history.pushState(historyState, '', url.href);
     }
   }
 
@@ -832,18 +847,30 @@ class RoutingClass {
     let url = new URL(location.href);
     const hashRoutingActive = LuigiConfig.getConfigBooleanValue('routing.useHashRouting');
     if (hashRoutingActive) {
-      let modalParamsObj = {};
-      if (params[modalParamName]) {
-        modalParamsObj[modalParamName] = params[modalParamName];
-      }
-      if (params[`${modalParamName}Params`]) {
-        modalParamsObj[`${modalParamName}Params`] = params[`${modalParamName}Params`];
-      }
-      let prevModalPath = RoutingHelpers.encodeParams(modalParamsObj);
-      if (url.hash.includes(`?${prevModalPath}`)) {
-        url.hash = url.hash.replace(`?${prevModalPath}`, '');
-      } else if (url.hash.includes(`&${prevModalPath}`)) {
-        url.hash = url.hash.replace(`&${prevModalPath}`, '');
+      const hashPart = url.hash.slice(1);
+
+      if (hashPart) {
+        let [hashPath, ...rest] = hashPart.split('?');
+        rest = rest.join('?');
+        let [hashSearch, ...hashHash] = rest.split('#');
+        hashHash = hashHash.join('#');
+
+        hashSearch = hashSearch
+          .split('&')
+          .filter((segment) => {
+            const key = segment.split('=')[0];
+            return key !== modalParamName && key !== `${modalParamName}Params`;
+          })
+          .join('&');
+
+        // reconstructing hash
+        url.hash = hashPath;
+        if (hashSearch.length > 0) {
+          url.hash += '?' + hashSearch;
+        }
+        if (hashHash.length > 0) {
+          url.hash += '#' + hashHash;
+        }
       }
     } else {
       let searchParams = new URLSearchParams(url.search.slice(1));

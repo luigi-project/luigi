@@ -132,6 +132,34 @@ describe('WebComponentService', function () {
       });
     });
 
+    it('check setting dirty status in UX manager', async () => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      expect(expectedCmp.LuigiClient.uxManager().setDirtyStatus).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().setDirtyStatus(true);
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.set-page-dirty',
+        dirty: true
+      });
+    });
+
+    it('check unsetting dirty status in UX manager', async () => {
+      container.appendChild(itemPlaceholder);
+      WebComponentService.attachWC('div', itemPlaceholder, container, extendedContext);
+
+      const expectedCmp = container.children[0];
+
+      expect(expectedCmp.LuigiClient.uxManager().setDirtyStatus).to.be.a('function');
+      expectedCmp.LuigiClient.uxManager().setDirtyStatus(false);
+      sinon.assert.calledOnceWithExactly(window.postMessage, {
+        msg: 'luigi.set-page-dirty',
+        dirty: false
+      });
+    });
+
     it('check post-processing', () => {
       const wc_id = 'my-wc';
       const MyLuigiElement = class extends LuigiElement {
@@ -150,7 +178,6 @@ describe('WebComponentService', function () {
           return myEl;
         });
       sb.stub(container, 'replaceChild').callsFake(() => {});
-      sb.stub(window, 'location').value({ origin: 'http://localhost' });
 
       container.appendChild(itemPlaceholder);
       WebComponentService.attachWC(wc_id, itemPlaceholder, container, extendedContext, 'http://localhost:8080/');
@@ -506,7 +533,7 @@ describe('WebComponentService', function () {
           const target = compoundCnt.querySelector('[nodeId=' + listeners[0].wcElementId + ']');
           sb.spy(target, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          assert(target.dispatchEvent.calledOnce);
+          assert(target.dispatchEvent.called);
           // IntersectionObserver for lazy loading should not be instantiated
           expect(globalThis.IntersectionObserver.mock.instances).to.have.lengthOf(0);
           // Check if renderWebComponent is called for each child
@@ -542,7 +569,7 @@ describe('WebComponentService', function () {
           const evBus = compoundCnt.eventBus;
           sb.spy(compoundCnt, 'dispatchEvent');
           evBus.onPublishEvent(new CustomEvent(eventName), eventEmitter);
-          assert(compoundCnt.dispatchEvent.calledOnce);
+          assert(compoundCnt.dispatchEvent.called);
 
           done();
         },

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
@@ -17,6 +17,7 @@ import { delay } from 'rxjs/operators';
   selector: 'app-project',
   templateUrl: './project.component.html',
   styleUrls: ['./project.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ProjectComponent implements OnInit, OnDestroy {
@@ -209,7 +210,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
       goToHome: { text: 'homepage', url: '/overview' },
       goToOtherProject: { text: 'other project', url: '/projects/pr2' },
       relativePath: { text: 'relative hide side nav', url: 'hideSideNav' },
-      neverShowItAgain: { text: 'Never show it again', dismissKey: 'neverShowItAgain' }
+      neverShowItAgain: {
+        text: 'Never show it again',
+        dismissKey: 'neverShowItAgain'
+      }
     };
 
     const textData = !text ? '' : links ? texts.withLink : texts.withoutLink;

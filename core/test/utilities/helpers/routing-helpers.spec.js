@@ -104,6 +104,23 @@ describe('Routing-helpers', () => {
       expect(RoutingHelpers.getI18nViewUrl(viewUrl)).to.equal(expected);
     });
 
+    it('substituteViewUrl - removes {virtualTreePath} placeholder when currentNode has virtualTree=true', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+      const expected = 'https://mf.luigi-project.io/app/details';
+
+      expect(
+        RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: { virtualTree: true }, pathParams: {} })
+      ).to.equal(expected);
+    });
+
+    it('substituteViewUrl - keeps {virtualTreePath} placeholder when currentNode has no virtualTree', () => {
+      const viewUrl = 'https://mf.luigi-project.io/app/{virtualTreePath}details';
+
+      const result = RoutingHelpers.substituteViewUrl(viewUrl, { currentNode: {}, pathParams: {} });
+
+      expect(result).to.include('{virtualTreePath}');
+    });
+
     it('substituteViewUrl - substitutes {i18n.currentLocale} variable to current locale', () => {
       const viewUrl = '/{i18n.currentLocale}/microfrontend.html';
       const expected = '/en/microfrontend.html';
@@ -843,6 +860,24 @@ describe('Routing-helpers', () => {
       const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath').path;
       assert.equal(undefined, expected);
     });
+
+    it('forwards the mode argument to the custom pageNotFoundHandler', async () => {
+      const handler = sinon.stub().returns({ redirectTo: 'somePath' });
+      sinon.stub(LuigiConfig, 'getConfigValue').withArgs('routing.pageNotFoundHandler').returns(handler);
+      await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath', true, 'modal');
+      sinon.assert.calledWith(handler, 'notFoundPath', true, 'modal');
+    });
+
+    it('returns ignoreLuigiErrorHandling even without a redirect path', async () => {
+      sinon
+        .stub(LuigiConfig, 'getConfigValue')
+        .withArgs('routing.pageNotFoundHandler')
+        .returns(() => {
+          return { ignoreLuigiErrorHandling: true };
+        });
+      const expected = await RoutingHelpers.getPageNotFoundRedirectResult('notFoundPath');
+      assert.deepEqual({ path: undefined, keepURL: undefined, ignoreLuigiErrorHandling: true }, expected);
+    });
   });
 
   describe('handlePageNotFoundAndRetrieveRedirectPath', () => {
@@ -855,6 +890,7 @@ describe('Routing-helpers', () => {
       sinon.stub(LuigiI18N, 'getTranslation');
       sinon.stub(RoutingHelpers, 'getPageNotFoundRedirectResult');
       sinon.stub(RoutingHelpers, 'showRouteNotFoundAlert');
+      sinon.stub(Routing, 'removeModalDataFromUrl');
       sinon.stub(component, 'showAlert');
     });
 
@@ -889,6 +925,31 @@ describe('Routing-helpers', () => {
       const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(component, path, false);
       sinon.assert.calledWith(console.warn, `Could not find the requested route: ${path}`);
       sinon.assert.calledOnce(RoutingHelpers.showRouteNotFoundAlert);
+      assert.equal(undefined, expected);
+    });
+
+    it('forwards the mode argument to getPageNotFoundRedirectResult', async () => {
+      const path = 'notFoundPath';
+      RoutingHelpers.getPageNotFoundRedirectResult.returns({});
+      await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(component, path, false, 'splitView');
+      sinon.assert.calledWith(RoutingHelpers.getPageNotFoundRedirectResult, path, false, 'splitView');
+    });
+
+    it('with ignoreLuigiErrorHandling removes modal data from URL and returns undefined', async () => {
+      const path = 'notFoundPath';
+      RoutingHelpers.getPageNotFoundRedirectResult.returns({ ignoreLuigiErrorHandling: true });
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(component, path, false, 'modal');
+      sinon.assert.calledOnceWithExactly(Routing.removeModalDataFromUrl, true);
+      sinon.assert.notCalled(RoutingHelpers.showRouteNotFoundAlert);
+      assert.equal(undefined, expected);
+    });
+
+    it('with ignoreLuigiErrorHandling and keepURL keeps the URL and returns undefined', async () => {
+      const path = 'notFoundPath';
+      RoutingHelpers.getPageNotFoundRedirectResult.returns({ ignoreLuigiErrorHandling: true, keepURL: true });
+      const expected = await RoutingHelpers.handlePageNotFoundAndRetrieveRedirectPath(component, path, false);
+      sinon.assert.notCalled(Routing.removeModalDataFromUrl);
+      sinon.assert.notCalled(RoutingHelpers.showRouteNotFoundAlert);
       assert.equal(undefined, expected);
     });
   });

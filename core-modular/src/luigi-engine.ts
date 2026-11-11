@@ -5,11 +5,13 @@ import { RoutingModule } from './modules/routing-module';
 import { UIModule } from './modules/ui-module';
 import { UXModule } from './modules/ux-module';
 import { DirtyStatusService } from './services/dirty-status.service';
+import { GlobalSearchService } from './services/global-search.service';
 import { ModalService } from './services/modal.service';
 import { NavigationService } from './services/navigation.service';
 import { NodeDataManagementService } from './services/node-data-management.service';
 import { RoutingService } from './services/routing.service';
 import { serviceRegistry } from './services/service-registry';
+import { PreloadingService } from './services/preloading.service';
 import { ViewUrlDecoratorSvc } from './services/viewurl-decorator';
 import type { LuigiConnector } from './types/connector';
 
@@ -33,12 +35,14 @@ export class LuigiEngine {
   init(): void {
     const luigi = (window as any).Luigi;
 
-    serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService());
+    serviceRegistry.register(DirtyStatusService, () => new DirtyStatusService(luigi));
+    serviceRegistry.register(GlobalSearchService, () => new GlobalSearchService(luigi));
     serviceRegistry.register(NavigationService, () => new NavigationService(luigi));
     serviceRegistry.register(NodeDataManagementService, () => new NodeDataManagementService());
     serviceRegistry.register(RoutingService, () => new RoutingService(luigi));
     serviceRegistry.register(ViewUrlDecoratorSvc, () => new ViewUrlDecoratorSvc());
     serviceRegistry.register(ModalService, () => new ModalService(luigi));
+    serviceRegistry.register(PreloadingService, () => new PreloadingService(luigi));
     luigi.theming()._init();
     UIModule.init(luigi);
     RoutingModule.init(luigi);

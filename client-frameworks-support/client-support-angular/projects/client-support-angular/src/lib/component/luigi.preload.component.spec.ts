@@ -1,17 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+enum ChangeDetectionMock {
+  OnPush = 0,
+  Eager = 1,
+  Default = 1
+}
+
+jest.mock('@angular/core', () => ({
+  Component: () => (target: any) => target,
+  ChangeDetectionStrategy: ChangeDetectionMock
+}));
+
 import { LuigiPreloadComponent } from './luigi.preload.component';
 
 describe('ClientSupportAngularComponent', () => {
-  let component: LuigiPreloadComponent;
-  let fixture: ComponentFixture<LuigiPreloadComponent>;
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LuigiPreloadComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   it('should create', () => {
+    const component = new LuigiPreloadComponent();
     expect(component).toBeTruthy();
   });
 });

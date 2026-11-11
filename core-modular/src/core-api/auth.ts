@@ -117,7 +117,10 @@ export class LuigiAuthClass {
        * @param {AuthData} data - new auth data object
        * @example Luigi.auth().store.setAuthData(data)
        */
-      setAuthData: (data: any) => AuthStoreSvc.setAuthData(data),
+      setAuthData: (data: any) => {
+        AuthStoreSvc.setAuthData(data);
+        AuthLayerSvc.broadcastAuthData(data);
+      },
       /**
        * Clears authorization data from store
        * @memberof AuthorizationStore

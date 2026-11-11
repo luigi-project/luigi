@@ -48,6 +48,7 @@ The configuration file contains a tree-like structure of **navigation nodes**. T
 
 Here is an example of a simple navigation structure:
 
+<!-- fiddle-preset:basicNavigation -->
 ```javascript
 navigation: {
   nodes: [

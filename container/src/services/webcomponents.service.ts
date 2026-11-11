@@ -178,17 +178,13 @@ export class WebComponentService {
               fromParent,
               nodeParams
             };
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
               this.containerService.dispatch(
                 Events.GET_CURRENT_ROUTE_REQUEST,
                 this.thisComponent,
                 { ...options },
                 (route) => {
-                  if (route) {
-                    resolve(route);
-                  } else {
-                    reject('No current route received.');
-                  }
+                  resolve(route);
                 }
               );
             });
@@ -334,8 +330,8 @@ export class WebComponentService {
           openUserSettings: () => {
             this.dispatchLuigiEvent(Events.OPEN_USER_SETTINGS_REQUEST, this.thisComponent.userSettings);
           },
-          collapseLeftSideNav: () => {
-            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, {});
+          collapseLeftSideNav: (state: boolean) => {
+            this.dispatchLuigiEvent(Events.COLLAPSE_LEFT_NAV_REQUEST, { state });
           },
           getDirtyStatus: () => {
             return this.thisComponent.dirtyStatus || false;
@@ -436,11 +432,15 @@ export class WebComponentService {
       getClientPermissions: (): object => {
         return this.thisComponent.clientPermissions || {};
       },
-      addCoreSearchParams: (searchParams = {}, keepBrowserHistory = true) => {
-        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, { data: searchParams, keepBrowserHistory });
+      addCoreSearchParams: (searchParams = {}, keepBrowserHistory = true, preventLuigiConfigUpdate = false) => {
+        this.dispatchLuigiEvent(Events.ADD_SEARCH_PARAMS_REQUEST, {
+          data: searchParams,
+          keepBrowserHistory,
+          preventLuigiConfigUpdate
+        });
       },
       getUserSettings: (): object => {
-        return this.thisComponent.userSettings || {};
+        return this.getUserSettingsForWc(eventBusElement, !isCompoundChild);
       },
       setViewGroupData: (data) => {
         this.dispatchLuigiEvent(Events.SET_VIEW_GROUP_DATA_REQUEST, data);
@@ -481,6 +481,17 @@ export class WebComponentService {
     } else {
       wc.context = ctx;
       wc.LuigiClient = clientAPI;
+    }
+    const wcCreationInterceptor = this.thisComponent.webcomponentCreationInterceptor;
+
+    if (wcCreationInterceptor && typeof wcCreationInterceptor === 'function') {
+      try {
+        const isSpecialMf =
+          !!this.thisComponent._luigiMicroFrontendType && this.thisComponent._luigiMicroFrontendType !== 'main';
+        wcCreationInterceptor(wc, this.thisComponent.currentNode, ctx, nodeId, isSpecialMf);
+      } catch (err) {
+        console.error('Error applying web component creation interceptor: ', err);
+      }
     }
   }
 
@@ -794,6 +805,40 @@ export class WebComponentService {
           this.containerService.dispatch(Events.RUNTIME_ERROR_HANDLING_REQUEST, this.thisComponent, error);
         });
     });
+  }
+
+  /**
+   * Gets the stored user settings for a compound web component.
+   *
+   * If the user-settings provided to the compound container follow the
+   * `{ rootNodeUserSettingsGroup, groupedUserSettings }` shape, only the settings of
+   * the relevant group are returned: the root/nesting web component is mapped to the
+   * `rootNodeUserSettingsGroup` group, while every compound child is mapped to the
+   * group defined via `userSettingsGroup` on its node. If no group applies, or the
+   * group has no stored settings, an empty object is returned. For backwards
+   * compatibility a plain key-value user-settings object is returned as is.
+   *
+   * @param eventBusElement the per-child web component container holding `_luigi_node`
+   * @param isRootNode whether the web component is the root (nesting) compound wc
+   * @returns the user settings relevant for the given web component
+   */
+  getUserSettingsForWc(eventBusElement?: ContainerElement, isRootNode?: boolean): object {
+    const userSettings = this.thisComponent?.userSettings;
+    if (!userSettings || typeof userSettings !== 'object') {
+      return {};
+    }
+
+    if (Object.prototype.hasOwnProperty.call(userSettings, 'groupedUserSettings')) {
+      const groupedUserSettings = userSettings.groupedUserSettings;
+      const userSettingsGroup = isRootNode
+        ? userSettings.rootNodeUserSettingsGroup
+        : eventBusElement?._luigi_node?.userSettingsGroup;
+      const hasUserSettings =
+        userSettingsGroup && typeof groupedUserSettings === 'object' && groupedUserSettings !== null;
+      return hasUserSettings ? groupedUserSettings[userSettingsGroup] || {} : {};
+    }
+
+    return userSettings;
   }
 
   /**

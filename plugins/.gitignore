@@ -4,3 +4,5 @@ public/*/plugin.js
 auth/public/auth-oidc-pkce/*.LICENSE.txt
 auth/public/auth-oidc/*.LICENSE.txt
 auth/public/auth-oidc/oidc-client.min.js.LICENSE.txt
+
+coverage/

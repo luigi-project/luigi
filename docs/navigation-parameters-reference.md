@@ -56,6 +56,7 @@ If you don't want Luigi to handle the page not found error, because you've imple
 - **attributes**:
   - **wrongPath** (string): the path that the user tried navigating to.
   - **wasAnyPathFitted** (bool): it is true if Luigi managed to fit a valid path which means **wrongPath** was only partially wrong. Otherwise it is false.
+  - **mode** (string): the special view mode the navigation was requested in. One of `'modal'`, `'splitView'` or `'drawer'`, or `undefined` for a regular navigation. This lets the handler react differently to a `404` depending on how the view was opened (for example, when the **ignoreLuigiErrorHandling** option is returned, Luigi removes the modal data from the URL unless **keepURL** is set). ( **since**: 2.33.0 )
 
 ### preserveQueryParams
 - **type**: boolean
@@ -234,7 +235,7 @@ navigation: {
 
 ### validWebcomponentUrls
   - **type**: array
-  - **description**: a list of allowed web component URLs. They must be added as regular expressions to the array.
+  - **description**: a list of allowed web component URLs. They must be added as regular expressions to the array. This is the trust boundary for web component micro frontends: since web components run in the host page's context rather than in an isolated iframe, only add origins you trust.
   - **example**:
 ```javascript
 settings: {
@@ -289,6 +290,34 @@ Node parameters are all the parameters that can be added to an individual naviga
   - **id** if this property is defined all nodes with the same category `id` will be grouped.
   - **titleExpandButton** adds the HTML `title` attribute with the defined value to the expand button.
   - **titleCollapseButton** adds the HTML `title` attribute with the defined value to the collapse button.
+  - **navigateOnClick** makes the category label itself navigable in the horizontal ([tab](navigation-parameters-reference.md#tabnav)) navigation, in addition to opening the drop-down. By default, clicking a category in the tab navigation only opens its drop-down menu; with `navigateOnClick` the tab text also navigates directly to a target node. It accepts either a boolean or a string:
+    - `true` navigates to the node that declares the category (the node that defines the category as an object). If that node has no `label` of its own, it acts solely as the click target and is not listed as a separate entry in the drop-down.
+    - a string navigates to the sibling node in the same category whose `pathSegment` matches the given value. If no sibling matches, no node is flagged as navigable. A matching node that has a `label` remains visible in the drop-down.
+    - This only applies to nodes rendered as tab navigation. (core-modular)
+- **example**:
+    ```javascript
+    // `navigateOnClick: true` — the category-declaring node is the click target.
+    // Because it has no label, it is hidden from the drop-down and only reachable
+    // by clicking the tab text.
+    children: [
+      {
+        pathSegment: 'overview',
+        category: { id: 'products', label: 'Products', navigateOnClick: true }
+      },
+      { pathSegment: 'details', label: 'Details', category: 'products' }
+    ]
+
+    // `navigateOnClick: '<pathSegment>'` — clicking the tab text navigates to the
+    // sibling with the matching pathSegment. A labelled target stays in the drop-down.
+    children: [
+      {
+        pathSegment: 'first',
+        label: 'First',
+        category: { id: 'products', label: 'Products', navigateOnClick: 'second' }
+      },
+      { pathSegment: 'second', label: 'Second', category: 'products' }
+    ]
+    ```
 
 ### children
 - **type**: array | function
@@ -815,6 +844,43 @@ navigation: {
 tooltipText: 'Useful links'
 ```
 
+### titleResolver
+- **type**: object
+- **description**: dynamically resolves the title and icon of a navigation node via an HTTP request. Use this instead of a static **label** when the node title depends on runtime data (for example, a resource name fetched from an API). The response is cached per resolved request configuration, so repeated navigation to the same node does not trigger additional requests. Variable substitution using `${varName}` syntax is supported in `request.url`, `request.headers`, and `request.body`, where variable values are taken from the current navigation context.
+- **since**: v1.19.0
+- **attributes**:
+  - **request** (object, required): HTTP request configuration.
+    - **method** (string): HTTP method, for example `'GET'` or `'POST'`.
+    - **url** (string): endpoint URL. Supports `${varName}` substitution from the navigation context.
+    - **headers** (object): optional request headers. Supports `${varName}` substitution.
+    - **body** (object): optional request body. Supports `${varName}` substitution.
+  - **titlePropertyChain** (string): dot-notation path to extract the title value from the response object, for example `'data.project.displayName'`.
+    - **titleDecorator** (string): format string applied to the resolved title. Use `%s` as a placeholder for the title value, for example `'Project: %s'`.
+  - **fallbackTitle** (string): title shown when the resolved value is empty or the request fails. Supports i18n keys.
+    - **prerenderFallback** (boolean): if `true`, the **fallbackTitle** is displayed in the breadcrumb immediately while the request is still pending. If `false` or omitted, the breadcrumb shows `navigation.breadcrumbs.pendingItemLabel` during the pending state. Defaults to `false`.
+- **example**:
+```javascript
+{
+  pathSegment: 'project',
+  titleResolver: {
+    request: {
+      method: 'POST',
+      url: '/api/projects',
+      headers: {
+        authorization: 'Bearer ${token}'
+      },
+      body: {
+        variables: { projectId: '${projectId}' }
+      }
+    },
+    titlePropertyChain: 'data.project.displayName',
+    titleDecorator: 'Project: %s',
+    fallbackTitle: 'navigation.project.fallback',
+    prerenderFallback: true
+  }
+}
+```
+
 ### topNav
 - **type**: boolean
 - **description** children of the root node will not be rendered in the top navigation if this value is set to `false`. Instead, the children will be rendered in the left navigation (default) or in the horizontal navigation ([tabNav](#tabNav)) if this is configured on the node. This feature only works if the [nodes](#nodes) property is an object instead of an array. In that case, the root node will not be reflected in the URL.
@@ -1043,7 +1109,7 @@ The profile section is a configurable drop-down list available in the top naviga
 
 ### items
 - **type**: array
-- **description**: an array of objects, each one being a link to a Luigi navigation node or an external URL.
+- **description**: an array of objects, each one being a link to a Luigi navigation node or an external URL. Items can also act as group headers containing sub-items when the **children** property is defined.
 - **attributes**:
   - **label** defines the text for the link.
   - **testId** is a string where you can define your own custom `testId` for E2E tests. If nothing is specified, it is the node's label written as one word and lower case (e.g. `label`).
@@ -1057,6 +1123,7 @@ The profile section is a configurable drop-down list available in the top naviga
     - **sameWindow** defines if the external URL is opened in the current tab or in a new one. The default value for this attribute
    is `false`.
     - **url** is the external URL that the link leads to.
+  - **children** is an array of sub-items displayed in an expandable submenu flyout. When this property is defined, the item acts as a non-clickable group header. Each child item supports the same attributes as a regular item (**label**, **icon**, **altText**, **testId**, **link**, **openNodeInModal**, **externalLink**). This feature is only available for the **vega** profile type.
 
 ### logout
 - **type**: object
@@ -1262,3 +1329,11 @@ The global search is an input field available in the top navigation bar. The sea
       - **visible**
         - **type**: boolean
         - **description**: specifies if the input text is visible or not.
+   - **onSearchBtnClick**
+     - **type**: Function
+     - **description**: will be executed when the user clicks the in-pill magnifier button while the input has a value. Only invoked when `style` is set to `'vega'`. If not defined, the framework falls back to invoking `onEnter`. When the input is empty, the magnifier collapses the search field instead.
+
+### style
+- **type**: string
+- **description**: selects the visual layout of the global search field. When set to `'vega'`, the magnifier icon is rendered inside the search input pill (along with a clear-input button), matching the Fundamental Styles shellbar reference. The outside toggle button is hidden while the field is expanded so the pill visually wraps around it. Any other value (or omitting the property) keeps the original two-button layout where the magnifier sits outside the input as a separate toggle. When `'vega'` is active, you can implement `searchProvider.onSearchBtnClick` to handle clicks on the in-pill magnifier; if not provided, it falls back to `searchProvider.onEnter`.
+- **since**: 2.32.0

@@ -55,7 +55,10 @@ class HelpersClass {
    * @param {path} string full url, relative or absolute path
    */
   prependOrigin(path) {
-    if (path.startsWith('http')) {
+    // Only treat http(s) URLs as absolute — a bare `startsWith('http')` check
+    // would also accept schemes like `httpevil://` and pass them through
+    // unchanged as a "full URL".
+    if (path.startsWith('http://') || path.startsWith('https://')) {
       return path;
     }
     const hasLeadingSlash = path.startsWith('/');
