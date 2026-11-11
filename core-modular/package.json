@@ -9,7 +9,6 @@
     "@fast-check/jest": "2.2.0",
     "@luigi-project/container": "^1.8.0",
     "@happy-dom/jest-environment": "21.0.4",
-    "@jridgewell/remapping": "2.3.5",
     "@sveltejs/vite-plugin-svelte": "7.1.2",
     "@tsconfig/svelte": "5.0.8",
     "@types/jest": "30.0.0",
