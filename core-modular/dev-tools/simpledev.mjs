@@ -66,7 +66,7 @@ try {
 
 build({
   build: {
-    watch: {}
+   watch: {}
  }
  });
 
