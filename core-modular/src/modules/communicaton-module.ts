@@ -28,6 +28,8 @@ function applyViewGroupData(vg: string, data: Record<string, any>, luigi: Luigi)
  * the container event names.
  */
 const CONTAINER_EVENT_TO_CLIENT_MSG: Record<string, string> = {
+  [Events.INITIALIZED]: 'luigi.init.ok',
+  [Events.NAVIGATION_COMPLETED_REPORT]: 'luigi.navigate.ok',
   [Events.CUSTOM_MESSAGE]: 'custom',
   [Events.NAVIGATION_REQUEST]: 'luigi.navigation.open',
   [Events.ALERT_REQUEST]: 'luigi.ux.alert.show',
@@ -40,15 +42,25 @@ const CONTAINER_EVENT_TO_CLIENT_MSG: Record<string, string> = {
   [Events.RUNTIME_ERROR_HANDLING_REQUEST]: 'luigi-runtime-error-handling',
   [Events.SHOW_LOADING_INDICATOR_REQUEST]: 'luigi.show-loading-indicator',
   [Events.HIDE_LOADING_INDICATOR_REQUEST]: 'luigi.hide-loading-indicator',
-  [Events.GO_BACK_REQUEST]: 'luigi.navigation.back'
+  [Events.GO_BACK_REQUEST]: 'luigi.navigation.back',
+  [Events.GET_CURRENT_ROUTE_REQUEST]: 'luigi.navigation.currentRoute',
+  [Events.SET_VIEW_GROUP_DATA_REQUEST]: 'luigi.setVGData',
+  [Events.ADD_BACKDROP_REQUEST]: 'luigi.add-backdrop',
+  [Events.REMOVE_BACKDROP_REQUEST]: 'luigi.remove-backdrop',
+  [Events.UPDATE_MODAL_SETTINGS_REQUEST]: 'luigi.navigation.updateModalSettings',
+  [Events.CLOSE_CURRENT_MODAL_REQUEST]: 'luigi.close-modal'
 };
 
 /**
  * Mirrors the legacy core `skipEventsWhenInactive` behaviour: when the microfrontend's container
  * is currently inactive (not visible), events whose internal message id is listed in
- * `communication.skipEventsWhenInactive` are ignored. Returns true if the event should be skipped.
+ * `communication.skipEventsWhenInactive` are ignored. Modal and drawer containers are exempt,
+ * just like the special iframes in legacy core. Returns true if the event should be skipped.
  */
 function shouldSkipInactiveEvent(containerElement: any, containerEventName: string, luigi: Luigi): boolean {
+  if (UIModule.modalContainer?.includes(containerElement) || UIModule.drawerContainer === containerElement) {
+    return false;
+  }
   const skipInactiveConfig: string[] = luigi.getConfigValue('communication.skipEventsWhenInactive');
   if (!skipInactiveConfig?.length) {
     return false;
@@ -78,7 +90,7 @@ export const CommunicationModule = {
         handler(event);
       });
     };
-    containerElement.addEventListener(Events.INITIALIZED, (event: LuigiEvent) => {
+    addListener(Events.INITIALIZED, (event: LuigiEvent) => {
       UXModule.luigi?.ux().hideLoadingIndicator(containerElement.parentNode);
       const preloadingService = serviceRegistry.get(PreloadingService);
       preloadingService.viewGroupLoaded(containerElement);
@@ -86,7 +98,7 @@ export const CommunicationModule = {
         preloadingService.preload();
       }
     });
-    containerElement.addEventListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
+    addListener(Events.NAVIGATION_COMPLETED_REPORT, () => {
       serviceRegistry.get(PreloadingService).preload();
     });
     addListener(Events.NAVIGATION_REQUEST, (event: LuigiEvent) => {
@@ -141,7 +153,7 @@ export const CommunicationModule = {
     addListener(Events.SHOW_CONFIRMATION_MODAL_REQUEST, (event: LuigiEvent) => {
       UXModule.handleConfirmationModalRequest(event.payload as ConfirmationModalSettings, containerElement);
     });
-    containerElement.addEventListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SET_DOCUMENT_TITLE_REQUEST, (event: LuigiEvent) => {
       const detail = event.detail as { title: string };
       CommunicationModule.luigi.getEngine()._connector?.setDocumentTitle(detail.title);
     });
@@ -151,10 +163,10 @@ export const CommunicationModule = {
     addListener(Events.HIDE_LOADING_INDICATOR_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.hideLoadingIndicator(containerElement.parentNode);
     });
-    containerElement.addEventListener(Events.ADD_BACKDROP_REQUEST, () => {
+    addListener(Events.ADD_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.addBackdrop();
     });
-    containerElement.addEventListener(Events.REMOVE_BACKDROP_REQUEST, () => {
+    addListener(Events.REMOVE_BACKDROP_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.removeBackdrop();
     });
     addListener(Events.SET_ANCHOR_LINK_REQUEST, (event: LuigiEvent) => {
@@ -171,14 +183,14 @@ export const CommunicationModule = {
       const payload = event.payload as { data: Record<string, string>; keepBrowserHistory: boolean };
       luigi.routing().addNodeParams(payload.data, payload.keepBrowserHistory);
     });
-    containerElement.addEventListener(Events.COLLAPSE_LEFT_NAV_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.COLLAPSE_LEFT_NAV_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { state: boolean };
       luigi.ux().collapseLeftSideNav(payload.state);
     });
-    containerElement.addEventListener(Events.OPEN_USER_SETTINGS_REQUEST, () => {
+    addListener(Events.OPEN_USER_SETTINGS_REQUEST, () => {
       luigi.ux().openUserSettings();
     });
-    containerElement.addEventListener(Events.CLOSE_USER_SETTINGS_REQUEST, () => {
+    addListener(Events.CLOSE_USER_SETTINGS_REQUEST, () => {
       CommunicationModule.luigi.getEngine()._connector?.closeUserSettings();
     });
     addListener(Events.ADD_SEARCH_PARAMS_REQUEST, (event: LuigiEvent) => {
@@ -194,7 +206,7 @@ export const CommunicationModule = {
         luigi
       );
     });
-    containerElement.addEventListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.UPDATE_MODAL_SETTINGS_REQUEST, (event: LuigiEvent) => {
       const payload = event.payload as { updatedModalSettings: object; addHistoryEntry: boolean };
       UIModule.updateModalSettings(payload.updatedModalSettings, payload.addHistoryEntry, luigi);
     });
@@ -208,7 +220,7 @@ export const CommunicationModule = {
         luigi.i18n().setCurrentLocale(locale);
       }
     });
-    containerElement.addEventListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.GET_CURRENT_ROUTE_REQUEST, (event: LuigiEvent) => {
       const options = event.payload as {
         fromClosestContext?: boolean;
         fromContext?: string | null;
@@ -223,7 +235,7 @@ export const CommunicationModule = {
         })
         .catch(() => event.callback(''));
     });
-    containerElement.addEventListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
+    addListener(Events.SET_VIEW_GROUP_DATA_REQUEST, (event: LuigiEvent) => {
       const vg = containerElement.viewGroup;
       if (vg) {
         applyViewGroupData(vg, event.detail as Record<string, any>, luigi);
@@ -235,7 +247,7 @@ export const CommunicationModule = {
       }
     });
     addListener(Events.CUSTOM_MESSAGE, (event: LuigiEvent) => {
-      const payload = event.payload as { id: string; _metaData?: object; data?: Record<string, any> };
+      const payload = event.payload as { id: string; _metaData?: { src?: HTMLElement }; data?: Record<string, any> };
       const customMessagesListeners: Record<string, any> =
         luigi.getConfigValue('communication.customMessagesListeners') || {};
       const customMessageListener = customMessagesListeners[payload?.id];
@@ -249,10 +261,13 @@ export const CommunicationModule = {
       }
 
       if (typeof customMessageListener === 'function') {
-        const microfrontend = luigi
-          .elements()
-          .getMicrofrontends()
-          .find((mf) => mf.container === containerElement.iframeHandle?.iframe);
+        const microfrontends = luigi.elements().getMicrofrontends();
+        // Web components do not have an iframeHandle. Use the container's stable id for
+        // both rendering modes; prefer an exact source match for compound events.
+        const source = payload?._metaData?.src || containerElement.iframeHandle?.iframe;
+        const microfrontend =
+          microfrontends.find((mf) => source && mf.container === source) ||
+          microfrontends.find((mf) => containerElement.luigiMfId != null && mf.id === containerElement.luigiMfId);
 
         const message = { id: payload?.id, ...(payload?.data || {}) };
 
