@@ -571,6 +571,9 @@ export const UIModule = {
           } catch (e) {
             return;
           }
+          if (resolved) return;
+          // Notify the caller MFE as well as the connector's internal close promise.
+          onCloseCallback?.();
           resolveFn && resolveFn();
           const showModalPathInUrl =
             modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
@@ -585,6 +588,7 @@ export const UIModule = {
           } catch (e) {
             return;
           }
+          if (resolved) return;
           const goBackContext = event?.detail || event?.payload;
           onCloseCallback?.(goBackContext);
           resolveFn && resolveFn(goBackContext);
@@ -628,6 +632,7 @@ export const UIModule = {
         } catch (e) {
           return;
         }
+        if (resolved) return;
         onCloseCallback?.();
         resolveFn && resolveFn();
         const showModalPathInUrl =
