@@ -79,7 +79,7 @@ export class GridCompoundRenderer extends DefaultCompoundRenderer {
 
     if (this.config.layouts) {
       this.config.layouts.forEach((el) => {
-        if (el.minWidth || el.maxWidth) {
+        if (el.minWidth != null || el.maxWidth != null) {
           let mq = '@media only screen ';
           if (el.minWidth != null) {
             mq += `and (min-width: ${el.minWidth}px) `;
@@ -101,8 +101,8 @@ export class GridCompoundRenderer extends DefaultCompoundRenderer {
       });
     }
 
-    compoundCnt.innerHTML = /*html*/ `
-        <style scoped>
+    const style = document.createElement('style');
+    style.textContent = `
           .${containerClass} {
             display: grid;
             grid-template-columns: ${this.config.columns || 'auto'};
@@ -111,8 +111,8 @@ export class GridCompoundRenderer extends DefaultCompoundRenderer {
             min-height: ${this.config.minHeight || 'auto'};
           }
           ${mediaQueries}
-        </style>
     `;
+    compoundCnt.appendChild(style);
     return compoundCnt;
   }
 

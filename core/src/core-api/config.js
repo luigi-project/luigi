@@ -222,6 +222,7 @@ class LuigiConfig {
    */
   unload() {
     this.initialized = false;
+    CompoundIframeService.cleanup();
     window.Luigi._store.clear();
     AuthLayerSvc.unload();
     EventListenerHelpers.removeAllEventListeners();

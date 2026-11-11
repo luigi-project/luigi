@@ -198,7 +198,7 @@ describe('WebComponentService', function () {
       let definedId;
       sb.stub(WebComponentService, 'dynamicImport').returns(
         new Promise((resolve, reject) => {
-          resolve({ default: {} });
+          resolve({ default: class extends HTMLElement {} });
         })
       );
       const customElementsMock = {

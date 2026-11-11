@@ -1,375 +1,297 @@
 import { getCompoundIframeBootstrapScript } from './compound-iframe-bootstrap';
-import { GenericHelpers, EventListenerHelpers } from '../utilities/helpers';
+import { RoutingHelpers, EscapingHelpers, NavigationHelpers } from '../utilities/helpers';
+import { LuigiConfig } from '../core-api';
+import { WebComponentService } from './web-components';
+import { CompoundBridge } from './compound/bridge';
+import { normalizeCompoundConfig } from './compound/config';
 
-/**
- * Service for managing isolated compound views rendered inside sandboxed iframes.
- *
- * When compound.isolated is true and settings.experimental.compoundIsolation is enabled,
- * compound web components are rendered inside a sandboxed iframe (sandbox="allow-scripts",
- * without allow-same-origin) for true security isolation.
- *
- * @experimental Part of the compoundIsolation experimental feature
- */
-class CompoundIframeSvcClass {
-  constructor() {
-    /** @type {HTMLIFrameElement|null} */
-    this._iframe = null;
-    /** @type {Function|null} */
-    this._messageHandler = null;
-    /** @type {Object} */
-    this._pendingConfig = null;
-  }
+function object(value, name) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Invalid ${name}`);
+  return value;
+}
 
-  /**
-   * Creates an isolated compound view inside a sandboxed iframe.
-   *
-   * @param {Object} navNode - navigation node with compound config
-   * @param {HTMLElement} iframeContainer - DOM element to insert the iframe into
-   * @param {Object} componentData - component data from the store (context, pathParams, etc.)
-   */
-  createIsolatedCompound(navNode, iframeContainer, componentData) {
-    this.cleanup();
-    console.log('CompoundIframe: createIsolatedCompound called', navNode, iframeContainer);
+function string(value, name) {
+  if (typeof value !== 'string') throw new Error(`Invalid ${name}`);
+  return value;
+}
 
-    const iframe = document.createElement('iframe');
-    iframe.sandbox = 'allow-scripts';
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-    iframe.setAttribute('data-testid', 'luigi-compound-iframe');
-
-    // Build the compound config to send to the iframe
-    const config = this._buildIframeConfig(navNode, componentData);
-    this._pendingConfig = config;
-
-    // Set up the parent-side message handler
-    this._messageHandler = (event) => this._handleMessage(event, iframe);
-    EventListenerHelpers.addEventListener('message', this._messageHandler);
-
-    // codeql[js/html-injection] - srcdoc content is a static template from
-    // compound-iframe-bootstrap.js. No user input flows into the template.
-    // CSS links are collected from the parent document's own stylesheet elements.
-    const cssLinks = this._collectCssLinks();
-    iframe.srcdoc = getCompoundIframeBootstrapScript(cssLinks);
-
-    // Store reference and insert
-    this._iframe = iframe;
-
-    iframeContainer.appendChild(iframe);
-  }
-
-  /**
-   * Builds the serialized config payload to send to the iframe.
-   * Resolves all viewUrls to absolute and strips non-serializable properties.
-   */
-  _buildIframeConfig(navNode, componentData) {
-    const context = componentData.context || {};
-    const compound = navNode.compound;
-
-    // Build navNode representation for the iframe (serializable only)
-    const iframeNavNode = {
-      children: (compound.children || []).map((child) => {
-        const resolved = Object.assign({}, child);
-        resolved.viewUrl = this._resolveToAbsoluteUrl(child.viewUrl);
-        // Strip dataConverter functions from eventListeners (not serializable)
-        if (resolved.eventListeners) {
-          resolved.eventListeners = resolved.eventListeners.map((el) => ({
-            source: el.source,
-            name: el.name,
-            action: el.action
-          }));
+/** One disposable isolated view. The service below only owns the active instance. */
+export class IsolatedCompoundView {
+  constructor(navNode, componentData, { bootstrap = getCompoundIframeBootstrapScript, timeout = 30000 } = {}) {
+    this.navNode = navNode;
+    this.componentData = componentData;
+    this.state = 'initializing';
+    this.pendingContext = {};
+    this.nodes = new Map([['_root', navNode]]);
+    (navNode.compound.children || []).forEach((node, index) => this.nodes.set(node.id || 'gen_' + index, node));
+    this.splitViews = new Map();
+    this.config = normalizeCompoundConfig(navNode, componentData, {
+      resolveUrl: (url, context) => {
+        const resolved = new URL(
+          RoutingHelpers.getI18nViewUrl(RoutingHelpers.substituteViewUrl(url, { context })),
+          document.baseURI
+        ).href;
+        if (!EscapingHelpers.sanitizeExternalNavigationUrl(resolved) || !WebComponentService.checkWCUrl(resolved)) {
+          throw new Error(`Web component URL not allowed: ${resolved}`);
         }
         return resolved;
-      })
-    };
-
-    // Handle renderer
-    if (compound.renderer) {
-      if (typeof compound.renderer.use === 'string' || !compound.renderer.use) {
-        iframeNavNode.renderer = compound.renderer;
-      } else {
-        console.warn(
-          'Luigi: Custom compound renderers with function references are not supported in isolated mode. Using default renderer.'
-        );
-      }
-    }
-
-    // Handle nested WC (viewUrl on the node itself)
-    if (navNode.webcomponent && navNode.viewUrl) {
-      iframeNavNode.viewUrl = this._resolveToAbsoluteUrl(navNode.viewUrl);
-      iframeNavNode.webcomponent = navNode.webcomponent;
-    }
-
-    // Handle root-level event listeners
-    if (compound.eventListeners) {
-      iframeNavNode.eventListeners = compound.eventListeners.map((el) => ({
-        source: el.source,
-        name: el.name,
-        action: el.action
-      }));
-    }
-
-    return {
-      navNode: iframeNavNode,
-      context: context,
-      pathParams: componentData.pathParams || {},
-      clientPermissions: navNode.clientPermissions || {},
-      nodeParams: componentData.nodeParams || {},
-      _luigiInternalContext: {
-        _locale: window.Luigi ? window.Luigi.i18n().getCurrentLocale() : '',
-        _featureToggles: window.Luigi ? window.Luigi.featureToggles().getActiveFeatureToggleList() : []
-      }
-    };
-  }
-
-  /**
-   * Resolves a potentially relative URL to an absolute URL.
-   */
-  _resolveToAbsoluteUrl(url) {
-    if (!url) return url;
-    try {
-      return new URL(url, window.location.href).href;
-    } catch (e) {
-      return url;
-    }
-  }
-
-  /**
-   * Collects absolute hrefs of Luigi-related CSS stylesheets from the parent document.
-   * These are injected into the compound iframe so that Fundamental Styles,
-   * icon fonts, and Luigi layout CSS are available inside the iframe.
-   */
-  _collectCssLinks() {
-    return Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      },
+      getSnapshot: () => this.snapshot()
+    });
+    this.iframe = document.createElement('iframe');
+    this.iframe.sandbox = 'allow-scripts';
+    this.iframe.title = 'Luigi compound view';
+    this.iframe.style.cssText = 'width:100%;height:100%;border:none';
+    this.iframe.setAttribute('data-testid', 'luigi-compound-iframe');
+    const cssLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
       .map((link) => link.href)
-      .filter((href) => href && /luigi[_.].*\.css/i.test(href));
+      .filter((href) => /luigi[_.].*\.css/i.test(href));
+    this.iframe.srcdoc = bootstrap(cssLinks);
+    this.ready = new Promise((resolve, reject) => {
+      this.resolveReady = resolve;
+      this.rejectReady = reject;
+    });
+    // Routing need not await rendering; failures still surface visibly and never become unhandled rejections.
+    this.ready.catch((error) => {
+      if (this.state !== 'disposed') this.showError(error);
+    });
+    this.timeout = timeout;
   }
 
-  /**
-   * Handles postMessage events from the compound iframe.
-   * Routes messages to the appropriate Luigi core API.
-   */
-  _handleMessage(event, iframe) {
-    console.log(
-      'CompoundIframe: message received',
-      event.data,
-      'source match:',
-      event.source === iframe?.contentWindow,
-      'iframe.contentWindow:',
-      iframe?.contentWindow
-    );
-    if (!iframe || !iframe.contentWindow || event.source !== iframe.contentWindow) {
-      return;
-    }
+  mount(container) {
+    if (this.bridge || this.state !== 'initializing')
+      throw new Error('Compound view cannot be mounted twice or after disposal');
+    if (!container) throw new Error('Missing compound iframe container');
+    container.appendChild(this.iframe);
+    this.bridge = new CompoundBridge({ peer: this.iframe.contentWindow, handlers: this.handlers() });
+    this.timer = setTimeout(() => this.fail(new Error('Compound view initialization timed out')), this.timeout);
+    return this;
+  }
 
-    const data = event.data;
-    if (!data || !data.msg) return;
-
-    switch (data.msg) {
-      case 'luigi.compound.ready':
-        // Iframe is ready, send the compound config
-        if (this._pendingConfig) {
-          iframe.contentWindow.postMessage({ msg: 'luigi.compound.init', config: this._pendingConfig }, '*');
-          this._pendingConfig = null;
-        }
-        break;
-
-      case 'luigi.compound.rendered':
-        // Compound rendering complete
-        break;
-
-      case 'luigi.compound.navigate':
-        if (window.Luigi) {
-          const nav = window.Luigi.navigation();
-          if (data.options) {
-            let lm = nav;
-            if (data.options.fromContext) lm = lm.fromContext(data.options.fromContext);
-            if (data.options.fromClosestContext) lm = lm.fromClosestContext();
-            if (data.options.fromVirtualTreeRoot) lm = lm.fromVirtualTreeRoot();
-            if (data.options.fromParent) lm = lm.fromParent();
-            if (data.options.nodeParams) lm = lm.withParams(data.options.nodeParams);
-            lm.navigate(data.path);
-          } else {
-            nav.navigate(data.path);
+  snapshot() {
+    return {
+      locale: window.Luigi.i18n().getCurrentLocale(),
+      featureToggles: window.Luigi.featureToggles().getActiveFeatureToggleList(),
+      anchor: window.Luigi.routing().getAnchor(),
+      route: String(window.Luigi.navigation().getCurrentRoute()),
+      nodes: Object.fromEntries(
+        Array.from(this.nodes, ([id, node]) => [
+          id,
+          {
+            clientPermissions: node.clientPermissions || {},
+            searchParams: RoutingHelpers.prepareSearchParamsForClient(node)
           }
+        ])
+      )
+    };
+  }
+
+  node(params) {
+    const node = this.nodes.get(params.nodeId);
+    if (!node) throw new Error('Unknown compound node');
+    return node;
+  }
+
+  navigation(params) {
+    this.node(params);
+    const options = params.options || {};
+    object(options, 'navigation options');
+    const allowed = ['fromContext', 'fromClosestContext', 'fromVirtualTreeRoot', 'fromParent', 'nodeParams'];
+    if (Object.keys(options).some((key) => !allowed.includes(key))) throw new Error('Invalid navigation option');
+    let manager = window.Luigi.navigation();
+    if (options.fromContext !== undefined)
+      manager = manager.fromContext(string(options.fromContext, 'navigation context'));
+    for (const name of ['fromClosestContext', 'fromVirtualTreeRoot', 'fromParent']) {
+      if (options[name] !== undefined && typeof options[name] !== 'boolean') throw new Error(`Invalid ${name}`);
+      if (options[name]) manager = manager[name]();
+    }
+    if (options.nodeParams) manager = manager.withParams(object(options.nodeParams, 'node parameters'));
+    return manager;
+  }
+
+  handlers() {
+    const navigation = (method) => (params) => {
+      const manager = this.navigation(params);
+      string(params.path, 'navigation path');
+      if (params.settings !== undefined) object(params.settings, 'view settings');
+      if (method === 'openAsModal')
+        return new Promise((resolve) => {
+          manager.openAsModal(params.path, params.settings, (value) => resolve({ goBackValue: value }));
+        });
+      if (method === 'openAsSplitView') {
+        this.splitViews.set(params.nodeId, manager.openAsSplitView(params.path, params.settings));
+        return;
+      }
+      if (method === 'navigate') {
+        if (params.preserveView !== undefined && typeof params.preserveView !== 'boolean')
+          throw new Error('Invalid preserveView');
+        manager.navigate(params.path, params.preserveView);
+        return;
+      }
+      if (method === 'pathExists') return manager.pathExists(params.path);
+      manager[method](params.path, params.settings);
+    };
+    const ux = (method) => (params) => {
+      this.node(params);
+      return window.Luigi.ux()[method](object(params.settings, 'UX settings'));
+    };
+    const rootOnly = (params) => {
+      this.node(params);
+      if (params.nodeId !== '_root') throw new Error('Operation is disabled for compound children');
+    };
+    return {
+      ready: async () => {
+        if (this.state !== 'initializing') return;
+        this.state = 'rendering';
+        try {
+          await this.bridge.request('init', this.config, this.timeout);
+          if (this.state === 'disposed' || this.state === 'failed') return;
+          clearTimeout(this.timer);
+          this.state = 'ready';
+          this.resolveReady(this);
+          const pendingContext = this.pendingContext;
+          this.pendingContext = {};
+          this.updateContext(pendingContext);
+        } catch (error) {
+          this.fail(error);
         }
-        break;
+      },
+      'render.failed': ({ message }) => this.fail(new Error(string(message, 'component load error'))),
+      'navigation.setViewGroupData': (params) => {
+        const node = this.node(params);
+        const data = object(params.data, 'view group data');
+        const viewGroup = NavigationHelpers.findViewGroup(node);
+        if (!viewGroup) return;
+        const settings = NavigationHelpers.getViewGroupSettings(viewGroup);
+        settings._liveCustomData = data;
+        LuigiConfig.configChanged('navigation.viewgroupdata');
+      },
+      'navigation.navigate': navigation('navigate'),
+      'navigation.openAsModal': navigation('openAsModal'),
+      'navigation.openAsDrawer': navigation('openAsDrawer'),
+      'navigation.openAsSplitView': navigation('openAsSplitView'),
+      'navigation.pathExists': navigation('pathExists'),
+      'navigation.getCurrentRoute': (params) => this.navigation(params).getCurrentRoute(),
+      'navigation.goBack': (params) => {
+        this.node(params);
+        window.Luigi.navigation().goBack(params.value);
+      },
+      'navigation.splitView': (params) => {
+        this.node(params);
+        if (!['close', 'collapse', 'expand', 'isCollapsed', 'isExpanded', 'exists'].includes(params.action))
+          throw new Error('Invalid split view action');
+        const splitView = this.splitViews.get(params.nodeId);
+        if (!splitView) throw new Error('No split view opened by this node');
+        return splitView[params.action]();
+      },
+      'ux.showAlert': ux('showAlert'),
+      'ux.showConfirmationModal': ux('showConfirmationModal'),
+      'ux.showLoadingIndicator': (params) => {
+        this.node(params);
+        window.Luigi.ux().showLoadingIndicator();
+      },
+      'ux.hideLoadingIndicator': (params) => {
+        this.node(params);
+        window.Luigi.ux().hideLoadingIndicator();
+      },
+      'ux.closeCurrentModal': (params) => {
+        this.node(params);
+        window.Luigi.ux().closeCurrentModal();
+      },
+      'ux.setDocumentTitle': (params) => {
+        this.node(params);
+        window.Luigi.ux().setDocumentTitle(string(params.title, 'title'));
+      },
+      'ux.setDirtyStatus': (params) => {
+        this.node(params);
+        if (typeof params.dirty !== 'boolean') throw new Error('Invalid dirty status');
+        window.postMessage({ msg: 'luigi.set-page-dirty', dirty: params.dirty }, '*');
+      },
+      'routing.addCoreSearchParams': (params) => {
+        RoutingHelpers.addSearchParamsFromClient(
+          this.node(params),
+          object(params.searchParams, 'search parameters'),
+          params.keepBrowserHistory,
+          params.preventLuigiConfigUpdate
+        );
+        this.updateContext({});
+      },
+      'routing.addNodeParams': (params) => {
+        rootOnly(params);
+        window.Luigi.routing().addNodeParams(object(params.params, 'node parameters'), params.keepBrowserHistory);
+      },
+      'routing.setAnchor': (params) => {
+        rootOnly(params);
+        window.Luigi.routing().setAnchor(string(params.anchor, 'anchor'));
+        this.updateContext({});
+      },
+      'settings.getUserSettings': (params) => WebComponentService.getUserSettingsForWc(this.node(params))
+    };
+  }
 
-      case 'luigi.compound.openAsModal':
-        if (window.Luigi) {
-          window.Luigi.navigation().openAsModal(data.path, data.modalSettings, (value) => {
-            this._respond(iframe, data.correlationId, { goBackValue: value });
-          });
-        }
-        break;
+  updateContext(context) {
+    if (['failed', 'disposed'].includes(this.state)) return;
+    this.componentData = { ...this.componentData, context: { ...this.componentData.context, ...context } };
+    if (this.state === 'ready') this.bridge.notify('context.update', { context, snapshot: this.snapshot() });
+    else this.pendingContext = { ...this.pendingContext, ...context };
+  }
 
-      case 'luigi.compound.openAsDrawer':
-        if (window.Luigi) {
-          window.Luigi.navigation().openAsDrawer(data.path, data.drawerSettings);
-        }
-        break;
+  fail(error) {
+    if (['failed', 'disposed'].includes(this.state)) return;
+    const wasReady = this.state === 'ready';
+    clearTimeout(this.timer);
+    this.state = 'failed';
+    this.bridge?.dispose();
+    this.rejectReady(error);
+    // Deferred imports can fail after the initialization promise has already resolved.
+    if (wasReady) this.showError(error);
+  }
 
-      case 'luigi.compound.openAsSplitView':
-        if (window.Luigi) {
-          const sv = window.Luigi.navigation().openAsSplitView(data.path, data.splitViewSettings);
-          this._respond(iframe, data.correlationId, sv);
-        }
-        break;
+  showError(error) {
+    console.error('Luigi isolated compound view:', error);
+    this.errorElement = document.createElement('div');
+    this.errorElement.setAttribute('role', 'alert');
+    this.errorElement.textContent = 'Could not load the compound view.';
+    this.iframe.replaceWith(this.errorElement);
+  }
 
-      case 'luigi.compound.goBack':
-        if (window.Luigi) {
-          window.Luigi.navigation().goBack(data.value);
-        }
-        break;
+  dispose() {
+    if (this.state === 'disposed') return;
+    this.state = 'disposed';
+    clearTimeout(this.timer);
+    this.bridge?.dispose();
+    this.rejectReady(new Error('Compound view disposed'));
+    this.iframe.remove();
+    this.errorElement?.remove();
+    this.splitViews.clear();
+  }
+}
 
-      case 'luigi.compound.pathExists':
-        if (window.Luigi) {
-          window.Luigi.navigation()
-            .pathExists(data.path)
-            .then((exists) => {
-              this._respond(iframe, data.correlationId, exists);
-            });
-        }
-        break;
-
-      case 'luigi.compound.getCurrentRoute':
-        if (window.Luigi) {
-          const route = window.Luigi.navigation().getCurrentRoute();
-          Promise.resolve(route).then((r) => {
-            this._respond(iframe, data.correlationId, r);
-          });
-        }
-        break;
-
-      case 'luigi.compound.showAlert':
-        if (window.Luigi) {
-          window.Luigi.ux()
-            .showAlert(data.settings)
-            .then((dismissKey) => {
-              this._respond(iframe, data.correlationId, dismissKey);
-            });
-        }
-        break;
-
-      case 'luigi.compound.showConfirmationModal':
-        if (window.Luigi) {
-          window.Luigi.ux()
-            .showConfirmationModal(data.settings)
-            .then(() => {
-              this._respond(iframe, data.correlationId, true);
-            })
-            .catch(() => {
-              this._respond(iframe, data.correlationId, false);
-            });
-        }
-        break;
-
-      case 'luigi.compound.showLoadingIndicator':
-        if (window.Luigi) {
-          window.Luigi.ux().showLoadingIndicator();
-        }
-        break;
-
-      case 'luigi.compound.hideLoadingIndicator':
-        if (window.Luigi) {
-          window.Luigi.ux().hideLoadingIndicator();
-        }
-        break;
-
-      case 'luigi.compound.closeCurrentModal':
-        if (window.Luigi) {
-          window.Luigi.ux().closeCurrentModal();
-        }
-        break;
-
-      case 'luigi.compound.setDocumentTitle':
-        if (window.Luigi) {
-          window.Luigi.ux().setDocumentTitle(data.title);
-        }
-        break;
-
-      case 'luigi.compound.getCoreSearchParams':
-        if (window.Luigi) {
-          const params = window.Luigi.routing().getCoreSearchParams();
-          this._respond(iframe, data.correlationId, params);
-        }
-        break;
-
-      case 'luigi.compound.getAnchor':
-        if (window.Luigi) {
-          const anchor = window.Luigi.routing().getAnchor();
-          this._respond(iframe, data.correlationId, anchor);
-        }
-        break;
-
-      case 'luigi.compound.getUserSettings':
-        if (window.Luigi) {
-          window.Luigi.userSettings()
-            .getUserSettings()
-            .then((settings) => {
-              this._respond(iframe, data.correlationId, settings);
-            })
-            .catch(() => {
-              this._respond(iframe, data.correlationId, null);
-            });
-        }
-        break;
-
-      case 'luigi.compound.setViewGroupData':
-        // View group data setting requires node reference — not supported in isolated mode
-        console.warn('Luigi: setViewGroupData is not supported in isolated compound mode.');
-        break;
-
-      default:
-        break;
+class CompoundIframeSvcClass {
+  createIsolatedCompound(navNode, container, componentData) {
+    this.cleanup();
+    const view = new IsolatedCompoundView(navNode, componentData);
+    this.view = view;
+    try {
+      return view.mount(container);
+    } catch (error) {
+      this.cleanup();
+      throw error;
     }
   }
 
-  /**
-   * Sends a response back to the iframe for request/response patterns.
-   */
-  _respond(iframe, correlationId, result) {
-    if (iframe && iframe.contentWindow && correlationId) {
-      iframe.contentWindow.postMessage({ correlationId: correlationId, result: result }, '*');
-    }
+  forwardContextUpdate(context) {
+    this.view?.updateContext(context);
   }
-
-  /**
-   * Forwards a context update to the compound iframe.
-   */
-  forwardContextUpdate(ctx) {
-    if (this._iframe && this._iframe.contentWindow) {
-      this._iframe.contentWindow.postMessage({ msg: 'luigi.compound.contextUpdate', context: ctx }, '*');
-    }
-  }
-
-  /**
-   * Returns true if there is an active isolated compound iframe.
-   */
   isActive() {
-    return !!this._iframe;
+    return !!this.view && !['failed', 'disposed'].includes(this.view.state);
   }
-
-  /**
-   * Returns the active compound iframe element, or null.
-   */
   getIframe() {
-    return this._iframe;
+    return this.isActive() ? this.view.iframe : null;
   }
-
-  /**
-   * Cleans up the current compound iframe and message handler.
-   */
   cleanup() {
-    if (this._messageHandler) {
-      EventListenerHelpers.removeEventListener('message', this._messageHandler);
-      this._messageHandler = null;
-    }
-    if (this._iframe && this._iframe.parentNode) {
-      this._iframe.parentNode.removeChild(this._iframe);
-    }
-    this._iframe = null;
-    this._pendingConfig = null;
+    this.view?.dispose();
+    this.view = null;
   }
 }
 

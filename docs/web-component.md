@@ -273,6 +273,49 @@ Below is a Luigi web component example configuration which shows 3 web component
       }
 ```
 
+## Isolated compound views (experimental)
+
+Enable `settings.experimental.compoundIsolation` and set `compound.isolated: true` on a navigation node to render its compound view inside a sandboxed iframe:
+
+```js
+settings: {
+  experimental: { compoundIsolation: true }
+},
+navigation: {
+  nodes: [{
+    pathSegment: 'isolated',
+    compound: {
+      isolated: true,
+      renderer: { use: 'grid', config: { columns: '1fr 1fr' } },
+      children: [
+        { id: 'first', viewUrl: '/components/first.js' },
+        { id: 'second', viewUrl: '/components/second.js' }
+      ]
+    }
+  }]
+}
+```
+
+The iframe has `allow-scripts`, but **not** `allow-same-origin`. Components cannot access the shell's DOM directly. All children share the same iframe and event bus; this does **not** isolate compound children from each other. Treat the entire compound as one trust boundary. Shell interactions use an allowlisted, source-checked message bridge.
+
+The runtime is built into Luigi's existing `srcdoc` bootstrap. No additional runtime asset needs to be deployed. Your CSP must permit this inline bootstrap and the required component/style resources. Module imports execute from an opaque origin, so component servers must support CORS for that origin (for example, `Access-Control-Allow-Origin: *` for public, credential-free modules). Do not add `allow-same-origin` to work around loading failures. `navigation.validWebcomponentUrls` still applies.
+
+### Supported behavior and limitations
+
+- Default/grid renderers, nested container web components with slots, module imports, self-registered components, and local component events are supported.
+- Locale, feature toggles, path/node parameters, permitted core search parameters, and anchor getters are synchronous. They read local state supplied by the shell; locale, feature toggles, search parameters, and anchors refresh when the shell forwards a context update.
+- Navigation options are applied to navigation, modal/drawer/split-view opening, route retrieval, and path checks. Modal promises and close callbacks are supported. Split-view controls are local proxies whose methods return promises; functions never cross the message boundary.
+- Alerts and confirmation dialogs return promises. Confirmation cancellation rejects, just as in direct mode. User settings are retrieved for the requesting node's `userSettingsGroup`; search parameters use that node's permissions. These scopes provide API behavior, not security isolation between children sharing the same iframe.
+- Node-parameter and anchor mutations remain disabled for compound children. The root container may use them.
+- Lazy loading is supported with `compound.lazyLoadingOptions.enabled: true`. An `IntersectionObserver` runs inside the iframe, using its own viewport; the root container loads eagerly, and initial readiness does not wait for offscreen children. `intersectionRootMargin`, `temporaryContainerHeight` (default `500px`), per-child `layoutConfig.temporaryContainerHeight`, and `noTemporaryContainerHeight` work as in direct mode. Observers and pending loads are cleaned up on disposal, and deferred children receive context updates before they initialize. Local events are not buffered for children that have not loaded yet.
+- `LuigiClient.setViewGroupData(data)` sends a fire-and-forget update to the shell. The shell resolves the requesting node's view group using the existing hierarchy and same-origin inheritance rules, updates its live custom data, and calls `configChanged('navigation.viewgroupdata')`. Callers cannot select a different group in the message; a node with no applicable group produces no update. Data must be a transferable object.
+- Function-based custom renderers and event `dataConverter` functions are not supported in isolated mode. Unsupported configuration is rejected explicitly rather than silently downgraded. Context/layout configuration must contain serializable plain data; duplicate child IDs are rejected.
+- The isolated Client facade is an experimental subset, not the full direct-mode API. Ordinary requests and initialization time out after 30 seconds; modal/alert/confirmation requests time out after five minutes. Disposal rejects pending requests. Deferred component imports also time out after 30 seconds. Component-load failures, including failures after initial readiness, display an error in place of the view.
+
+### Development verification
+
+Run unit tests in `core/` with `npm test`. A standalone real-browser smoke test is available with `node core/dev-tools/compound-smoke.mjs` from the repository root. It requires Node 22+ and Chrome/Chromium (`CHROME_BIN` can override detection). It builds in memory and uses a temporary browser profile to verify the opaque-origin sandbox, CORS imports, rendering, local events, context updates, synchronous getters, RPC results/errors, actual viewport-based lazy imports, and view-group messages.
+
 ## Examples 
 
 You can find an example of Luigi web components in [Luigi Fiddle](https://fiddle.luigi-project.io) in the last navigation entry on the left. The source code for Fiddle is available on [GitHub](https://github.com/luigi-project/luigi/tree/main/website/fiddle) as well.

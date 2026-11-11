@@ -156,8 +156,7 @@ export const projectDetailNavStructure = (projectId) => [
             {
               source: 'btn',
               name: 'sendBtn',
-              action: 'update',
-              dataConverter: (data) => data
+              action: 'update'
             }
           ]
         }

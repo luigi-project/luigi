@@ -1,3 +1,4 @@
+import { compoundRuntime } from './dev-tools/compound-runtime-plugin.mjs';
 import { createLogger, defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import * as csstree from 'css-tree';
@@ -99,5 +100,5 @@ export default defineConfig({
     }
   },
   publicDir: 'public_root',
-  plugins: [luigiPlugin(), svelte()]
+  plugins: [compoundRuntime(), luigiPlugin(), svelte()]
 });

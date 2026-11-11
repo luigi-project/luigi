@@ -1,3 +1,4 @@
+import { compoundRuntime } from './dev-tools/compound-runtime-plugin.mjs';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -153,6 +154,7 @@ export default [
     },
     onwarn,
     plugins: [
+      compoundRuntime(),
       svelte({
         compilerOptions: {
           dev: !production
