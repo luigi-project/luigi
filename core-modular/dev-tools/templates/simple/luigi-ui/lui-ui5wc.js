@@ -1093,13 +1093,15 @@ const connector = {
       }
       setDialogSize(dialog, modalSettings);
     };
-    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
-    if (dialogs.length) {
-      dialogs.forEach((dialog) => updateSettings(dialog));
-    }
+    const modals = document.querySelectorAll('ui5-dialog.lui-modal');
     const drawer = document.querySelector('ui5-dialog.lui-drawer');
-    if (drawer) {
-      updateSettings(drawer);
+    const allDialogs = document.querySelectorAll('ui5-dialog');
+    if (modals.length && !drawer) {
+      modals.forEach((modal) => updateSettings(modal));
+    } else {
+      if (allDialogs.length) {
+        updateSettings(Array.from(allDialogs).at(-1));
+      }
     }
   },
 

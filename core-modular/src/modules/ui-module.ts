@@ -62,6 +62,8 @@ const createContainer = async (
     (lcc as any).viewGroup = node.viewGroup;
     (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
     (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
+    (lcc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lcc as any).currentNode = node;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
@@ -99,8 +101,9 @@ const createContainer = async (
     setAllowRules(lc, luigi);
     setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
-    luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lc as any).currentNode = node;
+    luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
 };
@@ -283,9 +286,8 @@ export const UIModule = {
     if (isViewGroupDataOnly) {
       const modalService = serviceRegistry.get(ModalService);
       if (modalService.getModalStackLength()) {
-        const params = RoutingHelpers.getQueryParams(UIModule.luigi);
-        const node = (await UIModule.navService.getCurrentNode(params.modal)) as Node;
         const settings = modalService.getModalSettings() as ModalSettings;
+        const node = (UIModule.modalContainer.at(-1)?.currentNode || { label: settings?.title ?? '' }) as Node;
         if (settings._liveLabel) {
           const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
           UIModule.updateModalSettings({ title }, false, UIModule.luigi);
@@ -480,6 +482,7 @@ export const UIModule = {
         const previousViewUrl = viewGroupContainer.viewurl;
 
         viewGroupContainer.viewStackSize = viewStackSize;
+        (viewGroupContainer as any).currentNode = currentNode;
 
         if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
@@ -538,6 +541,7 @@ export const UIModule = {
           const newContext = { ...currentNode.context, ...goBackContext };
 
           currentContainer.viewStackSize = viewStackSize;
+          (currentContainer as any).currentNode = currentNode;
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext, { withoutSync });
