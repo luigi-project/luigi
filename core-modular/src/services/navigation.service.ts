@@ -139,8 +139,9 @@ export class NavigationService {
 
     const routePath = route.startsWith('/') ? route : `/${route}`;
     const lastPreservedView = [...this._preservedViews].pop();
+    const lastPreservedPath = lastPreservedView.path.startsWith('/') ? lastPreservedView.path : `/${lastPreservedView.path}`;
     const removeQueryParams = (path: string) => path.split('?')[0];
-    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+    const paths = [removeQueryParams(lastPreservedPath), removeQueryParams(lastPreservedView.nextPath)];
 
     return paths.includes(removeQueryParams(routePath));
   }
@@ -188,7 +189,7 @@ export class NavigationService {
 
       dirtyStatusService.getUnsavedChangesModalPromise().then(
         () => {
-          const previousActiveViewData = this._preservedViews.pop();
+          const previousActiveViewData = this._preservedViews.at(-1);
 
           this.prepareGoBackContextForNavigation(backContext);
 
