@@ -1062,9 +1062,7 @@ const connector = {
     btn.onclick = (e) => {
       e.stopImmediatePropagation();
       e.preventDefault();
-      if (onCloseCallback) {
-        onCloseCallback();
-      }
+      onCloseCallback?.();
     };
     btn.setAttribute('slot', 'endContent');
     bar.appendChild(btn);
@@ -1074,12 +1072,11 @@ const connector = {
     dialog.appendChild(lc);
     document.body.appendChild(dialog);
 
-    if (onCloseRequest) {
-      onCloseRequest().then(() => {
-        dialog.open = false;
-        document.body.removeChild(dialog);
-      });
-    }
+    const closePromise = onCloseRequest?.();
+    closePromise?.then(() => {
+      dialog.open = false;
+      dialog.remove();
+    });
 
     dialog.open = true;
     updateOverlays();
