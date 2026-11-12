@@ -557,7 +557,6 @@ export const UIModule = {
       try {
         onCloseCallback?.(...args);
       } finally {
-        // A failing caller callback must not leave the connector's close promise pending.
         resolveFn?.(...args);
         const showModalPathInUrl =
           modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
