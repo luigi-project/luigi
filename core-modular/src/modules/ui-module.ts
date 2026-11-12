@@ -552,6 +552,21 @@ export const UIModule = {
     let resolveFn: ((goBackValue?: any) => void) | undefined;
     let onCloseRequestHandler: (() => void) | undefined;
 
+    const completeClose = (updateUrl: boolean, ...args: [goBackValue?: any]) => {
+      if (resolved) return;
+      try {
+        onCloseCallback?.(...args);
+      } finally {
+        // A failing caller callback must not leave the connector's close promise pending.
+        resolveFn?.(...args);
+        const showModalPathInUrl =
+          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+        if (updateUrl && showModalPathInUrl && modalService.getModalStackLength() === 0) {
+          routingService.removeModalDataFromUrl(true);
+        }
+      }
+    };
+
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
         resolveFn = (goBackValue?: any) => {
@@ -566,37 +581,24 @@ export const UIModule = {
         };
 
         onCloseRequestHandler = async () => {
+          if (resolved) return;
           try {
             await dirtyStatusService.getUnsavedChangesModalPromise(lc);
           } catch (e) {
             return;
           }
-          if (resolved) return;
-          // Notify the caller MFE as well as the connector's internal close promise.
-          onCloseCallback?.();
-          resolveFn && resolveFn();
-          const showModalPathInUrl =
-            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-            routingService.removeModalDataFromUrl(true);
-          }
+          completeClose(true);
         };
 
         const onGoBackRequestHandler = async (event: any) => {
+          if (resolved) return;
           try {
             await dirtyStatusService.getUnsavedChangesModalPromise(lc);
           } catch (e) {
             return;
           }
-          if (resolved) return;
           const goBackContext = event?.detail || event?.payload;
-          onCloseCallback?.(goBackContext);
-          resolveFn && resolveFn(goBackContext);
-          const showModalPathInUrl =
-            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-            routingService.removeModalDataFromUrl(true);
-          }
+          completeClose(true, goBackContext);
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -611,9 +613,11 @@ export const UIModule = {
       resolveFn,
       onCloseRequestHandler,
       onInternalClose: () => {
+        if (resolved) return;
         try {
           dirtyStatusService.clearDirtyState(lc);
-          modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
+          // Routing already changed the URL; only notify and resolve here.
+          completeClose(false);
         } catch (e) {
           console.warn('onInternalClose failed', e);
         }
@@ -627,19 +631,13 @@ export const UIModule = {
       lc,
       modalSettings,
       async () => {
+        if (resolved) return;
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
         } catch (e) {
           return;
         }
-        if (resolved) return;
-        onCloseCallback?.();
-        resolveFn && resolveFn();
-        const showModalPathInUrl =
-          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-        if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-          routingService.removeModalDataFromUrl(true);
-        }
+        completeClose(true);
       },
       () => closePromise
     );

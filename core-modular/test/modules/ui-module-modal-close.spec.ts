@@ -66,7 +66,11 @@ describe('UIModule.openModal close callbacks', () => {
     modalService = new ModalService(luigi);
     jest.spyOn(modalService, 'registerModal');
     jest.spyOn(modalService, 'removeLastModalFromStack');
-    dirtyStatusService = { getUnsavedChangesModalPromise: jest.fn().mockResolvedValue(undefined) };
+    dirtyStatusService = {
+      getUnsavedChangesModalPromise: jest.fn().mockResolvedValue(undefined),
+      shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false),
+      clearDirtyState: jest.fn()
+    };
     routingService = { removeModalDataFromUrl: jest.fn() };
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ModalService) return modalService;
@@ -113,6 +117,113 @@ describe('UIModule.openModal close callbacks', () => {
     expect(UIModule.modalContainer).toHaveLength(0);
     expect(routingService.removeModalDataFromUrl).toHaveBeenCalledTimes(1);
     expect(routingService.removeModalDataFromUrl).toHaveBeenCalledWith(true);
+  });
+
+  it('notifies the caller and resolves the close promise when routing closes the modal internally', async () => {
+    await openModal();
+
+    await modalService.closeModalsWithDirtyCheck();
+    await closePromise;
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith();
+    expect(dirtyStatusService.clearDirtyState).toHaveBeenCalledWith(container);
+    expect(modalService.getModalStackLength()).toBe(0);
+    expect(UIModule.modalContainer).toHaveLength(0);
+    // Browser back has already updated the URL; do not navigate back again.
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+  });
+
+  it('keeps the modal promise pending when the internal close dirty check is cancelled', async () => {
+    await openModal();
+    const settled = jest.fn();
+    closePromise.then(settled);
+    dirtyStatusService.shouldShowUnsavedChangesModal.mockReturnValue(true);
+    dirtyStatusService.getUnsavedChangesModalPromise.mockRejectedValueOnce(new Error('cancelled'));
+
+    expect(await modalService.closeModalsWithDirtyCheck()).toBe(false);
+
+    expect(callback).not.toHaveBeenCalled();
+    expect(settled).not.toHaveBeenCalled();
+    expect(dirtyStatusService.clearDirtyState).not.toHaveBeenCalled();
+    expect(modalService.getModalStackLength()).toBe(1);
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+
+    expect(await modalService.closeModalsWithDirtyCheck()).toBe(true);
+    await closePromise;
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not notify again after an internal close', async () => {
+    await openModal();
+    await modalService.closeModalsWithDirtyCheck();
+    await closePromise;
+    registeredModal.onInternalClose!();
+    await registeredModal.onCloseRequestHandler!();
+    await closeViaGoBack();
+    await closeViaX();
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(modalService.removeLastModalFromStack).toHaveBeenCalledTimes(1);
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+  });
+
+  it.each(['closeCurrentModal', 'X'])('resolves and cleans up when the caller callback throws via %s', async (path) => {
+    const error = new Error('caller failed');
+    callback.mockImplementation(() => {
+      throw error;
+    });
+    await openModal();
+
+    const close = path === 'X' ? closeViaX : registeredModal.onCloseRequestHandler!;
+    await expect(close()).rejects.toThrow(error);
+    await closePromise;
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(modalService.getModalStackLength()).toBe(0);
+    expect(UIModule.modalContainer).toHaveLength(0);
+    expect(routingService.removeModalDataFromUrl).toHaveBeenCalledTimes(1);
+    await close();
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('resolves an internal close even when the caller callback throws, without changing history', async () => {
+    const error = new Error('caller failed');
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    callback.mockImplementation(() => {
+      throw error;
+    });
+    await openModal();
+
+    await modalService.closeModalsWithDirtyCheck();
+    await closePromise;
+    registeredModal.onInternalClose!();
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith('onInternalClose failed', error);
+    expect(modalService.getModalStackLength()).toBe(0);
+    expect(UIModule.modalContainer).toHaveLength(0);
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+  });
+
+  it('does not complete a pending close request again after routing closes the modal', async () => {
+    await openModal();
+    let confirm!: () => void;
+    dirtyStatusService.getUnsavedChangesModalPromise.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        confirm = resolve;
+      })
+    );
+    const pendingClose = registeredModal.onCloseRequestHandler!();
+
+    await modalService.closeModalsWithDirtyCheck();
+    await closePromise;
+    confirm();
+    await pendingClose;
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(modalService.removeLastModalFromStack).toHaveBeenCalledTimes(1);
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
   });
 
   it('notifies the caller exactly once when closed via X', async () => {
@@ -200,6 +311,7 @@ describe('UIModule.openModal close callbacks', () => {
     await registeredModal.onCloseRequestHandler!();
     await closeViaGoBack();
     await closeViaX();
+    registeredModal.onInternalClose!();
 
     expect(callback).toHaveBeenCalledTimes(1);
     expect(modalService.removeLastModalFromStack).toHaveBeenCalledTimes(1);

@@ -1,6 +1,7 @@
 import { FeatureToggles } from '../../src/core-api/feature-toggles';
 import { UIModule } from '../../src/modules/ui-module';
 import { NavigationService } from '../../src/services/navigation.service';
+import { DirtyStatusService } from '../../src/services/dirty-status.service';
 import { PreloadingService } from '../../src/services/preloading.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
@@ -21,6 +22,7 @@ describe('Routing Service', () => {
   let mockLuigi: any;
   let mockNavService: any;
   let mockConnector: any;
+  let mockDirtyStatusService: any;
   let addEventListenerSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -93,6 +95,12 @@ describe('Routing Service', () => {
       deleteCache: jest.fn()
     };
 
+    mockDirtyStatusService = {
+      shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false),
+      getUnsavedChangesModalPromise: jest.fn().mockResolvedValue(undefined),
+      unsavedChanges: { persistUrl: null }
+    };
+
     jest.spyOn(serviceRegistry, 'get').mockImplementation((svc: any) => {
       // Return the NavigationService mock when requested; otherwise a generic stub
       if (svc === NavigationService) {
@@ -100,6 +108,9 @@ describe('Routing Service', () => {
       }
       if (svc === NodeDataManagementService) {
         return mockNodeDataManagementService;
+      }
+      if (svc === DirtyStatusService) {
+        return mockDirtyStatusService;
       }
       if (svc === PreloadingService) {
         return { preload: jest.fn(), viewGroupLoaded: jest.fn() };
@@ -390,6 +401,82 @@ describe('Routing Service', () => {
 
       expect(featureToggleSpy).toHaveBeenCalled();
       expect(UIModule.updateMainContent).toHaveBeenCalledWith(fakeNode, mockLuigi, customParams, true, true, true);
+    });
+  });
+
+  describe('handleRouteChange with unsaved changes', () => {
+    const targetUrl = 'http://localhost/target?foo=bar';
+    const oldUrl = 'http://localhost/current?modal=/edit';
+    const targetState = { route: 'target' };
+    let pushStateSpy: jest.SpyInstance;
+    let replaceStateSpy: jest.SpyInstance;
+    let continueRoutingSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      jest.spyOn(window, 'location', 'get').mockReturnValue({ href: targetUrl } as Location);
+      jest.spyOn(history, 'state', 'get').mockReturnValue(targetState);
+      pushStateSpy = jest.spyOn(history, 'pushState').mockImplementation(() => {});
+      replaceStateSpy = jest.spyOn(history, 'replaceState').mockImplementation(() => {});
+      // Stop after the dirty check; rendering is covered by the tests above.
+      continueRoutingSpy = jest.spyOn(routingService, 'shouldSkipRoutingForUrlPatterns').mockReturnValue(true);
+      mockDirtyStatusService.shouldShowUnsavedChangesModal.mockReturnValue(true);
+      mockDirtyStatusService.unsavedChanges.persistUrl = oldUrl;
+    });
+
+    it('restores the current URL while waiting and resumes with the target URL and state after approval', async () => {
+      let confirm!: () => void;
+      mockDirtyStatusService.getUnsavedChangesModalPromise.mockReturnValue(
+        new Promise<void>((resolve) => {
+          confirm = resolve;
+        })
+      );
+
+      const routing = routingService.handleRouteChange({ path: '/target', query: 'foo=bar' });
+
+      expect(mockDirtyStatusService.getUnsavedChangesModalPromise).toHaveBeenCalledWith();
+      expect(pushStateSpy).toHaveBeenCalledWith(targetState, '', oldUrl);
+      expect(replaceStateSpy).not.toHaveBeenCalled();
+      expect(continueRoutingSpy).not.toHaveBeenCalled();
+
+      confirm();
+      await routing;
+
+      expect(replaceStateSpy).toHaveBeenCalledWith(targetState, '', targetUrl);
+      expect(continueRoutingSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the restored URL and does not continue routing after dismissal', async () => {
+      mockDirtyStatusService.getUnsavedChangesModalPromise.mockRejectedValueOnce(new Error('cancelled'));
+
+      await routingService.handleRouteChange({ path: '/target', query: 'foo=bar' });
+
+      expect(pushStateSpy).toHaveBeenCalledWith(targetState, '', oldUrl);
+      expect(replaceStateSpy).not.toHaveBeenCalled();
+      expect(continueRoutingSpy).not.toHaveBeenCalled();
+      expect(mockNavService.getPathData).not.toHaveBeenCalled();
+      expect(UIModule.updateMainContent).not.toHaveBeenCalled();
+    });
+
+    it('confirms and resumes even if no previous URL was persisted', async () => {
+      mockDirtyStatusService.unsavedChanges.persistUrl = null;
+
+      await routingService.handleRouteChange({ path: '/target', query: 'foo=bar' });
+
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(mockDirtyStatusService.getUnsavedChangesModalPromise).toHaveBeenCalledWith();
+      expect(replaceStateSpy).toHaveBeenCalledWith(targetState, '', targetUrl);
+      expect(continueRoutingSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('continues without touching history when there are no unsaved changes', async () => {
+      mockDirtyStatusService.shouldShowUnsavedChangesModal.mockReturnValue(false);
+
+      await routingService.handleRouteChange({ path: '/target', query: 'foo=bar' });
+
+      expect(mockDirtyStatusService.getUnsavedChangesModalPromise).not.toHaveBeenCalled();
+      expect(pushStateSpy).not.toHaveBeenCalled();
+      expect(replaceStateSpy).not.toHaveBeenCalled();
+      expect(continueRoutingSpy).toHaveBeenCalledTimes(1);
     });
   });
 
