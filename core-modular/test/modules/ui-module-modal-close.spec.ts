@@ -235,7 +235,7 @@ describe('UIModule.openModal close callbacks', () => {
     async (closePath) => {
       let ui5Connector: any;
       runInNewContext(
-        readFileSync(resolve(__dirname, '../../dev-tools/simple-app/luigi-ui/lui-ui5wc.js'), 'utf8'),
+        readFileSync(resolve(__dirname, '../../dev-tools/templates/simple/luigi-ui/lui-ui5wc.js'), 'utf8'),
         {
           Luigi: {
             getEngine: () => ({
