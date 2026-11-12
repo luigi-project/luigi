@@ -139,7 +139,9 @@ export class NavigationService {
 
     const routePath = route.startsWith('/') ? route : `/${route}`;
     const lastPreservedView = [...this._preservedViews].pop();
-    const lastPreservedPath = lastPreservedView.path.startsWith('/') ? lastPreservedView.path : `/${lastPreservedView.path}`;
+    const lastPreservedPath = lastPreservedView.path.startsWith('/')
+      ? lastPreservedView.path
+      : `/${lastPreservedView.path}`;
     const removeQueryParams = (path: string) => path.split('?')[0];
     const paths = [removeQueryParams(lastPreservedPath), removeQueryParams(lastPreservedView.nextPath)];
 
