@@ -30,6 +30,9 @@ jest.mock('../../src/utilities/helpers/auth-helpers', () => ({
   AuthHelpers: { getStoredAuthData: jest.fn() }
 }));
 
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { runInNewContext } from 'node:vm';
 import Events from '@luigi-project/container';
 import { UIModule } from '../../src/modules/ui-module';
 import { ModalService, type ModalPromiseObject } from '../../src/services/modal.service';
@@ -86,6 +89,7 @@ describe('UIModule.openModal close callbacks', () => {
     jest.restoreAllMocks();
     UIModule.modalContainer = [];
     UIModule.navService = originalNavService;
+    document.querySelectorAll('.lui-modal, .luigi-alert--overlay').forEach((element) => element.remove());
   });
 
   async function openModal(settings = {}, onCloseCallback = callback) {
@@ -225,6 +229,74 @@ describe('UIModule.openModal close callbacks', () => {
     expect(modalService.removeLastModalFromStack).toHaveBeenCalledTimes(1);
     expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
   });
+
+  it.each(['closeCurrentModal', 'X'])(
+    'keeps the first modal and its callback pending with the real UI5 example connector when closing the second via %s',
+    async (closePath) => {
+      let ui5Connector: any;
+      runInNewContext(
+        readFileSync(resolve(__dirname, '../../dev-tools/simple-app/luigi-ui/lui-ui5wc.js'), 'utf8'),
+        {
+          Luigi: {
+            getEngine: () => ({
+              bootstrap: (value: any) => {
+                ui5Connector = value;
+              }
+            })
+          },
+          window: { addEventListener: jest.fn() },
+          document,
+          console
+        }
+      );
+      const overlay = document.createElement('div');
+      overlay.className = 'luigi-alert--overlay';
+      Object.assign(overlay, { hidePopover: jest.fn(), showPopover: jest.fn() });
+      document.body.appendChild(overlay);
+      connector.renderModal.mockImplementation(ui5Connector.renderModal);
+
+      await openModal();
+      const firstModal = registeredModal;
+      const firstPromise = closePromise;
+      const firstSettled = jest.fn();
+      firstPromise.then(firstSettled);
+      const firstContainer = container;
+      const firstDialog = container.parentElement;
+      const secondCallback = jest.fn();
+      await UIModule.openModal(
+        luigi,
+        { viewUrl: '/second-modal.html', loadingIndicator: { enabled: false } },
+        { keepPrevious: true },
+        secondCallback
+      );
+      const secondModal = (modalService.registerModal as jest.Mock).mock.calls[1][0];
+      const secondPromise = connector.renderModal.mock.calls[1][3]();
+      const secondContainer = connector.renderModal.mock.calls[1][0];
+      const secondDialog = secondContainer.parentElement;
+      expect(document.querySelectorAll('.lui-modal')).toHaveLength(2);
+
+      if (closePath === 'X') {
+        secondDialog.querySelector('ui5-button').click();
+      } else {
+        secondContainer.dispatchEvent(new CustomEvent(Events.CLOSE_CURRENT_MODAL_REQUEST));
+      }
+      await secondPromise;
+
+      expect(secondCallback).toHaveBeenCalledTimes(1);
+      expect(callback).not.toHaveBeenCalled();
+      expect(firstSettled).not.toHaveBeenCalled();
+      expect(firstDialog.isConnected).toBe(true);
+      expect(secondDialog.isConnected).toBe(false);
+      expect(modalService._modalStack).toEqual([firstModal]);
+      expect(UIModule.modalContainer).toEqual([firstContainer]);
+      expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+
+      await firstModal.onCloseRequestHandler!();
+      await firstPromise;
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(document.querySelectorAll('.lui-modal')).toHaveLength(0);
+    }
+  );
 
   it('notifies the caller exactly once when closed via X', async () => {
     await openModal();
