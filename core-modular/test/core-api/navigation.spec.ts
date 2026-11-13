@@ -150,7 +150,13 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'modal', _liveLabel: true, title: 'Node Label', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
+        {
+          _dialogType: 'modal',
+          _liveLabel: true,
+          title: 'Node Label',
+          size: 'l',
+          closebtn_data_testid: 'lui-modal-index-0'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -165,7 +171,13 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'modal', _liveLabel: false, title: 'Modal Title', size: 'l', closebtn_data_testid: 'lui-modal-index-0' },
+        {
+          _dialogType: 'modal',
+          _liveLabel: false,
+          title: 'Modal Title',
+          size: 'l',
+          closebtn_data_testid: 'lui-modal-index-0'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -180,7 +192,13 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'modal', _liveLabel: false, title: 'Modal Title', size: 'm', closebtn_data_testid: 'lui-modal-index-0' },
+        {
+          _dialogType: 'modal',
+          _liveLabel: false,
+          title: 'Modal Title',
+          size: 'm',
+          closebtn_data_testid: 'lui-modal-index-0'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -219,7 +237,13 @@ describe('Navigation', () => {
       expect(openModalSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'modal', _liveLabel: false, title: 'Modal Title', size: 'l', closebtn_data_testid: 'my-custom-testid' },
+        {
+          _dialogType: 'modal',
+          _liveLabel: false,
+          title: 'Modal Title',
+          size: 'l',
+          closebtn_data_testid: 'my-custom-testid'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -320,7 +344,14 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'drawer', _liveLabel: true, header: { title: 'Node Label' }, overlap: true, size: 's', title: 'Node Label' },
+        {
+          _dialogType: 'drawer',
+          _liveLabel: true,
+          header: { title: 'Node Label' },
+          overlap: true,
+          size: 's',
+          title: 'Node Label'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -336,7 +367,13 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'drawer', _liveLabel: false, header: { title: 'Custom Drawer Title' }, overlap: true, size: 's' },
+        {
+          _dialogType: 'drawer',
+          _liveLabel: false,
+          header: { title: 'Custom Drawer Title' },
+          overlap: true,
+          size: 's'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
@@ -353,7 +390,13 @@ describe('Navigation', () => {
       expect(openDrawerSpy).toHaveBeenCalledWith(
         luigiMock,
         { label: 'Node Label', children: [] },
-        { _dialogType: 'drawer', _liveLabel: false, header: { title: 'Custom Drawer Title' }, overlap: true, size: 'm' },
+        {
+          _dialogType: 'drawer',
+          _liveLabel: false,
+          header: { title: 'Custom Drawer Title' },
+          overlap: true,
+          size: 'm'
+        },
         undefined,
         { nodeParams: {}, pathParams: {}, searchParams: {} }
       );
