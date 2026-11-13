@@ -61,10 +61,14 @@ export class RoutingService {
     const luigiConfig = this.luigi.getConfig();
 
     if (luigiConfig.routing?.useHashRouting) {
-      EventListenerHelpers.addEventListener('hashchange', (ev: HashChangeEvent) => {
+      EventListenerHelpers.addEventListener('hashchange', async (ev: HashChangeEvent) => {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        const modalService = serviceRegistry.get(ModalService);
+        const closed = await modalService.closeModalsWithDirtyCheck();
+        if (!closed) return;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, true, true),
@@ -75,10 +79,14 @@ export class RoutingService {
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
-      EventListenerHelpers.addEventListener('popstate', (ev: PopStateEvent) => {
+      EventListenerHelpers.addEventListener('popstate', async (ev: PopStateEvent) => {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
+
+        const modalService = serviceRegistry.get(ModalService);
+        const closed = await modalService.closeModalsWithDirtyCheck();
+        if (!closed) return;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, false, true),
@@ -112,14 +120,21 @@ export class RoutingService {
     const paramsObj: Record<string, string> = Object.create(null);
 
     try {
-      if (this.dirtyStatusService?.shouldShowUnsavedChangesModal()) {
+      this.dirtyStatusService ??= serviceRegistry.get(DirtyStatusService);
+      if (this.dirtyStatusService.shouldShowUnsavedChangesModal()) {
+        const targetUrl = window.location.href;
+        const targetState = history.state;
         const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
+        // Browser history has already changed. Keep the current view's URL while confirming.
         if (oldUrl) {
-          history.pushState((window as any).state, '', oldUrl);
+          history.pushState(targetState, '', oldUrl);
         }
-        return;
+        await this.dirtyStatusService.getUnsavedChangesModalPromise();
+        // Approval clears the dirty state. Resume routing with the requested URL and state.
+        history.replaceState(targetState, '', targetUrl);
       }
     } catch (e) {
+      // Dismissal leaves the current view/modal, its dirty state and the restored URL intact.
       return;
     }
 
