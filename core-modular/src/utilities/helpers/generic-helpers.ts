@@ -296,6 +296,26 @@ export const GenericHelpers = {
   },
 
   /**
+   * Returns a new Object with the same object,
+   * without the keys starting with an underscore (internal properties).
+   *
+   * @param {Object} input - any given object
+   * @returns {Object} the object without internal (underscore-prefixed) properties
+   */
+  removeInternalProperties(input: Record<string, any>): Record<string, any> {
+    return (
+      (input &&
+        Object.keys(input)
+          .filter((key) => !key.startsWith('_'))
+          .reduce((obj: Record<string, any>, key) => {
+            obj[key] = input[key];
+            return obj;
+          }, {})) ||
+      input
+    );
+  },
+
+  /**
    *  Replaces variables in the input string with the values from the params object. Variables are defined with a prefix and wrapped in curly braces, e.g. {i18n.key} or {config.key}.
    *  If the variable is not found in the params object, it will be removed from the string.
    * @param inputString
