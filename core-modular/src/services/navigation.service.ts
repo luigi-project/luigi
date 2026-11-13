@@ -191,7 +191,7 @@ export class NavigationService {
 
       dirtyStatusService.getUnsavedChangesModalPromise().then(
         () => {
-          const previousActiveViewData = this._preservedViews.at(-1);
+          const previousActiveViewData = this._preservedViews.pop();
 
           this.prepareGoBackContextForNavigation(backContext);
 

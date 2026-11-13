@@ -415,7 +415,9 @@ export const UIModule = {
             } else {
               (element as any)._luigiPreserved = hasBackContext;
               element.style.display = 'block';
-              viewGroupContainer = element;
+              if (!viewGroupContainer) {
+                viewGroupContainer = element;
+              }
             }
           } else if (
             !currentNode.viewGroup &&
@@ -518,7 +520,7 @@ export const UIModule = {
       if (hasBackContext && !viewStackSize && allChildNodes.length > 1) {
         const lastItem: any = allChildNodes.at(-1);
 
-        if (lastItem && lastItem.style.display === 'none') {
+        if ((lastItem as any)?._luigiPreserved) {
           lastItem.remove();
         }
       }
