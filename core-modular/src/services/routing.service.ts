@@ -66,13 +66,9 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        // Parity with core: a subsequential route change closes all open modals before
-        // routing. handleBookmarkableModalPath then reopens one only if the new URL carries
-        // a modal path. This is what closes a modal on browser back regardless of whether
-        // showModalPathInUrl is set globally or only per-modal.
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
-        if (!closed) return; // unsaved-changes prompt was cancelled → abort this route change
+        if (!closed) return;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, true, true),
@@ -88,13 +84,9 @@ export class RoutingService {
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
 
-        // Parity with core: a subsequential route change closes all open modals before
-        // routing. handleBookmarkableModalPath then reopens one only if the new URL carries
-        // a modal path. This is what closes a modal on browser back regardless of whether
-        // showModalPathInUrl is set globally or only per-modal.
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
-        if (!closed) return; // unsaved-changes prompt was cancelled → abort this route change
+        if (!closed) return;
 
         this.handleRouteChange(
           RoutingHelpers.getCurrentPath(this.luigi, false, true),
