@@ -57,9 +57,9 @@ export class ModalService {
    * Gets the settings of the first modal in the stack.
    * @returns The settings of the first modal in the stack, or an empty object if the stack is empty.
    */
-  getModalSettings(): ModalSettings | {} {
+  getModalSettings(index = 0): ModalSettings | {} {
     if (this._modalStack.length > 0) {
-      return this._modalStack[0].modalsettings || {};
+      return this._modalStack.at(index)?.modalsettings || {};
     }
     return {};
   }

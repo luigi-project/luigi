@@ -19,6 +19,7 @@ jest.mock('../../src/services/node-data-management.service', () => ({ NodeDataMa
 jest.mock('../../src/utilities/helpers/routing-helpers', () => ({
   RoutingHelpers: {
     substituteViewUrl: jest.fn().mockReturnValue('http://localhost/mfe'),
+    getNodeLabel: jest.fn().mockReturnValue(''),
     checkWCUrl: jest.fn().mockReturnValue(true)
   }
 }));

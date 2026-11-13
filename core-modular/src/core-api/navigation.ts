@@ -10,7 +10,6 @@ import type {
   Node,
   RunTimeErrorHandler
 } from '../types/navigation';
-import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -120,10 +119,14 @@ export class Navigation {
     if (!redirectPath) return;
 
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
-    const settings = modalSettings || {};
+    const settings = (modalSettings || {}) as ModalSettings;
+    settings._dialogType = 'modal';
+    settings._liveLabel = false;
     if (!settings.title) {
       settings.title = node?.label;
+      settings._liveLabel = true;
     }
+    settings.title = await RoutingHelpers.getNodeLabel({ ...node, ...{ label: settings.title } }, this.luigi);
     if (!settings.size) {
       settings.size = 'l';
     }
@@ -166,7 +169,9 @@ export class Navigation {
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
-    const settings = drawerSettings || {};
+    const settings = (drawerSettings || {}) as DrawerSettings;
+    settings._dialogType = 'drawer';
+    settings._liveLabel = false;
     if (!settings.header?.title) {
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
       const title = label || '';
@@ -175,6 +180,8 @@ export class Navigation {
       } else {
         settings.header = { title };
       }
+      settings.title = title;
+      settings._liveLabel = true;
     }
     if (settings.overlap === undefined) {
       settings.overlap = true;

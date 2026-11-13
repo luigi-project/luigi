@@ -296,23 +296,27 @@ export interface DrawerHeader {
   title: string;
 }
 
-export interface DrawerSettings {
+export interface DialogSettings {
+  nodeParams?: Record<string, any>;
+  title?: string;
+  _dialogType?: 'drawer' | 'modal';
+  _liveLabel?: boolean;
+}
+
+export interface DrawerSettings extends DialogSettings {
   backdrop?: boolean;
   header?: DrawerHeader;
   overlap?: boolean;
   size?: 'l' | 'm' | 's' | 'xs';
-  nodeParams?: Record<string, any>;
 }
 
-export interface ModalSettings {
+export interface ModalSettings extends DialogSettings {
+  closebtn_data_testid?: string;
+  height?: string;
+  keepPrevious?: boolean;
+  showModalPathInUrl?: boolean;
   size?: 'fullscreen' | 'l' | 'm' | 's';
   width?: string;
-  height?: string;
-  title?: string;
-  closebtn_data_testid?: string;
-  keepPrevious?: boolean;
-  nodeParams?: Record<string, any>;
-  showModalPathInUrl?: boolean;
 }
 
 export interface ProductSwitcher {

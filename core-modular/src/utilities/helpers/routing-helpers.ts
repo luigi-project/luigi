@@ -115,7 +115,7 @@ export const RoutingHelpers = {
   },
 
   resolveNodeLabel(node: Node, luigi: Luigi): string {
-    let label = luigi.i18n().getTranslation(node.label!) || node.label!;
+    let label = node.label ? luigi.i18n().getTranslation(node.label) : '';
     if (!label.includes('{viewGroupData.')) {
       return label;
     }
