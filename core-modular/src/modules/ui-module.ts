@@ -286,24 +286,22 @@ export const UIModule = {
     if (isViewGroupDataOnly) {
       const modalService = serviceRegistry.get(ModalService);
       if (modalService.getModalStackLength()) {
-        const settings = modalService.getModalSettings() as ModalSettings;
+        const settings = modalService.getModalSettings(-1) as ModalSettings;
         const node = (UIModule.modalContainer.at(-1)?.currentNode || { label: settings?.title ?? '' }) as Node;
         if (settings._liveLabel) {
-          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
-          UIModule.updateModalSettings({ title }, false, UIModule.luigi);
+          const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
+          UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
         }
       }
       if (UIModule.drawerContainer && UIModule.drawerData) {
         const node = UIModule.drawerData.node;
         const settings = { ...(UIModule.drawerData.settings as DrawerSettings) };
         if (settings._liveLabel) {
-          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
-          if (settings.header) {
+          const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
+          if (settings.header && GenericHelpers.isObject(settings.header)) {
             settings.header.title = title;
-            UIModule.drawerData.settings.header.title = title;
           }
           UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
-          UIModule.drawerData.settings.title = title;
         }
       }
       const pathData = await UIModule.navService.getPathData(croute.path);

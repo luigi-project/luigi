@@ -120,12 +120,13 @@ export class Navigation {
 
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = (modalSettings || {}) as ModalSettings;
+    settings._dialogType = 'modal';
     settings._liveLabel = false;
     if (!settings.title) {
       settings.title = node?.label;
       settings._liveLabel = true;
     }
-    settings.title = RoutingHelpers.resolveNodeLabel({ ...node, ...{ label: settings.title } }, this.luigi);
+    settings.title = await RoutingHelpers.getNodeLabel({ ...node, ...{ label: settings.title } }, this.luigi);
     if (!settings.size) {
       settings.size = 'l';
     }
@@ -169,6 +170,7 @@ export class Navigation {
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const settings = (drawerSettings || {}) as DrawerSettings;
+    settings._dialogType = 'drawer';
     settings._liveLabel = false;
     if (!settings.header?.title) {
       const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
