@@ -23,6 +23,22 @@ describe('PreloadingService', () => {
     preloadingService = new PreloadingService(mockLuigi);
   });
 
+  it('sets a preload node and sender id before registering listeners', () => {
+    const engine = mockLuigi.getEngine();
+    mockLuigi.getEngine = () => engine;
+    engine._comm.addListeners.mockImplementation((container: any) => {
+      expect(container.currentNode).toEqual({ viewUrl: 'http://localhost/preload', viewGroup: 'vg' });
+      expect(container.luigiMfId).toEqual(expect.any(Number));
+    });
+
+    preloadingService.preloadContainerOnBackground({ preloadUrl: 'http://localhost/preload' }, 'vg', containerWrapper);
+
+    expect(engine._comm.addListeners).toHaveBeenCalledTimes(1);
+    expect((containerWrapper.firstElementChild as any).currentNode).toEqual({
+      viewUrl: 'http://localhost/preload', viewGroup: 'vg'
+    });
+  });
+
   describe('preloadViewGroups', () => {
     it('should not preload if preloadViewGroups config is false', () => {
       mockLuigi.getConfigValue.mockImplementation((key: string) => {
