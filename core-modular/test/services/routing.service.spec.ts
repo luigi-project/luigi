@@ -6,6 +6,7 @@ import { PreloadingService } from '../../src/services/preloading.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 import { NodeDataManagementService } from '../../src/services/node-data-management.service';
+import { ModalService } from '../../src/services/modal.service';
 import type { ModalSettings } from '../../src/types/navigation';
 import { RoutingHelpers } from '../../src/utilities/helpers/routing-helpers';
 
@@ -23,6 +24,7 @@ describe('Routing Service', () => {
   let mockNavService: any;
   let mockConnector: any;
   let mockDirtyStatusService: any;
+  let mockModalService: any;
   let addEventListenerSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -101,6 +103,11 @@ describe('Routing Service', () => {
       unsavedChanges: { persistUrl: null }
     };
 
+    mockModalService = {
+      closeModalsWithDirtyCheck: jest.fn().mockResolvedValue(true),
+      getModalStackLength: jest.fn().mockReturnValue(0)
+    };
+
     jest.spyOn(serviceRegistry, 'get').mockImplementation((svc: any) => {
       // Return the NavigationService mock when requested; otherwise a generic stub
       if (svc === NavigationService) {
@@ -111,6 +118,9 @@ describe('Routing Service', () => {
       }
       if (svc === DirtyStatusService) {
         return mockDirtyStatusService;
+      }
+      if (svc === ModalService) {
+        return mockModalService;
       }
       if (svc === PreloadingService) {
         return { preload: jest.fn(), viewGroupLoaded: jest.fn() };
@@ -219,6 +229,74 @@ describe('Routing Service', () => {
     mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: false } });
     routingService.enableRouting();
     expect(addEventListenerSpy).not.toHaveBeenCalledWith('hashchange', expect.any(Function));
+  });
+
+  describe('closes modals on route change (parity with core)', () => {
+    // Grabs the callback registered for the given event type via EventListenerHelpers → window.addEventListener.
+    const getRegisteredListener = (type: 'hashchange' | 'popstate') => {
+      const call = addEventListenerSpy.mock.calls.find((args) => args[0] === type);
+      return call?.[1] as (ev: any) => Promise<void>;
+    };
+
+    beforeEach(() => {
+      // Keep handleRouteChange cheap and deterministic for these tests.
+      jest.spyOn(routingService, 'handleRouteChange').mockResolvedValue(undefined);
+    });
+
+    it.each([
+      ['hashchange', true],
+      ['popstate', false]
+    ] as const)(
+      'closes open modals before routing on a %s event even when showModalPathInUrl is globally false',
+      async (type, useHashRouting) => {
+        mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting } });
+        mockLuigi.getConfigValue = jest.fn().mockReturnValue(null); // global showModalPathInUrl falsy
+        routingService.enableRouting();
+
+        // Initial load must NOT close modals – only the subsequential listener does.
+        expect(mockModalService.closeModalsWithDirtyCheck).not.toHaveBeenCalled();
+
+        const listener = getRegisteredListener(type);
+        expect(listener).toBeDefined();
+        await listener({});
+
+        expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalledTimes(1);
+        // enableRouting already ran handleRouteChange once on init; the listener runs it again.
+        expect(routingService.handleRouteChange).toHaveBeenCalledTimes(2);
+      }
+    );
+
+    it.each([
+      ['hashchange', true],
+      ['popstate', false]
+    ] as const)(
+      'aborts the %s route change when the unsaved-changes prompt is cancelled',
+      async (type, useHashRouting) => {
+        mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting } });
+        mockModalService.closeModalsWithDirtyCheck.mockResolvedValueOnce(false);
+        routingService.enableRouting();
+        (routingService.handleRouteChange as jest.Mock).mockClear();
+
+        const listener = getRegisteredListener(type);
+        await listener({});
+
+        expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalledTimes(1);
+        expect(routingService.handleRouteChange).not.toHaveBeenCalled();
+      }
+    );
+
+    it('still routes (dedup no-op) when showModalPathInUrl is globally true and the stack is empty', async () => {
+      mockLuigi.getConfig.mockReturnValue({ routing: { useHashRouting: true } });
+      mockLuigi.getConfigValue = jest.fn().mockReturnValue(true); // global showModalPathInUrl true
+      routingService.enableRouting();
+      (routingService.handleRouteChange as jest.Mock).mockClear();
+
+      const listener = getRegisteredListener('hashchange');
+      await expect(listener({})).resolves.toBeUndefined();
+
+      expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalledTimes(1);
+      expect(routingService.handleRouteChange).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('handleRouteChange', () => {

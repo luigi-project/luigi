@@ -172,6 +172,20 @@ describe('UIModule.openModal close callbacks', () => {
     expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
   });
 
+  it('does not touch the URL on an internal close even when showModalPathInUrl is set per modal (browser back)', async () => {
+    // Case B: the browser has already removed modal data from the URL on back navigation,
+    // so the internal close path must not call removeModalDataFromUrl again.
+    await openModal({ showModalPathInUrl: true });
+    registeredModal.onInternalClose!();
+    await closePromise;
+
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith();
+    expect(modalService.getModalStackLength()).toBe(0);
+    expect(UIModule.modalContainer).toHaveLength(0);
+    expect(routingService.removeModalDataFromUrl).not.toHaveBeenCalled();
+  });
+
   it.each(['closeCurrentModal', 'X'])('resolves and cleans up when the caller callback throws via %s', async (path) => {
     const error = new Error('caller failed');
     callback.mockImplementation(() => {
