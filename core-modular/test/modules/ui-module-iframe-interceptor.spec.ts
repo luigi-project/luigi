@@ -88,6 +88,28 @@ describe('UIModule - iframeCreationInterceptor', () => {
     (UIModule as any).navService = mockNavigationService;
   });
 
+  it.each([
+    ['iframe', {}],
+    ['webcomponent', { webcomponent: true }],
+    ['compound', { compound: { children: [] } }]
+  ])('sets the %s node and sender id before registering listeners', async (type, options) => {
+    const node = { viewUrl: 'http://localhost/mfe', ...options } as any;
+    const engine = mockLuigi.getEngine();
+    mockLuigi.getEngine = () => engine;
+    engine._comm.addListeners.mockImplementation((container: any) => {
+      expect(container.currentNode).toBe(node);
+      expect(container.luigiMfId).toBe('random-id');
+    });
+
+    await UIModule.updateMainContent(node, mockLuigi, {});
+
+    expect(engine._comm.addListeners).toHaveBeenCalledTimes(1);
+    const container = containerWrapper.firstElementChild as any;
+    expect(container.tagName).toBe(type === 'compound' ? 'LUIGI-COMPOUND-CONTAINER' : 'LUIGI-CONTAINER');
+    expect(container.currentNode).toBe(node);
+    expect(container.luigiMfId).toBe('random-id');
+  });
+
   it('should set iframeCreationInterceptor on container when configured', async () => {
     const interceptor = jest.fn();
     mockLuigi.getConfigValue.mockImplementation((key: string) => {
