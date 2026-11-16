@@ -62,6 +62,8 @@ const createContainer = async (
     (lcc as any).viewGroup = node.viewGroup;
     (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
     (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
+    (lcc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lcc as any).currentNode = node;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
@@ -99,8 +101,9 @@ const createContainer = async (
     setAllowRules(lc, luigi);
     setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
-    luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lc as any).currentNode = node;
+    luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
 };
@@ -456,6 +459,7 @@ export const UIModule = {
         const previousViewUrl = viewGroupContainer.viewurl;
 
         viewGroupContainer.viewStackSize = viewStackSize;
+        (viewGroupContainer as any).currentNode = currentNode;
 
         if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
@@ -514,6 +518,7 @@ export const UIModule = {
           const newContext = { ...currentNode.context, ...goBackContext };
 
           currentContainer.viewStackSize = viewStackSize;
+          (currentContainer as any).currentNode = currentNode;
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext, { withoutSync });
@@ -552,6 +557,20 @@ export const UIModule = {
     let resolveFn: ((goBackValue?: any) => void) | undefined;
     let onCloseRequestHandler: (() => void) | undefined;
 
+    const completeClose = (updateUrl: boolean, ...args: [goBackValue?: any]) => {
+      if (resolved) return;
+      try {
+        onCloseCallback?.(...args);
+      } finally {
+        resolveFn?.(...args);
+        const showModalPathInUrl =
+          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
+        if (updateUrl && showModalPathInUrl && modalService.getModalStackLength() === 0) {
+          routingService.removeModalDataFromUrl(true);
+        }
+      }
+    };
+
     const onCloseRequest = () => {
       return new Promise<void>((resolve) => {
         resolveFn = (goBackValue?: any) => {
@@ -566,33 +585,24 @@ export const UIModule = {
         };
 
         onCloseRequestHandler = async () => {
+          if (resolved) return;
           try {
             await dirtyStatusService.getUnsavedChangesModalPromise(lc);
           } catch (e) {
             return;
           }
-          resolveFn && resolveFn();
-          const showModalPathInUrl =
-            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-            routingService.removeModalDataFromUrl(true);
-          }
+          completeClose(true);
         };
 
         const onGoBackRequestHandler = async (event: any) => {
+          if (resolved) return;
           try {
             await dirtyStatusService.getUnsavedChangesModalPromise(lc);
           } catch (e) {
             return;
           }
           const goBackContext = event?.detail || event?.payload;
-          onCloseCallback?.(goBackContext);
-          resolveFn && resolveFn(goBackContext);
-          const showModalPathInUrl =
-            modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-          if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-            routingService.removeModalDataFromUrl(true);
-          }
+          completeClose(true, goBackContext);
         };
 
         lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -607,9 +617,11 @@ export const UIModule = {
       resolveFn,
       onCloseRequestHandler,
       onInternalClose: () => {
+        if (resolved) return;
         try {
           dirtyStatusService.clearDirtyState(lc);
-          modalPromiseObj.resolveFn && modalPromiseObj.resolveFn();
+          // Routing already changed the URL; only notify and resolve here.
+          completeClose(false);
         } catch (e) {
           console.warn('onInternalClose failed', e);
         }
@@ -623,18 +635,13 @@ export const UIModule = {
       lc,
       modalSettings,
       async () => {
+        if (resolved) return;
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
         } catch (e) {
           return;
         }
-        onCloseCallback?.();
-        resolveFn && resolveFn();
-        const showModalPathInUrl =
-          modalSettings.showModalPathInUrl ?? luigi.getConfigValue('routing.showModalPathInUrl');
-        if (showModalPathInUrl && modalService.getModalStackLength() === 0) {
-          routingService.removeModalDataFromUrl(true);
-        }
+        completeClose(true);
       },
       () => closePromise
     );

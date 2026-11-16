@@ -273,3 +273,44 @@ describe('GenericHelpers.getPathWithoutHashOrSlash', () => {
     expect(GenericHelpers.getPathWithoutHashOrSlash('section')).toBe('section');
   });
 });
+
+describe('GenericHelpers.removeInternalProperties', () => {
+  it('should remove properties starting with an underscore', () => {
+    const input = { label: 'Home', pathSegment: 'home', _internal: true, _virtualTree: {} };
+    expect(GenericHelpers.removeInternalProperties(input)).toEqual({ label: 'Home', pathSegment: 'home' });
+  });
+
+  it('should keep all properties when none start with an underscore', () => {
+    const input = { label: 'Home', pathSegment: 'home', context: { a: 1 } };
+    expect(GenericHelpers.removeInternalProperties(input)).toEqual({ label: 'Home', pathSegment: 'home', context: { a: 1 } });
+  });
+
+  it('should return an empty object when all properties start with an underscore', () => {
+    const input = { _a: 1, _b: 2 };
+    expect(GenericHelpers.removeInternalProperties(input)).toEqual({});
+  });
+
+  it('should return an empty object for an empty object input', () => {
+    expect(GenericHelpers.removeInternalProperties({})).toEqual({});
+  });
+
+  it('should return a new object and not mutate the input', () => {
+    const input = { label: 'Home', _internal: true };
+    const result = GenericHelpers.removeInternalProperties(input);
+    expect(result).not.toBe(input);
+    expect(input).toEqual({ label: 'Home', _internal: true });
+  });
+
+  it('should return the input unchanged when it is undefined', () => {
+    expect(GenericHelpers.removeInternalProperties(undefined as any)).toBeUndefined();
+  });
+
+  it('should return the input unchanged when it is null', () => {
+    expect(GenericHelpers.removeInternalProperties(null as any)).toBeNull();
+  });
+
+  it('should only strip a leading underscore, not underscores elsewhere in the key', () => {
+    const input = { 'my_key': 1, 'key_': 2, '_hidden': 3 };
+    expect(GenericHelpers.removeInternalProperties(input)).toEqual({ 'my_key': 1, 'key_': 2 });
+  });
+});

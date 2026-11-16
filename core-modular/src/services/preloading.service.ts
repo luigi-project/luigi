@@ -83,6 +83,9 @@ export class PreloadingService {
     lc._luigiPreloading = true;
     lc._luigiPreloadCreatedAt = Date.now();
     lc.luigiMfId = GenericHelpers.getRandomId();
+    // A preload URL is not yet associated with a selected navigation node.
+    // Provide its own minimal node until updateMainContent activates the view group.
+    lc.currentNode = { viewUrl: settings.preloadUrl, viewGroup: name };
     this.luigi.getEngine()._comm.addListeners(lc, this.luigi);
     const interceptor = this.luigi.getConfigValue('settings.iframeCreationInterceptor');
     if (GenericHelpers.isFunction(interceptor)) {
