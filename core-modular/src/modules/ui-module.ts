@@ -529,10 +529,10 @@ export const UIModule = {
         }
       }
 
-      const allChildNodes = [...containerWrapper.childNodes];
+      const childNodes = [...containerWrapper.childNodes].filter((child: any) => child.tagName?.indexOf('LUIGI-') === 0);
 
-      if (hasBackContext && !viewStackSize && allChildNodes.length > 1) {
-        const lastItem: any = allChildNodes.at(-1);
+      if (hasBackContext && !viewStackSize && childNodes.length > 1) {
+        const lastItem: any = childNodes.at(-1);
 
         if ((lastItem as any)?._luigiPreserved) {
           lastItem.remove();
