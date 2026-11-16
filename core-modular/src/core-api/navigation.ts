@@ -238,7 +238,11 @@ export class Navigation {
    * Luigi.navigation().goBack(true);
    */
   goBack = (goBackValue?: any): void => {
-    this.navService.handleGoBackRequest(goBackValue && JSON.stringify(goBackValue));
+    if (goBackValue || typeof goBackValue === 'boolean' || typeof goBackValue === 'string') {
+      goBackValue = JSON.stringify(goBackValue);
+    }
+
+    this.navService.handleGoBackRequest(goBackValue ?? {});
   };
 
   /**

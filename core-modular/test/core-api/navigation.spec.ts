@@ -629,14 +629,36 @@ describe('Navigation', () => {
   });
 
   describe('goBack', () => {
-    it.each([{ foo: 'bar' }, true])('should handle "goBack" request with context', async (context) => {
+    it.each([{}, { foo: 'bar' }, true, false, '', 'test', [], [1, 2]])('should handle "goBack" request with valid context', async (context) => {
       const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
       jest.spyOn(mockNavService, 'getPreservedViewsLength').mockResolvedValue(1);
 
       navigation.goBack(context);
 
       expect.assertions(2);
-      expect(goBackRequestSpy).toHaveBeenCalledWith(context && JSON.stringify(context));
+      expect(goBackRequestSpy).toHaveBeenCalledWith(JSON.stringify(context));
+      await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
+    });
+
+    it.each([null, undefined])('should handle "goBack" request with invalid context', async (context) => {
+      const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
+      jest.spyOn(mockNavService, 'getPreservedViewsLength').mockResolvedValue(1);
+
+      navigation.goBack(context);
+
+      expect.assertions(2);
+      expect(goBackRequestSpy).toHaveBeenCalledWith({});
+      await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
+    });
+
+    it('should handle "goBack" request with no context', async () => {
+      const goBackRequestSpy = jest.spyOn(mockNavService, 'handleGoBackRequest');
+      jest.spyOn(mockNavService, 'getPreservedViewsLength').mockResolvedValue(1);
+
+      navigation.goBack();
+
+      expect.assertions(2);
+      expect(goBackRequestSpy).toHaveBeenCalledWith({});
       await expect(dirtyStatusService.getUnsavedChangesModalPromise()).resolves.toBeUndefined();
     });
   });
