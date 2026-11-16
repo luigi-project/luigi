@@ -90,16 +90,7 @@ describe('UserSettings-helpers', () => {
   });
 
   it('getUserSettingsIframesInDom', () => {
-    document.querySelector.mockReturnValue({
-      children: [
-        {
-          frame1: {}
-        },
-        {
-          frame2: {}
-        }
-      ]
-    });
+    document.querySelectorAll.mockReturnValue([{ frame1: {} }, { frame2: {} }]);
     const iframeCtn = UserSettingsHelper.getUserSettingsIframesInDom();
     expect(iframeCtn.length).toEqual(2);
   });

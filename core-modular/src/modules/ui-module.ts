@@ -51,8 +51,10 @@ const createContainer = async (
     lcc.clientPermissions = node.clientPermissions ?? {};
     lcc.nodeParams = nodeParams;
     lcc.pathParams = pathParams;
-    (lcc as any).userSettingsGroup = node.userSettingsGroup;
-    lcc.userSettings = userSettings;
+    lcc.userSettings = {
+      rootNodeUserSettingsGroup: node.userSettingsGroup,
+      groupedUserSettings: userSettingGroups
+    };
     lcc.searchParams = searchParams;
     lcc.activeFeatureToggleList = luigi.featureToggles().getActiveFeatureToggleList();
     lcc.locale = luigi.i18n().getCurrentLocale();
@@ -60,12 +62,17 @@ const createContainer = async (
     (lcc as any).viewGroup = node.viewGroup;
     (lcc as any).virtualTree = node.virtualTree || node._virtualTree;
     (lcc as any).virtualTreeRootNode = NavigationHelpers.findVirtualTreeRootNode(node);
+    (lcc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lcc as any).currentNode = node;
     luigi.getEngine()._comm.addListeners(lcc, luigi);
     return lcc;
   } else {
     const lc: LuigiContainer = document.createElement('luigi-container') as LuigiContainer;
 
     lc.setAttribute('lui_container', 'true');
+    if (microFrontendType === 'usersettings') {
+      lc.classList.add('iframeUserSettingsCtn');
+    }
     lc.viewurl = node.viewUrl
       ? serviceRegistry
           .get(ViewUrlDecoratorSvc)
@@ -94,8 +101,9 @@ const createContainer = async (
     setAllowRules(lc, luigi);
     setIframeCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
     setWebcomponentCreationInterceptor(lc, luigi, node, microFrontendType || 'main');
-    luigi.getEngine()._comm.addListeners(lc, luigi);
     (lc as any).luigiMfId = GenericHelpers.getRandomId();
+    (lc as any).currentNode = node;
+    luigi.getEngine()._comm.addListeners(lc, luigi);
     return lc;
   }
 };
@@ -403,6 +411,10 @@ export const UIModule = {
               element.pathParams = {};
             }
           }
+        } else if (element.webcomponent) {
+          if (!withoutSync && !(element as any)._luigiPreserved) {
+            element.remove();
+          }
         } else {
           if (
             withoutSync ||
@@ -449,6 +461,7 @@ export const UIModule = {
         const previousViewUrl = viewGroupContainer.viewurl;
 
         viewGroupContainer.viewStackSize = viewStackSize;
+        (viewGroupContainer as any).currentNode = currentNode;
 
         if (!withoutSync && !preventContextUpdate) {
           viewGroupContainer.style.display = 'block';
@@ -507,6 +520,7 @@ export const UIModule = {
           const newContext = { ...currentNode.context, ...goBackContext };
 
           currentContainer.viewStackSize = viewStackSize;
+          (currentContainer as any).currentNode = currentNode;
 
           if (!preventContextUpdate && currentContainer) {
             currentContainer.updateContext(newContext, { withoutSync });
@@ -743,23 +757,33 @@ export const UIModule = {
     luigi: Luigi
   ) => {
     const mfeStoredSettings: Record<string, any> = {};
+    const userSettingsContainers: Record<string, LuigiContainer> = {};
 
-    const renderMicroFrontendContainer = async (groupConfig: any, groupKey: string) => {
+    const renderMicroFrontendContainer = async (groupConfig: any, groupKey: string): Promise<LuigiContainer> => {
+      if (userSettingsContainers[groupKey]) {
+        return userSettingsContainers[groupKey];
+      }
       const viewUrl = groupConfig.viewUrl;
       const isWebComponent = groupConfig.webcomponent ?? false;
       const userSettingsData = previousUserSettings?.[groupKey] || {};
       const context = { ...groupConfig.context, userSettingsData: userSettingsData };
-      const lc = await createContainer(
+      const lc = (await createContainer(
         { viewUrl, userSettingsGroup: groupKey, webcomponent: isWebComponent, context } as Node,
         luigi,
         undefined,
         'usersettings'
-      );
-
+      )) as LuigiContainer;
+      userSettingsContainers[groupKey] = lc;
       lc.addEventListener(Events.CUSTOM_MESSAGE, (event: any) => {
         const message = event.detail;
         if (message?.id === 'luigi.updateUserSettings') {
-          mfeStoredSettings[groupKey] = message.data?.data ?? message.data;
+          const data = message.data?.data ?? message.data;
+          mfeStoredSettings[groupKey] = data;
+
+          const target = userSettingsContainers[groupKey];
+          if (target?.updateContext) {
+            target.updateContext({ userSettingsData: data }, { withoutSync: false });
+          }
         }
       });
 

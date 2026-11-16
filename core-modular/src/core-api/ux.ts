@@ -152,6 +152,10 @@ export class UX {
 
     const previousUserSettings = await this.luigi.readUserSettings();
     const userSettingData = UserSettingsHelper.processUserSettingGroups(userSettings, storedSettings);
+    if (!Array.isArray(userSettingData) || userSettingData.length === 0) {
+      console.info('There are no user setting groups in the settings section of the luigi config defined.');
+      return;
+    }
     const initialUserSettings = UserSettingsHelper.prepareUserSettingsObj(userSettingData, previousUserSettings);
 
     const userSettingsDialog = userSettings.userSettingsDialog || {};

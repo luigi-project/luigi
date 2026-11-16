@@ -702,6 +702,12 @@ window.onload = () => {
           icon: 'private',
           viewUrl: 'http://localhost:8090/customUserSettingsMf.html'
         },
+        custom3: {
+          label: 'Custom3',
+          title: 'Custom3',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsMf2.html'
+        },
         custom2: {
           label: 'Custom 2',
           title: 'Custom 2',
@@ -713,6 +719,13 @@ window.onload = () => {
           webcomponent: {
             selfRegistered: false
           }
+        },
+        wc2: {
+          label: 'wc2',
+          title: 'wc 2',
+          icon: 'private',
+          viewUrl: 'http://localhost:8090/customUserSettingsWC.js',
+          webcomponent: true
         }
       }
     },

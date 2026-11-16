@@ -51,7 +51,7 @@ export class Elements {
 
   /**
    * Returns a list of all available micro frontends.
-   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'drawer'|'modal'}>} list of objects defining all micro frontends from the DOM
+   * @returns {Array<{id: string, active: boolean, container: HTMLElement, type: 'main'|'drawer'|'modal'|'user-settings'}>} list of objects defining all micro frontends from the DOM
    * @memberof Elements
    * @example
    * Luigi.elements().getMicrofrontends();
