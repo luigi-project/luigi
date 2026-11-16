@@ -529,7 +529,9 @@ export const UIModule = {
         }
       }
 
-      const childNodes = [...containerWrapper.childNodes].filter((child: any) => child.tagName?.indexOf('LUIGI-') === 0);
+      const childNodes = [...containerWrapper.childNodes].filter(
+        (child: any) => child.tagName?.indexOf('LUIGI-') === 0
+      );
 
       if (hasBackContext && !viewStackSize && childNodes.length > 1) {
         const lastItem: any = childNodes.at(-1);
