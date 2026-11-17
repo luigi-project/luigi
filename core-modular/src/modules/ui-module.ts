@@ -533,10 +533,10 @@ export const UIModule = {
         (child: any) => child.tagName?.indexOf('LUIGI-') === 0
       );
 
-      if (hasBackContext && !viewStackSize && childNodes.length > 1) {
+      if (hasBackContext && childNodes.length > 1) {
         const lastItem: any = childNodes.at(-1);
 
-        if ((lastItem as any)?._luigiPreserved) {
+        if (!viewStackSize && lastItem?._luigiPreserved || lastItem?.style?.display === 'none') {
           lastItem.remove();
         }
       }
