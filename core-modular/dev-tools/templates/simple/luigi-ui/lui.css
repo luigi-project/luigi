@@ -133,6 +133,11 @@ ui5-shellbar {
     padding-inline: 0;
 }
 
+.lui-confirmation-modal > p {
+    font-family: var(--sapFontFamily);
+    font-size: var(--sapFontSize);
+}
+
 .luigi-alert--overlay{
     background-color: transparent;
     overflow: visible;
