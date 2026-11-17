@@ -536,7 +536,7 @@ export const UIModule = {
       if (hasBackContext && childNodes.length > 1) {
         const lastItem: any = childNodes.at(-1);
 
-        if (!viewStackSize && lastItem?._luigiPreserved || lastItem?.style?.display === 'none') {
+        if ((!viewStackSize && lastItem?._luigiPreserved) || lastItem?.style?.display === 'none') {
           lastItem.remove();
         }
       }
