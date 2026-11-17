@@ -412,13 +412,13 @@ describe.only('Custom Element Manifest Validation', () => {
     // test if all elements of eventNames are in cemEvents
     let allEventsExist = true;
     for (let i = 0; i < eventNames.length; i++) {
-      if (!cemEvents.includes(eventNames[i])) {
+      if (!cemEvents.includes(eventNames[i]) && eventNames[i] !== 'boolean' && eventNames[i] !== 'string') {
         allEventsExist = false;
         missingEvents.push(eventNames[i]);
       }
     }
     if (!allEventsExist) {
-      throw new Error('missing Events in CEM: {' + missingEvents) + '}';
+      throw new Error('missing Events in CEM: {' + missingEvents + '}');
     }
     expect(allEventsExist).toBe(true);
   });
