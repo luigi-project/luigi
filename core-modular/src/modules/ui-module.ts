@@ -298,7 +298,7 @@ export const UIModule = {
             modalService.updateModalSettings({ ...settings, ...{ title } }, index);
             UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
           }
-        })
+        });
       }
       if (UIModule.drawerContainer && UIModule.drawerData) {
         const node = UIModule.drawerData.node;
