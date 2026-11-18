@@ -281,17 +281,24 @@ export const UIModule = {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
     }
 
-    const isViewGroupDataOnly = scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+    const shouldUpdateLiveLabels =
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata');
 
-    if (isViewGroupDataOnly) {
+    if (shouldUpdateLiveLabels) {
       const modalService = serviceRegistry.get(ModalService);
       if (modalService.getModalStackLength()) {
-        const settings = modalService.getModalSettings(-1) as ModalSettings;
-        const node = (UIModule.modalContainer.at(-1)?.currentNode || { label: settings?.title ?? '' }) as Node;
-        if (settings._liveLabel) {
-          const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
-          UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
-        }
+        UIModule.modalContainer.forEach(async (modal: any, index: number) => {
+          const settings = modalService.getModalSettings(index) as ModalSettings;
+          const node = (modal?.currentNode || { label: settings?.title ?? '' }) as Node;
+          if (settings._liveLabel) {
+            const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
+            modalService.updateModalSettings({ ...settings, ...{ title } }, index);
+            UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
+          }
+        })
       }
       if (UIModule.drawerContainer && UIModule.drawerData) {
         const node = UIModule.drawerData.node;
@@ -304,6 +311,11 @@ export const UIModule = {
           UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
         }
       }
+    }
+
+    const isViewGroupDataOnly = scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
+
+    if (isViewGroupDataOnly) {
       const pathData = await UIModule.navService.getPathData(croute.path);
       const connector = UIModule.luigi.getEngine()._connector;
       const [topNavData, leftNavData, tabNavData, breadcrumbData] = await Promise.all([

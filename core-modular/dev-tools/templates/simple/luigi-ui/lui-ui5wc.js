@@ -1091,15 +1091,18 @@ const connector = {
       setDialogSize(dialog, settings);
     };
     const drawer = document.querySelector('ui5-dialog.lui-drawer');
+    const modals = Array.from(document.querySelectorAll('ui5-dialog.lui-modal'));
     const dialogs = Array.from(document.querySelectorAll('ui5-dialog')).filter(
       (dialog) => dialog.classList.contains('lui-modal') || dialog.classList.contains('lui-drawer')
     );
     if (dialogs?.length) {
-      const activeDialog = dialogs.at(-1);
-      if (activeDialog === drawer && settings?._dialogType === 'drawer') {
+      if (drawer && settings?._dialogType === 'drawer') {
         updateSettings(drawer);
       } else if (settings?._dialogType === 'modal') {
-        updateSettings(activeDialog);
+        const index = Number(settings?.closebtn_data_testid?.at(-1) || -1);
+        if (modals?.at(index)) {
+          updateSettings(modals[index]);
+        }
       }
     }
   },
