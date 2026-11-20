@@ -689,6 +689,19 @@ export const UIModule = {
 
     let resolved = false;
     let resolveFn: ((goBackValue?: any) => void) | undefined;
+    const completeClose = (...args: [goBackValue?: any]) => {
+      if (resolved) return;
+      try {
+        onCloseCallback?.(...args);
+      } finally {
+        if (UIModule.drawerContainer === lc) {
+          UIModule.drawerContainer = undefined;
+        }
+        dirtyStatusService.clearDirtyState(lc);
+        resolveFn?.(...args);
+      }
+    };
+
     const closePromise = new Promise<void>((resolve) => {
       resolveFn = (goBackValue?: any) => {
         if (resolved) return;
@@ -701,25 +714,24 @@ export const UIModule = {
       };
 
       const onCloseRequestHandler = async () => {
+        if (resolved) return;
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
         } catch (e) {
           return;
         }
-        UIModule.drawerContainer = undefined;
-        dirtyStatusService.clearDirtyState(lc);
-        resolveFn && resolveFn();
+        completeClose();
       };
 
       const onGoBackRequestHandler = async (event: any) => {
+        if (resolved) return;
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
         } catch (e) {
           return;
         }
         const goBackContext = event?.detail || event?.payload;
-        onCloseCallback?.(goBackContext);
-        resolveFn && resolveFn(goBackContext);
+        completeClose(goBackContext);
       };
 
       lc.addEventListener(Events.CLOSE_CURRENT_MODAL_REQUEST, onCloseRequestHandler);
@@ -730,15 +742,13 @@ export const UIModule = {
       lc,
       drawerSettings,
       async () => {
+        if (resolved) return;
         try {
           await dirtyStatusService.getUnsavedChangesModalPromise(lc);
         } catch (e) {
           return;
         }
-        onCloseCallback?.();
-        UIModule.drawerContainer = undefined;
-        dirtyStatusService.clearDirtyState(lc);
-        resolveFn && resolveFn();
+        completeClose();
       },
       () => closePromise
     );
