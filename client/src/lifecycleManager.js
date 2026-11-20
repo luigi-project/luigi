@@ -76,6 +76,8 @@ class LifecycleManager extends LuigiClientBase {
       console.warn('Luigi Client has been already initialized');
       return;
     }
+    if (this._waitingForInit) return;
+    this._waitingForInit = true;
     /**
      * Save context data every time navigation to a different node happens
      * @private
@@ -101,6 +103,8 @@ class LifecycleManager extends LuigiClientBase {
     };
 
     helpers.addEventListener('luigi.init', (e) => {
+      window.clearTimeout(this._contextRequestTimer);
+      this._waitingForInit = false;
       setContext(e.data);
       setAuthData(e.data.authData);
       helpers.setLuigiCoreDomain(e.origin);
@@ -140,17 +144,21 @@ class LifecycleManager extends LuigiClientBase {
       helpers.sendPostMessageToLuigiCore({ msg: 'luigi.navigate.ok' });
     });
 
-    /**
-     * Get context once initially
-     * @private
-     */
-    window.parent.postMessage(
-      {
-        msg: 'luigi.get-context',
-        clientVersion: pkg.version
-      },
-      '*'
-    );
+    // The first request can arrive before Luigi Core registers its message listener.
+    const requestContext = () => {
+      if (this.luigiInitialized) return;
+      window.parent.postMessage(
+        {
+          msg: 'luigi.get-context',
+          clientVersion: pkg.version
+        },
+        '*'
+      );
+      if (window.parent !== window) {
+        this._contextRequestTimer = window.setTimeout(requestContext, 1000);
+      }
+    };
+    requestContext();
   }
 
   _tpcCheck() {
