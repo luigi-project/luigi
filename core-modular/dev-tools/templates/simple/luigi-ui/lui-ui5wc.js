@@ -1099,7 +1099,7 @@ const connector = {
       if (drawer && settings?._dialogType === 'drawer') {
         updateSettings(drawer);
       } else if (settings?._dialogType === 'modal') {
-        const index = Number(settings?.closebtn_data_testid?.at(-1) || -1);
+        const index = settings?._modalIndex;
         if (modals?.at(index)) {
           updateSettings(modals[index]);
         }

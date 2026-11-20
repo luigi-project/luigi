@@ -120,20 +120,21 @@ export class Navigation {
 
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const pathData = await this.navService.getPathData(normalizedPath);
+    const modalIndex = this.modalService.getModalStackLength();
     const settings = (modalSettings || {}) as ModalSettings;
     settings._dialogType = 'modal';
     settings._liveLabel = false;
     if (!settings.title) {
-      settings.title = node?.label;
+      settings.title = await RoutingHelpers.getNodeLabel(node, this.luigi);
       settings._liveLabel = true;
     }
-    settings.title = await RoutingHelpers.getNodeLabel({ ...node, ...{ label: settings.title } }, this.luigi);
     if (!settings.size) {
       settings.size = 'l';
     }
     if (!settings.closebtn_data_testid) {
-      settings.closebtn_data_testid = `lui-modal-index-${this.modalService.getModalStackLength()}`;
+      settings.closebtn_data_testid = `lui-modal-index-${modalIndex}`;
     }
+    settings._modalIndex = modalIndex;
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
     if (nodeParams && Object.keys(nodeParams).length > 0) {

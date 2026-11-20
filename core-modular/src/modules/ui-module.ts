@@ -295,8 +295,10 @@ export const UIModule = {
           const node = (modal?.currentNode || { label: settings?.title ?? '' }) as Node;
           if (settings._liveLabel) {
             const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
-            modalService.updateModalSettings({ ...settings, ...{ title } }, index);
-            UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
+            modalService.updateModalSettings({ title }, index);
+            UIModule.luigi.getEngine()._connector?.updateModalSettings(
+              modalService.getModalSettings(index)
+            );
           }
         });
       }

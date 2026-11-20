@@ -154,6 +154,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: true,
+          _modalIndex: 0,
           title: 'Node Label',
           size: 'l',
           closebtn_data_testid: 'lui-modal-index-0'
@@ -175,6 +176,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalIndex: 0,
           title: 'Modal Title',
           size: 'l',
           closebtn_data_testid: 'lui-modal-index-0'
@@ -196,6 +198,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalIndex: 0,
           title: 'Modal Title',
           size: 'm',
           closebtn_data_testid: 'lui-modal-index-0'
@@ -219,6 +222,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalIndex: 1,
           title: 'Modal Title',
           keepPrevious: true,
           size: 'l',
@@ -241,6 +245,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalIndex: 0,
           title: 'Modal Title',
           size: 'l',
           closebtn_data_testid: 'my-custom-testid'
@@ -275,6 +280,7 @@ describe('Navigation', () => {
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', {
         _dialogType: 'modal',
         _liveLabel: false,
+        _modalIndex: 0,
         title: 'Modal Title',
         size: 'l',
         closebtn_data_testid: 'lui-modal-index-0'
@@ -298,6 +304,7 @@ describe('Navigation', () => {
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', {
         _dialogType: 'modal',
         _liveLabel: false,
+        _modalIndex: 0,
         title: 'Modal Title',
         size: 'l',
         closebtn_data_testid: 'lui-modal-index-0',
