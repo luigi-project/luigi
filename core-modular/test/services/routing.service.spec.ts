@@ -79,6 +79,8 @@ describe('Routing Service', () => {
       handleNavigationRequest: jest.fn(),
       extractDataFromPath: jest.fn(),
       isValidBackRoute: jest.fn().mockResolvedValue(false),
+      getGoBackContext: jest.fn().mockReturnValue(undefined),
+      removeLastPreservedView: jest.fn(),
       clearPreservedViews: jest.fn(),
       getPathData: jest.fn(),
       findMatchingNode: jest.fn(),

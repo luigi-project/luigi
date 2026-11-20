@@ -1391,8 +1391,9 @@ export class NavigationService {
         }
       } else {
         const event = new CustomEvent<NavigationRequestBase>('popstate', eventDetail);
+        const newURL = `${window.location.origin}/${GenericHelpers.trimLeadingSlash(normalizedPath)}`;
 
-        window.history[method]({ path: normalizedPath }, '', normalizedPath);
+        window.history[method]({ path: normalizedPath }, '', newURL);
         window.dispatchEvent(event);
       }
     }

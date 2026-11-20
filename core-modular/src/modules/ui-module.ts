@@ -393,15 +393,16 @@ export const UIModule = {
             )
         : '';
 
-      [...containerWrapper.childNodes].forEach((element: any) => {
-        if (element.tagName?.indexOf('LUIGI-') !== 0) return;
-
+      [...containerWrapper.childNodes].filter(
+        (element: any) => element.tagName?.indexOf('LUIGI-') === 0
+      ).forEach((element: any, index: number) => {
         if (withoutSync) {
           currentContainer = element;
         }
 
         if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
           if (!withoutSync) {
+            (element as any)._luigiActiveContainer = false;
             element.style.display = 'none';
             const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
             if (vgSettings?.preloadUrl) {
@@ -421,15 +422,17 @@ export const UIModule = {
             element.viewGroup ||
             (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
           ) {
-            if (preserveView || ((element as any)._luigiPreserved && viewStackSize)) {
-              (element as any)._luigiPreserved = !hasBackContext;
-              element.style.display = 'none';
-            } else {
+            if (!preserveView && viewStackSize === index) {
               (element as any)._luigiPreserved = hasBackContext;
+              (element as any)._luigiActiveContainer = true;
               element.style.display = 'block';
               if (!viewGroupContainer) {
                 viewGroupContainer = element;
               }
+            } else {
+              (element as any)._luigiPreserved = !hasBackContext;
+              (element as any)._luigiActiveContainer = false;
+              element.style.display = 'none';
             }
           } else if (
             !currentNode.viewGroup &&
@@ -439,11 +442,13 @@ export const UIModule = {
             (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
           ) {
             (element as any)._luigiPreserved = false;
+            (element as any)._luigiActiveContainer = true;
             element.style.display = 'block';
             viewGroupContainer = element;
           } else {
             if (preserveView) {
               (element as any)._luigiPreserved = true;
+              (element as any)._luigiActiveContainer = false;
               element.style.display = 'none';
             } else if (!withoutSync && !(element as any)._luigiPreserved) {
               element.remove();
@@ -510,6 +515,9 @@ export const UIModule = {
           const connector = luigi.getEngine()._connector;
 
           (container as any).viewStackSize = viewStackSize;
+          if (viewStackSize) {
+            (container as any)._luigiActiveContainer = true;
+          }
           containerWrapper?.appendChild(container);
 
           if (currentNode.loadingIndicator?.enabled !== false) {
@@ -530,14 +538,20 @@ export const UIModule = {
       }
 
       const childNodes = [...containerWrapper.childNodes].filter(
-        (child: any) => child.tagName?.indexOf('LUIGI-') === 0
+        (child: any) => child.tagName?.startsWith('LUIGI-') && !child.hasAttribute('_luigiPreloading')
       );
 
-      if (hasBackContext && childNodes.length > 1) {
+      if (childNodes.length > 1) {
         const lastItem: any = childNodes.at(-1);
 
-        if ((!viewStackSize && lastItem?._luigiPreserved) || lastItem?.style?.display === 'none') {
-          lastItem.remove();
+        if (hasBackContext) {
+          if ((!viewStackSize && lastItem?._luigiPreserved) || lastItem?.style?.display === 'none') {
+            lastItem.remove();
+          }
+        } else {
+          if (!lastItem?._luigiActiveContainer && lastItem?.style?.display === 'none') {
+            lastItem.remove();
+          }
         }
       }
 
@@ -583,7 +597,6 @@ export const UIModule = {
           resolve();
           modalService.removeLastModalFromStack();
           if (UIModule.navService.isValidGoBackContext(goBackValue)) {
-            UIModule.navService.removeLastPreservedView();
             setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
           }
         };
@@ -699,7 +712,6 @@ export const UIModule = {
         resolved = true;
         resolve();
         if (UIModule.navService.isValidGoBackContext(goBackValue)) {
-          UIModule.navService.removeLastPreservedView();
           setTimeout(() => UIModule.navService.processGoBackContext(goBackValue));
         }
       };

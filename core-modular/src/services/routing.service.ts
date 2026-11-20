@@ -65,13 +65,21 @@ export class RoutingService {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
-
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
+
         if (!closed) return;
 
+        const navService = serviceRegistry.get(NavigationService);
+        const hasBackContext = !!navService.getGoBackContext();
+        const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, true, true);
+
+        if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !hasBackContext && !preserveView) {
+          this.getNavigationService().removeLastPreservedView();
+        }
+
         this.handleRouteChange(
-          RoutingHelpers.getCurrentPath(this.luigi, true, true),
+          routeInfo,
           withoutSync,
           preventContextUpdate,
           preserveView
@@ -83,13 +91,19 @@ export class RoutingService {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
-
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
+
         if (!closed) return;
 
+        const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, false, true);
+
+        if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !(ev as any)?.detail) {
+          this.getNavigationService().removeLastPreservedView();
+        }
+
         this.handleRouteChange(
-          RoutingHelpers.getCurrentPath(this.luigi, false, true),
+          routeInfo,
           withoutSync,
           preventContextUpdate,
           preserveView
