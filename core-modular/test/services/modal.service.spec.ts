@@ -128,7 +128,27 @@ describe('ModalService', () => {
     });
   });
 
-  describe('updateLastModalSettings', () => {
+  describe('updateModalSettings', () => {
+    it('does nothing when stack is empty', () => {
+      expect(service._modalStack.length).toBe(0);
+      service.updateModalSettings({ title: 'New Title' }, 0);
+      expect(service._modalStack.length).toBe(0);
+    });
+
+    it('updates modalsettings of the second modal in the stack', () => {
+      const m1: ModalPromiseObject = { modalsettings: { title: 'First' } };
+      const m2: ModalPromiseObject = { modalsettings: { title: 'Second' } };
+      service.registerModal(m1);
+      service.registerModal(m2);
+
+      service.updateModalSettings({ size: 'l' }, 1);
+
+      expect(service._modalStack[0].modalsettings).toEqual({ title: 'First' });
+      expect(service._modalStack[1].modalsettings).toEqual({ title: 'Second', size: 'l' });
+    });
+  });
+
+  describe('updateFirstModalSettings', () => {
     it('does nothing when stack is empty', () => {
       expect(service._modalStack.length).toBe(0);
       service.updateFirstModalSettings({ title: 'New Title' });

@@ -318,7 +318,7 @@ export interface LuigiConnector {
    *   updates) — apply as-is, do not attempt to diff against previous
    *   state.
    */
-  updateModalSettings(modalSettings: ModalSettings): void;
+  updateModalSettings(modalSettings: ModalSettings | DrawerSettings): void;
 
   /**
    * Display an unrecoverable error and halt further interaction.
