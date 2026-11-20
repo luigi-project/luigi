@@ -119,6 +119,7 @@ export class Navigation {
     if (!redirectPath) return;
 
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
+    const pathData = await this.navService.getPathData(normalizedPath);
     const settings = (modalSettings || {}) as ModalSettings;
     settings._dialogType = 'modal';
     settings._liveLabel = false;
@@ -150,9 +151,11 @@ export class Navigation {
     if (showModalPathInUrl && this.modalService.getModalStackLength() === 0) {
       this.routingService.appendModalDataToUrl(modalPathForUrl, settings);
     }
-    this.luigi
-      .getEngine()
-      ._ui.openModal(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
+    this.luigi.getEngine()._ui.openModal(this.luigi, node, settings, onCloseCallback, {
+      nodeParams,
+      pathParams: pathData.pathParams || {},
+      searchParams: {}
+    });
   };
 
   openAsDrawer = async (path: string, drawerSettings: DrawerSettings, onCloseCallback?: () => void) => {
@@ -169,6 +172,7 @@ export class Navigation {
     const redirectPath = await NavigationHelpers.validatePathAndGetRedirect(normalizedPath, this.luigi);
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
+    const pathData = await this.navService.getPathData(normalizedPath);
     const settings = (drawerSettings || {}) as DrawerSettings;
     settings._dialogType = 'drawer';
     settings._liveLabel = false;
@@ -190,9 +194,11 @@ export class Navigation {
       settings.size = 's';
     }
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
-    this.luigi
-      .getEngine()
-      ._ui.openDrawer(this.luigi, node, settings, onCloseCallback, { nodeParams, pathParams: {}, searchParams: {} });
+    this.luigi.getEngine()._ui.openDrawer(this.luigi, node, settings, onCloseCallback, {
+      nodeParams,
+      pathParams: pathData.pathParams || {},
+      searchParams: {}
+    });
   };
 
   runTimeErrorHandler = async (errorObj: object): Promise<void> => {
