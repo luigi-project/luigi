@@ -65,17 +65,20 @@ export class RoutingService {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
-
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
+
         if (!closed) return;
 
-        this.handleRouteChange(
-          RoutingHelpers.getCurrentPath(this.luigi, true, true),
-          withoutSync,
-          preventContextUpdate,
-          preserveView
-        );
+        const navService = serviceRegistry.get(NavigationService);
+        const hasBackContext = !!navService.getGoBackContext();
+        const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, true, true);
+
+        if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !hasBackContext && !preserveView) {
+          this.getNavigationService().removeLastPreservedView();
+        }
+
+        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
@@ -83,17 +86,18 @@ export class RoutingService {
         const preserveView = !!(ev as any)?.detail?.preserveView;
         const preventContextUpdate = !!(ev as any)?.detail?.preventContextUpdate;
         const withoutSync = !!(ev as any)?.detail?.withoutSync;
-
         const modalService = serviceRegistry.get(ModalService);
         const closed = await modalService.closeModalsWithDirtyCheck();
+
         if (!closed) return;
 
-        this.handleRouteChange(
-          RoutingHelpers.getCurrentPath(this.luigi, false, true),
-          withoutSync,
-          preventContextUpdate,
-          preserveView
-        );
+        const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, false, true);
+
+        if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !(ev as any)?.detail) {
+          this.getNavigationService().removeLastPreservedView();
+        }
+
+        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }

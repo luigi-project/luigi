@@ -60,7 +60,7 @@ describe('UIModule.updateMainContent - withoutSync', () => {
 
     const mockNavigationService = {
       clearGoBackContext: jest.fn(),
-      getPreservedViewsLength: jest.fn().mockResolvedValue(0),
+      getPreservedViewsLength: jest.fn().mockReturnValue(0),
       getGoBackContext: jest.fn().mockResolvedValue(null)
     };
 
