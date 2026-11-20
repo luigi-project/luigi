@@ -78,12 +78,7 @@ export class RoutingService {
           this.getNavigationService().removeLastPreservedView();
         }
 
-        this.handleRouteChange(
-          routeInfo,
-          withoutSync,
-          preventContextUpdate,
-          preserveView
-        );
+        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
@@ -102,12 +97,7 @@ export class RoutingService {
           this.getNavigationService().removeLastPreservedView();
         }
 
-        this.handleRouteChange(
-          routeInfo,
-          withoutSync,
-          preventContextUpdate,
-          preserveView
-        );
+        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
       });
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }

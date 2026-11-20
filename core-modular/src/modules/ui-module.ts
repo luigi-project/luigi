@@ -393,69 +393,69 @@ export const UIModule = {
             )
         : '';
 
-      [...containerWrapper.childNodes].filter(
-        (element: any) => element.tagName?.indexOf('LUIGI-') === 0
-      ).forEach((element: any, index: number) => {
-        if (withoutSync) {
-          currentContainer = element;
-        }
+      [...containerWrapper.childNodes]
+        .filter((element: any) => element.tagName?.indexOf('LUIGI-') === 0)
+        .forEach((element: any, index: number) => {
+          if (withoutSync) {
+            currentContainer = element;
+          }
 
-        if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
-          if (!withoutSync) {
-            (element as any)._luigiActiveContainer = false;
-            element.style.display = 'none';
-            const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
-            if (vgSettings?.preloadUrl) {
-              element.viewurl = vgSettings.preloadUrl;
-              element.context = {};
-              element.nodeParams = {};
-              element.pathParams = {};
-            }
-          }
-        } else if (element.webcomponent) {
-          if (!withoutSync && !(element as any)._luigiPreserved) {
-            element.remove();
-          }
-        } else {
-          if (
-            withoutSync ||
-            element.viewGroup ||
-            (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
-          ) {
-            if (!preserveView && viewStackSize === index) {
-              (element as any)._luigiPreserved = hasBackContext;
-              (element as any)._luigiActiveContainer = true;
-              element.style.display = 'block';
-              if (!viewGroupContainer) {
-                viewGroupContainer = element;
+          if (element.viewGroup && currentNode.viewGroup !== element.viewGroup) {
+            if (!withoutSync) {
+              (element as any)._luigiActiveContainer = false;
+              element.style.display = 'none';
+              const vgSettings = luigi.getConfigValue('navigation.viewGroupSettings')?.[element.viewGroup];
+              if (vgSettings?.preloadUrl) {
+                element.viewurl = vgSettings.preloadUrl;
+                element.context = {};
+                element.nodeParams = {};
+                element.pathParams = {};
               }
-            } else {
-              (element as any)._luigiPreserved = !hasBackContext;
-              (element as any)._luigiActiveContainer = false;
-              element.style.display = 'none';
             }
-          } else if (
-            !currentNode.viewGroup &&
-            !currentNode.isolateView &&
-            !currentNode.webcomponent &&
-            element.viewurl &&
-            (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
-          ) {
-            (element as any)._luigiPreserved = false;
-            (element as any)._luigiActiveContainer = true;
-            element.style.display = 'block';
-            viewGroupContainer = element;
-          } else {
-            if (preserveView) {
-              (element as any)._luigiPreserved = true;
-              (element as any)._luigiActiveContainer = false;
-              element.style.display = 'none';
-            } else if (!withoutSync && !(element as any)._luigiPreserved) {
+          } else if (element.webcomponent) {
+            if (!withoutSync && !(element as any)._luigiPreserved) {
               element.remove();
             }
+          } else {
+            if (
+              withoutSync ||
+              element.viewGroup ||
+              (element.virtualTree && currentVirtualTreeRootNode === element.virtualTreeRootNode)
+            ) {
+              if (!preserveView && viewStackSize === index) {
+                (element as any)._luigiPreserved = hasBackContext;
+                (element as any)._luigiActiveContainer = true;
+                element.style.display = 'block';
+                if (!viewGroupContainer) {
+                  viewGroupContainer = element;
+                }
+              } else {
+                (element as any)._luigiPreserved = !hasBackContext;
+                (element as any)._luigiActiveContainer = false;
+                element.style.display = 'none';
+              }
+            } else if (
+              !currentNode.viewGroup &&
+              !currentNode.isolateView &&
+              !currentNode.webcomponent &&
+              element.viewurl &&
+              (preventContextUpdate || (resolvedViewUrl && GenericHelpers.isSameUrl(element.viewurl, resolvedViewUrl)))
+            ) {
+              (element as any)._luigiPreserved = false;
+              (element as any)._luigiActiveContainer = true;
+              element.style.display = 'block';
+              viewGroupContainer = element;
+            } else {
+              if (preserveView) {
+                (element as any)._luigiPreserved = true;
+                (element as any)._luigiActiveContainer = false;
+                element.style.display = 'none';
+              } else if (!withoutSync && !(element as any)._luigiPreserved) {
+                element.remove();
+              }
+            }
           }
-        }
-      });
+        });
 
       if (viewGroupContainer && viewGroupContainer._luigiPreloading) {
         viewGroupContainer._luigiPreloading = false;
