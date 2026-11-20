@@ -31,7 +31,7 @@ describe('Navigation', () => {
       shouldPreventNavigationForPath: jest.fn().mockReturnValue(false),
       getPreservedViewsLength: jest.fn().mockReturnValue(0),
       handleGoBackRequest: jest.fn(),
-      getPathData: jest.fn()
+      getPathData: jest.fn().mockResolvedValue({ pathParams: {} })
     };
 
     luigiMock = {
@@ -46,7 +46,8 @@ describe('Navigation', () => {
         }
       }),
       i18n: jest.fn().mockReturnValue({
-        getTranslation: (key: string) => key
+        getTranslation: (key: string) => key,
+        getCurrentLocale: () => 'en'
       }),
       ux: jest.fn().mockReturnValue({
         showAlert: jest.fn()
@@ -384,6 +385,89 @@ describe('Navigation', () => {
 
       await navigation.openAsDrawer('/drawer/path', drawerSettings);
       expect(openDrawerSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe.each(['modal', 'drawer'] as const)('%s target path parameters', (dialogType) => {
+    describe.each([false, true])('useHashRouting: %s', (useHashRouting) => {
+      it.each([
+        {
+          path: '/projects/p1/details',
+          pathSegment: 'details',
+          virtualTree: false,
+          pathParams: { projectId: 'p1' },
+          viewUrl: 'https://example.test/projects/:projectId/details',
+          expectedViewUrl: 'https://example.test/projects/p1/details'
+        },
+        {
+          path: '/projects/p1/users/u2',
+          pathSegment: ':userId',
+          virtualTree: false,
+          pathParams: { projectId: 'p1', userId: 'u2' },
+          viewUrl: 'https://example.test/projects/:projectId/users/:userId',
+          expectedViewUrl: 'https://example.test/projects/p1/users/u2'
+        },
+        {
+          path: '/home2//vt2/blog',
+          pathSegment: ':virtualSegment_1',
+          virtualTree: true,
+          pathParams: { virtualSegment_1: 'blog' },
+          viewUrl: 'https://www.luigi-project.io/:virtualSegment_1/?q=v',
+          expectedViewUrl: 'https://www.luigi-project.io/blog/?q=v'
+        },
+        {
+          path: '/home2/vt2/blog/article',
+          pathSegment: ':virtualSegment_2',
+          virtualTree: true,
+          pathParams: { virtualSegment_1: 'blog', virtualSegment_2: 'article' },
+          viewUrl: 'https://www.luigi-project.io/:virtualSegment_1/:virtualSegment_2/?q=v',
+          expectedViewUrl: 'https://www.luigi-project.io/blog/article/?q=v'
+        }
+      ])('forwards target parameters and resolves the view URL for $path', async (testCase) => {
+        luigiMock.getConfig.mockReturnValue({ routing: { useHashRouting } });
+        navigation = new Navigation(luigiMock);
+        const node: Node = {
+          label: 'Detail',
+          pathSegment: testCase.pathSegment,
+          viewUrl: testCase.viewUrl,
+          ...(testCase.virtualTree ? { _virtualTree: true } : {})
+        };
+        const pathParams = { ...testCase.pathParams };
+        const nodeParams = { tenant: 't1' };
+        const onCloseCallback = jest.fn();
+        mockNavService.getCurrentNode.mockResolvedValue(node);
+        mockNavService.getPathData.mockResolvedValue({ pathParams });
+        jest.spyOn(RoutingHelpers, 'pathExists').mockResolvedValue(true);
+        const openDialog = luigiMock.getEngine()._ui[dialogType === 'modal' ? 'openModal' : 'openDrawer'];
+
+        if (dialogType === 'modal') {
+          await navigation.openAsModal(
+            testCase.path,
+            { title: 'Explicit title', nodeParams, showModalPathInUrl: false },
+            onCloseCallback
+          );
+        } else {
+          await navigation.openAsDrawer(
+            testCase.path,
+            { header: { title: 'Explicit title' }, nodeParams },
+            onCloseCallback
+          );
+        }
+
+        const normalizedPath = testCase.path.replace(/\/\/+/g, '/');
+        expect(mockNavService.getCurrentNode).toHaveBeenCalledWith(normalizedPath);
+        expect(mockNavService.getPathData).toHaveBeenCalledWith(normalizedPath);
+        expect(openDialog).toHaveBeenCalledWith(luigiMock, node, expect.any(Object), onCloseCallback, {
+          nodeParams,
+          pathParams,
+          searchParams: {}
+        });
+        const forwardedParams = openDialog.mock.calls[0][4];
+        expect(
+          RoutingHelpers.substituteViewUrl(node, forwardedParams.pathParams, forwardedParams.nodeParams, luigiMock)
+        ).toBe(testCase.expectedViewUrl);
+        expect(pathParams).toEqual(testCase.pathParams);
+      });
     });
   });
 
