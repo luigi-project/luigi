@@ -76,9 +76,10 @@ export class ModalService {
    * Updates the settings of the given modal in the stack.
    * @param settings modal settings to update the modal with
    */
-  updateModalSettings(settings: ModalSettings, index: number): void {
-    if (this._modalStack.at(index)) {
-      const modal = this._modalStack[index];
+  updateModalSettings(settings: ModalSettings, index: number, id: number): void {
+    const modal = this._modalStack[index];
+
+    if (modal?.modalsettings?._modalId === id) {
       modal.modalsettings = { ...modal.modalsettings, ...settings };
     }
   }

@@ -154,6 +154,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: true,
+          _modalId: expect.any(Number),
           _modalIndex: 0,
           title: 'Node Label',
           size: 'l',
@@ -176,6 +177,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalId: expect.any(Number),
           _modalIndex: 0,
           title: 'Modal Title',
           size: 'l',
@@ -198,6 +200,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalId: expect.any(Number),
           _modalIndex: 0,
           title: 'Modal Title',
           size: 'm',
@@ -222,6 +225,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalId: expect.any(Number),
           _modalIndex: 1,
           title: 'Modal Title',
           keepPrevious: true,
@@ -245,6 +249,7 @@ describe('Navigation', () => {
         {
           _dialogType: 'modal',
           _liveLabel: false,
+          _modalId: expect.any(Number),
           _modalIndex: 0,
           title: 'Modal Title',
           size: 'l',
@@ -280,6 +285,7 @@ describe('Navigation', () => {
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path', {
         _dialogType: 'modal',
         _liveLabel: false,
+        _modalId: expect.any(Number),
         _modalIndex: 0,
         title: 'Modal Title',
         size: 'l',
@@ -304,6 +310,7 @@ describe('Navigation', () => {
       expect(appendModalDataToUrlSpy).toHaveBeenCalledWith('/modal/path?~test=true&~foo=bar', {
         _dialogType: 'modal',
         _liveLabel: false,
+        _modalId: expect.any(Number),
         _modalIndex: 0,
         title: 'Modal Title',
         size: 'l',

@@ -125,7 +125,7 @@ export class Navigation {
     settings._dialogType = 'modal';
     settings._liveLabel = false;
     if (!settings.title) {
-      settings.title = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      settings.title = await RoutingHelpers.resolveNodeLabel(node, this.luigi);
       settings._liveLabel = true;
     }
     if (!settings.size) {
@@ -134,6 +134,7 @@ export class Navigation {
     if (!settings.closebtn_data_testid) {
       settings.closebtn_data_testid = `lui-modal-index-${modalIndex}`;
     }
+    settings._modalId = GenericHelpers.getRandomId();
     settings._modalIndex = modalIndex;
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
@@ -178,7 +179,7 @@ export class Navigation {
     settings._dialogType = 'drawer';
     settings._liveLabel = false;
     if (!settings.header?.title) {
-      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      const label = await RoutingHelpers.resolveNodeLabel(node, this.luigi);
       const title = label || '';
       if (settings.header && Object.keys(settings.header).length) {
         settings.header.title = title;

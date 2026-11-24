@@ -317,6 +317,7 @@ export interface ModalSettings extends DialogSettings {
   showModalPathInUrl?: boolean;
   size?: 'fullscreen' | 'l' | 'm' | 's';
   width?: string;
+  _modalId?: number;
   _modalIndex?: number;
 }
 
