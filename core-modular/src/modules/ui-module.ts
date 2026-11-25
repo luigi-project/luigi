@@ -412,7 +412,7 @@ export const UIModule = {
                 element.pathParams = {};
               }
             }
-          } else if (element.webcomponent || !preserveView && currentNode.viewGroup === element.viewGroup) {
+          } else if (element.webcomponent || (!preserveView && currentNode.viewGroup === element.viewGroup)) {
             if (!withoutSync) {
               if ((element as any)._luigiPreserved && hasBackContext) {
                 (element as any)._luigiActiveContainer = true;
