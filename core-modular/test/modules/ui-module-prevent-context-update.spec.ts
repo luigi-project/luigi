@@ -108,7 +108,7 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
 
     await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
 
-    expect(containerWrapper.contains(existingContainer)).toBe(true);
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
     expect(containerWrapper.children.length).toBe(1);
     expect(existingContainer.viewurl).toBe('/withoptions.html');
   });
@@ -149,11 +149,12 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
 
     expect(containerWrapper.contains(existingContainer)).toBe(false);
     expect(containerWrapper.children.length).toBe(1);
+    expect(existingContainer.updateContext).not.toHaveBeenCalled();
     const newContainer = containerWrapper.children[0] as any;
     expect(newContainer.viewurl).toBe('/multipurpose.html');
   });
 
-  it('should reuse container and update context when preventContextUpdate is false and viewUrls match', async () => {
+  it('should remove container and create new one when preventContextUpdate is false and viewUrls match', async () => {
     const existingContainer = createMockContainer('/multipurpose.html');
     containerWrapper.appendChild(existingContainer);
 
@@ -161,8 +162,9 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
 
     await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false);
 
-    expect(containerWrapper.contains(existingContainer)).toBe(true);
-    expect(existingContainer.updateContext).toHaveBeenCalledWith({ updated: true }, { withoutSync: false });
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
+    expect(containerWrapper.children.length).toBe(1);
+    expect(existingContainer.updateContext).not.toHaveBeenCalled();
   });
 
   it('should not match container when node is webcomponent even with preventContextUpdate', async () => {

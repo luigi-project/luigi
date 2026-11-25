@@ -412,9 +412,21 @@ export const UIModule = {
                 element.pathParams = {};
               }
             }
-          } else if (element.webcomponent) {
-            if (!withoutSync && !(element as any)._luigiPreserved) {
-              element.remove();
+          } else if (element.webcomponent || !preserveView && currentNode.viewGroup === element.viewGroup) {
+            if (!withoutSync) {
+              if ((element as any)._luigiPreserved && hasBackContext) {
+                (element as any)._luigiActiveContainer = true;
+                element.style.display = 'block';
+                if (!viewGroupContainer) {
+                  viewGroupContainer = element;
+                }
+              } else {
+                element.remove();
+              }
+            } else {
+              if (!viewGroupContainer) {
+                viewGroupContainer = currentContainer;
+              }
             }
           } else {
             if (
@@ -538,7 +550,7 @@ export const UIModule = {
       }
 
       const childNodes = [...containerWrapper.childNodes].filter(
-        (child: any) => child.tagName?.startsWith('LUIGI-') && !child.hasAttribute('_luigiPreloading')
+        (child: any) => child.tagName?.startsWith('LUIGI-') && !child._luigiPreloadCreatedAt
       );
 
       if (childNodes.length > 1) {

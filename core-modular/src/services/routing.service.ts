@@ -75,11 +75,26 @@ export class RoutingService {
         const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, true, true);
 
         if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !hasBackContext && !preserveView) {
-          this.getNavigationService().removeLastPreservedView();
-        }
+          this.dirtyStatusService ??= serviceRegistry.get(DirtyStatusService);
 
-        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+          // pretend the url hasn't been changed by browser default behaviour
+          const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
+          const newUrl = `${window.location.origin}/#/${GenericHelpers.trimLeadingSlash(routeInfo?.path)}`;
+
+          oldUrl && history.pushState(null, '', oldUrl);
+          try {
+            await this.dirtyStatusService.getUnsavedChangesModalPromise();
+            history.pushState(null, '', newUrl);
+          } catch (e) {
+            return;
+          }
+          this.getNavigationService().removeLastPreservedView();
+          this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+        } else {
+          this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+        }
       });
+
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, true, true));
     } else {
       EventListenerHelpers.addEventListener('popstate', async (ev: PopStateEvent) => {
@@ -94,11 +109,26 @@ export class RoutingService {
         const routeInfo = RoutingHelpers.getCurrentPath(this.luigi, false, true);
 
         if (this.getNavigationService().isValidBackRoute(routeInfo?.path) && !(ev as any)?.detail) {
-          this.getNavigationService().removeLastPreservedView();
-        }
+          this.dirtyStatusService ??= serviceRegistry.get(DirtyStatusService);
 
-        this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+          // pretend the url hasn't been changed by browser default behaviour
+          const oldUrl = this.dirtyStatusService.unsavedChanges.persistUrl;
+          const newUrl = `${window.location.origin}/${GenericHelpers.trimLeadingSlash(routeInfo?.path)}`;
+
+          oldUrl && history.pushState(null, '', oldUrl);
+          try {
+            await this.dirtyStatusService.getUnsavedChangesModalPromise();
+            history.pushState(null, '', newUrl);
+          } catch (e) {
+            return;
+          }
+          this.getNavigationService().removeLastPreservedView();
+          this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+        } else {
+          this.handleRouteChange(routeInfo, withoutSync, preventContextUpdate, preserveView);
+        }
       });
+
       this.handleRouteChange(RoutingHelpers.getCurrentPath(this.luigi, false, true));
     }
   }
