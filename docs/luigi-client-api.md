@@ -31,10 +31,7 @@ This document outlines the features provided by the Luigi Client API. It covers 
 
 ## Lifecycle&nbsp;  
 ### publishEvent&nbsp;  
-<!-- label-success: Web Component API only-->
-Publish an event that can be listened to from the container host.
-
-Similar to [sendCustomMessage](luigi-client-api.md#sendCustomMessage) but for WebComponent based microfrontends only.
+<!-- label-success: Web Component API only-->Publish an event that can be listened to from the container host.Similar to [sendCustomMessage](luigi-client-api.md#sendCustomMessage) but for WebComponent based microfrontends only.
 
 **Params**
 
@@ -43,55 +40,7 @@ Similar to [sendCustomMessage](luigi-client-api.md#sendCustomMessage) but for We
   
 **Example**  
 ```js
-// case 1: publish an event from a WC based microfrontend
-
-// wcComponent.js
-// sending a message to parent host
-this.LuigiClient.publishEvent(new CustomEvent('sendSomeMsg', { detail: 'My own message' }));
-
-// host.html
-myContainer.addEventListener('custom-message', event => {
-  console.log('My custom message from the microfrontend', event.detail.data);
-}
-
-// case 2: publish an event from a compound microfrontend
-
-// secondChild.js
-// Set the custom event name = 'sendInput' and
-// send a message to its parent (main.html) and sibling (firstChild.js)
-this.LuigiClient.publishEvent(new CustomEvent('sendInput', { detail: 'My own message' }));
-
-// main.html
-myContainer.addEventListener('custom-message', event => {
-  console.log('My custom message from microfrontend', event.detail.data);
-}
-
-// Note: eventListeners.name must match CustomEvent name above
-// eventListeners.source = input1 = id of secondChild.js, which is where the message being sent from
-compoundConfig = {
- ...
- children: [
-  {
-    viewUrl: 'firstChild.js'
-    ...
-    eventListeners: [
-          {
-            source: 'input1',
-            name: 'sendInput',
-            action: 'update',
-            dataConverter: data => {
-              console.log(
-                'dataConverter(): Received Custom Message from "input1" MF ' + data
-              );
-              return 'new text: ' + data;
-            }
-          }
-     ]
-  },
-  {
-    viewUrl: 'secondChild.js',
-    id: 'input1',
-  }
+// case 1: publish an event from a WC based microfrontend// wcComponent.js// sending a message to parent hostthis.LuigiClient.publishEvent(new CustomEvent('sendSomeMsg', { detail: 'My own message' }));// host.htmlmyContainer.addEventListener('custom-message', event => {  console.log('My custom message from the microfrontend', event.detail.data);}// case 2: publish an event from a compound microfrontend// secondChild.js// Set the custom event name = 'sendInput' and// send a message to its parent (main.html) and sibling (firstChild.js)this.LuigiClient.publishEvent(new CustomEvent('sendInput', { detail: 'My own message' }));// main.htmlmyContainer.addEventListener('custom-message', event => {  console.log('My custom message from microfrontend', event.detail.data);}// Note: eventListeners.name must match CustomEvent name above// eventListeners.source = input1 = id of secondChild.js, which is where the message being sent fromcompoundConfig = { ... children: [  {    viewUrl: 'firstChild.js'    ...    eventListeners: [          {            source: 'input1',            name: 'sendInput',            action: 'update',            dataConverter: data => {              console.log(                'dataConverter(): Received Custom Message from "input1" MF ' + data              );              return 'new text: ' + data;            }          }     ]  },  {    viewUrl: 'secondChild.js',    id: 'input1',  }
 ```
 ### isLuigiClientInitialized&nbsp;  
 Check if LuigiClient is initialized
@@ -166,13 +115,7 @@ Removes a context update listener.
 LuigiClient.removeContextUpdateListener(updateListenerId)
 ```
 ### addInactiveListener&nbsp;  
-Registers a listener called upon micro frontend inactivity. This happens when a new micro frontend gets shown while keeping the old one cached.
-Gets called when:
-- navigating with **preserveView**
-- navigating from or to a **viewGroup**
-
-Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.
-Once the micro frontend turns back into active state, the `addContextUpdateListener` receives an updated context.
+Registers a listener called upon micro frontend inactivity. This happens when a new micro frontend gets shown while keeping the old one cached.Gets called when:- navigating with **preserveView**- navigating from or to a **viewGroup**Does not get called when navigating normally, or when `openAsModal` or `openAsSplitView` are used.Once the micro frontend turns back into active state, the `addContextUpdateListener` receives an updated context.
 
 **Params**
 
@@ -181,8 +124,7 @@ Once the micro frontend turns back into active state, the `addContextUpdateListe
   
 **Example**  
 ```js
-LuigiClient.addInactiveListener(() => mfIsInactive = true)
-const inactiveListenerId = LuigiClient.addInactiveListener(() => mfIsInactive = true)
+LuigiClient.addInactiveListener(() => mfIsInactive = true)const inactiveListenerId = LuigiClient.addInactiveListener(() => mfIsInactive = true)
 ```
 ### removeInactiveListener&nbsp;  
 Removes a listener for inactive micro frontends.
@@ -279,10 +221,7 @@ Sets node parameters in Luigi Core. The parameters will be added to the URL.
 LuigiClient.addNodeParams({luigi:'rocks'}, true);
 ```
 ### getNodeParams&nbsp;  
-Returns the node parameters of the active URL.
-Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.
-<!-- add-attribute:class:warning -->
-> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
+Returns the node parameters of the active URL.Node parameters are defined like URL query parameters but with a specific prefix allowing Luigi to pass them to the micro frontend view. The default prefix is **~** and you can use it in the following way: `https://my.luigi.app/home/products?~sort=asc&~page=3`.<!-- add-attribute:class:warning -->> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in node parameters are HTML-encoded.
 
 **Params**
 
@@ -291,16 +230,11 @@ Node parameters are defined like URL query parameters but with a specific prefix
   
 **Example**  
 ```js
-const nodeParams = LuigiClient.getNodeParams()
-const nodeParams = LuigiClient.getNodeParams(true)
+const nodeParams = LuigiClient.getNodeParams()const nodeParams = LuigiClient.getNodeParams(true)
 ```
 **Returns**: <code>Object</code> - node parameters, where the object property name is the node parameter name without the prefix, and its value is the value of the node parameter. For example `{sort: 'asc', page: 3}`  
 ### getPathParams&nbsp;  
-Returns the dynamic path parameters of the active URL.
-Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.
-All path parameters in the current navigation path (as defined by the active URL) are returned.
-<!-- add-attribute:class:warning -->
-> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in path parameters are HTML-encoded.
+Returns the dynamic path parameters of the active URL.Path parameters are defined by navigation nodes with a dynamic **pathSegment** value starting with **:**, such as **productId**.All path parameters in the current navigation path (as defined by the active URL) are returned.<!-- add-attribute:class:warning -->> **NOTE:** some special characters (`<`, `>`, `"`, `'`, `/`) in path parameters are HTML-encoded.
 
   
 **Example**  
@@ -341,8 +275,7 @@ const permissions = LuigiClient.getClientPermissions()
 ```
 **Returns**: <code>Object</code> - client permissions as specified in the navigation node  
 ### setTargetOrigin&nbsp;  
-<!-- label-success: Web App API only  -->
-When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client. Typically used only in custom micro-frontend frameworks that are compatible with LuigiClient API.
+<!-- label-success: Web App API only  -->When the micro frontend is not embedded in the Luigi Core application and there is no init handshake you can set the target origin that is used in postMessage function calls by Luigi Client. Typically used only in custom micro-frontend frameworks that are compatible with LuigiClient API.
 
 **Params**
 
@@ -357,8 +290,7 @@ LuigiClient.setTargetOrigin(window.location.origin)
 **Meta**:  
 * **since:** 0.7.3
 ### sendCustomMessage&nbsp;  
-<!-- label-success: Web App API only  -->
-Sends a custom message to the Luigi Core application.
+<!-- label-success: Web App API only  -->Sends a custom message to the Luigi Core application.
 
 **Params**
 
@@ -369,8 +301,7 @@ Sends a custom message to the Luigi Core application.
   
 **Example**  
 ```js
-LuigiClient.sendCustomMessage({id: 'environment.created', production: false})
-LuigiClient.sendCustomMessage({id: 'environment.created', data: environmentDataObj})
+LuigiClient.sendCustomMessage({id: 'environment.created', production: false})LuigiClient.sendCustomMessage({id: 'environment.created', data: environmentDataObj})
 ```
   
 **Meta**:  
@@ -430,8 +361,7 @@ LuigiClient.setViewGroupData({'vg1':' Luigi rocks!'})
 **Meta**:  
 * **since:** 2.2.0
 ### initListenerCallback&nbsp;  
-Callback of the addInitListener <br><br>
-Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+Callback of the addInitListener <br><br>Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
 
 **Params**
 
@@ -440,8 +370,7 @@ Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referen
 
   
 ### customMessageListenerCallback&nbsp;  
-Callback of the customMessageListener <br><br>
-Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+Callback of the customMessageListener <br><br>Type: [Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
 
 **Params**
 
@@ -845,10 +774,7 @@ Registers a listener for split view events
   
 **Example**  
 ```js
-const listenerId = splitViewHandle.on('expand', () => {});
-const listenerId = splitViewHandle.on('collapse', () => {});
-const listenerId = splitViewHandle.on('resize', () => {});
-const listenerId = splitViewHandle.on('close', () => {});
+const listenerId = splitViewHandle.on('expand', () => {});const listenerId = splitViewHandle.on('collapse', () => {});const listenerId = splitViewHandle.on('resize', () => {});const listenerId = splitViewHandle.on('close', () => {});
 ```
 **Returns**: <code>string</code> - listener id  
   
@@ -1118,10 +1044,7 @@ LuigiClient.uxManager().applyCSS();
 * **since:** 2.3.0
 ## storageManager&nbsp;  
 ### storageManager&nbsp;  
-<!-- label-success: Web App API only  -->
-StorageManager allows you to use browser local storage of key/values. Every storage operation is sent to be managed by Luigi Core.
-The idea is that different micro frontends can share or persist items using local storage, as long as they come from the same domain and follow the [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).
-Since all storage operations are asynchronous (sending an event to Luigi Core that will reply once operation is finished), all the methods return Promises.
+<!-- label-success: Web App API only  -->StorageManager allows you to use browser local storage of key/values. Every storage operation is sent to be managed by Luigi Core.The idea is that different micro frontends can share or persist items using local storage, as long as they come from the same domain and follow the [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy).Since all storage operations are asynchronous (sending an event to Luigi Core that will reply once operation is finished), all the methods return Promises.
 
   
 ### setItem&nbsp;  

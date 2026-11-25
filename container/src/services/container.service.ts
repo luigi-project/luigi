@@ -226,8 +226,15 @@ export class ContainerService {
                 break;
               case LuigiInternalMessageID.BACK_NAVIGATION_REQUEST:
                 {
-                  let gbctx = event.data?.goBackContext || {};
-                  if (typeof gbctx === 'string') {
+                  const isValidGoBackContext = (goBackContext: unknown): boolean => {
+                    if (typeof goBackContext === 'boolean' || typeof goBackContext === 'string') {
+                      return true;
+                    }
+                    return !!goBackContext && typeof goBackContext === 'object' && !Array.isArray(goBackContext);
+                  };
+                  const goBackContext = event.data?.goBackContext;
+                  let gbctx = isValidGoBackContext(goBackContext) ? goBackContext : {};
+                  if (typeof gbctx === 'string' && gbctx.trim() !== '') {
                     try {
                       gbctx = JSON.parse(gbctx);
                     } catch (e) {

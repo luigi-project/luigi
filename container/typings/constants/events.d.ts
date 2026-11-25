@@ -383,7 +383,7 @@ export class LuigiEvent extends Event {
   constructor(type: string, data: unknown, payload?: unknown, callback?: Function) {
     super(type);
     this.detail = data;
-    this.payload = payload || data || {};
+    this.payload = payload ?? data ?? {};
     this.callbackFn = callback;
   }
 
