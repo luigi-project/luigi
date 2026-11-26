@@ -295,7 +295,7 @@ export const UIModule = {
           const node = (modal?.currentNode || { label: settings?.title ?? '' }) as Node;
           if (settings._liveLabel) {
             const id = settings._modalId;
-            const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
+            const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
             modalService.updateModalSettings({ title }, index, id);
             UIModule.luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings(index));
           }
@@ -305,7 +305,7 @@ export const UIModule = {
         const node = UIModule.drawerData.node;
         const settings = { ...(UIModule.drawerData.settings as DrawerSettings) };
         if (settings._liveLabel) {
-          const title = await RoutingHelpers.getNodeLabel(node, UIModule.luigi);
+          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
           if (settings.header && GenericHelpers.isObject(settings.header)) {
             settings.header.title = title;
           }
@@ -645,6 +645,8 @@ export const UIModule = {
     };
 
     const closePromise = onCloseRequest();
+
+    modalSettings._modalIndex = modalService.getModalStackLength();
 
     const modalPromiseObj: ModalPromiseObject = {
       closePromise,

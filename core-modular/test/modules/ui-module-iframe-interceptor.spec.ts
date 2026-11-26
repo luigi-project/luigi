@@ -69,7 +69,11 @@ describe('UIModule - iframeCreationInterceptor', () => {
     };
 
     const mockViewUrlDecoratorSvc = { applyDecorators: jest.fn().mockImplementation((url: string) => url) };
-    const mockModalService = { registerModal: jest.fn(), getModalSettings: jest.fn().mockReturnValue({}) };
+    const mockModalService = {
+      registerModal: jest.fn(),
+      getModalSettings: jest.fn().mockReturnValue({}),
+      getModalStackLength: jest.fn().mockReturnValue(0)
+    };
     const mockDirtyStatusService = { shouldShowUnsavedChangesModal: jest.fn().mockReturnValue(false) };
     const mockNavigationService = {
       clearGoBackContext: jest.fn(),
