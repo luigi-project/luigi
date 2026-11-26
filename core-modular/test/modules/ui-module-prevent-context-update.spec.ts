@@ -92,9 +92,15 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     (UIModule as any).navService = mockNavigationService;
   });
 
-  function createMockContainer(viewurl: string): any {
+  function createMockContainer(viewurl: string, group?: string, preserved?: boolean): any {
     const el = document.createElement('luigi-container') as any;
     el.viewurl = viewurl;
+    if (group) {
+      el.viewGroup = group;
+    }
+    if (preserved) {
+      el._luigiPreserved = true;
+    }
     el.updateContext = jest.fn();
     el.updateViewUrl = jest.fn();
     return el;
@@ -198,5 +204,45 @@ describe('UIModule.updateMainContent - preventContextUpdate', () => {
     await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, true);
 
     expect(containerWrapper.contains(existingContainer)).toBe(false);
+  });
+
+  it('should keep container and create new one when preserveView is set to true and view groups match', async () => {
+    const existingContainer = createMockContainer('/multipurpose.html', 'vg1');
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewGroup: 'vg1', viewUrl: '/multipurpose.html', context: { updated: true } } as any;
+
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false, true);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(true);
+    expect(containerWrapper.children.length).toBe(2);
+    expect(existingContainer.updateContext).not.toHaveBeenCalled();
+  });
+
+  it('should keep container and update context when preserveView is set to false, view groups match, element is preserved and go back happens', async () => {
+    const existingContainer = createMockContainer('/multipurpose.html', 'vg1', true);
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewGroup: 'vg1', viewUrl: '/multipurpose.html', context: { updated: true } } as any;
+
+    jest.spyOn((UIModule as any).navService, 'getGoBackContext').mockImplementation(() => ({ foo: 'bar' }));
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(true);
+    expect(containerWrapper.children.length).toBe(1);
+    expect(existingContainer.updateContext).toHaveBeenCalledWith({ foo: 'bar', updated: true }, { withoutSync: false });
+  });
+
+  it('should remove container and create new one when preserveView is set to false, view groups match and element is not preserved', async () => {
+    const existingContainer = createMockContainer('/multipurpose.html', 'vg1');
+    containerWrapper.appendChild(existingContainer);
+
+    const targetNode = { viewGroup: 'vg1', viewUrl: '/multipurpose.html', context: { updated: true } } as any;
+
+    await UIModule.updateMainContent(targetNode, mockLuigi, {}, false, false);
+
+    expect(containerWrapper.contains(existingContainer)).toBe(false);
+    expect(containerWrapper.children.length).toBe(1);
+    expect(existingContainer.updateContext).not.toHaveBeenCalled();
   });
 });
