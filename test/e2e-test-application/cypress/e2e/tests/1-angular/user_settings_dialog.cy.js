@@ -287,7 +287,8 @@ describe('Navigation', () => {
       });
     });
 
-    it('Should hide iframe container and show WC container', () => {
+    // TODO replace external WC with more reliable source
+    xit('Should hide iframe container and show WC container', () => {
       cy.get('[data-testid="us-navigation-item"]').eq(5).click();
       cy.get('.iframeUserSettingsCtn').should('not.be.visible');
       cy.get('.wcUserSettingsCtn').should('be.visible');
@@ -301,12 +302,14 @@ describe('Navigation', () => {
       cy.get('[data-testid="us-navigation-item"]').eq(6).should('have.class', 'is-selected');
       cy.get('.wcUserSettingsCtn').should('be.visible');
       cy.get('.wcUserSettingsCtn > :first-child', { timeout: 1000 }).as('wc').should('exist');
-      cy.get('@wc').shadow().then((shadow) => {
-        cy.wrap(shadow).find('#green').should('not.have.class', 'active');
-        cy.wrap(shadow).find('#red').should('not.have.class', 'active');
-        cy.wrap(shadow).find('#green').click();
-        cy.wrap(shadow).find('#green').should('have.class', 'active');
-      });
+      cy.get('@wc')
+        .shadow()
+        .then((shadow) => {
+          cy.wrap(shadow).find('#green').should('not.have.class', 'active');
+          cy.wrap(shadow).find('#red').should('not.have.class', 'active');
+          cy.wrap(shadow).find('#green').click();
+          cy.wrap(shadow).find('#green').should('have.class', 'active');
+        });
 
       //Save Settings
       saveSettings();
@@ -317,13 +320,15 @@ describe('Navigation', () => {
       cy.get('[data-testid="us-navigation-item"]').eq(6).click();
       cy.get('.wcUserSettingsCtn').should('be.visible');
       cy.get('.wcUserSettingsCtn > :first-child', { timeout: 1000 }).as('wc').should('exist');
-      cy.get('@wc').shadow().then((shadow) => {
-        cy.wrap(shadow).find('#green').should('have.class', 'active');
-        cy.wrap(shadow).find('#red').should('not.have.class', 'active');
-        cy.wrap(shadow).find('#red').click();
-        cy.wrap(shadow).find('#green').should('not.have.class', 'active');
-        cy.wrap(shadow).find('#red').should('have.class', 'active');
-      });
+      cy.get('@wc')
+        .shadow()
+        .then((shadow) => {
+          cy.wrap(shadow).find('#green').should('have.class', 'active');
+          cy.wrap(shadow).find('#red').should('not.have.class', 'active');
+          cy.wrap(shadow).find('#red').click();
+          cy.wrap(shadow).find('#green').should('not.have.class', 'active');
+          cy.wrap(shadow).find('#red').should('have.class', 'active');
+        });
 
       //Save Settings
       saveSettings();
@@ -334,10 +339,12 @@ describe('Navigation', () => {
       cy.get('[data-testid="us-navigation-item"]').eq(6).click();
       cy.get('.wcUserSettingsCtn').should('be.visible');
       cy.get('.wcUserSettingsCtn > :first-child', { timeout: 1000 }).as('wc').should('exist');
-      cy.get('@wc').shadow().then((shadow) => {
-        cy.wrap(shadow).find('#red').should('have.class', 'active');
-        cy.wrap(shadow).find('#green').should('not.have.class', 'active');
-      });
+      cy.get('@wc')
+        .shadow()
+        .then((shadow) => {
+          cy.wrap(shadow).find('#red').should('have.class', 'active');
+          cy.wrap(shadow).find('#green').should('not.have.class', 'active');
+        });
     });
 
     it('Test userSettingGroupKey', () => {
@@ -350,17 +357,19 @@ describe('Navigation', () => {
         // click red button
         cy.get('.wcUserSettingsCtn').should('be.visible');
         cy.get('.wcUserSettingsCtn > :first-child', { timeout: 1000 }).as('wc').should('exist');
-        cy.get('@wc').shadow().then((shadow) => {
-          cy.wrap(shadow).find('#red').click();
+        cy.get('@wc')
+          .shadow()
+          .then((shadow) => {
+            cy.wrap(shadow).find('#red').click();
 
-          // Save Settings
-          saveSettings();
+            // Save Settings
+            saveSettings();
 
-          cy.getAllLocalStorage().then((localStorage) => {
-            var userSettingsString = localStorage['http://localhost:4200']['luigi.preferences.userSettings'];
-            expect(userSettingsString).to.include('"custom3":{"themeWC":"red"}');
+            cy.getAllLocalStorage().then((localStorage) => {
+              var userSettingsString = localStorage['http://localhost:4200']['luigi.preferences.userSettings'];
+              expect(userSettingsString).to.include('"custom3":{"themeWC":"red"}');
+            });
           });
-        });
       });
     });
   });
