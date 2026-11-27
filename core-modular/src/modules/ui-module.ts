@@ -243,6 +243,7 @@ export const UIModule = {
   luigi: undefined as unknown as Luigi,
   modalContainer: [] as any,
   drawerContainer: undefined as any,
+  drawerData: undefined as any,
   init: (luigi: Luigi) => {
     UIModule.navService = serviceRegistry.get(NavigationService);
     UIModule.routingService = serviceRegistry.get(RoutingService);
@@ -278,6 +279,39 @@ export const UIModule = {
 
     if (noScopes || scopes.includes('navigation') || scopes.includes('navigation.nodes')) {
       serviceRegistry.get(NodeDataManagementService).deleteCache();
+    }
+
+    const shouldUpdateLiveLabels =
+      noScopes ||
+      scopes.includes('navigation') ||
+      scopes.includes('navigation.nodes') ||
+      scopes.includes('navigation.viewgroupdata');
+
+    if (shouldUpdateLiveLabels) {
+      const modalService = serviceRegistry.get(ModalService);
+      if (modalService.getModalStackLength()) {
+        UIModule.modalContainer.forEach(async (modal: any, index: number) => {
+          const settings = modalService.getModalSettings(index) as ModalSettings;
+          const node = (modal?.currentNode || { label: settings?.title ?? '' }) as Node;
+          if (settings._liveLabel) {
+            const id = settings._modalId;
+            const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+            modalService.updateModalSettings({ title }, index, id);
+            UIModule.luigi.getEngine()._connector?.updateModalSettings(modalService.getModalSettings(index));
+          }
+        });
+      }
+      if (UIModule.drawerContainer && UIModule.drawerData) {
+        const node = UIModule.drawerData.node;
+        const settings = { ...(UIModule.drawerData.settings as DrawerSettings) };
+        if (settings._liveLabel) {
+          const title = RoutingHelpers.resolveNodeLabel(node, UIModule.luigi);
+          if (settings.header && GenericHelpers.isObject(settings.header)) {
+            settings.header.title = title;
+          }
+          UIModule.luigi.getEngine()._connector?.updateModalSettings({ ...settings, ...{ title } });
+        }
+      }
     }
 
     const isViewGroupDataOnly = scopes?.length === 1 && scopes[0] === 'navigation.viewgroupdata';
@@ -612,6 +646,8 @@ export const UIModule = {
 
     const closePromise = onCloseRequest();
 
+    modalSettings._modalIndex = modalService.getModalStackLength();
+
     const modalPromiseObj: ModalPromiseObject = {
       closePromise,
       resolveFn,
@@ -686,6 +722,7 @@ export const UIModule = {
 
     const lc = await createContainer(node, luigi, luigiParams, 'drawer');
     UIModule.drawerContainer = lc;
+    UIModule.drawerData = { node, settings: drawerSettings };
 
     let resolved = false;
     let resolveFn: ((goBackValue?: any) => void) | undefined;
@@ -707,6 +744,7 @@ export const UIModule = {
           return;
         }
         UIModule.drawerContainer = undefined;
+        UIModule.drawerData = undefined;
         dirtyStatusService.clearDirtyState(lc);
         resolveFn && resolveFn();
       };
@@ -737,6 +775,7 @@ export const UIModule = {
         }
         onCloseCallback?.();
         UIModule.drawerContainer = undefined;
+        UIModule.drawerData = undefined;
         dirtyStatusService.clearDirtyState(lc);
         resolveFn && resolveFn();
       },

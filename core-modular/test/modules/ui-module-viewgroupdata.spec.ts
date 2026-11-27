@@ -23,10 +23,12 @@ jest.mock('../../src/utilities/helpers/generic-helpers', () => ({ GenericHelpers
 jest.mock('../../src/utilities/helpers/auth-helpers', () => ({ AuthHelpers: {} }));
 
 import { UIModule } from '../../src/modules/ui-module';
+import { ModalService } from '../../src/services/modal.service';
 import { serviceRegistry } from '../../src/services/service-registry';
 
 describe('UIModule.update - viewgroupdata fast path', () => {
   let mockConnector: any;
+  let mockModalService: any;
   let mockNavService: any;
   let mockRoutingService: any;
   let mockNodeDataMgmt: any;
@@ -40,6 +42,9 @@ describe('UIModule.update - viewgroupdata fast path', () => {
       renderBreadcrumbs: jest.fn(),
       getContainerWrapper: jest.fn().mockReturnValue(document.createElement('div')),
       setDocumentTitle: jest.fn()
+    };
+    mockModalService = {
+      getModalStackLength: jest.fn().mockReturnValue(0)
     };
     mockNavService = {
       getPathData: jest.fn().mockResolvedValue({ selectedNode: {}, nodesInPath: [] }),
@@ -60,6 +65,7 @@ describe('UIModule.update - viewgroupdata fast path', () => {
     };
 
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
+      if (service === ModalService) return mockModalService;
       if (service === NodeDataManagementService) return mockNodeDataMgmt;
       return {};
     });
