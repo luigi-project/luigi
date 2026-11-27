@@ -1082,16 +1082,29 @@ const connector = {
     updateOverlays();
   },
 
-  updateModalSettings: (modalSettings) => {
-    console.log('modalSettings', modalSettings);
-    const dialogs = document.querySelectorAll('ui5-dialog.lui-modal');
-    if (!dialogs) return;
-    dialogs.forEach((dialog) => {
-      if (modalSettings?.title) {
-        dialog.querySelector('.lui-modal-title').innerText = modalSettings.title;
+  updateModalSettings: (settings) => {
+    console.log('modalSettings', settings);
+    const updateSettings = (dialog) => {
+      if (settings?.title || settings?.title?.trim() === '') {
+        dialog.querySelector('.lui-modal-title').innerText = settings.title;
       }
-      setDialogSize(dialog, modalSettings);
-    });
+      setDialogSize(dialog, settings);
+    };
+    const drawer = document.querySelector('ui5-dialog.lui-drawer');
+    const modals = Array.from(document.querySelectorAll('ui5-dialog.lui-modal'));
+    const dialogs = Array.from(document.querySelectorAll('ui5-dialog')).filter(
+      (dialog) => dialog.classList.contains('lui-modal') || dialog.classList.contains('lui-drawer')
+    );
+    if (dialogs?.length) {
+      if (drawer && settings?._dialogType === 'drawer') {
+        updateSettings(drawer);
+      } else if (settings?._dialogType === 'modal') {
+        const index = settings?._modalIndex;
+        if (modals?.at(index)) {
+          updateSettings(modals[index]);
+        }
+      }
+    }
   },
 
   renderTabNav: (tabNavData) => {

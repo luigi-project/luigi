@@ -174,6 +174,15 @@ describe('ViewGroup Data', () => {
       expect(RoutingHelpers.resolveNodeLabel(node, luigi)).toBe('');
     });
 
+    it('should return empty string when node label is not available', () => {
+      const node: Node = {
+        pathSegment: 'project',
+        viewGroup: 'vg1'
+      };
+      luigi.getConfigValue.mockReturnValue({});
+      expect(RoutingHelpers.resolveNodeLabel(node, luigi)).toBe('');
+    });
+
     it('should find viewGroup from parent if not on node directly', () => {
       const parent: Node = {
         pathSegment: 'root',

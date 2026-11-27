@@ -10,7 +10,6 @@ import type {
   Node,
   RunTimeErrorHandler
 } from '../types/navigation';
-import type { LuigiParams } from '../types/routing';
 import { GenericHelpers } from '../utilities/helpers/generic-helpers';
 import { NavigationHelpers } from '../utilities/helpers/navigation-helpers';
 import { RoutingHelpers } from '../utilities/helpers/routing-helpers';
@@ -121,16 +120,22 @@ export class Navigation {
 
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const pathData = await this.navService.getPathData(normalizedPath);
-    const settings = modalSettings || {};
+    const modalIndex = this.modalService.getModalStackLength();
+    const settings = (modalSettings || {}) as ModalSettings;
+    settings._dialogType = 'modal';
+    settings._liveLabel = false;
     if (!settings.title) {
-      settings.title = node?.label;
+      settings.title = await RoutingHelpers.resolveNodeLabel(node, this.luigi);
+      settings._liveLabel = true;
     }
     if (!settings.size) {
       settings.size = 'l';
     }
     if (!settings.closebtn_data_testid) {
-      settings.closebtn_data_testid = `lui-modal-index-${this.modalService.getModalStackLength()}`;
+      settings.closebtn_data_testid = `lui-modal-index-${modalIndex}`;
     }
+    settings._modalId = GenericHelpers.getRandomId();
+    settings._modalIndex = modalIndex;
     const nodeParams = settings.nodeParams || this.options.nodeParams || {};
     let modalPathForUrl = normalizedPath;
     if (nodeParams && Object.keys(nodeParams).length > 0) {
@@ -170,15 +175,19 @@ export class Navigation {
     if (!redirectPath) return;
     const node = (await this.navService.getCurrentNode(normalizedPath)) as Node;
     const pathData = await this.navService.getPathData(normalizedPath);
-    const settings = drawerSettings || {};
+    const settings = (drawerSettings || {}) as DrawerSettings;
+    settings._dialogType = 'drawer';
+    settings._liveLabel = false;
     if (!settings.header?.title) {
-      const label = await RoutingHelpers.getNodeLabel(node, this.luigi);
+      const label = await RoutingHelpers.resolveNodeLabel(node, this.luigi);
       const title = label || '';
       if (settings.header && Object.keys(settings.header).length) {
         settings.header.title = title;
       } else {
         settings.header = { title };
       }
+      settings.title = title;
+      settings._liveLabel = true;
     }
     if (settings.overlap === undefined) {
       settings.overlap = true;
