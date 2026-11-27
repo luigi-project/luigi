@@ -36,6 +36,7 @@ import { runInNewContext } from 'node:vm';
 import Events from '@luigi-project/container';
 import { UIModule } from '../../src/modules/ui-module';
 import { ModalService, type ModalPromiseObject } from '../../src/services/modal.service';
+import { NavigationService } from '../../src/services/navigation.service';
 import { RoutingService } from '../../src/services/routing.service';
 import { DirtyStatusService } from '../../src/services/dirty-status.service';
 import { ViewUrlDecoratorSvc } from '../../src/services/viewurl-decorator';
@@ -45,6 +46,7 @@ describe('UIModule.openModal close callbacks', () => {
   let luigi: any;
   let connector: any;
   let modalService: ModalService;
+  let mockNavService: any;
   let dirtyStatusService: any;
   let routingService: any;
   let callback: jest.Mock;
@@ -55,6 +57,17 @@ describe('UIModule.openModal close callbacks', () => {
   let originalNavService: typeof UIModule.navService;
 
   beforeEach(() => {
+    mockNavService = {
+      getCurrentNode: jest.fn(),
+      openViewInNewTab: jest.fn(),
+      handleNavigationRequest: jest.fn(),
+      isValidGoBackContext: jest.fn().mockReturnValue(false),
+      shouldPreventNavigationForPath: jest.fn().mockReturnValue(false),
+      getPreservedViewsLength: jest.fn().mockReturnValue(0),
+      handleGoBackRequest: jest.fn(),
+      getPathData: jest.fn()
+    };
+    UIModule.navService = mockNavService;
     originalNavService = UIModule.navService;
     UIModule.modalContainer = [];
     connector = { renderModal: jest.fn(), showLoadingIndicator: jest.fn() };
@@ -77,6 +90,7 @@ describe('UIModule.openModal close callbacks', () => {
     routingService = { removeModalDataFromUrl: jest.fn() };
     (serviceRegistry.get as jest.Mock).mockImplementation((service: any) => {
       if (service === ModalService) return modalService;
+      if (service === NavigationService) return mockNavService;
       if (service === RoutingService) return routingService;
       if (service === DirtyStatusService) return dirtyStatusService;
       if (service === ViewUrlDecoratorSvc) return { applyDecorators: (url: string) => url };

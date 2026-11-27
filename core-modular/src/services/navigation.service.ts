@@ -97,9 +97,17 @@ export class NavigationService {
   }
 
   private prepareGoBackContextForNavigation(goBackContext: any): void {
-    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+    if (this.isValidGoBackContext(goBackContext)) {
       this.handleDialogContainer(goBackContext);
     }
+  }
+
+  isValidGoBackContext(goBackContext: any): boolean {
+    if (typeof goBackContext === 'boolean' || typeof goBackContext === 'string') {
+      return true;
+    }
+
+    return !!goBackContext && typeof goBackContext === 'object';
   }
 
   clearGoBackContext(): void {
@@ -131,8 +139,11 @@ export class NavigationService {
 
     const routePath = route.startsWith('/') ? route : `/${route}`;
     const lastPreservedView = [...this._preservedViews].pop();
+    const lastPreservedPath = lastPreservedView.path.startsWith('/')
+      ? lastPreservedView.path
+      : `/${lastPreservedView.path}`;
     const removeQueryParams = (path: string) => path.split('?')[0];
-    const paths = [removeQueryParams(lastPreservedView.path), removeQueryParams(lastPreservedView.nextPath)];
+    const paths = [removeQueryParams(lastPreservedPath), removeQueryParams(lastPreservedView.nextPath)];
 
     return paths.includes(removeQueryParams(routePath));
   }
@@ -155,7 +166,7 @@ export class NavigationService {
       }
     };
 
-    if (typeof goBackContext === 'boolean' || (goBackContext && typeof goBackContext === 'object')) {
+    if (this.isValidGoBackContext(goBackContext)) {
       const dialogUpdated = this.handleDialogContainer(goBackContext);
 
       if (!dialogUpdated) {
@@ -1380,8 +1391,9 @@ export class NavigationService {
         }
       } else {
         const event = new CustomEvent<NavigationRequestBase>('popstate', eventDetail);
+        const newURL = `${window.location.origin}/${GenericHelpers.trimLeadingSlash(normalizedPath)}`;
 
-        window.history[method]({ path: normalizedPath }, '', normalizedPath);
+        window.history[method]({ path: normalizedPath }, '', newURL);
         window.dispatchEvent(event);
       }
     }

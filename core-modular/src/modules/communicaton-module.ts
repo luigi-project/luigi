@@ -243,7 +243,13 @@ export const CommunicationModule = {
     });
     addListener(Events.GO_BACK_REQUEST, (event: LuigiEvent) => {
       if (containerElement.parentNode?.classList?.contains('content')) {
-        serviceRegistry.get(NavigationService).handleGoBackRequest(event.payload);
+        let eventPayload = event.payload || event.detail;
+
+        if (eventPayload || typeof eventPayload === 'boolean' || typeof eventPayload === 'string') {
+          eventPayload = JSON.stringify(eventPayload);
+        }
+
+        serviceRegistry.get(NavigationService).handleGoBackRequest(eventPayload);
       }
     });
     addListener(Events.CUSTOM_MESSAGE, (event: LuigiEvent) => {

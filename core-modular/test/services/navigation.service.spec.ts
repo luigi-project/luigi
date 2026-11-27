@@ -1093,7 +1093,7 @@ describe('NavigationService', () => {
       await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
-      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', 'http://localhost/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(expect.any(CustomEvent));
 
       pushStateSpy.mockRestore();
@@ -1193,7 +1193,7 @@ describe('NavigationService', () => {
       await navigationService.handleNavigationRequest(navRequestParams);
 
       expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
-      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(pushStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', 'http://localhost/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
           CustomEvent<{
@@ -1237,7 +1237,7 @@ describe('NavigationService', () => {
 
       expect(mockModalService.closeModalsWithDirtyCheck).toHaveBeenCalled();
       expect(pushStateSpy).not.toHaveBeenCalled();
-      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', '/normal/path');
+      expect(replaceStateSpy).toHaveBeenCalledWith({ path: '/normal/path' }, '', 'http://localhost/normal/path');
       expect(dispatchEventSpy).toHaveBeenCalledWith(
         expect.any(
           CustomEvent<{
@@ -1266,14 +1266,14 @@ describe('NavigationService', () => {
 
   describe('NavigationService.buildNavItems', () => {
     it('should return empty array if nodes is empty', async () => {
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [],
         nodesInPath: [],
         rootNodes: [],
         pathParams: {}
       };
-      const data = await navigationService.buildNavItems([], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([], undefined, pathData);
       expect(data.items).toEqual([]);
     });
 
@@ -1287,14 +1287,14 @@ describe('NavigationService', () => {
       const node2: Node = { pathSegment: 'node2', label: 'Node 2', children: [] };
       const selectedNode: Node = node2;
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode,
         selectedNodeChildren: [node1, node2],
         nodesInPath: [],
         rootNodes: [node1, node2],
         pathParams: {}
       };
-      const data = await navigationService.buildNavItems([node1, node2], selectedNode, pathData, true);
+      const data = await navigationService.buildNavItems([node1, node2], selectedNode, pathData);
       expect(data.items).toEqual([
         {
           altText: undefined,
@@ -1338,14 +1338,14 @@ describe('NavigationService', () => {
         badgeCounter: { count: () => 2 }
       };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [node1, node2],
         nodesInPath: [],
         rootNodes: [node1, node2],
         pathParams: {}
       };
-      const data = await navigationService.buildNavItems([node1, node2], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1, node2], undefined, pathData);
       expect(data.items.length).toBe(1);
       expect(data.items[0].category?.id).toBe('cat1');
       expect(data.items[0].category?.nodes?.length).toBe(2);
@@ -1359,14 +1359,14 @@ describe('NavigationService', () => {
       const category = { id: 'cat1', label: 'Category 1' };
       const node1: Node = { pathSegment: 'node1', label: 'Node 1', category, children: [] };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => 'Translated ' + key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [node1],
         nodesInPath: [],
         rootNodes: [node1],
         pathParams: {}
       };
-      const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
       expect(data.items.length).toBe(1);
       expect(data.items[0].category?.label).toBe('Translated Category 1');
     });
@@ -1374,14 +1374,14 @@ describe('NavigationService', () => {
     it('translated node label and tooltip', async () => {
       const node1: Node = { pathSegment: 'node1', label: 'Node 1', tooltipText: 'Tooltip 1', children: [] };
       luigiMock.i18n = jest.fn().mockReturnValue({ getTranslation: (key: string) => 'Translated ' + key });
-      const pathData = {
+      const pathData: PathData = {
         selectedNode: undefined,
         selectedNodeChildren: [node1],
         nodesInPath: [],
         rootNodes: [node1],
         pathParams: {}
       };
-      const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
       expect(data.items.length).toBe(1);
       expect(data.items[0].label).toBe('Translated Node 1');
       expect(data.items[0].tooltip).toBe('Translated Tooltip 1');
@@ -1399,7 +1399,7 @@ describe('NavigationService', () => {
         pathParams: {},
         matchedPath: ''
       };
-      const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
       expect(data.items[0].href).toBe('#/projects');
       expect(RoutingHelpers.getNodeHref).toHaveBeenCalledWith(node1, {}, luigiMock);
       jest.restoreAllMocks();
@@ -1417,7 +1417,7 @@ describe('NavigationService', () => {
         pathParams: {},
         matchedPath: ''
       };
-      const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
       expect(data.items[0].href).toBeUndefined();
       jest.restoreAllMocks();
     });
@@ -1435,7 +1435,7 @@ describe('NavigationService', () => {
         pathParams: {},
         matchedPath: ''
       };
-      const data = await navigationService.buildNavItems([node1], undefined, pathData, true);
+      const data = await navigationService.buildNavItems([node1], undefined, pathData);
       expect(data.items[0].category?.nodes?.[0].href).toBe('/node1');
       jest.restoreAllMocks();
     });
@@ -3060,15 +3060,18 @@ describe('NavigationService', () => {
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
     });
 
-    it.each([{ foo: 'bar' }, {}, true, false])('should handle dialog container when context is valid', (ctx) => {
-      const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
-      const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
+    it.each([{ foo: 'bar' }, 'test', '', true, false])(
+      'should handle dialog container when context is valid',
+      (ctx) => {
+        const activeContainerSpy = jest.spyOn(activeContainer, 'updateContext');
+        const handleDialogContainerSpy = jest.spyOn(navigationService, 'handleDialogContainer');
 
-      navigationService.processGoBackContext(ctx);
+        navigationService.processGoBackContext(ctx);
 
-      expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
-      expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
-    });
+        expect(activeContainerSpy).toHaveBeenCalledWith({ goBackContext: ctx }, { withoutSync: false });
+        expect(handleDialogContainerSpy).toHaveBeenCalledWith(ctx);
+      }
+    );
   });
 
   describe('NavigationService._preservedViews', () => {
@@ -3219,5 +3222,18 @@ describe('NavigationService', () => {
       expect(handleDialogContainerSpy).not.toHaveBeenCalled();
       expect((navigationService as any).goBackContext).toEqual(null);
     });
+  });
+
+  describe('NavigationService.isValidGoBackContext', () => {
+    it.each([undefined, null])('should return false when value is invalid', (value: any) => {
+      expect(navigationService.isValidGoBackContext(value)).toEqual(false);
+    });
+
+    it.each([true, false, '', 'test', {}, { foo: 'bar' }, [], ['test']])(
+      'should return true when value is valid',
+      (value: any) => {
+        expect(navigationService.isValidGoBackContext(value)).toEqual(true);
+      }
+    );
   });
 });
